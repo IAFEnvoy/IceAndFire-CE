@@ -1255,13 +1255,8 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
                             this.remove(RemovalReason.DISCARDED);
                         } else if (this.getDeathStage() == (lastDeathStage / 2) - 1 && IafCommonConfig.INSTANCE.dragon.lootHeart.getValue()) {
                             ItemStack heart = new ItemStack(this.getHeartItem(), 1);
-                            List<DragonColor> colors = DragonColor.getColorsByType(this.dragonType);
-                            ItemStack egg = new ItemStack(colors.get(this.random.nextInt(colors.size())).getEggItem(), 1);
                             if (!this.getWorld().isClient) {
                                 this.dropStack(heart, 1);
-                                if (!this.isMale() && this.getDragonStage() > 3) {
-                                    this.dropStack(egg, 1);
-                                }
                             }
                             this.setDeathStage(this.getDeathStage() + 1);
                         } else {
