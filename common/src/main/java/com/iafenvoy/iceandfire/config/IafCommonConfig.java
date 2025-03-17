@@ -96,7 +96,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final IConfigEntry<Boolean> sleep = new BooleanEntry("iceandfire.dragon.sleep", true);
         public final IConfigEntry<Boolean> digWhenStuck = new BooleanEntry("iceandfire.dragon.digWhenStuck", true);
         public final IConfigEntry<Integer> breakBlockCooldown = new IntegerEntry("iceandfire.dragon.breakBlockCooldown", 5, 0, Integer.MAX_VALUE);
-        public final IConfigEntry<Integer> targetSearchLength = new IntegerEntry("iceandfire.dragon.breakBlockCooldown", 128, 0, 1024);
+        public final IConfigEntry<Integer> targetSearchLength = new IntegerEntry("iceandfire.dragon.targetSearchLength", 128, 0, 1024);
         public final IConfigEntry<Integer> wanderFromHomeDistance = new IntegerEntry("iceandfire.dragon.wanderFromHomeDistance", 40, 0, 1024);
         public final IConfigEntry<Integer> hungerTickRate = new IntegerEntry("iceandfire.dragon.hungerTickRate", 3000, 1, Integer.MAX_VALUE);
         public final IConfigEntry<Double> blockBreakingDropChance = new DoubleEntry("iceandfire.dragon.blockBreakingDropChance", 0.1, 0, 1);
@@ -158,7 +158,6 @@ public class IafCommonConfig extends AutoInitConfigContainer {
     }
 
     public static class GorgonConfig extends AutoInitConfigCategoryBase {
-        public final IConfigEntry<Boolean> generateTemple = new BooleanEntry("iceandfire.gorgon.generateTemple", true);
         public final IConfigEntry<Double> maxHealth = new DoubleEntry("iceandfire.gorgon.maxHealth", 100, 1, Integer.MAX_VALUE);
 
         public GorgonConfig() {
