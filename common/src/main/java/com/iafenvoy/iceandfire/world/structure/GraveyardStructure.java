@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.world.structure;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
 import com.mojang.serialization.Codec;
@@ -31,12 +32,14 @@ public class GraveyardStructure extends IafJigsawStructure {
     }
 
     @Override
-    protected Optional<StructurePosition> getStructurePosition(Context pContext) {
-        BlockPos blockpos = pContext.chunkPos().getCenterAtY(1);
-        if (pContext.biomeSource().getBiome(blockpos.getX(), blockpos.getY(), blockpos.getZ(), pContext.noiseConfig().getMultiNoiseSampler()).isIn(IafBiomeTags.NO_GRAVEYARD))
+    protected Optional<StructurePosition> getStructurePosition(Context context) {
+        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateGraveYardChance.getValue())
+            return Optional.empty();
+        BlockPos blockpos = context.chunkPos().getCenterAtY(1);
+        if (context.biomeSource().getBiome(blockpos.getX(), blockpos.getY(), blockpos.getZ(), context.noiseConfig().getMultiNoiseSampler()).isIn(IafBiomeTags.NO_GRAVEYARD))
             return Optional.empty();
         return StructurePoolBasedGenerator.generate(
-                pContext, // Used for JigsawPlacement to get all the proper behaviors done.
+                context, // Used for JigsawPlacement to get all the proper behaviors done.
                 this.startPool, // The starting pool to use to create the structure layout from
                 this.startJigsawName, // Can be used to only spawn from one Jigsaw block. But we don't need to worry about this.
                 this.size, // How deep a branch of pieces can go away from center piece. (5 means branches cannot be longer than 5 pieces from center piece)

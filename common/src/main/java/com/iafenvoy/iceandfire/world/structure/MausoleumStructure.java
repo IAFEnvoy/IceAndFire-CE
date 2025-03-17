@@ -33,14 +33,14 @@ public class MausoleumStructure extends IafJigsawStructure {
     }
 
     @Override
-    protected Optional<StructurePosition> getStructurePosition(Context pContext) {
-        if (!IafCommonConfig.INSTANCE.worldGen.generateMausoleums.getValue())
+    protected Optional<StructurePosition> getStructurePosition(Context context) {
+        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateMausoleumChance.getValue())
             return Optional.empty();
-        ChunkPos pos = pContext.chunkPos();
+        ChunkPos pos = context.chunkPos();
         BlockPos blockpos = pos.getCenterAtY(1);
         if (!GenerationConstants.isFarEnoughFromSpawn(blockpos)) return Optional.empty();
         return StructurePoolBasedGenerator.generate(
-                pContext, // Used for JigsawPlacement to get all the proper behaviors done.
+                context, // Used for JigsawPlacement to get all the proper behaviors done.
                 this.startPool, // The starting pool to use to create the structure layout from
                 this.startJigsawName, // Can be used to only spawn from one Jigsaw block. But we don't need to worry about this.
                 this.size, // How deep a branch of pieces can go away from center piece. (5 means branches cannot be longer than 5 pieces from center piece)

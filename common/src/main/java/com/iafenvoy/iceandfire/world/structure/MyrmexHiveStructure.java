@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.world.structure;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.*;
 import com.iafenvoy.iceandfire.entity.util.MyrmexHive;
 import com.iafenvoy.iceandfire.item.block.BlockGoldPile;
@@ -59,6 +60,8 @@ public class MyrmexHiveStructure extends Structure {
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
+        if (context.random().nextDouble() >= (this.jungle ? IafCommonConfig.INSTANCE.worldGen.generateMyemexHiveJungleChance : IafCommonConfig.INSTANCE.worldGen.generateMyemexHiveDesertChance).getValue())
+            return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
         if (!GenerationConstants.isFarEnoughFromSpawn(blockPos)) return Optional.empty();

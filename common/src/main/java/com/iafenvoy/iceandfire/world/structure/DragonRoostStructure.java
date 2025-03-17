@@ -37,6 +37,8 @@ public abstract class DragonRoostStructure extends Structure {
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
+        if (context.random().nextDouble() >= this.getGenerateChance())
+            return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
         if (!GenerationConstants.isFarEnoughFromSpawn(blockPos)) return Optional.empty();
@@ -44,6 +46,8 @@ public abstract class DragonRoostStructure extends Structure {
     }
 
     protected abstract DragonRoostPiece createPiece(BlockBox boundingBox, boolean isMale);
+
+    protected abstract double getGenerateChance();
 
     protected static abstract class DragonRoostPiece extends StructurePiece {
         protected final Block treasureBlock;

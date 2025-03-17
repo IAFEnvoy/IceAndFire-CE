@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.world.structure;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
@@ -32,6 +33,11 @@ public class LightningDragonCaveStructure extends DragonCaveStructure {
     @Override
     protected DragonCavePiece createPiece(BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
         return new LightningDragonCavePiece(0, boundingBox, male, offset, y, seed);
+    }
+
+    @Override
+    protected double getGenerateChance() {
+        return IafCommonConfig.INSTANCE.worldGen.generateLightningDragonCaveChance.getValue();
     }
 
     @Override

@@ -47,6 +47,8 @@ public abstract class DragonCaveStructure extends Structure {
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
+        if (context.random().nextDouble() >= this.getGenerateChance())
+            return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
         if (!GenerationConstants.isFarEnoughFromSpawn(blockPos)) return Optional.empty();
@@ -62,6 +64,8 @@ public abstract class DragonCaveStructure extends Structure {
     }
 
     protected abstract DragonCavePiece createPiece(BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed);
+
+    protected abstract double getGenerateChance();
 
     protected abstract static class DragonCavePiece extends StructurePiece {
         private final boolean male;

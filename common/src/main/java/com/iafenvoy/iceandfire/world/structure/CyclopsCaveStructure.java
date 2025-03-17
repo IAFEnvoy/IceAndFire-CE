@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.world.structure;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.EntityCyclops;
 import com.iafenvoy.iceandfire.item.block.BlockGoldPile;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
@@ -47,6 +48,8 @@ public class CyclopsCaveStructure extends Structure {
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
+        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateCyclopsCaveChance.getValue())
+            return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
         if (!GenerationConstants.isFarEnoughFromSpawn(blockPos)) return Optional.empty();
