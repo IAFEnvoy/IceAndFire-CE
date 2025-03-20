@@ -6,7 +6,7 @@
       "item": "minecraft:stick"
     },
     "M": {
-      "tag": "c:ingots/silver"
+      "tag": "c:silver_ingots"
     }
   },
   "pattern": [

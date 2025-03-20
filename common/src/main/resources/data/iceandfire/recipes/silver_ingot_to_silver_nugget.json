@@ -3,7 +3,7 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "iceandfire:silver_ingot"
+      "tag": "c:silver_ingots"
     }
   ],
   "result": {
