@@ -456,6 +456,7 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
             case 1 -> 10;
             case 2 -> 20;
             case 3 -> 30;
+            case 4 -> 35;
             default -> 0;
         };
         this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(armorValue);
