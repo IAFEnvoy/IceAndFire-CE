@@ -7,66 +7,6 @@
       "type": "minecraft:multi_noise",
       "biomes": [
         {
-          "biome": "minecraft:deep_frozen_ocean",
-          "parameters": {
-            "temperature": -1,
-            "humidity": 1.5,
-            "continentalness": -1.5,
-            "erosion": 0.5,
-            "weirdness": -0.5,
-            "depth": -2,
-            "offset": 0
-          }
-        },
-        {
-          "biome": "minecraft:frozen_ocean",
-          "parameters": {
-            "temperature": -1,
-            "humidity": 1,
-            "continentalness": -1,
-            "erosion": 0.5,
-            "weirdness": 0,
-            "depth": -1.5,
-            "offset": 0
-          }
-        },
-        {
-          "biome": "minecraft:frozen_peaks",
-          "parameters": {
-            "temperature": -1,
-            "humidity": 0,
-            "continentalness": 1,
-            "erosion": 0.5,
-            "weirdness": 1,
-            "depth": 2,
-            "offset": 0
-          }
-        },
-        {
-          "biome": "minecraft:snowy_plains",
-          "parameters": {
-            "temperature": -1,
-            "humidity": 0,
-            "continentalness": 1,
-            "erosion": 0,
-            "weirdness": 0,
-            "depth": 1,
-            "offset": 0
-          }
-        },
-        {
-          "biome": "minecraft:snowy_slopes",
-          "parameters": {
-            "temperature": -1,
-            "humidity": -0.5,
-            "continentalness": 1,
-            "erosion": 0.5,
-            "weirdness": 0,
-            "depth": 2,
-            "offset": 0
-          }
-        },
-        {
           "biome": "iceandfire:dread_plain",
           "parameters": {
             "temperature": -1,
