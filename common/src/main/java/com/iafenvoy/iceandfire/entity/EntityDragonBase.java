@@ -107,6 +107,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     public static final float[] growth_stage_3 = new float[]{7F, 12.5F};
     public static final float[] growth_stage_4 = new float[]{12.5F, 20F};
     public static final float[] growth_stage_5 = new float[]{20F, 30F};
+    public static final float[][] growth_stages = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};
     protected static final TrackedData<Boolean> SWIMMING = DataTracker.registerData(EntityDragonBase.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final UUID ARMOR_MODIFIER_UUID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
     private static final TrackedData<Integer> HUNGER = DataTracker.registerData(EntityDragonBase.class, TrackedDataHandlerRegistry.INTEGER);
@@ -145,7 +146,6 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     public final double minimumArmor;
     public final double maximumArmor;
     public final float[] prevAnimationProgresses = new float[10];
-    public final float[][] growth_stages = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};
     public final LegSolverQuadruped legSolver;
     public final IafDragonLogic logic;
     public final IafDragonFlightManager flightManager;
@@ -1765,11 +1765,10 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     public float getRenderSize() {
         final int stage = this.getDragonStage() - 1;
-        final float step = (this.growth_stages[stage][1] - this.growth_stages[stage][0]) / 25;
-        if (this.getAgeInDays() > 125) {
-            return this.growth_stages[stage][0] + (step * 25);
-        }
-        return this.growth_stages[stage][0] + (step * this.getAgeFactor());
+        final float step = (growth_stages[stage][1] - growth_stages[stage][0]) / 25;
+        if (this.getAgeInDays() > 125)
+            return growth_stages[stage][0] + (step * 25);
+        return growth_stages[stage][0] + (step * this.getAgeFactor());
     }
 
     private int getAgeFactor() {
