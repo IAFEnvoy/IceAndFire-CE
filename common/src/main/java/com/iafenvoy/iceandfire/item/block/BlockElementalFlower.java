@@ -22,17 +22,15 @@ public class BlockElementalFlower extends PlantBlock {
 
     @Override
     public boolean canPlantOnTop(BlockState state, BlockView world, BlockPos pos) {
-        Block block = state.getBlock();
-        return block == Blocks.GRASS_BLOCK || block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.PODZOL || block == Blocks.FARMLAND || state.isIn(BlockTags.SAND) || this.canStay(world, pos);
+        return state.isOf(Blocks.GRASS_BLOCK) || state.isOf(Blocks.DIRT) || state.isOf(Blocks.COARSE_DIRT) || state.isOf(Blocks.PODZOL) || state.isOf(Blocks.FARMLAND) || state.isIn(BlockTags.SAND) || this.canStay(state);
     }
 
-    public boolean canStay(BlockView world, BlockPos pos) {
-        BlockState soil = world.getBlockState(pos.down());
+    public boolean canStay(BlockState state) {
         if (this == IafBlocks.FIRE_LILY.get())
-            return soil.isIn(BlockTags.SAND) || soil.isOf(Blocks.NETHERRACK);
+            return state.isIn(BlockTags.SAND) || state.isOf(Blocks.NETHERRACK);
         else if (this == IafBlocks.LIGHTNING_LILY.get())
-            return soil.isIn(BlockTags.DIRT) || soil.isOf(Blocks.GRASS);
+            return state.isIn(BlockTags.DIRT) || state.isOf(Blocks.GRASS);
         else
-            return soil.isIn(BlockTags.ICE) || soil.isIn(BlockTags.SNOW) || soil.isIn(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON);
+            return state.isIn(BlockTags.ICE) || state.isIn(BlockTags.SNOW) || state.isIn(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON);
     }
 }

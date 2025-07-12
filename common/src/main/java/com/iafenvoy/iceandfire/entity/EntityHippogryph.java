@@ -149,13 +149,11 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new SitGoal(this));
         this.goalSelector.add(3, new MeleeAttackGoal(this, 1.2D, true));
-        this.goalSelector.add(4, new HippogryphAIMate(this, 1.0D));
-        this.goalSelector.add(5, new TemptGoal(this, 1.0D, Ingredient.fromTag(IafItemTags.TEMPT_HIPPOGRYPH), false));
-        //TODO: This doesn't gurantee the hippogryph will fly, it can still and is likely to path on the ground
-        this.goalSelector.add(6, new FlyGoal(this, 1D));
-        this.goalSelector.add(7, new HippogryphAIWander(this, 1.0D));
-        this.goalSelector.add(8, new LookAtEntityGoal(this, LivingEntity.class, 6.0F));
-        this.goalSelector.add(8, new LookAroundGoal(this));
+        this.goalSelector.add(4, new LookAtEntityGoal(this, LivingEntity.class, 6.0F));
+        this.goalSelector.add(4, new LookAroundGoal(this));
+        this.goalSelector.add(5, new HippogryphAIMate(this, 1.0D));
+        this.goalSelector.add(6, new TemptGoal(this, 1.0D, Ingredient.fromTag(IafItemTags.TEMPT_HIPPOGRYPH), false));
+        this.goalSelector.add(8, new HippogryphAIWander(this, 1.0D));
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
         this.targetSelector.add(3, new RevengeGoal(this));
