@@ -96,11 +96,6 @@ public class DragonAIMate extends Goal {
     private void spawnBaby() {
         EntityDragonEgg egg = this.dragon.createEgg(this.targetMate);
         if (egg != null) {
-//            PlayerEntity PlayerEntity = this.dragon.getLoveCause();
-//
-//            if (PlayerEntity == null && this.targetMate.getLoveCause() != null) {
-//                PlayerEntity = this.targetMate.getLoveCause();
-//            }
 
             this.dragon.setBreedingAge(6000);
             this.targetMate.setBreedingAge(6000);

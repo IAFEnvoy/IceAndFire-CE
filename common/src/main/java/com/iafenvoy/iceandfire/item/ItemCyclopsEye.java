@@ -40,7 +40,7 @@ public class ItemCyclopsEye extends Item {
                         stack.getNbt().putInt("HurtingTicks", stack.getNbt().getInt("HurtingTicks") + 1);
                 }
                 if (stack.getNbt().getInt("HurtingTicks") > 120) {
-                    stack.damage(1, (LivingEntity) entity, (livingEntity) -> {
+                    stack.damage(1, living, (livingEntity) -> {
                     });
                     stack.getNbt().putInt("HurtingTicks", 0);
                 }

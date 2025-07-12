@@ -10,11 +10,13 @@ Join our [Discord](https://discord.gg/NDzz2upqAk) if you have any questions.
 
 ## What we have added
 
-**All the things from original mod.**
+**All the things from original mod except myrmex series.**
 
 Netherite Related things.
 
-(Planned) Complete Dread Land
+(Planned) Complete Dread Land.
+
+(Planned) New myrmex series.
 
 ## FAQ
 
@@ -33,8 +35,4 @@ side gui through mod menu. (Require server operator permission.)
 
 Change biome tags by using datapacks.
 
-## Critical bugs
-
 **Please DO NOT report any issue to the original mod!**
-
-Myrmex cave may be cut. (I try my best to fix that)

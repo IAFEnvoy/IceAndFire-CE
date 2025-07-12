@@ -3,9 +3,6 @@ package com.iafenvoy.iceandfire.render.block;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.block.BlockEntityPodium;
 import com.iafenvoy.iceandfire.item.ItemDragonEgg;
-import com.iafenvoy.iceandfire.item.ItemMyrmexEgg;
-import com.iafenvoy.iceandfire.registry.IafItems;
-import com.iafenvoy.iceandfire.render.entity.RenderMyrmexEgg;
 import com.iafenvoy.iceandfire.render.model.ModelDragonEgg;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -36,17 +33,6 @@ public class RenderPodium<T extends BlockEntityPodium> implements BlockEntityRen
                 matrixStackIn.push();
                 model.renderPodium();
                 model.render(matrixStackIn, bufferIn.getBuffer(RenderPodium.getEggTexture(item.type)), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
-                matrixStackIn.pop();
-                matrixStackIn.pop();
-                matrixStackIn.pop();
-            } else if (entity.getStack(0).getItem() instanceof ItemMyrmexEgg) {
-                boolean jungle = entity.getStack(0).getItem() == IafItems.MYRMEX_JUNGLE_EGG.get();
-                matrixStackIn.push();
-                matrixStackIn.translate(0.5F, 0.475F, 0.5F);
-                matrixStackIn.push();
-                matrixStackIn.push();
-                model.renderPodium();
-                model.render(matrixStackIn, bufferIn.getBuffer(RenderLayer.getEntityCutout(jungle ? RenderMyrmexEgg.EGG_JUNGLE : RenderMyrmexEgg.EGG_DESERT)), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);
                 matrixStackIn.pop();
                 matrixStackIn.pop();
                 matrixStackIn.pop();

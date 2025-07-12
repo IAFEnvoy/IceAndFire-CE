@@ -1649,13 +1649,6 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     public void calculateDimensions() {
         super.calculateDimensions();
         final float scale = Math.min(this.getRenderSize() * 0.35F, 7F);
-//        double prevX = getPosX();
-//        double prevY = getPosY();
-//        double prevZ = getPosZ();
-//        float localWidth = this.getWidth();
-//        if (this.getWidth() > localWidth && !this.firstUpdate && !this.world.isRemote) {
-//            this.setPosition(prevX, prevY, prevZ);
-//        }
         if (scale != this.lastScale) {
             this.updateScale(this.getRenderSize() / 3);
         }

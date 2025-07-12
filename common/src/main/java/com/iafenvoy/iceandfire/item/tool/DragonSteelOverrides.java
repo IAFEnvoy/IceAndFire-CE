@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.item.tool;
 import com.google.common.collect.Multimap;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
-import com.iafenvoy.iceandfire.entity.EntityDeathWorm;
 import com.iafenvoy.iceandfire.event.ServerEvents;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.client.item.TooltipContext;
@@ -62,12 +61,6 @@ public interface DragonSteelOverrides<T extends ToolItem> {
             if (target.getGroup() == EntityGroup.UNDEAD)
                 target.damage(attacker.getWorld().getDamageSources().magic(), this.getAttackDamage(item) + 3.0F);
 
-        if (item.getMaterial() == IafItems.MYRMEX_CHITIN_TOOL_MATERIAL) {
-            if (target.getGroup() != EntityGroup.ARTHROPOD)
-                target.damage(attacker.getWorld().getDamageSources().generic(), this.getAttackDamage(item) + 5.0F);
-            if (target instanceof EntityDeathWorm)
-                target.damage(attacker.getWorld().getDamageSources().generic(), this.getAttackDamage(item) + 5.0F);
-        }
         if (this.isDragonSteelFire(item.getMaterial())) {
             if (IafCommonConfig.INSTANCE.armors.dragonFireAbility.getValue()) {
                 target.setOnFireFor(15);
@@ -105,8 +98,6 @@ public interface DragonSteelOverrides<T extends ToolItem> {
     default void appendHoverText(ToolMaterial tier, ItemStack stack, World worldIn, List<Text> tooltip, TooltipContext flagIn) {
         if (tier == IafItems.SILVER_TOOL_MATERIAL)
             tooltip.add(Text.translatable("silvertools.hurt").formatted(Formatting.GREEN));
-        if (tier == IafItems.MYRMEX_CHITIN_TOOL_MATERIAL)
-            tooltip.add(Text.translatable("myrmextools.hurt").formatted(Formatting.GREEN));
         if (this.isDragonSteelFire(tier)) {
             if (IafCommonConfig.INSTANCE.armors.dragonFireAbility.getValue())
                 tooltip.add(Text.translatable("dragon_sword_fire.hurt2").formatted(Formatting.DARK_RED));

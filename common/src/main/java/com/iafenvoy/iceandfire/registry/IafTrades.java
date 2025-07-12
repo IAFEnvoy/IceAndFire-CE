@@ -51,8 +51,6 @@ public final class IafTrades {
                 new BuyWithPrice(new ItemStack(Items.EMERALD, 2), new ItemStack(IafBlocks.DRAGON_ICE_SPIKES.get(), 7), 2, 3, emeraldForItemsMultiplier),
                 new BuyWithPrice(new ItemStack(IafItems.SAPPHIRE_GEM.get()), new ItemStack(Items.EMERALD, 2), 30, 3, rareItemForEmeraldMultiplier),
                 new BuyWithPrice(new ItemStack(Items.EMERALD, 2), new ItemStack(IafBlocks.JAR_EMPTY.get(), 1), 3, 4, emeraldForItemsMultiplier),
-                new BuyWithPrice(new ItemStack(Items.EMERALD, 2), new ItemStack(IafItems.MYRMEX_DESERT_RESIN.get(), 1), 40, 2, emeraldForItemsMultiplier),
-                new BuyWithPrice(new ItemStack(Items.EMERALD, 2), new ItemStack(IafItems.MYRMEX_JUNGLE_RESIN.get(), 1), 40, 2, emeraldForItemsMultiplier),
                 new BuyWithPrice(new ItemStack(Items.AMETHYST_SHARD), new ItemStack(Items.EMERALD, 3), 20, 3, rareItemForEmeraldMultiplier));
         TradeOfferHelper.registerVillagerOffers(profession, 3,
                 new BuyWithPrice(new ItemStack(IafItems.DRAGON_BONE.get(), 6), new ItemStack(Items.EMERALD, 1), 7, 4, itemForEmeraldMultiplier),

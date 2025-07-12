@@ -92,12 +92,6 @@ public final class IafSounds {
     public static final RegistrySupplier<SoundEvent> STYMPHALIAN_BIRD_IDLE = of("stymphalian_bird_idle");
     public static final RegistrySupplier<SoundEvent> STYMPHALIAN_BIRD_HURT = of("stymphalian_bird_hurt");
     public static final RegistrySupplier<SoundEvent> STYMPHALIAN_BIRD_ATTACK = of("stymphalian_bird_attack");
-    public static final RegistrySupplier<SoundEvent> MYRMEX_DIE = of("myrmex_die");
-    public static final RegistrySupplier<SoundEvent> MYRMEX_IDLE = of("myrmex_idle");
-    public static final RegistrySupplier<SoundEvent> MYRMEX_HURT = of("myrmex_hurt");
-    public static final RegistrySupplier<SoundEvent> MYRMEX_WALK = of("myrmex_walk");
-    public static final RegistrySupplier<SoundEvent> MYRMEX_BITE = of("myrmex_bite");
-    public static final RegistrySupplier<SoundEvent> MYRMEX_STING = of("myrmex_sting");
     public static final RegistrySupplier<SoundEvent> AMPHITHERE_DIE = of("amphithere_die");
     public static final RegistrySupplier<SoundEvent> AMPHITHERE_IDLE = of("amphithere_idle");
     public static final RegistrySupplier<SoundEvent> AMPHITHERE_HURT = of("amphithere_hurt");

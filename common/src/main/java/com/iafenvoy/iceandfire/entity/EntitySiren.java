@@ -196,8 +196,6 @@ public class EntitySiren extends HostileEntity implements IAnimatedEntity, IVill
             double attackmotionZ = (Math.signum(this.getZ() - attackTarget.getZ()) * 0.5D - attackTarget.getVelocity().z) * 0.100000000372529 * 5;
 
             attackTarget.setVelocity(attackTarget.getVelocity().add(attackmotionX, attackmotionY, attackmotionZ));
-            // float angle = (float) (Math.atan2(attackTarget.getDeltaMovement().z, attackTarget.getDeltaMovement().x) * 180.0D / Math.PI) - 90.0F;
-            // entity.moveForward = 0.5F;
             double d0 = this.getX() - attackTarget.getX();
             double d2 = this.getZ() - attackTarget.getZ();
             double d1 = this.getY() - 1 - attackTarget.getY();

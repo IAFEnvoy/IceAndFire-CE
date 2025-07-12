@@ -40,13 +40,6 @@ public class ItemDragonFlute extends Item {
 
         for (IDragonFlute dragon : dragons) {
             dragon.onHearFlute(player);
-			/*
-			if(dragon.isTamed() && dragon.isOwner(player)) {
-                if (dragon.isFlying() || dragon.isHovering()) {
-                    dragon.setFlying(false);
-                    dragon.setHovering(false);
-                }
-            }*/
         }
         worldIn.playSound(player, player.getBlockPos(), IafSounds.DRAGONFLUTE.get(), SoundCategory.NEUTRAL, 1, 1.75F);
 

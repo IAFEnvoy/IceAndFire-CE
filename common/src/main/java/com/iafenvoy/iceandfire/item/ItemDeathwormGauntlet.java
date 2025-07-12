@@ -117,7 +117,7 @@ public class ItemDeathwormGauntlet extends Item {
 
                     if (canSee) {
                         this.specialDamage++;
-                        livingEntity.damage(entity.getWorld().damageSources.playerAttack((PlayerEntity) entity), 3F);
+                        livingEntity.damage(entity.getWorld().damageSources.playerAttack(player), 3F);
                         livingEntity.takeKnockback(0.5F, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
                     }
                 }

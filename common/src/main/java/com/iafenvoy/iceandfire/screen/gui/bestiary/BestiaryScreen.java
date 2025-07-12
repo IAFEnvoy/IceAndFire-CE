@@ -611,59 +611,6 @@ public class BestiaryScreen extends HandledScreen<BestiaryScreenHandler> {
                 this.drawItemStack(ms, new ItemStack(TrollType.values().get(j).leggings.get()), 67, 15, 1.5F);
                 this.drawItemStack(ms, new ItemStack(TrollType.values().get(j).boots.get()), 87, 15, 1.5F);
             }
-        } else if (this.pageType.equals(MYRMEX)) {
-            if (bookPages == 0) {
-                ms.getMatrices().push();
-                ms.getMatrices().scale(1.51F, 1.51F, 1F);
-                this.drawImage(ms, DRAWINGS_1, 137, 10, 202, 16, 57, 21, 512F);
-                this.drawImage(ms, DRAWINGS_1, 195, 10, 278, 16, 57, 21, 512F);
-                ms.getMatrices().pop();
-            }
-            if (bookPages == 1) {
-                ms.getMatrices().push();
-                ms.getMatrices().scale(1.51F, 1.51F, 1F);
-                this.drawImage(ms, DRAWINGS_1, 7, 17, 202, 37, 59, 21, 512F);
-                this.drawImage(ms, DRAWINGS_1, 65, 17, 278, 37, 59, 21, 512F);
-                this.drawImage(ms, DRAWINGS_1, 7, 77, 202, 58, 59, 21, 512F);
-                this.drawImage(ms, DRAWINGS_1, 65, 77, 278, 58, 59, 21, 512F);
-                this.drawImage(ms, DRAWINGS_1, 145, 20, 278, 103, 43, 45, 512F);
-                this.drawImage(ms, DRAWINGS_1, 195, 20, 321, 103, 43, 45, 512F);
-                ms.getMatrices().pop();
-            }
-            if (bookPages == 2) {
-                ms.getMatrices().push();
-                ms.getMatrices().scale(1.51F, 1.51F, 1F);
-                this.drawImage(ms, DRAWINGS_1, 25, 13, 202, 79, 76, 24, 512F);
-                this.drawImage(ms, DRAWINGS_1, 25, 40, 278, 79, 76, 24, 512F);
-                ms.getMatrices().pop();
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_DESERT_CHITIN.get()), 125, 43, 2F);
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_JUNGLE_CHITIN.get()), 155, 43, 2F);
-                int i = 133;
-                boolean jungle = player.age % 60 > 30;
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_SHOVEL.get() : IafItems.MYRMEX_DESERT_SHOVEL.get()), i += 16, 100, 1.51F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_PICKAXE.get() : IafItems.MYRMEX_DESERT_PICKAXE.get()), i += 16, 100, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_AXE.get() : IafItems.MYRMEX_DESERT_AXE.get()), i += 16, 100, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_SWORD.get() : IafItems.MYRMEX_DESERT_SWORD.get()), i += 16, 100, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_SWORD_VENOM.get() : IafItems.MYRMEX_DESERT_SWORD_VENOM.get()), i += 16, 100, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_HOE.get() : IafItems.MYRMEX_DESERT_HOE.get()), i + 16, 100, 1.5F);
-                int j = 148;
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_HELMET.get() : IafItems.MYRMEX_DESERT_HELMET.get()), j += 16, 115, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_CHESTPLATE.get() : IafItems.MYRMEX_DESERT_CHESTPLATE.get()), j += 16, 115, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_LEGGINGS.get() : IafItems.MYRMEX_DESERT_LEGGINGS.get()), j += 16, 115, 1.5F);
-                this.drawItemStack(ms, new ItemStack(jungle ? IafItems.MYRMEX_JUNGLE_BOOTS.get() : IafItems.MYRMEX_DESERT_BOOTS.get()), j + 16, 115, 1.5F);
-            }
-            if (bookPages == 3) {
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_STINGER.get()), 35, 22, 2.5F);
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_DESERT_RESIN.get()), 25, 64, 2F);
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_JUNGLE_RESIN.get()), 55, 64, 2F);
-            }
-            if (bookPages == 4) {
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_DESERT_STAFF.get()), 25, 73, 2F);
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_JUNGLE_STAFF.get()), 55, 73, 2F);
-
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_DESERT_EGG.get()), 125, 90, 2F);
-                this.drawItemStack(ms, new ItemStack(IafItems.MYRMEX_JUNGLE_EGG.get()), 155, 90, 2F);
-            }
         } else if (this.pageType.equals(AMPHITHERE)) {
             if (bookPages == 0) {
                 ms.getMatrices().push();

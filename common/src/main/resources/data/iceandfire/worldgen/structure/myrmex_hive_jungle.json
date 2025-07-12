@@ -1,7 +1,0 @@
-{
-  "type": "iceandfire:myrmex_hive",
-  "biomes": "#iceandfire:structure_gen/myrmex_hive_jungle",
-  "spawn_overrides": {},
-  "step": "surface_structures",
-  "jungle": true
-}

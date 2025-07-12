@@ -37,7 +37,5 @@ public class LecternSlot extends Slot {
      */
     @Override
     protected void onCrafted(ItemStack stack) {
-        // thePlayer.addStat(StatList.objectCraftStats[Item.getIdFromItem(stack.getItem())],
-        // stack.stackSize);
     }
 }

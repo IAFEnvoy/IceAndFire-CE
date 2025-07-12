@@ -376,10 +376,6 @@ public class ModelTroll extends ModelDragonBase<EntityTroll> {
         this.walk(this.rightleg, speed_idle, degree_idle * 0.1F, true, 0F, 0.1F, animationProgress, 1);
         this.walk(this.leftleg, speed_idle, degree_idle * 0.1F, true, 0F, 0.1F, animationProgress, 1);
 
-        //this.flap(this.leftarm, speed_idle, degree_idle * -0.1F, true, 0, 0F, f2, 1);
-        //this.flap(this.rightarm, speed_idle, degree_idle * -0.1F, false, 0, 0F, f2, 1);
-        //this.flap(this.leftarm2, speed_idle, degree_idle * -0.1F, true, 0, -0.1F, f2, 1);
-        //this.flap(this.rightarm2, speed_idle, degree_idle * -0.1F, false, 0, -0.1F, f2, 1);
         this.walk(this.jaw, speed_idle, degree_idle * -0.15F, true, 0F, -0.1F, animationProgress, 1);
         this.walk(this.mouth, speed_idle, degree_idle * -0.15F, false, 0F, -0.1F, animationProgress, 1);
         this.faceTarget(headYaw, headPitch, 1, this.head);

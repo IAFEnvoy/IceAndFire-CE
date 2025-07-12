@@ -22,14 +22,14 @@ public abstract class MobEntityMixin extends Entity {
     }
 
     @Unique
-    private static boolean isSkeleton(Entity entity) {
+    private static boolean iceandfire$isSkeleton(Entity entity) {
         return WitherSkeletonEntity.class.isAssignableFrom(entity.getClass());
     }
 
     @Inject(method = "dropLoot", at = @At("HEAD"))
     public void dropHandler(DamageSource damageSource, boolean causedByPlayer, CallbackInfo ci) {
         if (causedByPlayer && damageSource.getSource() instanceof PlayerEntity player)
-            if (isSkeleton(this))
+            if (iceandfire$isSkeleton(this))
                 this.dropStack(new ItemStack(IafItems.WITHERBONE.get(), this.random.nextInt(2)));
     }
 }

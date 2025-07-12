@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire;
 import net.minecraft.util.Identifier;
 
 public class StaticVariables {
-    public static final Identifier MYRMEX_SYNC = Identifier.of(IceAndFire.MOD_ID, "myrmex_sync");
     public static final Identifier DRAGON_CONTROL = Identifier.of(IceAndFire.MOD_ID, "dragon_control");
     public static final Identifier DRAGON_SET_BURN_BLOCK = Identifier.of(IceAndFire.MOD_ID, "dragon_set_burn_block");
     public static final Identifier MULTIPART_INTERACT = Identifier.of(IceAndFire.MOD_ID, "multipart_interact");

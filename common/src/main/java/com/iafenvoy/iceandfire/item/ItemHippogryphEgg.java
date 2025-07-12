@@ -36,21 +36,6 @@ public class ItemHippogryphEgg extends Item {
     }
 
 
-/*    @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items) {
-        if (this.allowdedIn(group)) {
-            for (EnumHippogryphTypes type : EnumHippogryphTypes.values()) {
-                ItemStack stack = new ItemStack(this);
-                CompoundTag tag = new CompoundTag();
-                tag.putInt("EggOrdinal", type.ordinal());
-                stack.setTag(tag);
-                items.add(stack);
-
-            }
-        }
-
-    }*/
-
     @Override
     public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getStackInHand(handIn);

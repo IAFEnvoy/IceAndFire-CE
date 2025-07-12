@@ -6,11 +6,9 @@ import com.iafenvoy.iceandfire.entity.util.IAnimalFear;
 import com.iafenvoy.iceandfire.entity.util.IDreadMob;
 import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
-import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
@@ -29,7 +27,6 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -242,10 +239,6 @@ public class EntityDreadScuttler extends EntityDreadMob implements IAnimatedEnti
     @Override
     public float getSoundPitch() {
         return super.getSoundPitch() * 0.70F;
-    }
-
-    protected void playStepSound(BlockPos pos, Block blockIn) {
-        this.playSound(IafSounds.MYRMEX_WALK.get(), 0.25F, 1.0F);
     }
 
     @Override

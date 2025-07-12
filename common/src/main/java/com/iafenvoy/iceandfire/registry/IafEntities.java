@@ -50,12 +50,6 @@ public final class IafEntities {
     public static final RegistrySupplier<EntityType<EntityStymphalianFeather>> STYMPHALIAN_FEATHER = build("stymphalian_feather", EntityStymphalianFeather::new, SpawnGroup.MISC, false, 0.5F, 0.5F);
     public static final RegistrySupplier<EntityType<EntityStymphalianArrow>> STYMPHALIAN_ARROW = build("stymphalian_arrow", EntityStymphalianArrow::new, SpawnGroup.MISC, false, 0.5F, 0.5F);
     public static final RegistrySupplier<EntityType<EntityTroll>> TROLL = build("troll", EntityTroll::new, SpawnGroup.MONSTER, false, 1.2F, 3.5F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexWorker>> MYRMEX_WORKER = build("myrmex_worker", EntityMyrmexWorker::new, SpawnGroup.CREATURE, false, 0.9F, 0.9F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexSoldier>> MYRMEX_SOLDIER = build("myrmex_soldier", EntityMyrmexSoldier::new, SpawnGroup.CREATURE, false, 1.2F, 0.95F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexSentinel>> MYRMEX_SENTINEL = build("myrmex_sentinel", EntityMyrmexSentinel::new, SpawnGroup.CREATURE, false, 1.3F, 1.95F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexRoyal>> MYRMEX_ROYAL = build("myrmex_royal", EntityMyrmexRoyal::new, SpawnGroup.CREATURE, false, 1.9F, 1.86F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexQueen>> MYRMEX_QUEEN = build("myrmex_queen", EntityMyrmexQueen::new, SpawnGroup.CREATURE, false, 2.9F, 1.86F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexEgg>> MYRMEX_EGG = build("myrmex_egg", EntityMyrmexEgg::new, SpawnGroup.MISC, false, 0.45F, 0.55F);
     public static final RegistrySupplier<EntityType<EntityAmphithere>> AMPHITHERE = build("amphithere", EntityAmphithere::new, SpawnGroup.CREATURE, false, 2.5F, 1.25F, 128);
     public static final RegistrySupplier<EntityType<EntityAmphithereArrow>> AMPHITHERE_ARROW = build("amphithere_arrow", EntityAmphithereArrow::new, SpawnGroup.MISC, false, 0.5F, 0.5F);
     public static final RegistrySupplier<EntityType<EntitySeaSerpent>> SEA_SERPENT = build("sea_serpent", EntitySeaSerpent::new, SpawnGroup.CREATURE, false, 0.5F, 0.5F, 256);
@@ -63,7 +57,6 @@ public final class IafEntities {
     public static final RegistrySupplier<EntityType<EntitySeaSerpentArrow>> SEA_SERPENT_ARROW = build("sea_serpent_arrow", EntitySeaSerpentArrow::new, SpawnGroup.MISC, false, 0.5F, 0.5F);
     public static final RegistrySupplier<EntityType<EntityChainTie>> CHAIN_TIE = build("chain_tie", EntityChainTie::new, SpawnGroup.MISC, false, 0.8F, 0.9F);
     public static final RegistrySupplier<EntityType<EntityPixieCharge>> PIXIE_CHARGE = build("pixie_charge", EntityPixieCharge::new, SpawnGroup.MISC, false, 0.5F, 0.5F);
-    public static final RegistrySupplier<EntityType<EntityMyrmexSwarmer>> MYRMEX_SWARMER = build("myrmex_swarmer", EntityMyrmexSwarmer::new, SpawnGroup.CREATURE, false, 0.5F, 0.5F);
     public static final RegistrySupplier<EntityType<EntityTideTrident>> TIDE_TRIDENT = build("tide_trident", EntityTideTrident::new, SpawnGroup.MISC, false, 0.85F, 0.5F);
     public static final RegistrySupplier<EntityType<EntityMobSkull>> MOB_SKULL = build("mob_skull", EntityMobSkull::new, SpawnGroup.MISC, false, 0.85F, 0.85F);
     public static final RegistrySupplier<EntityType<EntityDreadThrall>> DREAD_THRALL = build("dread_thrall", EntityDreadThrall::new, SpawnGroup.MONSTER, false, 0.6F, 1.8F);
@@ -118,13 +111,6 @@ public final class IafEntities {
         EntityAttributeRegistry.register(COCKATRICE, EntityCockatrice::bakeAttributes);
         EntityAttributeRegistry.register(STYMPHALIAN_BIRD, EntityStymphalianBird::bakeAttributes);
         EntityAttributeRegistry.register(TROLL, EntityTroll::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_WORKER, EntityMyrmexWorker::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_SOLDIER, EntityMyrmexSoldier::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_SENTINEL, EntityMyrmexSentinel::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_ROYAL, EntityMyrmexRoyal::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_QUEEN, EntityMyrmexQueen::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_EGG, EntityMyrmexEgg::bakeAttributes);
-        EntityAttributeRegistry.register(MYRMEX_SWARMER, EntityMyrmexSwarmer::bakeAttributes);
         EntityAttributeRegistry.register(AMPHITHERE, EntityAmphithere::bakeAttributes);
         EntityAttributeRegistry.register(SEA_SERPENT, EntitySeaSerpent::bakeAttributes);
         EntityAttributeRegistry.register(MOB_SKULL, EntityMobSkull::bakeAttributes);

@@ -36,7 +36,6 @@ public final class BestiaryPages {
     public static final BestiaryPages COCKATRICE = new BestiaryPages("cockatrice", 2);
     public static final BestiaryPages STYMPHALIAN_BIRD = new BestiaryPages("stymphalianbird", 1);
     public static final BestiaryPages TROLL = new BestiaryPages("troll", 2);
-    public static final BestiaryPages MYRMEX = new BestiaryPages("myrmex", 4);
     public static final BestiaryPages AMPHITHERE = new BestiaryPages("amphithere", 2);
     public static final BestiaryPages SEA_SERPENT = new BestiaryPages("seaserpent", 2);
     public static final BestiaryPages DREAD_MOBS = new BestiaryPages("dread_mobs", 1);

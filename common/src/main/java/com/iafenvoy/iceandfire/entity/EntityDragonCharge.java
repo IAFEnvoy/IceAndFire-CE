@@ -108,7 +108,7 @@ public abstract class EntityDragonCharge extends AbstractFireballEntity implemen
 
                         entity.damage(source, damageAmount);
                         if (entity instanceof LivingEntity && ((LivingEntity) entity).getHealth() == 0) {
-                            ((EntityDragonBase) shootingEntity).randomizeAttacks();
+                            shootingDragon.randomizeAttacks();
                         }
                     }
                     if (shootingEntity instanceof LivingEntity) {

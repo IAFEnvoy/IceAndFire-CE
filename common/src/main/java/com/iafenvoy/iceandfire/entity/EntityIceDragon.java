@@ -107,11 +107,6 @@ public class EntityIceDragon extends EntityDragonBase {
         this.ticksSwiming = compound.getInt("SwimmingTicks");
     }
 
-/*    @Override
-    public boolean canBeControlledByRider() {
-        return true;
-    }*/
-
     @Override
     public boolean tryAttack(Entity entityIn) {
         this.getLookControl().lookAt(entityIn, 30.0F, 30.0F);

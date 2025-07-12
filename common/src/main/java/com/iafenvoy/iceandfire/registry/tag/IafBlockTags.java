@@ -19,7 +19,6 @@ public final class IafBlockTags {
 
     public static final TagKey<Block> DRAGON_BLOCK_BREAK_BLACKLIST = createKey("dragon_block_break_blacklist");
     public static final TagKey<Block> DRAGON_BLOCK_BREAK_NO_DROPS = createKey("dragon_block_break_no_drops");
-    public static final TagKey<Block> MYRMEX_HARVESTABLES = TagKey.of(RegistryKeys.BLOCK, Identifier.of(IceAndFire.MOD_ID, "myrmex_harvestables"));
 
     private static TagKey<Block> createKey(final String name) {
         return TagKey.of(RegistryKeys.BLOCK, Identifier.of(IceAndFire.MOD_ID, name));

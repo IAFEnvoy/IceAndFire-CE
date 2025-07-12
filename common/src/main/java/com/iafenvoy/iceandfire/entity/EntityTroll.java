@@ -330,8 +330,6 @@ public class EntityTroll extends HostileEntity implements IAnimatedEntity, IVill
             target.damage(this.getWorld().getDamageSources().mobAttack(this), (float) this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue());
             float f5 = MathHelper.sin(this.getYaw() * 0.017453292F);
             float f6 = MathHelper.cos(this.getYaw() * 0.017453292F);
-            // float f7 = f2 * f6 - f3 * f5;
-            // float f8 = f3 * f6 + f2 * f5;
             target.setVelocity(f5, f6, 0.4F);
         }
         if (this.getNavigation().isIdle() && this.getTarget() != null && this.squaredDistanceTo(this.getTarget()) > 3 && this.squaredDistanceTo(this.getTarget()) < 30 && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {

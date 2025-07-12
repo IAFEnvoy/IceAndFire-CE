@@ -36,10 +36,6 @@ public class ItemModArmor extends ArmorItem implements IArmorTextureProvider {
 
     @Override
     public Identifier getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
-        if (this.material == IafItems.MYRMEX_DESERT_ARMOR_MATERIAL)
-            return Identifier.of(IceAndFire.MOD_ID, "textures/models/armor/" + (slot == EquipmentSlot.LEGS ? "myrmex_desert_layer_2" : "myrmex_desert_layer_1") + ".png");
-        if (this.material == IafItems.MYRMEX_JUNGLE_ARMOR_MATERIAL)
-            return Identifier.of(IceAndFire.MOD_ID, "textures/models/armor/" + (slot == EquipmentSlot.LEGS ? "myrmex_jungle_layer_2" : "myrmex_jungle_layer_1") + ".png");
         if (this.material == IafItems.SHEEP_ARMOR_MATERIAL)
             return Identifier.of(IceAndFire.MOD_ID, "textures/models/armor/" + (slot == EquipmentSlot.LEGS ? "sheep_disguise_layer_2" : "sheep_disguise_layer_1") + ".png");
         if (this.material == IafItems.EARPLUGS_ARMOR_MATERIAL)

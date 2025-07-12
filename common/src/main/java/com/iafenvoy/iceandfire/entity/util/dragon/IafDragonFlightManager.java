@@ -81,9 +81,6 @@ public class IafDragonFlightManager {
                 viewBlock = this.dragon instanceof EntityIceDragon && this.dragon.isTouchingWater() ? DragonUtils.getWaterBlockInViewEscort(this.dragon) : DragonUtils.getBlockInViewEscort(this.dragon);
             else if (this.dragon.lookingForRoostAIFlag) {
                 // FIXME :: Unused
-//                double xDist = Math.abs(dragon.getX() - dragon.getRestrictCenter().getX() - 0.5F);
-//                double zDist = Math.abs(dragon.getZ() - dragon.getRestrictCenter().getZ() - 0.5F);
-//                double xzDist = Math.sqrt(xDist * xDist + zDist * zDist);
                 BlockPos upPos = this.dragon.getPositionTarget();
                 if (this.dragon.getDistanceSquared(Vec3d.ofCenter(this.dragon.getPositionTarget())) > 200)
                     upPos = upPos.up(30);

@@ -137,12 +137,6 @@ public class ModelHydraHead extends ModelDragonBase<EntityHydra> {
         this.chainSwing(ENTIRE_HEAD, speed_walk, degree_walk * 0.75F, -3, limbAngle, limbDistance);
         float speakProgress = entity.prevSpeakingProgress[this.headIndex] + partialTicks * (entity.speakingProgress[this.headIndex] - entity.prevSpeakingProgress[this.headIndex]);
         this.progressRotationInterp(this.LowerJaw1, MathHelper.sin((float) (speakProgress * Math.PI)) * 10F, (float) Math.toRadians(25), 0.0F, 0.0F, 10F);
-        /*
-        this.progressRotationInterp(Neck1, (float)limbSwingProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 1F);
-        this.progressRotationInterp(Neck2, (float)limbSwingProgress, (float) Math.toRadians(-5), 0.0F, 0.0F, 1F);
-        this.progressRotationInterp(Neck3, (float)limbSwingProgress, (float) Math.toRadians(-5), 0.0F, 0.0F, 1F);
-        this.progressRotationInterp(Neck4, (float)limbSwingProgress, (float) Math.toRadians(-5), 0.0F, 0.0F, 1F);
-        this.progressRotationInterp(Head1, (float)limbSwingProgress, (float) Math.toRadians(-5), 0.0F, 0.0F, 1F);*/
         float strikeProgress = entity.prevStrikeProgress[this.headIndex] + partialTicks * (entity.strikingProgress[this.headIndex] - entity.prevStrikeProgress[this.headIndex]);
         this.progressRotationInterp(this.Neck2, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);
         this.progressRotationInterp(this.Neck3, strikeProgress, (float) Math.toRadians(5), 0.0F, 0.0F, 10F);

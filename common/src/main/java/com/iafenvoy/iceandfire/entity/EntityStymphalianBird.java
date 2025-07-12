@@ -69,7 +69,7 @@ public class EntityStymphalianBird extends HostileEntity implements IAnimatedEnt
                 //SPEED
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3D)
                 //ATTACK
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, IafCommonConfig.INSTANCE.myrmex.baseAttackDamage.getValue() * 2D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6)
                 //FOLLOW RANGE
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, Math.min(2048, IafCommonConfig.INSTANCE.stymphalianBird.targetSearchLength.getValue()))
                 //ARMOR

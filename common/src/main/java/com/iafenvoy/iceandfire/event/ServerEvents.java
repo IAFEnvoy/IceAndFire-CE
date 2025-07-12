@@ -111,20 +111,6 @@ public class ServerEvents {
         return false;
     }
 
-//    public static void onArrowCollide(final ProjectileImpactEvent event) {
-//        if (event.getRayTraceResult() instanceof EntityHitResult result) {
-//            Entity shotEntity = result.getEntity();
-//
-//            if (shotEntity instanceof EntityGhost) event.cancel();
-//            else if (event.getProjectile() instanceof PersistentProjectileEntity arrow && arrow.getOwner() != null) {
-//                Entity shootingEntity = arrow.getOwner();
-//                if (shootingEntity instanceof LivingEntity && isRidingOrBeingRiddenBy(shootingEntity, shotEntity))
-//                    if (shotEntity instanceof TameableEntity tamable && tamable.isTamed() && shotEntity.isTeammate(shootingEntity))
-//                        event.cancel();
-//            }
-//        }
-//    }
-
     public static void onEntityFall(LivingEntity entity, float fallDistance, float multiplier, DamageSource source) {
         if (entity instanceof PlayerEntity) {
             IafEntityData data = IafEntityData.get(entity);

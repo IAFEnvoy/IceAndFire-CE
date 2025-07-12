@@ -71,13 +71,6 @@ public class WorldGenDreadRuin extends Feature<DefaultFeatureConfig> {
         Direction facing = HORIZONTALS[rand.nextInt(3)];
         MinecraftServer server = worldIn.toServerWorld().getServer();
         Biome biome = worldIn.getBiome(position).value();
-        /*TemplateManager templateManager = server.getWorld(worldIn.getDimensionType()).getStructureTemplateManager();
-        PlacementSettings settings = new PlacementSettings().setRotation(getRotationFromFacing(facing)).addProcessor(new DreadRuinProcessor());
-        Template template = templateManager.getTemplate(structure);
-        BlockPos genPos = position.offset(facing, template.getSize().getZ() / 2).offset(facing.rotateYCCW(), template.getSize().getX() / 2);
-        template.addBlocksToWorld(worldIn, genPos, settings, 2);
-
-         */
         return false;
     }
 }

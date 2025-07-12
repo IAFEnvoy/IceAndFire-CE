@@ -116,22 +116,8 @@ public class ItemSummoningCrystal extends Item {
                                             ChunkPos pos = new ChunkPos(dragonChunkPos);
                                             serverWorld.setChunkForced(pos.x, pos.z, true);
                                         }
-                                                /*ticket = ForgeChunkManager.requestPlayerTicket(IceAndFire.INSTANCE, player.getName(), worldIn, ForgeChunkManager.Type.NORMAL);
-                                                if (ticket != null) {
-                                                    if (dragonChunkPos != null) {
-                                                        ForgeChunkManager.forceChunk(ticket, new ChunkPos(dragonChunkPos));
-                                                    } else {
-                                                        displayError = true;
-                                                    }
-                                                    lastChunkTicket = ticket;
-                                                    flag2 = true;
-                                                }*/
                                     }
                                 }
-                                        /* if (flag && lastChunkTicket != null && dragonChunkPos != null) {
-                                            ForgeChunkManager.releaseTicket(lastChunkTicket);
-                                            lastChunkTicket = null;
-                                        }*/
                             } catch (Exception e) {
                                 IceAndFire.LOGGER.warn("Could not load chunk when summoning dragon", e);
                             }

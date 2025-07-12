@@ -73,14 +73,6 @@ public record DragonColor(String name, Formatting color, DragonType dragonType, 
         return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/egg_%s.png", this.dragonType.getName(), this.name));
     }
 
-    @Override
-    public String toString() {
-        return "EnumDragonColor[" +
-                "name=" + this.name + ", " +
-                "color=" + this.color + ", " +
-                "dragonType=" + this.dragonType + ']';
-    }
-
     public Identifier getTextureByEntity(EntityDragonBase dragon) {
         int stage = dragon.getDragonStage();
         if (dragon.isModelDead()) {

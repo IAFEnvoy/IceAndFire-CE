@@ -18,7 +18,6 @@ public final class IafStructurePieces {
     public static final RegistrySupplier<StructurePieceType> FIRE_DRAGON_CAVE = register("fire_dragon_cave", () -> FireDragonCaveStructure.FireDragonCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> ICE_DRAGON_CAVE = register("ice_dragon_cave", () -> IceDragonCaveStructure.IceDragonCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> LIGHTNING_DRAGON_CAVE = register("lightning_dragon_cave", () -> LightningDragonCaveStructure.LightningDragonCavePiece::new);
-    public static final RegistrySupplier<StructurePieceType> MYRMEX_HIVE = register("myrmex_hive", () -> MyrmexHiveStructure.MyrmexHivePiece::new);
     public static final RegistrySupplier<StructurePieceType> CYCLOPS_CAVE = register("cyclops_cave", () -> CyclopsCaveStructure.CyclopsCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> HYDRA_CAVE = register("hydra_cave", () -> HydraCaveStructure.HydraCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> SIREN_ISLAND = register("siren_island", () -> SirenIslandStructure.SirenIslandPiece::new);

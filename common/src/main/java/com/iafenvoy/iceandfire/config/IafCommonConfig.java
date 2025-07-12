@@ -31,7 +31,6 @@ public class IafCommonConfig extends AutoInitConfigContainer {
     public CockatriceConfig cockatrice = new CockatriceConfig();
     public StymphalianBirdConfig stymphalianBird = new StymphalianBirdConfig();
     public TrollConfig troll = new TrollConfig();
-    public MyrmexConfig myrmex = new MyrmexConfig();
     public AmphithereConfig amphithere = new AmphithereConfig();
     public SeaSerpentConfig seaSerpent = new SeaSerpentConfig();
     public LichConfig lich = new LichConfig();
@@ -216,20 +215,6 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         }
     }
 
-    public static class MyrmexConfig extends AutoInitConfigCategoryBase {
-        public final IConfigEntry<Integer> pregnantTicks = new IntegerEntry("iceandfire.myrmex.pregnantTicks", 2500, 0, Integer.MAX_VALUE);
-        public final IConfigEntry<Integer> eggTicks = new IntegerEntry("iceandfire.myrmex.eggTicks", 3000, 0, Integer.MAX_VALUE);
-        public final IConfigEntry<Integer> larvaTicks = new IntegerEntry("iceandfire.myrmex.larvaTicks", 35000, 0, Integer.MAX_VALUE);
-        public final IConfigEntry<Integer> colonySize = new IntegerEntry("iceandfire.myrmex.colonySize", 80, 0, 400);
-        public final IConfigEntry<Integer> maximumWanderRadius = new IntegerEntry("iceandfire.myrmex.maximumWanderRadius", 50, 0, 400);
-        public final IConfigEntry<Boolean> hiveIgnoreDaytime = new BooleanEntry("iceandfire.myrmex.hiveIgnoreDaytime", false);
-        public final IConfigEntry<Double> baseAttackDamage = new DoubleEntry("iceandfire.myrmex.baseAttackDamage", 3, 0, Integer.MAX_VALUE);
-
-        public MyrmexConfig() {
-            super("myrmex", "iceandfire.category.myrmex");
-        }
-    }
-
     public static class AmphithereConfig extends AutoInitConfigCategoryBase {
         public final IConfigEntry<Boolean> spawn = new BooleanEntry("iceandfire.amphithere.spawn", true);
         public final IConfigEntry<Integer> spawnWeight = new IntegerEntry("iceandfire.amphithere.spawnWeight", 50, 0, 400);
@@ -322,8 +307,6 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final IConfigEntry<Double> generateGraveYardChance = new DoubleEntry("iceandfire.worldgen.generateGraveYardChance", 1, 0, 1);
         public final IConfigEntry<Double> generateHydraCaveChance = new DoubleEntry("iceandfire.worldgen.generateHydraCaveChance", 1, 0, 1);
         public final IConfigEntry<Double> generateMausoleumChance = new DoubleEntry("iceandfire.worldgen.generateMausoleumChance", 1, 0, 1);
-        public final IConfigEntry<Double> generateMyemexHiveDesertChance = new DoubleEntry("iceandfire.worldgen.generateMyemexHiveDesertChance", 1, 0, 1);
-        public final IConfigEntry<Double> generateMyemexHiveJungleChance = new DoubleEntry("iceandfire.worldgen.generateMyemexHiveJungleChance", 1, 0, 1);
         public final IConfigEntry<Double> generatePixieVillageChance = new DoubleEntry("iceandfire.worldgen.generatePixieVillageChance", 1, 0, 1);
         public final IConfigEntry<Double> generateSirenIslandChance = new DoubleEntry("iceandfire.worldgen.generateSirenIslandChance", 1, 0, 1);
 
