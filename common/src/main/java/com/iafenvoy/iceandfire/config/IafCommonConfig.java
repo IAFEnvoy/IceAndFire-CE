@@ -113,6 +113,17 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final IConfigEntry<Boolean> lootSkull = new BooleanEntry("iceandfire.dragon.loot.skull", true);
         public final IConfigEntry<Boolean> lootHeart = new BooleanEntry("iceandfire.dragon.loot.heart", true);
         public final IConfigEntry<Boolean> lootBlood = new BooleanEntry("iceandfire.dragon.loot.blood", true);
+        public final SeparatorEntry s4 = new SeparatorEntry();
+        public final IConfigEntry<Double> minSizeStage1 = new DoubleEntry("iceandfire.dragon.minSizeStage1", 1.0,1.0, 1000.0);
+        public final IConfigEntry<Double> maxSizeStage1 = new DoubleEntry("iceandfire.dragon.maxSizeStage1", 3.0,1.0, 1000.0);
+        public final IConfigEntry<Double> minSizeStage2 = new DoubleEntry("iceandfire.dragon.minSizeStage2", 3.0,1.0, 1000.0);
+        public final IConfigEntry<Double> maxSizeStage2 = new DoubleEntry("iceandfire.dragon.maxSizeStage2", 7.0,1.0, 1000.0);
+        public final IConfigEntry<Double> minSizeStage3 = new DoubleEntry("iceandfire.dragon.minSizeStage3", 7.0,1.0, 1000.0);
+        public final IConfigEntry<Double> maxSizeStage3 = new DoubleEntry("iceandfire.dragon.maxSizeStage3", 12.5,1.0, 1000.0);
+        public final IConfigEntry<Double> minSizeStage4 = new DoubleEntry("iceandfire.dragon.minSizeStage4", 12.5,1.0, 1000.0);
+        public final IConfigEntry<Double> maxSizeStage4 = new DoubleEntry("iceandfire.dragon.maxSizeStage4", 20.0,1.0, 1000.0);
+        public final IConfigEntry<Double> minSizeStage5 = new DoubleEntry("iceandfire.dragon.minSizeStage5", 20.0,1.0, 1000.0);
+        public final IConfigEntry<Double> maxSizeStage5 = new DoubleEntry("iceandfire.dragon.maxSizeStage5", 30.0,1.0, 1000.0);
 
         public DragonConfig() {
             super("dragon", "iceandfire.category.dragon");

@@ -111,11 +111,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class EntityDragonBase extends TameableEntity implements NamedScreenHandlerFactory, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IDropArmor, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, InventoryChangedListener {
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
-    public static final float[] growth_stage_1 = new float[]{1F, 3F};
-    public static final float[] growth_stage_2 = new float[]{3F, 7F};
-    public static final float[] growth_stage_3 = new float[]{7F, 12.5F};
-    public static final float[] growth_stage_4 = new float[]{12.5F, 20F};
-    public static final float[] growth_stage_5 = new float[]{20F, 30F};
+
+    public static final float[] growth_stage_1 = new float[] {
+            IafCommonConfig.INSTANCE.dragon.minSizeStage1.getValue().floatValue(),
+            IafCommonConfig.INSTANCE.dragon.maxSizeStage1.getValue().floatValue()
+    };
+    public static final float[] growth_stage_2 = new float[] {
+            IafCommonConfig.INSTANCE.dragon.minSizeStage2.getValue().floatValue(),
+            IafCommonConfig.INSTANCE.dragon.maxSizeStage2.getValue().floatValue()
+    };
+    public static final float[] growth_stage_3 = new float[] {
+            IafCommonConfig.INSTANCE.dragon.minSizeStage3.getValue().floatValue(),
+            IafCommonConfig.INSTANCE.dragon.maxSizeStage3.getValue().floatValue()
+    };
+    public static final float[] growth_stage_4 = new float[] {
+            IafCommonConfig.INSTANCE.dragon.minSizeStage4.getValue().floatValue(),
+            IafCommonConfig.INSTANCE.dragon.maxSizeStage4.getValue().floatValue()
+    };
+    public static final float[] growth_stage_5 = new float[] {
+            IafCommonConfig.INSTANCE.dragon.minSizeStage5.getValue().floatValue(),
+            IafCommonConfig.INSTANCE.dragon.maxSizeStage5.getValue().floatValue()
+    };
+
     public static final float[][] GROWTH_STAGES = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};
     private static final Identifier ARMOR_MODIFIER = Identifier.of(IceAndFire.MOD_ID, "armor_modifier");
     private static final TrackedData<Integer> HUNGER = DataTracker.registerData(EntityDragonBase.class, TrackedDataHandlerRegistry.INTEGER);
