@@ -136,11 +136,10 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
     }
 
     private BlockEntityDragonForge getConnectedTileEntity(final BlockPos position) {
-        for (Direction facing : HORIZONTALS) {
-            assert this.world != null;
+        assert this.world != null;
+        for (Direction facing : HORIZONTALS)
             if (this.world.getBlockEntity(position.offset(facing)) instanceof BlockEntityDragonForge forge)
                 return forge;
-        }
         return null;
     }
 }

@@ -4,8 +4,11 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.entity.block.BlockEntityDragonForge;
 import com.iafenvoy.iceandfire.entity.block.BlockEntityDragonForgeBrick;
 import com.iafenvoy.iceandfire.item.block.util.IDragonProof;
+import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -70,5 +73,10 @@ public class BlockDragonForgeBricks extends BlockWithEntity implements IDragonPr
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new BlockEntityDragonForgeBrick(pos, state);
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> entityType) {
+        return world.isClient ? null : checkType(entityType, IafBlockEntities.DRAGONFORGE_BRICK.get(), BlockEntityDragonForgeBrick::tick);
     }
 }

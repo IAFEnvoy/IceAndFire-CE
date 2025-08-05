@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class BlockEntityDragonForge extends LockableContainerBlockEntity implements SidedInventory {
-    private static final int[] SLOTS_TOP = new int[]{0, 1};
+    private static final int[] SLOTS_TOP = new int[]{0};
+    private static final int[] SLOTS_SIDES = new int[]{1};
     private static final int[] SLOTS_BOTTOM = new int[]{2};
-    private static final int[] SLOTS_SIDES = new int[]{0, 1};
     private static final Direction[] HORIZONTALS = new Direction[]{
             Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST
     };
