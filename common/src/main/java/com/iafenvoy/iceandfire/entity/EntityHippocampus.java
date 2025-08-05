@@ -53,7 +53,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -70,17 +69,11 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
     public static final int INV_SLOT_SADDLE = 0;
     public static final int INV_SLOT_CHEST = 1;
     public static final int INV_SLOT_ARMOR = 2;
-    public static final int INV_BASE_COUNT = 3;
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(EntityHippocampus.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> SADDLE = DataTracker.registerData(EntityHippocampus.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> ARMOR = DataTracker.registerData(EntityHippocampus.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CHESTED = DataTracker.registerData(EntityHippocampus.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Byte> CONTROL_STATE = DataTracker.registerData(EntityHippocampus.class, TrackedDataHandlerRegistry.BYTE);
-    // These are from TamableAnimal
-    private static final int FLAG_SITTING = 1;
-    private static final int FLAG_TAME = 4;
-    private static final Text CONTAINER_TITLE = Text.translatable("entity.iceandfire.hippocampus");
-
     public static Animation ANIMATION_SPEAK;
     public float onLandProgress;
     public ChainBuffer tail_buffer;
@@ -101,12 +94,10 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
     }
 
     public static int getIntFromArmor(ItemStack stack) {
-        if (!stack.isEmpty() && stack.getItem() == Items.IRON_HORSE_ARMOR)
-            return 1;
-        if (!stack.isEmpty() && stack.getItem() == Items.GOLDEN_HORSE_ARMOR)
-            return 2;
-        if (!stack.isEmpty() && stack.getItem() == Items.DIAMOND_HORSE_ARMOR)
-            return 3;
+        if (stack.isEmpty()) return 0;
+        if (stack.getItem() == Items.IRON_HORSE_ARMOR) return 1;
+        if (stack.getItem() == Items.GOLDEN_HORSE_ARMOR) return 2;
+        if (stack.getItem() == Items.DIAMOND_HORSE_ARMOR) return 3;
         return 0;
     }
 
@@ -382,13 +373,9 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
         }
     }
 
-    protected int getInventorySize() {
-        return this.isChested() ? 18 : 3;
-    }
-
     protected void createInventory() {
         SimpleInventory simplecontainer = this.inventory;
-        this.inventory = new SimpleInventory(this.getInventorySize());
+        this.inventory = new SimpleInventory(18);
         if (simplecontainer != null) {
             simplecontainer.removeListener(this);
             int i = Math.min(simplecontainer.size(), this.inventory.size());
@@ -602,7 +589,7 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
     @Nullable
     @Override
     public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new HippocampusScreenHandler(syncId, this.inventory, inv, this, new EntityPropertyDelegate(this.getId()));
+        return new HippocampusScreenHandler(syncId, this.inventory, inv, new EntityPropertyDelegate(this.getId()));
     }
 
     public void openInventory(PlayerEntity player) {
@@ -658,10 +645,6 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
             return player;
         }
         return null;
-    }
-
-    public int getInventoryColumns() {
-        return 5; // TODO :: Introduce upgrade item?
     }
 
     @Override

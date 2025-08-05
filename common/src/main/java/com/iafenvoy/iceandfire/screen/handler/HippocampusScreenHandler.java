@@ -3,8 +3,6 @@ package com.iafenvoy.iceandfire.screen.handler;
 import com.iafenvoy.iceandfire.entity.EntityHippocampus;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
 import com.iafenvoy.uranus.data.EntityPropertyDelegate;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -16,28 +14,21 @@ import net.minecraft.screen.slot.Slot;
 
 public class HippocampusScreenHandler extends ScreenHandler {
     private final Inventory hippocampusInventory;
-    private final EntityHippocampus hippocampus;
+    private EntityHippocampus hippocampus;
     private final EntityPropertyDelegate propertyDelegate;
 
     public HippocampusScreenHandler(int i, PlayerInventory playerInventory) {
-        this(i, new SimpleInventory(18), playerInventory, null, new EntityPropertyDelegate());
+        this(i, new SimpleInventory(18), playerInventory, new EntityPropertyDelegate());
     }
 
-    public HippocampusScreenHandler(int id, Inventory hippoInventory, PlayerInventory playerInventory, EntityHippocampus hippocampus, EntityPropertyDelegate propertyDelegate) {
+    public HippocampusScreenHandler(int id, Inventory hippoInventory, PlayerInventory playerInventory, EntityPropertyDelegate propertyDelegate) {
         super(IafScreenHandlers.HIPPOCAMPUS_SCREEN.get(), id);
         this.hippocampusInventory = hippoInventory;
-        if (hippocampus != null)
-            this.hippocampus = hippocampus;
-        else {
-            assert MinecraftClient.getInstance().world != null;
-            this.hippocampus = (EntityHippocampus) MinecraftClient.getInstance().world.getEntityById(propertyDelegate.entityId);
-        }
         this.propertyDelegate = propertyDelegate;
         this.addProperties(this.propertyDelegate);
         PlayerEntity player = playerInventory.player;
+        this.hippocampus = (EntityHippocampus) player.getWorld().getEntityById(propertyDelegate.entityId);
         this.hippocampusInventory.onOpen(player);
-
-        // Saddle slot
         this.addSlot(new Slot(this.hippocampusInventory, 0, 8, 18) {
             @Override
             public boolean canInsert(ItemStack stack) {
@@ -45,16 +36,28 @@ public class HippocampusScreenHandler extends ScreenHandler {
             }
 
             @Override
+            public void markDirty() {
+                super.markDirty();
+                if (HippocampusScreenHandler.this.hippocampus != null)
+                    HippocampusScreenHandler.this.hippocampus.setSaddled(this.hasStack() && this.getStack().isOf(Items.SADDLE));
+            }
+
+            @Override
             public boolean isEnabled() {
                 return true;
             }
         });
-
-        // Chest slot
         this.addSlot(new Slot(this.hippocampusInventory, 1, 8, 36) {
             @Override
             public boolean canInsert(ItemStack stack) {
-                return stack.getItem() == Blocks.CHEST.asItem() && !this.hasStack();
+                return stack.isOf(Items.CHEST) && !this.hasStack();
+            }
+
+            @Override
+            public void markDirty() {
+                super.markDirty();
+                if (HippocampusScreenHandler.this.hippocampus != null)
+                    HippocampusScreenHandler.this.hippocampus.setChested(this.hasStack() && this.getStack().isOf(Items.CHEST));
             }
 
             @Override
@@ -62,8 +65,6 @@ public class HippocampusScreenHandler extends ScreenHandler {
                 return true;
             }
         });
-
-        // Armor slot
         this.addSlot(new Slot(this.hippocampusInventory, 2, 8, 52) {
             @Override
             public boolean canInsert(ItemStack stack) {
@@ -76,23 +77,39 @@ public class HippocampusScreenHandler extends ScreenHandler {
             }
 
             @Override
+            public void markDirty() {
+                super.markDirty();
+                if (HippocampusScreenHandler.this.hippocampus != null)
+                    HippocampusScreenHandler.this.hippocampus.setArmor(this.hasStack() ? EntityHippocampus.getIntFromArmor(this.getStack()) : 0);
+            }
+
+            @Override
             public boolean isEnabled() {
                 return true;
             }
         });
 
+        for (int k = 0; k < 3; ++k)
+            for (int l = 0; l < 5; ++l)
+                this.addSlot(new Slot(this.hippocampusInventory, 3 + l + k * 5, 80 + l * 18, 18 + k * 18) {
+                    @Override
+                    public boolean isEnabled() {
+                        HippocampusScreenHandler.this.refreshEntity(player);
+                        return HippocampusScreenHandler.this.hippocampus != null && HippocampusScreenHandler.this.hippocampus.isChested();
+                    }
 
-        // Create the slots for the inventory
-        assert this.hippocampus != null;
-        if (this.hippocampus.isChested())
-            for (int k = 0; k < 3; ++k)
-                for (int l = 0; l < this.hippocampus.getInventoryColumns(); ++l)
-                    this.addSlot(new Slot(hippoInventory, 3 + l + k * this.hippocampus.getInventoryColumns(), 80 + l * 18, 18 + k * 18));
+                    @Override
+                    public boolean canInsert(ItemStack stack) {
+                        return HippocampusScreenHandler.this.hippocampus != null && HippocampusScreenHandler.this.hippocampus.isChested();
+                    }
+                });
+
         for (int i1 = 0; i1 < 3; ++i1)
             for (int k1 = 0; k1 < 9; ++k1)
-                this.addSlot(new Slot(player.getInventory(), k1 + i1 * 9 + 9, 8 + k1 * 18, 102 + i1 * 18 - 18));
+                this.addSlot(new Slot(playerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 102 + i1 * 18 - 18));
+
         for (int j1 = 0; j1 < 9; ++j1)
-            this.addSlot(new Slot(player.getInventory(), j1, 8 + j1 * 18, 142));
+            this.addSlot(new Slot(playerInventory, j1, 8 + j1 * 18, 142));
     }
 
     @Override
@@ -149,5 +166,10 @@ public class HippocampusScreenHandler extends ScreenHandler {
 
     public int getHippocampusId() {
         return this.propertyDelegate.entityId;
+    }
+
+    private void refreshEntity(PlayerEntity player) {
+        if (player.getWorld().getEntityById(this.getHippocampusId()) instanceof EntityHippocampus h)
+            this.hippocampus = h;
     }
 }
