@@ -34,6 +34,7 @@ import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.IPassabilityNavigat
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.PathingStuckHandler;
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.pathjobs.ICustomSizeNavigator;
 import com.iafenvoy.uranus.object.item.FoodUtils;
+import com.iafenvoy.uranus.util.RandomHelper;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
@@ -1877,22 +1878,20 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     }
 
     @Override
-    public boolean canBreedWith(AnimalEntity otherAnimal) {
-        if (otherAnimal instanceof EntityDragonBase dragon && otherAnimal != this && otherAnimal.getClass() == this.getClass()) {
+    public boolean canBreedWith(AnimalEntity other) {
+        if (this.getDragonStage() < 4 || this.isModelDead || !(other instanceof EntityDragonBase dragon) || dragon.getDragonStage() < 4 || dragon.isModelDead)
+            return false;
+        if (other != this && other.getClass() == this.getClass())
             return this.isMale() && !dragon.isMale() || !this.isMale() && dragon.isMale();
-        }
         return false;
     }
 
-    public EntityDragonEgg createEgg(EntityDragonBase ageable) { // FIXME :: Unused parameter
+    public EntityDragonEgg createEgg() {
         EntityDragonEgg dragon = new EntityDragonEgg(IafEntities.DRAGON_EGG.get(), this.getWorld());
-        dragon.setEggType(DragonColor.byMetadata(new Random().nextInt(4) + this.getStartMetaForType()));
+        List<DragonColor> colors = DragonColor.getColorsByType(this.dragonType);
+        dragon.setEggType(colors.isEmpty() ? DragonColor.RED : RandomHelper.randomOne(colors));
         dragon.setPosition(MathHelper.floor(this.getX()) + 0.5, MathHelper.floor(this.getY()) + 1, MathHelper.floor(this.getZ()) + 0.5);
         return dragon;
-    }
-
-    public int getStartMetaForType() {
-        return 0;
     }
 
     public boolean isTargetBlocked(Vec3d target) {

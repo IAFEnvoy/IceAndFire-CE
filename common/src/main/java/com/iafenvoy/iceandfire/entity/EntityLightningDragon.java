@@ -73,11 +73,6 @@ public class EntityLightningDragon extends EntityDragonBase {
     }
 
     @Override
-    public int getStartMetaForType() {
-        return 8;
-    }
-
-    @Override
     protected boolean shouldTarget(Entity entity) {
         if (entity instanceof EntityDragonBase && !this.isTamed())
             return entity.getType() != this.getType() && this.getWidth() >= entity.getWidth() && !((EntityDragonBase) entity).isMobDead();

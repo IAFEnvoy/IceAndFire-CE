@@ -45,12 +45,15 @@ dependencies {
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))
 
-    modImplementation "maven.modrinth:uranus:vFEnl7wj"
+    modImplementation "maven.modrinth:uranus:iOaj5KrN"
     modImplementation "maven.modrinth:jupiter:quscWB5K"
 
     modLocalRuntime "dev.emi:emi-forge:${emi_version}"
 
     modImplementation "maven.modrinth:jade:bzWVE2db"
+
+    //ProjectE
+    modApi "curse.maven:projecte-226410:4901949"
 }
 
 processResources {

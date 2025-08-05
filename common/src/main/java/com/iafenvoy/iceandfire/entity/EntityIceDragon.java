@@ -580,12 +580,6 @@ public class EntityIceDragon extends EntityDragonBase {
             }
     }
 
-    //Required for proper egg drop
-    @Override
-    public int getStartMetaForType() {
-        return 4;
-    }
-
     @Override
     public SoundEvent getBabyFireSound() {
         return SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH;

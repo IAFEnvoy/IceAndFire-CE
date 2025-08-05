@@ -94,7 +94,7 @@ public class DragonAIMate extends Goal {
      * Spawns a baby animal of the same type.
      */
     private void spawnBaby() {
-        EntityDragonEgg egg = this.dragon.createEgg(this.targetMate);
+        EntityDragonEgg egg = this.dragon.createEgg();
         if (egg != null) {
 
             this.dragon.setBreedingAge(6000);

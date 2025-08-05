@@ -48,11 +48,6 @@ public record DragonColor(String name, Formatting color, DragonType dragonType, 
         return ImmutableList.copyOf(VALUES);
     }
 
-    public static DragonColor byMetadata(int meta) {
-        DragonColor i = values().get(meta);
-        return i == null ? RED : i;
-    }
-
     public static DragonColor getById(String id) {
         return ID_MAP.getOrDefault(id, RED);
     }

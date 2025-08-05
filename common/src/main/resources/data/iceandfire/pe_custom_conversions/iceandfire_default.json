@@ -1,0 +1,24 @@
+{
+  "values": {
+    "before": {
+      "iceandfire:dragonbone": 156,
+      "#c:bones/wither": 156,
+      "#c:heart": 262144,
+      "#iceandfire:scales/dragon": 512,
+      "#iceandfire:scales/sea_serpent": 256,
+      "#iceandfire:dragon_skulls": 624,
+      "#iceandfire:mob_skulls": 320,
+      "iceandfire:cyclops_eye": 96,
+      "iceandfire:dread_shard": 144,
+      "iceandfire:fire_dragon_blood": 256,
+      "iceandfire:hippocampus_fin": 512,
+      "iceandfire:hippogryph_talon": 128,
+      "iceandfire:ice_dragon_blood": 256,
+      "iceandfire:lightning_dragon_blood": 256,
+      "iceandfire:pixie_dust": 1,
+      "iceandfire:pixie_wings": 1,
+      "iceandfire:shiny_scales": 512,
+      "iceandfire:siren_tear": 768
+    }
+  }
+}
