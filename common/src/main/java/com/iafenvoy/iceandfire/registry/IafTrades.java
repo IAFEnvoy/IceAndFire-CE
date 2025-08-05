@@ -2,7 +2,6 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.google.common.collect.ImmutableSet;
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.mixin.PointOfInterestTypesAccessor;
 import com.iafenvoy.iceandfire.util.trade.TradeOfferHelper;
 import com.iafenvoy.iceandfire.util.trade.factory.BuyWithPrice;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -16,6 +15,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +33,7 @@ public final class IafTrades {
 
     public static void init() {
         for (BlockState state : SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()))
-            PointOfInterestTypesAccessor.getPoiToStatesMap().put(state, Registries.POINT_OF_INTEREST_TYPE.getEntry(SCRIBE_POI.get()));
+            PointOfInterestTypes.POI_STATES_TO_TYPE.put(state, Registries.POINT_OF_INTEREST_TYPE.getEntry(SCRIBE_POI.get()));
         VillagerProfession profession = SCRIBE_PROFESSION.get();
         final float emeraldForItemsMultiplier = 0.05F; //Values taken from VillagerTrades.java
         final float itemForEmeraldMultiplier = 0.05F;

@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.compat.jade;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
 import com.iafenvoy.iceandfire.entity.EntityMultipartPart;
-import com.iafenvoy.iceandfire.mixin.ClientWorldAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
@@ -30,7 +29,7 @@ public enum MultipartComponentProvider implements IEntityComponentProvider {
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         if (entityAccessor.getEntity() instanceof EntityMultipartPart multipart) {
             assert MinecraftClient.getInstance().world != null;
-            Entity parent = ((ClientWorldAccessor) MinecraftClient.getInstance().world).getEntityManager().getLookup().get(multipart.getParentId());
+            Entity parent =  MinecraftClient.getInstance().world.entityManager.getLookup().get(multipart.getParentId());
             if (parent instanceof MobEntity mob) {
                 iTooltip.clear();
                 iTooltip.addAll(mob.getDisplayName().getWithStyle(Style.EMPTY.withColor(Formatting.WHITE)));

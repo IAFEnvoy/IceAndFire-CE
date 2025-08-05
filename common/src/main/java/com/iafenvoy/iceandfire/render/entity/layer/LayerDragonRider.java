@@ -7,7 +7,6 @@ import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -115,22 +114,14 @@ public class LayerDragonRider extends FeatureRenderer<EntityDragonBase, TabulaMo
     }
 
     public <E extends Entity> void renderEntity(E entityIn, int x, int y, int z, float yaw, float partialTicks, MatrixStack matrixStack, VertexConsumerProvider bufferIn, int packedLight) {
-        EntityRenderer<? super E> render = null;
-        EntityRenderDispatcher manager = MinecraftClient.getInstance().getEntityRenderDispatcher();
         try {
-            render = manager.getRenderer(entityIn);
-            if (render != null)
-                try {
-                    render.render(entityIn, 0, partialTicks, matrixStack, bufferIn, packedLight);
-                } catch (Throwable throwable1) {
-                    throw new CrashException(CrashReport.create(throwable1, "Rendering entity in world"));
-                }
+            MinecraftClient.getInstance().getEntityRenderDispatcher().render(entityIn, x, y, z, yaw, partialTicks, matrixStack, bufferIn, packedLight);
         } catch (Throwable throwable3) {
             CrashReport crashreport = CrashReport.create(throwable3, "Rendering entity in world");
             CrashReportSection crashreportcategory = crashreport.addElement("Entity being rendered");
             entityIn.populateCrashReport(crashreportcategory);
             CrashReportSection crashreportcategory1 = crashreport.addElement("Renderer details");
-            crashreportcategory1.add("Assigned renderer", render);
+            crashreportcategory1.add("Assigned renderer", this.render);
             crashreportcategory1.add("Location", new BlockPos(x, y, z));
             crashreportcategory1.add("Rotation", yaw);
             crashreportcategory1.add("Delta", partialTicks);

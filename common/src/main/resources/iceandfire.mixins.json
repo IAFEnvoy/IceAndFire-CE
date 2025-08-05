@@ -9,11 +9,9 @@
     "LakeFeatureMixin",
     "LivingEntityMixin",
     "MinecraftServerMixin",
-    "MobEntityMixin",
-    "PointOfInterestTypesAccessor"
+    "MobEntityMixin"
   ],
   "client": [
-    "ClientWorldAccessor",
     "GameRendererMixin",
     "InGameHudMixin",
     "LivingEntityRendererMixin",
