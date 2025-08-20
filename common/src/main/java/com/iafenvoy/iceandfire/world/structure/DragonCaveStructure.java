@@ -60,7 +60,7 @@ public abstract class DragonCaveStructure extends Structure {
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
-                collector.addPiece(this.createPiece(new BlockBox(pos.getX() + i * 32, pos.getY(), pos.getZ() + j * 32, pos.getX() + i * 32, pos.getY(), pos.getZ() + j * 32), male, new BlockPos(i * 32, 0, j * 32), y, seed));
+                collector.addPiece(this.createPiece(new BlockBox(pos.getX() + i * 32, y - 12, pos.getZ() + j * 32, pos.getX() + i * 32, y + 12, pos.getZ() + j * 32), male, new BlockPos(i * 32, 0, j * 32), y, seed));
     }
 
     protected abstract DragonCavePiece createPiece(BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed);
