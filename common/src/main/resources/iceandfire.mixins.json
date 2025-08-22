@@ -16,7 +16,8 @@
     "InGameHudMixin",
     "LivingEntityRendererMixin",
     "PlayerEntityRendererMixin",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

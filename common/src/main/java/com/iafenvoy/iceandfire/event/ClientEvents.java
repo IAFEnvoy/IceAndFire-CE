@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.entity.EntityDragonBase;
 import com.iafenvoy.iceandfire.entity.EntityMultipartPart;
 import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.particle.CockatriceBeamRender;
+import com.iafenvoy.iceandfire.particle.LightningRender;
 import com.iafenvoy.iceandfire.registry.IafKeybindings;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.render.block.RenderFrozenState;
@@ -28,11 +29,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Environment(EnvType.CLIENT)
 public class ClientEvents {
     private static final Identifier SIREN_SHADER = Identifier.of("iceandfire", "shaders/post/siren.json");
     public static int currentView = 0;
+    public static final CopyOnWriteArrayList<Pair<Vec3d, Vec3d>> LIGHTNINGS = new CopyOnWriteArrayList<>();
 
     public static void onCameraSetup(Camera camera) {
         PlayerEntity player = MinecraftClient.getInstance().player;

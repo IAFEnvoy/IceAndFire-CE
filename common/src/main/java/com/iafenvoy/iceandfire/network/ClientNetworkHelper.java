@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.entity.block.BlockEntityJar;
 import com.iafenvoy.iceandfire.entity.block.BlockEntityPixieHouse;
 import com.iafenvoy.iceandfire.entity.block.BlockEntityPodium;
 import com.iafenvoy.iceandfire.entity.util.ISyncMount;
+import com.iafenvoy.iceandfire.event.ClientEvents;
 import com.iafenvoy.uranus.network.PacketBufferUtils;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,7 +18,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ClientNetworkHelper {
     private static Perspective prev = Perspective.FIRST_PERSON;
@@ -97,5 +103,12 @@ public class ClientNetworkHelper {
                 if (player.getWorld().getBlockEntity(blockPos) instanceof BlockEntityPodium podium)
                     podium.setStack(0, heldStack);
         });
+        NetworkManager.registerReceiver(NetworkManager.Side.S2C, StaticVariables.LIGHTNING_BOLT_S2C, ((buf, ctx) -> {
+            int size = buf.readInt();
+            List<Pair<Vec3d, Vec3d>> lightnings = new LinkedList<>();
+            for (int i = 0; i < size; i++)
+                lightnings.add(new Pair<>(new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()), new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble())));
+            ctx.queue(() -> ClientEvents.LIGHTNINGS.addAll(lightnings));
+        }));
     }
 }

@@ -12,4 +12,5 @@ public class StaticVariables {
     public static final Identifier UPDATE_PIXIE_HOUSE = Identifier.of(IceAndFire.MOD_ID, "update_pixie_house");
     public static final Identifier UPDATE_PIXIE_JAR = Identifier.of(IceAndFire.MOD_ID, "update_pixie_jar");
     public static final Identifier UPDATE_PODIUM = Identifier.of(IceAndFire.MOD_ID, "update_podium");
+    public static final Identifier LIGHTNING_BOLT_S2C = Identifier.of(IceAndFire.MOD_ID, "lightning_bolt_s2c");
 }

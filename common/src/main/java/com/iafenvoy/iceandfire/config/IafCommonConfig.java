@@ -288,6 +288,10 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final IConfigEntry<Double> dragonSteelBaseArmorToughness = new DoubleEntry("iceandfire.armors.dragonSteelBaseArmorToughness", 6, 0, Integer.MAX_VALUE);
         public final IConfigEntry<Integer> dragonSteelBaseDurability = new IntegerEntry("iceandfire.armors.dragonSteelBaseDurability", 8000, 0, Integer.MAX_VALUE);
         public final IConfigEntry<Integer> dragonSteelBaseDurabilityEquipment = new IntegerEntry("iceandfire.armors.dragonSteelBaseDurabilityEquipment", 8000, 0, Integer.MAX_VALUE);
+        public final SeparatorEntry s2 = new SeparatorEntry();
+        public final IConfigEntry<Double> dragonLightningSearchRange = new DoubleEntry("iceandfire.armors.dragonLightningSearchRange", 10, 0, 128);
+        public final IConfigEntry<Double> dragonLightningDamageReduction = new DoubleEntry("iceandfire.armors.dragonLightningDamageReduction", 0.5, 0, 1);
+        public final IConfigEntry<Integer> dragonLightningMaxSearchCount = new IntegerEntry("iceandfire.armors.dragonLightningMaxSearchCount", 10, 0, 1024);
 
         public ArmorsConfig() {
             super("armors", "iceandfire.category.armors");
