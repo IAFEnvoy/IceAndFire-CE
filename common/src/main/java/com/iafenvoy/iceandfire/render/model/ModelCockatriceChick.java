@@ -277,6 +277,7 @@ public class ModelCockatriceChick extends ModelDragonBase<EntityCockatrice> {
             this.rotate(this.animator, this.lowerJaw, 25, 0, 0);
             this.animator.resetKeyframe(5);
         }
+        this.animator.update(null);
     }
 
     private void jumpPos() {

@@ -342,6 +342,7 @@ public class ModelTroll extends ModelDragonBase<EntityTroll> {
             this.animator.resetKeyframe(5);
             this.animator.endKeyframe();
         }
+        this.animator.update(null);
     }
 
     @Override

@@ -603,6 +603,7 @@ public class ModelGorgon extends ModelDragonBase<EntityGorgon> {
             this.animator.endKeyframe();
             this.animator.resetKeyframe(5);
         }
+        this.animator.update(null);
     }
 
     @Override

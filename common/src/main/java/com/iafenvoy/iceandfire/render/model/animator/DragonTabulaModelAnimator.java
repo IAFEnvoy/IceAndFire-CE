@@ -419,5 +419,6 @@ public abstract class DragonTabulaModelAnimator extends IceAndFireTabulaModelAni
             this.rotate(model.animator, model.getCube("Neck2"), -18, 0, 0);
             model.animator.endKeyframe();
         }
+        model.animator.update(null);
     }
 }

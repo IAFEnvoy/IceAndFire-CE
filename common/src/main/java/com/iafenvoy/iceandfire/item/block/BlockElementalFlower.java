@@ -29,7 +29,7 @@ public class BlockElementalFlower extends PlantBlock {
         if (this == IafBlocks.FIRE_LILY.get())
             return state.isIn(BlockTags.SAND) || state.isOf(Blocks.NETHERRACK);
         else if (this == IafBlocks.LIGHTNING_LILY.get())
-            return state.isIn(BlockTags.DIRT) || state.isOf(Blocks.GRASS);
+            return state.isIn(BlockTags.DIRT);
         else
             return state.isIn(BlockTags.ICE) || state.isIn(BlockTags.SNOW) || state.isIn(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON);
     }

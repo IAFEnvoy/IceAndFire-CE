@@ -344,7 +344,7 @@ public class ModelStymphalianBird extends ModelDragonBase<EntityStymphalianBird>
             this.animator.endKeyframe();
             this.animator.resetKeyframe(10);
         }
-
+        this.animator.update(null);
     }
 
     private void shootPosture() {

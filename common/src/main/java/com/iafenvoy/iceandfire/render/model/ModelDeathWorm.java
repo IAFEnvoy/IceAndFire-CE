@@ -255,6 +255,7 @@ public class ModelDeathWorm extends ModelDragonBase<EntityDeathWorm> {
             this.animator.endKeyframe();
             this.animator.resetKeyframe(2);
         }
+        this.animator.update(null);
     }
 
     @Override

@@ -534,6 +534,7 @@ public class ModelHippogryph extends ModelDragonBase<EntityHippogryph> {
             this.animator.endKeyframe();
             this.animator.resetKeyframe(5);
         }
+        this.animator.update(null);
     }
 
     @Override

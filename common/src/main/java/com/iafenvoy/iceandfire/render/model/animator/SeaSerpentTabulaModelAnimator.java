@@ -76,6 +76,7 @@ public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator
             model.getCube("Tail3").rotateAngleX -= (entity.getPiecePitch(3, partialTicks) - 0) * ((float) Math.PI / 180F);
             model.getCube("Tail4").rotateAngleX -= (entity.getPiecePitch(4, partialTicks) - 0) * ((float) Math.PI / 180F);
         }
+        model.animator.update(null);
     }
 
     public void progressRotation(AdvancedModelBox model, float progress, float rotX, float rotY, float rotZ) {

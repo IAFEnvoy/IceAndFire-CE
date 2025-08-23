@@ -98,6 +98,7 @@ public class ModelHydraBody extends ModelDragonBase<EntityHydra> {
     public void animate(IAnimatedEntity entity, float f, float f1, float f2, float f3, float f4, float f5) {
         this.resetToDefaultPose();
         this.animator.update(entity);
+        this.animator.update(null);
     }
 
     @Override
