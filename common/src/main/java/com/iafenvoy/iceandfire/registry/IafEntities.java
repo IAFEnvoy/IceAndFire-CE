@@ -29,9 +29,11 @@ public final class IafEntities {
     public static final RegistrySupplier<EntityType<FireDragonEntity>> FIRE_DRAGON = build("fire_dragon", FireDragonEntity::new, SpawnGroup.CREATURE, true, 0.78F, 1.2F, 256);
     public static final RegistrySupplier<EntityType<IceDragonEntity>> ICE_DRAGON = build("ice_dragon", IceDragonEntity::new, SpawnGroup.CREATURE, false, 0.78F, 1.2F, 256);
     public static final RegistrySupplier<EntityType<LightningDragonEntity>> LIGHTNING_DRAGON = build("lightning_dragon", LightningDragonEntity::new, SpawnGroup.CREATURE, false, 0.78F, 1.2F, 256);
+    public static final RegistrySupplier<EntityType<NetherDragonEntity>> NETHER_DRAGON = build("nether_dragon", NetherDragonEntity::new, SpawnGroup.CREATURE, true, 0.78F, 1.2F, 256);
     public static final RegistrySupplier<EntityType<FireDragonChargeEntity>> FIRE_DRAGON_CHARGE = build("fire_dragon_charge", FireDragonChargeEntity::new, SpawnGroup.MISC, false, 0.9F, 0.9F);
     public static final RegistrySupplier<EntityType<IceDragonChargeEntity>> ICE_DRAGON_CHARGE = build("ice_dragon_charge", IceDragonChargeEntity::new, SpawnGroup.MISC, false, 0.9F, 0.9F);
     public static final RegistrySupplier<EntityType<LightningDragonChargeEntity>> LIGHTNING_DRAGON_CHARGE = build("lightning_dragon_charge", LightningDragonChargeEntity::new, SpawnGroup.MISC, false, 0.9F, 0.9F);
+    public static final RegistrySupplier<EntityType<NetherDragonChargeEntity>> NETHER_DRAGON_CHARGE = build("nether_dragon_charge", NetherDragonChargeEntity::new, SpawnGroup.MISC, false, 0.9F, 0.9F);
     public static final RegistrySupplier<EntityType<HippogryphEggEntity>> HIPPOGRYPH_EGG = build("hippogryph_egg", HippogryphEggEntity::new, SpawnGroup.MISC, false, 0.5F, 0.5F);
     public static final RegistrySupplier<EntityType<HippogryphEntity>> HIPPOGRYPH = build("hippogryph", HippogryphEntity::new, SpawnGroup.CREATURE, false, 1.7F, 1.6F, 128);
     public static final RegistrySupplier<EntityType<StoneStatueEntity>> STONE_STATUE = build("stone_statue", StoneStatueEntity::new, SpawnGroup.CREATURE, false, 0.5F, 0.5F);
@@ -98,6 +100,7 @@ public final class IafEntities {
         EntityAttributeRegistry.register(FIRE_DRAGON, FireDragonEntity::bakeAttributes);
         EntityAttributeRegistry.register(ICE_DRAGON, IceDragonEntity::bakeAttributes);
         EntityAttributeRegistry.register(LIGHTNING_DRAGON, LightningDragonEntity::bakeAttributes);
+        EntityAttributeRegistry.register(NETHER_DRAGON, NetherDragonEntity::bakeAttributes);
         EntityAttributeRegistry.register(HIPPOGRYPH, HippogryphEntity::bakeAttributes);
         EntityAttributeRegistry.register(GORGON, GorgonEntity::bakeAttributes);
         EntityAttributeRegistry.register(STONE_STATUE, StoneStatueEntity::bakeAttributes);

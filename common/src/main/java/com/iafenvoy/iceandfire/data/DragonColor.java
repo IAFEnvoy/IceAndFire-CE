@@ -104,6 +104,10 @@ public final class DragonColor {
     }
 
     public Identifier getMaleOverlay() {
+        // Nether dragons don't use male overlay (skeleton texture)
+        if (this.dragonType.name().equals("nether")) {
+            return null;
+        }
         return Identifier.of(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/male_%s.png", this.dragonType.name(), this.name));
     }
 
