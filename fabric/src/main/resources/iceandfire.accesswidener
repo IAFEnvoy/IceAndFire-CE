@@ -37,3 +37,4 @@ accessible method net/minecraft/block/Blocks createLeavesBlock (Lnet/minecraft/s
 accessible method net/minecraft/entity/SpawnRestriction register (Lnet/minecraft/entity/EntityType;Lnet/minecraft/entity/SpawnRestriction$Location;Lnet/minecraft/world/Heightmap$Type;Lnet/minecraft/entity/SpawnRestriction$SpawnPredicate;)V
 accessible method net/minecraft/particle/DefaultParticleType <init> (Z)V
 accessible method net/minecraft/recipe/BrewingRecipeRegistry registerPotionRecipe (Lnet/minecraft/potion/Potion;Lnet/minecraft/item/Item;Lnet/minecraft/potion/Potion;)V
+accessible field net/minecraft/client/world/ClientWorld entityManager Lnet/minecraft/client/world/ClientEntityManager;
