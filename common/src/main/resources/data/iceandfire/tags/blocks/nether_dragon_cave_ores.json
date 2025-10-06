@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:nether_gold_ore",
+    "minecraft:nether_quartz_ore",
+    "minecraft:gilded_blackstone",
+    "iceandfire:soulgma_block"
+  ]
+}

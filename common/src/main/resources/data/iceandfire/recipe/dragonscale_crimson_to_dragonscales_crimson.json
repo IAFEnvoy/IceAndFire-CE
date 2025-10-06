@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "iceandfire:dragonscale_crimson"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "iceandfire:dragonscales_crimson"
+  }
+}

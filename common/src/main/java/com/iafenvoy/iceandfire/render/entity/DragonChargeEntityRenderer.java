@@ -1,6 +1,8 @@
 package com.iafenvoy.iceandfire.render.entity;
 
+import com.iafenvoy.iceandfire.entity.NetherDragonChargeEntity;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -34,7 +36,18 @@ public class DragonChargeEntityRenderer extends EntityRenderer<AbstractFireballE
         matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
         matrixStackIn.translate(-0.5D, -0.5D, 0.5D);
         matrixStackIn.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(this.isFire ? Blocks.MAGMA_BLOCK.getDefaultState() : IafBlocks.DRAGON_ICE.get().getDefaultState(), matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV);
+        
+        // Use different blocks based on dragon type
+        BlockState blockToRender;
+        if (entityIn instanceof NetherDragonChargeEntity) {
+            blockToRender = IafBlocks.SOULGMA_BLOCK.get().getDefaultState();
+        } else if (this.isFire) {
+            blockToRender = Blocks.MAGMA_BLOCK.getDefaultState();
+        } else {
+            blockToRender = IafBlocks.DRAGON_ICE.get().getDefaultState();
+        }
+        
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockToRender, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.DEFAULT_UV);
         matrixStackIn.pop();
     }
 }

@@ -89,6 +89,12 @@ public abstract class DragonChargeEntity extends AbstractFireballEntity implemen
                         return;
                     }
                     if (shootingEntity instanceof DragonBaseEntity shootingDragon) {
+                        // Check if entity is immune to damage (creative mode, peaceful difficulty, etc.)
+                        if (entity.isInvulnerableTo(this.causeDamage(shootingDragon))) {
+                            this.remove(RemovalReason.DISCARDED);
+                            return;
+                        }
+                        
                         float damageAmount = this.getDamage() * shootingDragon.getDragonStage();
 
                         Entity cause = shootingDragon.getRidingPlayer() != null ? shootingDragon.getRidingPlayer() : shootingDragon;

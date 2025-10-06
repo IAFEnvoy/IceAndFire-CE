@@ -47,6 +47,9 @@ public class IafDragonDestructionManager {
         } else if (dragon.dragonType == IafDragonTypes.LIGHTNING) {
             statusDuration = 3;
             damageScale = IafCommonConfig.INSTANCE.dragon.attackDamageLightning.getValue().floatValue();
+        } else if (dragon.dragonType == IafDragonTypes.NETHER) {
+            statusDuration = 5 + dragon.getDragonStage() * 5;
+            damageScale = IafCommonConfig.INSTANCE.dragon.netherDragonAttackDamage.getValue().floatValue();
         } else return;
 
         double damageRadius = 3.5;
@@ -187,6 +190,8 @@ public class IafDragonDestructionManager {
             return player != null ? IafDamageTypes.causeIndirectDragonIceDamage(dragon, player) : IafDamageTypes.causeDragonIceDamage(dragon);
         else if (dragon.dragonType == IafDragonTypes.LIGHTNING)
             return player != null ? IafDamageTypes.causeIndirectDragonLightningDamage(dragon, player) : IafDamageTypes.causeDragonLightningDamage(dragon);
+        else if (dragon.dragonType == IafDragonTypes.NETHER)
+            return player != null ? IafDamageTypes.causeIndirectDragonSoulFireDamage(dragon, player) : IafDamageTypes.causeDragonSoulFireDamage(dragon);
         else
             return dragon.getWorld().getDamageSources().mobAttack(dragon);
     }

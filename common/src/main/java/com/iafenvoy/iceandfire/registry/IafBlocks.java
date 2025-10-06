@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.*;
 import com.iafenvoy.iceandfire.item.block.LecternBlock;
+import com.iafenvoy.iceandfire.item.block.SoulgmaBlock;
 import com.iafenvoy.iceandfire.item.block.util.WallBlock;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
@@ -38,6 +39,7 @@ public final class IafBlocks {
     public static final RegistrySupplier<Block> GOLD_PILE = register("gold_pile", GoldPileBlock::new);
     public static final RegistrySupplier<Block> SILVER_PILE = register("silver_pile", GoldPileBlock::new);
     public static final RegistrySupplier<Block> COPPER_PILE = register("copper_pile", GoldPileBlock::new);
+    public static final RegistrySupplier<Block> SOULGMA_BLOCK = register("soulgma_block", SoulgmaBlock::new);
     public static final RegistrySupplier<Block> SILVER_ORE = register("silver_ore", () -> new ExperienceDroppingBlock(ConstantIntProvider.create(2), AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(3, 3).requiresTool()));
     public static final RegistrySupplier<Block> DEEPSLATE_SILVER_ORE = register("deepslate_silver_ore", () -> new ExperienceDroppingBlock(ConstantIntProvider.create(2), AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).strength(3, 3).requiresTool()));
     public static final RegistrySupplier<Block> SILVER_BLOCK = register("silver_block", () -> GenericBlock.builder(3.0F, 5.0F, BlockSoundGroup.METAL, MapColor.IRON_GRAY, null, null, false));
@@ -81,6 +83,8 @@ public final class IafBlocks {
     public static final RegistrySupplier<Block> DRAGON_SCALE_amethyst = register("dragonscale_amethyst", () -> new DragonScalesBlock(IafDragonColors.AMETHYST));
     public static final RegistrySupplier<Block> DRAGON_SCALE_COPPER = register("dragonscale_copper", () -> new DragonScalesBlock(IafDragonColors.COPPER));
     public static final RegistrySupplier<Block> DRAGON_SCALE_BLACK = register("dragonscale_black", () -> new DragonScalesBlock(IafDragonColors.BLACK));
+    public static final RegistrySupplier<Block> DRAGON_SCALE_NETHER = register("dragonscale_nether", () -> new DragonScalesBlock(IafDragonColors.NETHER));
+    public static final RegistrySupplier<Block> DRAGON_SCALE_CRIMSON = register("dragonscale_crimson", () -> new DragonScalesBlock(IafDragonColors.CRIMSON));
 
     public static final RegistrySupplier<Block> DRAGON_BONE_BLOCK = register("dragon_bone_block", DragonBoneBlock::new);
     public static final RegistrySupplier<Block> DRAGON_BONE_BLOCK_WALL = register("dragon_bone_wall", () -> new DragonBoneWallBlock(AbstractBlock.Settings.copy(IafBlocks.DRAGON_BONE_BLOCK.get())));

@@ -72,6 +72,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
     @SuppressWarnings("unused")
     public static class DragonConfig extends AutoInitConfigCategoryBase {
         public final IConfigEntry<Double> maxHealth = new DoubleEntry("config.iceandfire.dragon.maxHealth", 500, 1, Integer.MAX_VALUE).json("maxHealth");
+        public final IConfigEntry<Double> netherDragonMaxHealth = new DoubleEntry("config.iceandfire.dragon.netherDragonMaxHealth", 750, 1, Integer.MAX_VALUE).json("netherDragonMaxHealth");
         public final IConfigEntry<Integer> eggBornTime = new IntegerEntry("config.iceandfire.dragon.eggBornTime", 7200, 0, Integer.MAX_VALUE).json("eggBornTime");
         public final IConfigEntry<Integer> maxPathingNodes = new IntegerEntry("config.iceandfire.dragon.maxPathingNodes", 5000, 0, Integer.MAX_VALUE).json("maxPathingNodes");
         public final IConfigEntry<Boolean> villagersFear = new BooleanEntry("config.iceandfire.dragon.villagersFear", true).json("villagersFear");
@@ -90,6 +91,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final IConfigEntry<Double> attackDamageFire = new DoubleEntry("config.iceandfire.dragon.attackDamageFire", 2, 0, Integer.MAX_VALUE).json("attackDamageFire");
         public final IConfigEntry<Double> attackDamageIce = new DoubleEntry("config.iceandfire.dragon.attackDamageIce", 2.5, 0, Integer.MAX_VALUE).json("attackDamageIce");
         public final IConfigEntry<Double> attackDamageLightning = new DoubleEntry("config.iceandfire.dragon.attackDamageLightning", 3.5, 0, Integer.MAX_VALUE).json("attackDamageLightning");
+        public final IConfigEntry<Double> netherDragonAttackDamage = new DoubleEntry("config.iceandfire.dragon.netherDragonAttackDamage", 4.0, 0, Integer.MAX_VALUE).json("netherDragonAttackDamage");
         public final IConfigEntry<Integer> maxFlight = new IntegerEntry("config.iceandfire.dragon.maxFlight", 256, -2032, 2032).json("maxFlight");
         public final IConfigEntry<Integer> goldSearchLength = new IntegerEntry("config.iceandfire.dragon.goldSearchLength", 30, 0, 256).json("goldSearchLength");
         public final IConfigEntry<Boolean> canHealFromBiting = new BooleanEntry("config.iceandfire.dragon.canHealFromBiting", false).json("canHealFromBiting");
