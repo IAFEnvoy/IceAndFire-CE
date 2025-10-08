@@ -13,9 +13,7 @@ public enum IafToolMaterials implements ToolMaterial {
     SILVER_TOOL_MATERIAL("silver", 460, 1.0F, 11.0F, 18, BlockTags.INCORRECT_FOR_IRON_TOOL),
     COPPER_TOOL_MATERIAL("copper", 300, 0.0F, 3.0F, 10, BlockTags.INCORRECT_FOR_IRON_TOOL),
     DRAGONBONE_TOOL_MATERIAL("dragon_bone", 1660, 4.0F, 10.0F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
-    FIRE_DRAGONBONE_TOOL_MATERIAL("fire_dragon_bone", 2000, 5.5F, 10F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
-    ICE_DRAGONBONE_TOOL_MATERIAL("ice_dragon_bone", 2000, 5.5F, 10F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
-    LIGHTNING_DRAGONBONE_TOOL_MATERIAL("lightning_dragon_bone", 2000, 5.5F, 10F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
+    BLOODED_DRAGONBONE_TOOL_MATERIAL("blooded_dragon_bone", 2000, 5.5F, 10F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
     TROLL_WEAPON_TOOL_MATERIAL("troll_weapon", 300, 1F, 10F, 1, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     HIPPOGRYPH_SWORD_TOOL_MATERIAL("hippogryph_sword", 500, 2.5F, 10F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     STYMHALIAN_SWORD_TOOL_MATERIAL("stymphalian_sword", 500, 2, 10.0F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
@@ -24,9 +22,9 @@ public enum IafToolMaterials implements ToolMaterial {
     DREAD_SWORD_TOOL_MATERIAL("dread_sword", 100, 1F, 10F, 0, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     DREAD_KNIGHT_TOOL_MATERIAL("dread_knight_sword", 1200, 13F, 0F, 10, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
     GHOST_SWORD_TOOL_MATERIAL("ghost_sword", 3000, 5, 10.0F, 25, BlockTags.INCORRECT_FOR_WOODEN_TOOL),
-    DRAGONSTEEL_FIRE("dragon_steel_fire", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_DIAMOND_TOOL),
-    DRAGONSTEEL_ICE("dragon_steel_ice", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_DIAMOND_TOOL),
-    DRAGONSTEEL_LIGHTNING("dragon_steel_lightning", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_DIAMOND_TOOL),
+    DRAGONSTEEL_FIRE("dragon_steel_fire", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_NETHERITE_TOOL),
+    DRAGONSTEEL_ICE("dragon_steel_ice", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_NETHERITE_TOOL),
+    DRAGONSTEEL_LIGHTNING("dragon_steel_lightning", IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseDamage.getValue().floatValue() - 1, 10F, 21, BlockTags.INCORRECT_FOR_NETHERITE_TOOL),
     DREAD_QUEEN("dread_queen", 4000, 4F, 10F, 21, BlockTags.INCORRECT_FOR_WOODEN_TOOL);
 
     private final String name;
@@ -87,9 +85,7 @@ public enum IafToolMaterials implements ToolMaterial {
     public static void init() {
         SILVER_TOOL_MATERIAL.setRepairMaterial(Ingredient.fromTag(CommonItemTags.INGOTS_SILVER));
         DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
-        FIRE_DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
-        ICE_DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
-        LIGHTNING_DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
+        BLOODED_DRAGONBONE_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.DRAGON_BONE.get()));
         TROLL_WEAPON_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(Items.STONE));
         HIPPOGRYPH_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.HIPPOGRYPH_TALON.get()));
         HIPPOCAMPUS_SWORD_TOOL_MATERIAL.setRepairMaterial(Ingredient.ofItems(IafItems.SHINY_SCALES.get()));
