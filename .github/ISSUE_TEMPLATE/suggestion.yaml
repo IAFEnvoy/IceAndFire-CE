@@ -1,0 +1,20 @@
+name: Suggestion
+description: Submit an idea or capability request.
+title: "[Suggestion]: "
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Suggestion Type
+      options:
+        - New Feature
+        - Config Addition
+        - Integration With Other Mods
+    validations:
+      required: true
+  - type: textarea
+    id: content
+    attributes:
+      label: What's your suggestions?
+    validations:
+      required: true
