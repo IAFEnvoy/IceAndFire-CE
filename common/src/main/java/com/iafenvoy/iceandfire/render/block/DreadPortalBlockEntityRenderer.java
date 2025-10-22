@@ -20,34 +20,39 @@ public class DreadPortalBlockEntityRenderer<T extends DreadPortalBlockEntity> im
     }
 
     @Override
-    public void render(T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-        VertexConsumer consumer = vertexConsumers.getBuffer(this.renderType());
+    public void render(T tileEntityIn, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int combinedLightIn, int combinedOverlayIn) {
+        Matrix4f matrix4f = matrixStackIn.peek().getPositionMatrix();
+        VertexConsumer consumer = bufferIn.getBuffer(this.renderType());
         // z = 1
         consumer.vertex(matrix4f, 0, 0, 1).color(-1);
         consumer.vertex(matrix4f, 1, 0, 1).color(-1);
         consumer.vertex(matrix4f, 1, 1, 1).color(-1);
         consumer.vertex(matrix4f, 0, 1, 1).color(-1);
+
         // z = 0
         consumer.vertex(matrix4f, 0, 0, 0).color(-1);
         consumer.vertex(matrix4f, 0, 1, 0).color(-1);
         consumer.vertex(matrix4f, 1, 1, 0).color(-1);
         consumer.vertex(matrix4f, 1, 0, 0).color(-1);
+
         // x = 0
         consumer.vertex(matrix4f, 0, 0, 0).color(-1);
         consumer.vertex(matrix4f, 0, 0, 1).color(-1);
         consumer.vertex(matrix4f, 0, 1, 1).color(-1);
         consumer.vertex(matrix4f, 0, 1, 0).color(-1);
+
         // x = 1
         consumer.vertex(matrix4f, 1, 0, 1).color(-1);
         consumer.vertex(matrix4f, 1, 0, 0).color(-1);
         consumer.vertex(matrix4f, 1, 1, 0).color(-1);
         consumer.vertex(matrix4f, 1, 1, 1).color(-1);
+
         // y = 1
         consumer.vertex(matrix4f, 0, 1, 0).color(-1);
         consumer.vertex(matrix4f, 0, 1, 1).color(-1);
         consumer.vertex(matrix4f, 1, 1, 1).color(-1);
         consumer.vertex(matrix4f, 1, 1, 0).color(-1);
+
         // y = 0
         consumer.vertex(matrix4f, 0, 0, 0).color(-1);
         consumer.vertex(matrix4f, 1, 0, 0).color(-1);

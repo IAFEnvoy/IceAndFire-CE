@@ -101,13 +101,6 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
 
         @Override
         public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (super.boundingBox.getBlockCountX() > 1)
-                return;
-            BlockPos center = new BlockPos(super.boundingBox.getMinX(), super.boundingBox.getMinY(), super.boundingBox.getMinZ()).subtract(this.offset);
-            BlockPos bb_pos = center.add(new BlockPos((this.offset.getX() * 24) / 32, 0, (this.offset.getZ() * 24) / 32));
-            super.boundingBox = new BlockBox(bb_pos.getX() - 12, super.boundingBox.getMinY(), bb_pos.getZ() - 12,
-                                             bb_pos.getX() + 11, super.boundingBox.getMaxY(), bb_pos.getZ() + 11);
-
             random = new CheckedRandom(this.seed);
             // Center the position at the "middle" of the chunk
             BlockPos position = new BlockPos((chunkPos.x << 4) + 8, this.y, (chunkPos.z << 4) + 8).subtract(this.offset);

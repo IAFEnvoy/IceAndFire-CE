@@ -61,7 +61,7 @@ public class DragonForgeCoreBlock extends BlockWithEntity implements DragonProof
                 MenuRegistry.openExtendedMenu(serverPlayer, forge);
             return ActionResult.SUCCESS;
         }
-        return ActionResult.PASS;
+        return ActionResult.FAIL;
     }
 
     @Override

@@ -78,9 +78,6 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
 
         @Override
         public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
-                return;
-
             int i1 = 8;
             int i2 = i1 - 2;
             {
@@ -89,7 +86,6 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
                 int k = 5 + ySize;
                 int l = i1 + random.nextInt(2);
                 float f = (j + k + l) * 0.333F + 0.5F;
-                super.boundingBox = new BlockBox(pivot.getX() - j + 2, pivot.getY(), pivot.getZ() - l + 2, pivot.getX() + j - 2, pivot.getY() + k, pivot.getZ() + l - 2);
 
                 for (BlockPos blockpos : BlockPos.stream(pivot.add(-j, -k, -l), pivot.add(j, k, l)).map(BlockPos::toImmutable).collect(Collectors.toSet())) {
                     boolean doorwayX = blockpos.getX() >= pivot.getX() - 2 + random.nextInt(2) && blockpos.getX() <= pivot.getX() + 2 + random.nextInt(2);

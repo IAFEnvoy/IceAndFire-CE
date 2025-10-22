@@ -44,3 +44,5 @@ side = "BOTH"
 
 [[mixins]]
 config = "iceandfire.mixins.json"
+[[mixins]]
+config = "iceandfire-neoforge.mixins.json"

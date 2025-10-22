@@ -16,6 +16,7 @@ public final class IafBlockTags {
     public static final TagKey<Block> FIRE_DRAGON_CAVE_ORES = create("fire_dragon_cave_ores");
     public static final TagKey<Block> ICE_DRAGON_CAVE_ORES = create("ice_dragon_cave_ores");
     public static final TagKey<Block> LIGHTNING_DRAGON_CAVE_ORES = create("lightning_dragon_cave_ores");
+    public static final TagKey<Block> NETHER_DRAGON_CAVE_ORES = create("nether_dragon_cave_ores");
 
     public static final TagKey<Block> DRAGON_BLOCK_BREAK_BLACKLIST = create("dragon_block_break_blacklist");
     public static final TagKey<Block> DRAGON_BLOCK_BREAK_NO_DROPS = create("dragon_block_break_no_drops");

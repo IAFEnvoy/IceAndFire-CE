@@ -19,6 +19,7 @@ public final class IafDamageTypes {
     public static final RegistryKey<DamageType> DRAGON_FIRE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_fire"));
     public static final RegistryKey<DamageType> DRAGON_ICE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_ice"));
     public static final RegistryKey<DamageType> DRAGON_LIGHTNING_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_lightning"));
+    public static final RegistryKey<DamageType> DRAGON_SOUL_FIRE_TYPE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(IceAndFire.MOD_ID, "dragon_soul_fire"));
 
     private static RegistryEntry<DamageType> get(Entity entity, RegistryKey<DamageType> key) {
         Registry<DamageType> registry = entity.getWorld().damageSources.registry;
@@ -55,6 +56,14 @@ public final class IafDamageTypes {
 
     public static CustomIndirectEntityDamageSource causeIndirectDragonLightningDamage(Entity source, Entity indirectEntityIn) {
         return new CustomIndirectEntityDamageSource(get(indirectEntityIn, DRAGON_ICE_TYPE), source, indirectEntityIn);
+    }
+
+    public static CustomEntityDamageSource causeDragonSoulFireDamage(Entity entity) {
+        return new CustomEntityDamageSource(get(entity, DRAGON_SOUL_FIRE_TYPE), entity);
+    }
+
+    public static CustomIndirectEntityDamageSource causeIndirectDragonSoulFireDamage(Entity source, Entity indirectEntityIn) {
+        return new CustomIndirectEntityDamageSource(get(indirectEntityIn, DRAGON_SOUL_FIRE_TYPE), source, indirectEntityIn);
     }
 
     public static class CustomEntityDamageSource extends DamageSource {

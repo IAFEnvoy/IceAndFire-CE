@@ -11,12 +11,11 @@ import com.iafenvoy.iceandfire.particle.*;
 import com.iafenvoy.iceandfire.render.block.*;
 import com.iafenvoy.iceandfire.render.entity.*;
 import com.iafenvoy.iceandfire.render.item.*;
-import com.iafenvoy.iceandfire.render.item.armor.BasicArmorRenderer;
-import com.iafenvoy.iceandfire.render.item.armor.ScaleArmorRenderer;
+import com.iafenvoy.iceandfire.render.item.armor.*;
 import com.iafenvoy.iceandfire.render.model.animator.FireDragonTabulaModelAnimator;
 import com.iafenvoy.iceandfire.render.model.animator.IceDragonTabulaModelAnimator;
+import com.iafenvoy.iceandfire.render.model.animator.NetherDragonTabulaModelAnimator;
 import com.iafenvoy.iceandfire.render.model.animator.LightningTabulaDragonAnimator;
-import com.iafenvoy.iceandfire.render.model.armor.*;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
 import com.iafenvoy.uranus.client.render.armor.IArmorRendererBase;
@@ -38,18 +37,21 @@ public final class IafRenderers {
     public static final Identifier FIRE_DRAGON = Identifier.of(IceAndFire.MOD_ID, "firedragon/firedragon_ground");
     public static final Identifier ICE_DRAGON = Identifier.of(IceAndFire.MOD_ID, "icedragon/icedragon_ground");
     public static final Identifier LIGHTNING_DRAGON = Identifier.of(IceAndFire.MOD_ID, "lightningdragon/lightningdragon_ground");
+    public static final Identifier NETHER_DRAGON = Identifier.of(IceAndFire.MOD_ID, "firedragon/firedragon_ground"); // Using fire dragon model for now
     public static final Identifier SEA_SERPENT = Identifier.of(IceAndFire.MOD_ID, "seaserpent/seaserpent_base");
 
     public static void registerEntityRenderers() {
         EntityRendererRegistry.register(IafEntities.FIRE_DRAGON, x -> new DragonBaseEntityRenderer<>(x, TabulaModelHandlerHelper.getModel(FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new))));
         EntityRendererRegistry.register(IafEntities.ICE_DRAGON, manager -> new DragonBaseEntityRenderer<>(manager, TabulaModelHandlerHelper.getModel(ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new))));
         EntityRendererRegistry.register(IafEntities.LIGHTNING_DRAGON, manager -> new LightningDragonEntityRenderer(manager, TabulaModelHandlerHelper.getModel(LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new))));
+        EntityRendererRegistry.register(IafEntities.NETHER_DRAGON, x -> new DragonBaseEntityRenderer<>(x, TabulaModelHandlerHelper.getModel(NETHER_DRAGON, new MemorizeSupplier<>(NetherDragonTabulaModelAnimator::new))));
         EntityRendererRegistry.register(IafEntities.DRAGON_EGG, DragonEggEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.DRAGON_ARROW, DragonArrowEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.DRAGON_SKULL, DragonSkullEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.FIRE_DRAGON_CHARGE, manager -> new DragonChargeEntityRenderer(manager, true));
         EntityRendererRegistry.register(IafEntities.ICE_DRAGON_CHARGE, manager -> new DragonChargeEntityRenderer(manager, false));
         EntityRendererRegistry.register(IafEntities.LIGHTNING_DRAGON_CHARGE, LightningDragonChargeEntityRenderer::new);
+        EntityRendererRegistry.register(IafEntities.NETHER_DRAGON_CHARGE, manager -> new DragonChargeEntityRenderer(manager, true));
         EntityRendererRegistry.register(IafEntities.HIPPOGRYPH_EGG, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.HIPPOGRYPH, HippogryphEntityRenderer::new);
         EntityRendererRegistry.register(IafEntities.STONE_STATUE, StoneStatueEntityRenderer::new);
@@ -99,6 +101,7 @@ public final class IafRenderers {
         consumer.accept(new ParticleProviderHolder<>(IafParticles.BLOOD.get(), BloodParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.DRAGON_FLAME.get(), DragonFlameParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.DRAGON_FROST.get(), DragonFrostParticle::factory));
+        consumer.accept(new ParticleProviderHolder<>(IafParticles.DRAGON_SOUL_FLAME.get(), DragonSoulFlameParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.DREAD_PORTAL.get(), DreadPortalParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.DREAD_TORCH.get(), DreadTorchParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.GHOST_APPEARANCE.get(), GhostAppearanceParticle.factory()));
@@ -121,20 +124,20 @@ public final class IafRenderers {
     }
 
     public static void registerArmorRenderers() {
-        IArmorRendererBase.register(new BasicArmorRenderer(CopperArmorModel::new), IafItems.COPPER_HELMET.get(), IafItems.COPPER_CHESTPLATE.get(), IafItems.COPPER_LEGGINGS.get(), IafItems.COPPER_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DeathWormArmorModel::new), IafItems.DEATHWORM_WHITE_HELMET.get(), IafItems.DEATHWORM_WHITE_CHESTPLATE.get(), IafItems.DEATHWORM_WHITE_LEGGINGS.get(), IafItems.DEATHWORM_WHITE_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DeathWormArmorModel::new), IafItems.DEATHWORM_YELLOW_HELMET.get(), IafItems.DEATHWORM_YELLOW_CHESTPLATE.get(), IafItems.DEATHWORM_YELLOW_LEGGINGS.get(), IafItems.DEATHWORM_YELLOW_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DeathWormArmorModel::new), IafItems.DEATHWORM_RED_HELMET.get(), IafItems.DEATHWORM_RED_CHESTPLATE.get(), IafItems.DEATHWORM_RED_LEGGINGS.get(), IafItems.DEATHWORM_RED_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DragonSteelFireArmorModel::new), IafItems.DRAGONSTEEL_FIRE_HELMET.get(), IafItems.DRAGONSTEEL_FIRE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_FIRE_LEGGINGS.get(), IafItems.DRAGONSTEEL_FIRE_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DragonSteelIceArmorModel::new), IafItems.DRAGONSTEEL_ICE_HELMET.get(), IafItems.DRAGONSTEEL_ICE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_ICE_LEGGINGS.get(), IafItems.DRAGONSTEEL_ICE_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DragonSteelLightningArmorModel::new), IafItems.DRAGONSTEEL_LIGHTNING_HELMET.get(), IafItems.DRAGONSTEEL_LIGHTNING_CHESTPLATE.get(), IafItems.DRAGONSTEEL_LIGHTNING_LEGGINGS.get(), IafItems.DRAGONSTEEL_LIGHTNING_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(SilverArmorModel::new), IafItems.SILVER_HELMET.get(), IafItems.SILVER_CHESTPLATE.get(), IafItems.SILVER_LEGGINGS.get(), IafItems.SILVER_BOOTS.get());
+        IArmorRendererBase.register(new CopperArmorRenderer(), IafItems.COPPER_HELMET.get(), IafItems.COPPER_CHESTPLATE.get(), IafItems.COPPER_LEGGINGS.get(), IafItems.COPPER_BOOTS.get());
+        IArmorRendererBase.register(new DeathWormArmorRenderer(), IafItems.DEATHWORM_WHITE_HELMET.get(), IafItems.DEATHWORM_WHITE_CHESTPLATE.get(), IafItems.DEATHWORM_WHITE_LEGGINGS.get(), IafItems.DEATHWORM_WHITE_BOOTS.get());
+        IArmorRendererBase.register(new DeathWormArmorRenderer(), IafItems.DEATHWORM_YELLOW_HELMET.get(), IafItems.DEATHWORM_YELLOW_CHESTPLATE.get(), IafItems.DEATHWORM_YELLOW_LEGGINGS.get(), IafItems.DEATHWORM_YELLOW_BOOTS.get());
+        IArmorRendererBase.register(new DeathWormArmorRenderer(), IafItems.DEATHWORM_RED_HELMET.get(), IafItems.DEATHWORM_RED_CHESTPLATE.get(), IafItems.DEATHWORM_RED_LEGGINGS.get(), IafItems.DEATHWORM_RED_BOOTS.get());
+        IArmorRendererBase.register(new DragonSteelArmorRenderer(), IafItems.DRAGONSTEEL_FIRE_HELMET.get(), IafItems.DRAGONSTEEL_FIRE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_FIRE_LEGGINGS.get(), IafItems.DRAGONSTEEL_FIRE_BOOTS.get());
+        IArmorRendererBase.register(new DragonSteelArmorRenderer(), IafItems.DRAGONSTEEL_ICE_HELMET.get(), IafItems.DRAGONSTEEL_ICE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_ICE_LEGGINGS.get(), IafItems.DRAGONSTEEL_ICE_BOOTS.get());
+        IArmorRendererBase.register(new DragonSteelArmorRenderer(), IafItems.DRAGONSTEEL_LIGHTNING_HELMET.get(), IafItems.DRAGONSTEEL_LIGHTNING_CHESTPLATE.get(), IafItems.DRAGONSTEEL_LIGHTNING_LEGGINGS.get(), IafItems.DRAGONSTEEL_LIGHTNING_BOOTS.get());
+        IArmorRendererBase.register(new SilverArmorRenderer(), IafItems.SILVER_HELMET.get(), IafItems.SILVER_CHESTPLATE.get(), IafItems.SILVER_LEGGINGS.get(), IafItems.SILVER_BOOTS.get());
         for (DragonColor armor : IafRegistries.DRAGON_COLOR)
             IArmorRendererBase.register(new ScaleArmorRenderer(), armor.helmet.get(), armor.chestplate.get(), armor.leggings.get(), armor.boots.get());
         for (SeaSerpentType seaSerpent : IafRegistries.SEA_SERPENT_TYPE)
-            IArmorRendererBase.register(new BasicArmorRenderer(SeaSerpentArmorModel::new), seaSerpent.helmet.get(), seaSerpent.chestplate.get(), seaSerpent.leggings.get(), seaSerpent.boots.get());
+            IArmorRendererBase.register(new SeaSerpentArmorRenderer(), seaSerpent.helmet.get(), seaSerpent.chestplate.get(), seaSerpent.leggings.get(), seaSerpent.boots.get());
         for (TrollType troll : IafRegistries.TROLL_TYPE)
-            IArmorRendererBase.register(new BasicArmorRenderer(TrollArmorModel::new), troll.helmet.get(), troll.chestplate.get(), troll.leggings.get(), troll.boots.get());
+            IArmorRendererBase.register(new TrollArmorRenderer(), troll.helmet.get(), troll.chestplate.get(), troll.leggings.get(), troll.boots.get());
     }
 
     public static void registerItemRenderers() {

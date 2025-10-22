@@ -19,6 +19,8 @@ public final class IafStructureTypes {
     public static final RegistrySupplier<StructureType<FireDragonRoostStructure>> FIRE_DRAGON_ROOST = registerType("fire_dragon_roost", () -> () -> FireDragonRoostStructure.CODEC);
     public static final RegistrySupplier<StructureType<IceDragonRoostStructure>> ICE_DRAGON_ROOST = registerType("ice_dragon_roost", () -> () -> IceDragonRoostStructure.CODEC);
     public static final RegistrySupplier<StructureType<LightningDragonRoostStructure>> LIGHTNING_DRAGON_ROOST = registerType("lightning_dragon_roost", () -> () -> LightningDragonRoostStructure.CODEC);
+    public static final RegistrySupplier<StructureType<NetherDragonRoostStructure>> NETHER_DRAGON_ROOST = registerType("nether_dragon_roost", () -> () -> NetherDragonRoostStructure.CODEC);
+    public static final RegistrySupplier<StructureType<NetherDragonCaveStructure>> NETHER_DRAGON_CAVE = registerType("nether_dragon_cave", () -> () -> NetherDragonCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<FireDragonCaveStructure>> FIRE_DRAGON_CAVE = registerType("fire_dragon_cave", () -> () -> FireDragonCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<IceDragonCaveStructure>> ICE_DRAGON_CAVE = registerType("ice_dragon_cave", () -> () -> IceDragonCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<LightningDragonCaveStructure>> LIGHTNING_DRAGON_CAVE = registerType("lightning_dragon_cave", () -> () -> LightningDragonCaveStructure.CODEC);

@@ -13,6 +13,8 @@ public final class IafBannerPatternTags {
     public static final TagKey<BannerPattern> FIRE_HEAD_BANNER_PATTERN = create("pattern_item/fire_head");
     public static final TagKey<BannerPattern> ICE_HEAD_BANNER_PATTERN = create("pattern_item/ice_head");
     public static final TagKey<BannerPattern> LIGHTNING_HEAD_BANNER_PATTERN = create("pattern_item/lightning_head");
+    public static final TagKey<BannerPattern> NETHER_BANNER_PATTERN = create("pattern_item/nether");
+    public static final TagKey<BannerPattern> NETHER_HEAD_BANNER_PATTERN = create("pattern_item/nether_head");
     public static final TagKey<BannerPattern> AMPHITHERE_BANNER_PATTERN = create("pattern_item/amphithere");
     public static final TagKey<BannerPattern> BIRD_BANNER_PATTERN = create("pattern_item/bird");
     public static final TagKey<BannerPattern> EYE_BANNER_PATTERN = create("pattern_item/eye");

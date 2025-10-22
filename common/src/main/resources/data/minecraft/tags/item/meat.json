@@ -4,8 +4,10 @@
     "iceandfire:cooked_rice_with_fire_dragon_meat",
     "iceandfire:cooked_rice_with_ice_dragon_meat",
     "iceandfire:cooked_rice_with_lightning_dragon_meat",
+    "iceandfire:cooked_rice_with_nether_dragon_meat",
     "iceandfire:fire_dragon_flesh",
     "iceandfire:ice_dragon_flesh",
-    "iceandfire:lightning_dragon_flesh"
+    "iceandfire:lightning_dragon_flesh",
+    "iceandfire:nether_dragon_flesh"
   ]
 }

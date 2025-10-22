@@ -1,18 +1,18 @@
 package com.iafenvoy.iceandfire.entity.util.dragon;
 
-import com.iafenvoy.iceandfire.config.IafCommonConfig;
-import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import com.iafenvoy.iceandfire.entity.util.BlockLaunchExplosion;
 import com.iafenvoy.iceandfire.event.IafEvents;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
+import com.iafenvoy.iceandfire.data.component.FrozenData;
+import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
+import com.iafenvoy.iceandfire.item.block.entity.DragonForgeInputBlockEntity;
+import com.iafenvoy.iceandfire.entity.util.BlockLaunchExplosion;
 import com.iafenvoy.iceandfire.item.block.CharedPathBlock;
 import com.iafenvoy.iceandfire.item.block.FallingReturningStateBlock;
 import com.iafenvoy.iceandfire.item.block.ReturningStateBlock;
-import com.iafenvoy.iceandfire.item.block.entity.DragonForgeInputBlockEntity;
 import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafDamageTypes;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,9 +20,7 @@ import net.minecraft.block.SpreadableBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -237,9 +235,10 @@ public class IafDragonDestructionManager {
     private static void applyDragonEffect(final LivingEntity target, final DragonBaseEntity dragon, int statusDuration) {
         if (dragon.dragonType == IafDragonTypes.FIRE)
             target.setOnFireFor(statusDuration);
-        else if (dragon.dragonType == IafDragonTypes.ICE)
-            target.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(IafStatusEffects.FROZEN.get()), statusDuration));
-        else if (dragon.dragonType == IafDragonTypes.LIGHTNING) {
+        else if (dragon.dragonType == IafDragonTypes.ICE) {
+            FrozenData frozenData = FrozenData.get(target);
+            frozenData.setFrozen(target, statusDuration);
+        } else if (dragon.dragonType == IafDragonTypes.LIGHTNING) {
             double x = dragon.getX() - target.getX();
             double y = dragon.getZ() - target.getZ();
             target.takeKnockback((double) statusDuration / 10, x, y);

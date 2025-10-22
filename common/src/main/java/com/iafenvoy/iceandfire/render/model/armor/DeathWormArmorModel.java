@@ -8,8 +8,8 @@ public class DeathWormArmorModel extends ArmorModelBase {
     private static final ModelPart INNER_MODEL = getModelData(Dilation.NONE.add(INNER_MODEL_OFFSET), 0.0F).getRoot().createPart(64, 64);
     private static final ModelPart OUTER_MODEL = getModelData(Dilation.NONE.add(OUTER_MODEL_OFFSET), 0.0F).getRoot().createPart(64, 64);
 
-    public DeathWormArmorModel(boolean inner) {
-        super(inner ? INNER_MODEL : OUTER_MODEL);
+    public DeathWormArmorModel(ModelPart modelPart) {
+        super(modelPart);
     }
 
     public static ModelData getModelData(Dilation deformation, float offset) {

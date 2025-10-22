@@ -76,9 +76,6 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
 
         @Override
         public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
-                return;
-
             int radius = 12 + random.nextInt(8);
             this.spawnDragon(world, pivot, random, radius, this.isMale);
             this.generateSurface(world, pivot, random, radius);
@@ -233,9 +230,6 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         private void generateShell(StructureWorldAccess world, BlockPos origin, Random random, int radius) {
             int height = (radius / 5);
             double circularArea = this.getCircularArea(radius, height);
-
-            int real_radius = (int) Math.sqrt(circularArea);
-            super.boundingBox = new BlockBox(origin.getX() - real_radius, origin.getY(), origin.getZ() - real_radius, origin.getX() + real_radius, origin.getY() + 3, origin.getZ() + real_radius);
 
             BlockPos.stream(origin.add(-radius, -height, -radius), origin.add(radius, 1, radius)).map(BlockPos::toImmutable).forEach(position -> {
                 if (position.getSquaredDistance(origin) < circularArea)

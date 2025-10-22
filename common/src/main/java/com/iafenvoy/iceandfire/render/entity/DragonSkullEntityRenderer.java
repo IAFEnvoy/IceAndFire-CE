@@ -10,12 +10,13 @@ import com.iafenvoy.iceandfire.registry.IafRenderers;
 import com.iafenvoy.iceandfire.render.model.animator.FireDragonTabulaModelAnimator;
 import com.iafenvoy.iceandfire.render.model.animator.IceDragonTabulaModelAnimator;
 import com.iafenvoy.iceandfire.render.model.animator.LightningTabulaDragonAnimator;
+import com.iafenvoy.iceandfire.render.model.animator.NetherDragonTabulaModelAnimator;
 import com.iafenvoy.uranus.client.model.ITabulaModelAnimator;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
-import com.iafenvoy.uranus.event.Event;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -24,36 +25,31 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.math.RotationAxis;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity> {
-    public static final Event<Consumer<BiConsumer<DragonType, net.minecraft.util.Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>>>> COLLECT_DRAGON_SKULL_MODELS = new Event<>(callbacks -> consumer -> callbacks.forEach(x -> x.accept(consumer)));
-    //FIXME::Do not use array
-    private static final float[] GROWTH_STAGE_1 = new float[]{1F, 3F};
-    private static final float[] GROWTH_STAGE_2 = new float[]{3F, 7F};
-    private static final float[] GROWTH_STAGE_3 = new float[]{7F, 12.5F};
-    private static final float[] GROWTH_STAGE_4 = new float[]{12.5F, 20F};
-    private static final float[] GROWTH_STAGE_5 = new float[]{20F, 30F};
-    private static final float[][] GROWTH_STAGES = new float[][]{GROWTH_STAGE_1, GROWTH_STAGE_2, GROWTH_STAGE_3, GROWTH_STAGE_4, GROWTH_STAGE_5};
-    private final Map<DragonType, Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
+    public static final Map<DragonType, Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> MODELS = new HashMap<>();
+    public static final float[] growth_stage_1 = new float[]{1F, 3F};
+    public static final float[] growth_stage_2 = new float[]{3F, 7F};
+    public static final float[] growth_stage_3 = new float[]{7F, 12.5F};
+    public static final float[] growth_stage_4 = new float[]{12.5F, 20F};
+    public static final float[] growth_stage_5 = new float[]{20F, 30F};
 
     static {
-        COLLECT_DRAGON_SKULL_MODELS.register(consumer -> {
-            consumer.accept(IafDragonTypes.FIRE, new Pair<>(IafRenderers.FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new)));
-            consumer.accept(IafDragonTypes.ICE, new Pair<>(IafRenderers.ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new)));
-            consumer.accept(IafDragonTypes.LIGHTNING, new Pair<>(IafRenderers.LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new)));
-        });
+        MODELS.put(IafDragonTypes.FIRE, Pair.of(IafRenderers.FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new)));
+        MODELS.put(IafDragonTypes.ICE, Pair.of(IafRenderers.ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new)));
+        MODELS.put(IafDragonTypes.LIGHTNING, Pair.of(IafRenderers.LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new)));
+        MODELS.put(IafDragonTypes.NETHER, Pair.of(IafRenderers.NETHER_DRAGON, new MemorizeSupplier<>(NetherDragonTabulaModelAnimator::new)));
     }
+
+    public final float[][] growth_stages;
 
     public DragonSkullEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
-        COLLECT_DRAGON_SKULL_MODELS.invoker().accept(this.models::put);
+        this.growth_stages = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};
     }
 
     private static void setRotationAngles(BasicModelPart cube, float rotX) {
@@ -64,9 +60,9 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
 
     @Override
     public void render(DragonSkullEntity entity, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
+        Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = MODELS.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
         if (p == null) return;
-        TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getLeft());
+        TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getFirst());
         if (model == null) return;
         VertexConsumer consumer = bufferIn.getBuffer(RenderLayer.getEntityTranslucent(this.getTexture(entity)));
         matrixStackIn.push();
@@ -88,9 +84,10 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
     }
 
     public float getRenderSize(DragonSkullEntity skull) {
-        float step = (GROWTH_STAGES[skull.getDragonStage() - 1][1] - GROWTH_STAGES[skull.getDragonStage() - 1][0]) / 25;
-        if (skull.getDragonAge() > 125) return GROWTH_STAGES[skull.getDragonStage() - 1][0] + ((step * 25));
-        return GROWTH_STAGES[skull.getDragonStage() - 1][0] + ((step * this.getAgeFactor(skull)));
+        float step = (this.growth_stages[skull.getDragonStage() - 1][1] - this.growth_stages[skull.getDragonStage() - 1][0]) / 25;
+        if (skull.getDragonAge() > 125)
+            return this.growth_stages[skull.getDragonStage() - 1][0] + ((step * 25));
+        return this.growth_stages[skull.getDragonStage() - 1][0] + ((step * this.getAgeFactor(skull)));
     }
 
     private int getAgeFactor(DragonSkullEntity skull) {

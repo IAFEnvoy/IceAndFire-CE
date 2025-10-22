@@ -1,12 +1,12 @@
 package com.iafenvoy.iceandfire.event;
 
 import com.iafenvoy.iceandfire.data.component.ChainData;
+import com.iafenvoy.iceandfire.data.component.FrozenData;
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
 import com.iafenvoy.iceandfire.registry.IafKeybindings;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
 import com.iafenvoy.iceandfire.render.misc.ChainRenderer;
 import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
 import com.iafenvoy.iceandfire.render.misc.FrozenStateRenderer;
@@ -21,9 +21,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 
@@ -78,13 +77,11 @@ public final class ClientEvents {
         ClientWorld world = MinecraftClient.getInstance().world;
         if (world == null) return;
         miscData.checkScepterTarget(world.entityManager.getLookup()::get);
-        //Cockatrice Beam
         for (UUID target : miscData.getTargetedByScepters())
             CockatriceBeamRenderer.render(entity, world.entityManager.getLookup().get(target), matrixStack, buffers, partialRenderTick);
-        //Frozen
-        StatusEffectInstance effect = entity.getStatusEffect(Registries.STATUS_EFFECT.getEntry(IafStatusEffects.FROZEN.get()));
-        if (effect != null) FrozenStateRenderer.render(entity, matrixStack, buffers, light, effect.getDuration());
-        //Chain
+        FrozenData frozenData = FrozenData.get(entity);
+        if (frozenData.isFrozen)
+            FrozenStateRenderer.render(entity, matrixStack, buffers, light, frozenData.frozenTicks);
         ChainData chainData = ChainData.get(entity);
         ChainRenderer.render(entity, matrixStack, buffers, light, chainData.getChainedTo());
     }

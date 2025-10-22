@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
+import com.iafenvoy.iceandfire.data.component.SirenData;
 import com.iafenvoy.iceandfire.entity.ai.AquaticAIGetInWaterGoal;
 import com.iafenvoy.iceandfire.entity.ai.AquaticAIGetOutOfWaterGoal;
 import com.iafenvoy.iceandfire.entity.ai.SirenAIFindWaterTargetGoal;
@@ -9,16 +10,13 @@ import com.iafenvoy.iceandfire.entity.ai.SirenAIWanderGoal;
 import com.iafenvoy.iceandfire.entity.util.ChainBuffer;
 import com.iafenvoy.iceandfire.entity.util.IHasCustomizableAttributes;
 import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
+import com.iafenvoy.iceandfire.entity.util.SirenAffectable;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.registry.IafSounds;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
-import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -32,17 +30,11 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.Registries;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -57,7 +49,7 @@ import java.util.List;
 
 public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVillagerFear, IHasCustomizableAttributes {
     public static final int SEARCH_RANGE = 32;
-    public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof PlayerEntity player && !player.isCreative() && !entity.isSpectator()) || entity.getType().isIn(IafEntityTags.SIREN_CHARMABLE);
+    public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof PlayerEntity && !((PlayerEntity) entity).isCreative() && !entity.isSpectator()) || entity instanceof MerchantEntity || entity instanceof SirenAffectable;
     public static final Animation ANIMATION_BITE = Animation.create(20);
     public static final Animation ANIMATION_PULL = Animation.create(20);
     private static final TrackedData<Integer> HAIR_COLOR = DataTracker.registerData(SirenEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -67,13 +59,13 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
     private static final TrackedData<Boolean> SWIMMING = DataTracker.registerData(SirenEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> CHARMED = DataTracker.registerData(SirenEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Byte> CLIMBING = DataTracker.registerData(SirenEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private final Object2IntMap<LivingEntity> charmingEntities = new Object2IntOpenHashMap<>();
     public ChainBuffer tail_buffer;
     public float singProgress;
     public float swimProgress;
     public int singCooldown;
     private int animationTick;
     private Animation currentAnimation;
+    private boolean isSinging;
     private boolean isSwimming;
     private boolean isLandNavigator;
     private int ticksAgressive;
@@ -85,14 +77,16 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
     }
 
     public static boolean isWearingEarplugs(LivingEntity entity) {
-        ItemStack stack = entity.getEquippedStack(EquipmentSlot.HEAD);
-        return !stack.isEmpty() && stack.isOf(IafItems.EARPLUGS.get());
+        return entity.getEquippedStack(EquipmentSlot.HEAD).isOf(IafItems.EARPLUGS.get());
     }
 
     public static DefaultAttributeContainer.Builder bakeAttributes() {
         return MobEntity.createMobAttributes()
+                //HEALTH
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, IafCommonConfig.INSTANCE.siren.maxHealth.getValue())
+                //SPEED
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25D)
+                //ATTACK
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0D)
                 .add(EntityAttributes.GENERIC_STEP_HEIGHT, 1);
     }
@@ -255,15 +249,9 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
             this.swimProgress -= 0.5F;
         }
         if (!this.getWorld().isClient && !GorgonEntity.isStoneMob(this) && this.isActuallySinging()) {
-            if (this.age % 20 == 0) {
-                List<LivingEntity> targets = this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(50, 12, 50), SIREN_PREY)
-                        .stream().filter(x -> !isWearingEarplugs(x)).filter(x -> x.distanceTo(this) >= 5).toList();
-                this.charmingEntities.keySet().removeIf(x -> !targets.contains(x));
-                targets.forEach(x -> this.charmingEntities.computeIfAbsent(x, e -> 0));
-                this.charmingEntities.keySet().forEach(x -> x.addStatusEffect(new StatusEffectInstance(Registries.STATUS_EFFECT.getEntry(IafStatusEffects.SIREN_CHARM.get()), 30), this));
-            }
-            this.setSinging(true);
-            this.tickCharm();
+            this.updateLure();
+            this.checkForPrey();
+
         }
         if (!this.getWorld().isClient && GorgonEntity.isStoneMob(this) && this.isSinging()) {
             this.setSinging(false);
@@ -281,66 +269,21 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
                 }
             }
         }
-        if (this.isActuallySinging() && !this.isTouchingWater() && this.age % 200 == 0)
+        if (this.isActuallySinging() && !this.isTouchingWater() && this.age % 200 == 0) {
             this.playSound(IafSounds.SIREN_SONG.get(), 2, 1);
+        }
         AnimationHandler.INSTANCE.updateAnimations(this);
     }
 
-    public void tickCharm() {
-        for (LivingEntity charmingEntity : this.charmingEntities.keySet()) {
-            if (this.charmingEntities.getInt(charmingEntity) > IafCommonConfig.INSTANCE.siren.maxSingTime.getValue())
-                this.stopCharm(charmingEntity);
-            else if (!this.isAlive() || this.distanceTo(charmingEntity) > SirenEntity.SEARCH_RANGE * 2 || this.charmingEntities instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) {
-                this.stopCharm(charmingEntity);
-                this.setAttacking(false);
-            } else if (this.distanceTo(charmingEntity) < 5) {
-                this.singCooldown = IafCommonConfig.INSTANCE.siren.timeBetweenSongs.getValue();
-                this.setSinging(false);
-                this.setTarget(charmingEntity);
-                this.setAttacking(true);
-                this.triggerOtherSirens(charmingEntity);
-                this.stopCharm(charmingEntity);
-            } else {
-                this.charmingEntities.computeIntIfPresent(charmingEntity, (e, charmTime) -> charmTime + 1);
-                if (charmingEntity.horizontalCollision) charmingEntity.setJumping(true);
-                Vec3d velocity = charmingEntity.getVelocity();
-                double vx = (Math.signum(this.getX() - charmingEntity.getX()) * 0.5D - velocity.x) * 0.1;
-                double vy = (Math.signum(this.getY() - charmingEntity.getY() + 1) * 0.5D - velocity.y) * 0.1;
-                double vz = (Math.signum(this.getZ() - charmingEntity.getZ()) * 0.5D - velocity.z) * 0.1;
-                charmingEntity.setVelocity(velocity.add(vx, vy, vz));
-                charmingEntity.velocityModified = true;
-                if (charmingEntity.hasVehicle()) charmingEntity.stopRiding();
-                if (!(this.charmingEntities instanceof PlayerEntity)) {
-                    Vec3d delta = this.getPos().subtract(charmingEntity.getPos()).subtract(0, 1, 0);
-                    double x = delta.getX();
-                    double y = delta.getY();
-                    double z = delta.getZ();
-                    double radius = Math.sqrt(x * x + z * z);
-                    float xRot = (float) -Math.toDegrees(MathHelper.atan2(y, radius));
-                    float yRot = (float) Math.toDegrees(MathHelper.atan2(z, x)) - 90.0F;
-                    charmingEntity.setPitch(this.updateCharmedEntityRotation(charmingEntity.getPitch(), xRot));
-                    charmingEntity.setYaw(this.updateCharmedEntityRotation(charmingEntity.getYaw(), yRot));
-                }
-            }
-        }
-    }
-
-    private float updateCharmedEntityRotation(float angle, float targetAngle) {
-        float f = MathHelper.wrapDegrees(targetAngle - angle);
-        if (f > 30) f = 30f;
-        if (f < -30) f = -30f;
-        return angle + f;
-    }
-
-    public void stopCharm(LivingEntity living) {
-        this.charmingEntities.removeInt(living);
-        this.singCooldown = IafCommonConfig.INSTANCE.siren.timeBetweenSongs.getValue();
+    private void checkForPrey() {
+        this.setSinging(true);
     }
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity)
+        if (source.getAttacker() != null && source.getAttacker() instanceof LivingEntity) {
             this.triggerOtherSirens((LivingEntity) source.getAttacker());
+        }
         return super.damage(source, amount);
     }
 
@@ -355,17 +298,20 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
         }
     }
 
+    public void updateLure() {
+        if (this.age % 20 == 0) {
+            List<LivingEntity> entities = this.getWorld().getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(50, 12, 50), SIREN_PREY);
+            for (LivingEntity entity : entities) {
+                if (isWearingEarplugs(entity)) continue;
+                SirenData sirenData = SirenData.get(entity);
+                if (!sirenData.isCharmed()) sirenData.setCharmed(this);
+            }
+        }
+    }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
-        NbtList list = new NbtList();
-        for (Object2IntMap.Entry<LivingEntity> entry : this.charmingEntities.object2IntEntrySet()) {
-            NbtCompound nbt = new NbtCompound();
-            nbt.putUuid("Uuid", entry.getKey().getUuid());
-            nbt.putInt("CharmTime", entry.getIntValue());
-            list.add(nbt);
-        }
-        tag.put("CharmingEntities", list);
         tag.putInt("HairColor", this.getHairColor());
         tag.putBoolean("Aggressive", this.isAgressive());
         tag.putInt("SingingPose", this.getSingingPose());
@@ -377,16 +323,6 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
     @Override
     public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        this.charmingEntities.clear();
-        if (tag.contains("CharmingEntities", NbtElement.LIST_TYPE) && this.getWorld() instanceof ServerWorld world) {
-            NbtList list = tag.getList("CharmingEntities", NbtElement.COMPOUND_TYPE);
-            for (NbtElement element : list)
-                if (element instanceof NbtCompound nbt) {
-                    Entity entity = world.getEntity(nbt.getUuid("Uuid"));
-                    if (entity instanceof LivingEntity living)
-                        this.charmingEntities.put(living, nbt.getInt("CharmTime"));
-                }
-        }
         this.setHairColor(tag.getInt("HairColor"));
         this.setAttacking(tag.getBoolean("Aggressive"));
         this.setSingingPose(tag.getInt("SingingPose"));
@@ -397,12 +333,14 @@ public class SirenEntity extends HostileEntity implements IAnimatedEntity, IVill
     }
 
     public boolean isSinging() {
-        return this.dataTracker.get(SINGING);
+        return this.isSinging = this.dataTracker.get(SINGING);
     }
 
     public void setSinging(boolean singing) {
-        if (this.singCooldown > 0) singing = false;
+        if (this.singCooldown > 0)
+            singing = false;
         this.dataTracker.set(SINGING, singing);
+        this.isSinging = singing;
     }
 
     public boolean wantsToSing() {

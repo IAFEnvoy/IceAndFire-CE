@@ -18,7 +18,7 @@ dependencies {
     modImplementation "com.github.IAFEnvoy.Integration:integration-common:$integration_version"
 
     modImplementation "maven.modrinth:uranus:FH0tB0dy"
-    modImplementation "maven.modrinth:jupiter:sitr75nX"
+    modImplementation "maven.modrinth:jupiter:yHfucqRJ"
 
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
     modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"

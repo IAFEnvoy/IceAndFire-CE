@@ -53,6 +53,8 @@ public final class IafItems {
     public static final RegistrySupplier<Item> DRAGONEGG_AMETHYST = registerItem("dragonegg_amethyst", () -> new DragonEggItem(IafDragonColors.AMETHYST));
     public static final RegistrySupplier<Item> DRAGONEGG_COPPER = registerItem("dragonegg_copper", () -> new DragonEggItem(IafDragonColors.COPPER));
     public static final RegistrySupplier<Item> DRAGONEGG_BLACK = registerItem("dragonegg_black", () -> new DragonEggItem(IafDragonColors.BLACK));
+    public static final RegistrySupplier<Item> DRAGONEGG_NETHER = registerItem("dragonegg_nether", () -> new DragonEggItem(IafDragonColors.NETHER));
+    public static final RegistrySupplier<Item> DRAGONEGG_CRIMSON = registerItem("dragonegg_crimson", () -> new DragonEggItem(IafDragonColors.CRIMSON));
     public static final RegistrySupplier<Item> DRAGONSCALES_RED = registerItem("dragonscales_red", () -> new DragonScalesItem(IafDragonColors.RED));
     public static final RegistrySupplier<Item> DRAGONSCALES_GREEN = registerItem("dragonscales_green", () -> new DragonScalesItem(IafDragonColors.GREEN));
     public static final RegistrySupplier<Item> DRAGONSCALES_BRONZE = registerItem("dragonscales_bronze", () -> new DragonScalesItem(IafDragonColors.BRONZE));
@@ -65,12 +67,15 @@ public final class IafItems {
     public static final RegistrySupplier<Item> DRAGONSCALES_AMETHYST = registerItem("dragonscales_amethyst", () -> new DragonScalesItem(IafDragonColors.AMETHYST));
     public static final RegistrySupplier<Item> DRAGONSCALES_COPPER = registerItem("dragonscales_copper", () -> new DragonScalesItem(IafDragonColors.COPPER));
     public static final RegistrySupplier<Item> DRAGONSCALES_BLACK = registerItem("dragonscales_black", () -> new DragonScalesItem(IafDragonColors.BLACK));
+    public static final RegistrySupplier<Item> DRAGONSCALES_NETHER = registerItem("dragonscales_nether", () -> new DragonScalesItem(IafDragonColors.NETHER));
+    public static final RegistrySupplier<Item> DRAGONSCALES_CRIMSON = registerItem("dragonscales_crimson", () -> new DragonScalesItem(IafDragonColors.CRIMSON));
     public static final RegistrySupplier<Item> DRAGON_BONE = registerItem("dragonbone", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> WITHERBONE = registerItem("witherbone", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> WITHER_SHARD = registerItem("wither_shard", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> DRAGON_SKULL_FIRE = registerItem("dragon_skull_fire", () -> new DragonSkullItem(IafDragonTypes.FIRE));
     public static final RegistrySupplier<Item> DRAGON_SKULL_ICE = registerItem("dragon_skull_ice", () -> new DragonSkullItem(IafDragonTypes.ICE));
     public static final RegistrySupplier<Item> DRAGON_SKULL_LIGHTNING = registerItem("dragon_skull_lightning", () -> new DragonSkullItem(IafDragonTypes.LIGHTNING));
+    public static final RegistrySupplier<Item> DRAGON_SKULL_NETHER = registerItem("dragon_skull_nether", () -> new DragonSkullItem(IafDragonTypes.NETHER));
     public static final RegistrySupplier<DragonArmorItem> DRAGONARMOR_IRON_HEAD = buildDragonArmor(DragonArmorPart.HEAD, DragonArmorMaterial.IRON);
     public static final RegistrySupplier<DragonArmorItem> DRAGONARMOR_IRON_NECK = buildDragonArmor(DragonArmorPart.NECK, DragonArmorMaterial.IRON);
     public static final RegistrySupplier<DragonArmorItem> DRAGONARMOR_IRON_BODY = buildDragonArmor(DragonArmorPart.BODY, DragonArmorMaterial.IRON);
@@ -113,18 +118,22 @@ public final class IafItems {
     public static final RegistrySupplier<Item> FIRE_DRAGON_FLESH = registerItem("fire_dragon_flesh", () -> new DragonFleshItem(IafDragonTypes.FIRE));
     public static final RegistrySupplier<Item> ICE_DRAGON_FLESH = registerItem("ice_dragon_flesh", () -> new DragonFleshItem(IafDragonTypes.ICE));
     public static final RegistrySupplier<Item> LIGHTNING_DRAGON_FLESH = registerItem("lightning_dragon_flesh", () -> new DragonFleshItem(IafDragonTypes.LIGHTNING));
+    public static final RegistrySupplier<Item> NETHER_DRAGON_FLESH = registerItem("nether_dragon_flesh", () -> new DragonFleshItem(IafDragonTypes.NETHER));
     public static final RegistrySupplier<Item> FIRE_DRAGON_HEART = registerItem("fire_dragon_heart", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> ICE_DRAGON_HEART = registerItem("ice_dragon_heart", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> LIGHTNING_DRAGON_HEART = registerItem("lightning_dragon_heart", () -> new Item(new Item.Settings()));
+    public static final RegistrySupplier<Item> NETHER_DRAGON_HEART = registerItem("nether_dragon_heart", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> FIRE_DRAGON_BLOOD = registerItem("fire_dragon_blood", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> ICE_DRAGON_BLOOD = registerItem("ice_dragon_blood", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> LIGHTNING_DRAGON_BLOOD = registerItem("lightning_dragon_blood", () -> new Item(new Item.Settings()));
+    public static final RegistrySupplier<Item> NETHER_DRAGON_BLOOD = registerItem("nether_dragon_blood", () -> new Item(new Item.Settings()));
     public static final RegistrySupplier<Item> DRAGON_STAFF = registerItem("dragon_stick", () -> new Item(new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<Item> DRAGON_HORN = registerItem("dragon_horn", DragonHornItem::new);
     public static final RegistrySupplier<Item> DRAGON_FLUTE = registerItem("dragon_flute", DragonFluteItem::new);
     public static final RegistrySupplier<Item> SUMMONING_CRYSTAL_FIRE = registerItem("summoning_crystal_fire", SummoningCrystalItem::new);
     public static final RegistrySupplier<Item> SUMMONING_CRYSTAL_ICE = registerItem("summoning_crystal_ice", SummoningCrystalItem::new);
     public static final RegistrySupplier<Item> SUMMONING_CRYSTAL_LIGHTNING = registerItem("summoning_crystal_lightning", SummoningCrystalItem::new);
+    public static final RegistrySupplier<Item> SUMMONING_CRYSTAL_NETHER = registerItem("summoning_crystal_nether", SummoningCrystalItem::new);
     public static final RegistrySupplier<Item> HIPPOGRYPH_EGG = registerItem("hippogryph_egg", HippogryphEggItem::new);
     public static final RegistrySupplier<Item> IRON_HIPPOGRYPH_ARMOR = registerItem("iron_hippogryph_armor", () -> new Item(new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<Item> GOLD_HIPPOGRYPH_ARMOR = registerItem("gold_hippogryph_armor", () -> new Item(new Item.Settings().maxCount(1)));
@@ -177,6 +186,8 @@ public final class IafItems {
     public static final RegistrySupplier<BannerPatternItem> PATTERN_FIRE_HEAD = registerItem("banner_pattern_fire_head", () -> new BannerPatternItem(IafBannerPatternTags.FIRE_HEAD_BANNER_PATTERN, new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<BannerPatternItem> PATTERN_ICE_HEAD = registerItem("banner_pattern_ice_head", () -> new BannerPatternItem(IafBannerPatternTags.ICE_HEAD_BANNER_PATTERN, new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<BannerPatternItem> PATTERN_LIGHTNING_HEAD = registerItem("banner_pattern_lightning_head", () -> new BannerPatternItem(IafBannerPatternTags.LIGHTNING_HEAD_BANNER_PATTERN, new Item.Settings().maxCount(1)));
+    public static final RegistrySupplier<BannerPatternItem> PATTERN_NETHER = registerItem("banner_pattern_nether", () -> new BannerPatternItem(IafBannerPatternTags.NETHER_BANNER_PATTERN, new Item.Settings().maxCount(1)));
+    public static final RegistrySupplier<BannerPatternItem> PATTERN_NETHER_HEAD = registerItem("banner_pattern_nether_head", () -> new BannerPatternItem(IafBannerPatternTags.NETHER_HEAD_BANNER_PATTERN, new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<BannerPatternItem> PATTERN_AMPHITHERE = registerItem("banner_pattern_amphithere", () -> new BannerPatternItem(IafBannerPatternTags.AMPHITHERE_BANNER_PATTERN, new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<BannerPatternItem> PATTERN_BIRD = registerItem("banner_pattern_bird", () -> new BannerPatternItem(IafBannerPatternTags.BIRD_BANNER_PATTERN, new Item.Settings().maxCount(1)));
     public static final RegistrySupplier<BannerPatternItem> PATTERN_EYE = registerItem("banner_pattern_eye", () -> new BannerPatternItem(IafBannerPatternTags.EYE_BANNER_PATTERN, new Item.Settings().maxCount(1)));
@@ -193,6 +204,7 @@ public final class IafItems {
     public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_FIRE_DRAGON_MEAT = registerItem("cooked_rice_with_fire_dragon_meat", () -> new DelightFoodItem(new Item.Settings().maxCount(1).food(new FoodComponent.Builder().nutrition(4).saturationModifier(0.6f).statusEffect(new StatusEffectInstance(StatusEffects.SATURATION, 20 * 5), 1).statusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 20 * 60 * 2), 1).build())));
     public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_ICE_DRAGON_MEAT = registerItem("cooked_rice_with_ice_dragon_meat", () -> new DelightFoodItem(new Item.Settings().maxCount(1).food(new FoodComponent.Builder().nutrition(4).saturationModifier(0.6f).statusEffect(new StatusEffectInstance(StatusEffects.SATURATION, 20 * 5), 1).statusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 20 * 60 * 2, 2), 1).build())));
     public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_LIGHTNING_DRAGON_MEAT = registerItem("cooked_rice_with_lightning_dragon_meat", () -> new DelightFoodItem(new Item.Settings().maxCount(1).food(new FoodComponent.Builder().nutrition(4).saturationModifier(0.6f).statusEffect(new StatusEffectInstance(StatusEffects.SATURATION, 20 * 5), 1).statusEffect(new StatusEffectInstance(StatusEffects.SPEED, 20 * 60 * 2, 2), 1).build())));
+    public static final RegistrySupplier<DelightFoodItem> COOKED_RICE_WITH_NETHER_DRAGON_MEAT = registerItem("cooked_rice_with_nether_dragon_meat", () -> new DelightFoodItem(new Item.Settings().maxCount(1).food(new FoodComponent.Builder().nutrition(4).saturationModifier(0.6f).statusEffect(new StatusEffectInstance(StatusEffects.SATURATION, 20 * 5), 1).statusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 20 * 60 * 2), 1).build())));
     public static final RegistrySupplier<DelightFoodItem> GHOST_CREAM = registerItem("ghost_cream", () -> new DelightFoodItem(new Item.Settings().maxCount(1).food(new FoodComponent.Builder().snack().nutrition(4).saturationModifier(0.6f).statusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 20 * 20), 1).build())));
     public static final RegistrySupplier<DelightFoodItem> PIXIE_DUST_MILKY_TEA = registerItem("pixie_dust_milky_tea", () -> new DelightFoodItem(new Item.Settings().maxCount(1).food(new FoodComponent.Builder().snack().nutrition(4).saturationModifier(0.6f).statusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 20 * 60 * 2), 1).build())));
 
@@ -201,6 +213,7 @@ public final class IafItems {
         registerItem("spawn_egg_fire_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.FIRE_DRAGON, 0X340000, 0XA52929, new Item.Settings()));
         registerItem("spawn_egg_ice_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.ICE_DRAGON, 0XB5DDFB, 0X7EBAF0, new Item.Settings()));
         registerItem("spawn_egg_lightning_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.LIGHTNING_DRAGON, 0X422367, 0X725691, new Item.Settings()));
+        registerItem("spawn_egg_nether_dragon", () -> new ArchitecturySpawnEggItem(IafEntities.NETHER_DRAGON, 0X4A1A1A, 0X8B0000, new Item.Settings()));
         registerItem("spawn_egg_hippogryph", () -> new ArchitecturySpawnEggItem(IafEntities.HIPPOGRYPH, 0XD8D8D8, 0XD1B55D, new Item.Settings()));
         registerItem("spawn_egg_gorgon", () -> new ArchitecturySpawnEggItem(IafEntities.GORGON, 0XD0D99F, 0X684530, new Item.Settings()));
         registerItem("spawn_egg_pixie", () -> new ArchitecturySpawnEggItem(IafEntities.PIXIE, 0XFF7F89, 0XE2CCE2, new Item.Settings()));

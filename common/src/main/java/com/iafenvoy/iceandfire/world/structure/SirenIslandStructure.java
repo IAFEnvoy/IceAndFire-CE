@@ -68,17 +68,10 @@ public class SirenIslandStructure extends Structure implements DangerousGenerati
 
         @Override
         public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
-                return;
-
             int up = random.nextInt(4) + 1;
             BlockPos center = pivot.up(up);
             int layer = 0;
             int sirens = 1 + random.nextInt(3);
-
-            int radius = this.getRadius(up, up);
-            super.boundingBox = new BlockBox(center.getX() - radius, center.getY() - up, center.getZ() - radius,
-                                             center.getX() + radius, center.getY() + 1, center.getZ() + radius);
 
             while (!world.getBlockState(center).isOpaque() && center.getY() >= world.getBottomY()) {
                 layer++;

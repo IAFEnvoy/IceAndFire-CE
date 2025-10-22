@@ -23,6 +23,8 @@ public final class IafDragonColors {
     public static final DragonColor AMETHYST = register("amethyst", Formatting.LIGHT_PURPLE, IafDragonTypes.LIGHTNING, IafItems.DRAGONEGG_AMETHYST, IafItems.DRAGONSCALES_AMETHYST);
     public static final DragonColor COPPER = register("copper", Formatting.GOLD, IafDragonTypes.LIGHTNING, IafItems.DRAGONEGG_COPPER, IafItems.DRAGONSCALES_COPPER);
     public static final DragonColor BLACK = register("black", Formatting.DARK_GRAY, IafDragonTypes.LIGHTNING, IafItems.DRAGONEGG_BLACK, IafItems.DRAGONSCALES_BLACK);
+    public static final DragonColor NETHER = register("nether", Formatting.DARK_RED, IafDragonTypes.NETHER, IafItems.DRAGONEGG_NETHER, IafItems.DRAGONSCALES_NETHER);
+    public static final DragonColor CRIMSON = register("crimson", Formatting.DARK_RED, IafDragonTypes.NETHER, IafItems.DRAGONEGG_CRIMSON, IafItems.DRAGONSCALES_CRIMSON);
 
     private static DragonColor register(String name, Formatting color, DragonType dragonType, Supplier<Item> eggItem, Supplier<Item> scaleItem) {
         return Registry.register(IafRegistries.DRAGON_COLOR, Identifier.of(IceAndFire.MOD_ID, name), new DragonColor(name, color, dragonType, eggItem, scaleItem));

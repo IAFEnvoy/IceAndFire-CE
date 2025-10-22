@@ -23,11 +23,15 @@ public class DragonFleshItem extends Item {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity living) {
         if (!world.isClient) {
-            if (this.type == IafDragonTypes.FIRE)
+            if (this.type == IafDragonTypes.FIRE) {
+                // Keep existing fire dragon behavior (sets the eater on fire briefly)
                 living.setOnFireFor(5);
-            else if (this.type == IafDragonTypes.ICE)
+            } else if (this.type == IafDragonTypes.ICE) {
                 living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2));
-            else {
+            } else if (this.type == IafDragonTypes.NETHER) {
+                // Nether dragon meat sets you on fire for 7 seconds
+                living.setOnFireFor(7);
+            } else {
                 LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(living.getWorld());
                 assert lightning != null;
                 lightning.refreshPositionAfterTeleport(living.getPos());

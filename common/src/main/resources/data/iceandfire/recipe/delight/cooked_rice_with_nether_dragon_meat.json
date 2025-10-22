@@ -1,0 +1,25 @@
+{
+  "type": "farmersdelight:cooking",
+  "recipe_book_tab": "meals",
+  "ingredients": [
+    {
+      "item": "farmersdelight:rice"
+    },
+    {
+      "item": "iceandfire:nether_dragon_flesh"
+    },
+    {
+      "item": "minecraft:potato"
+    },
+    {
+      "item": "minecraft:carrot"
+    }
+  ],
+  "result": {
+    "id": "iceandfire:cooked_rice_with_nether_dragon_meat"
+  },
+  "container": {
+    "id": "minecraft:bowl"
+  },
+  "cookingtime": 200
+}

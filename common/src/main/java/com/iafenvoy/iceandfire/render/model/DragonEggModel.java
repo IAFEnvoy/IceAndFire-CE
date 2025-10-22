@@ -3,11 +3,15 @@ package com.iafenvoy.iceandfire.render.model;
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.DragonEggEntity;
 import com.iafenvoy.iceandfire.item.block.entity.EggInIceBlockEntity;
+import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.tag.BlockTags;
 
-public class DragonEggModel extends AdvancedEntityModel<DragonEggEntity> {
+public class DragonEggModel<T extends LivingEntity> extends AdvancedEntityModel<T> {
     public final AdvancedModelBox Egg1;
     public final AdvancedModelBox Egg2;
     public final AdvancedModelBox Egg3;
@@ -45,13 +49,22 @@ public class DragonEggModel extends AdvancedEntityModel<DragonEggEntity> {
     }
 
     @Override
-    public void setAngles(DragonEggEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setAngles(LivingEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.Egg1.setPos(0.0F, 19.6F, 0.0F);
         this.Egg4.setPos(0.0F, -0.9F, 0.0F);
-        if (entity instanceof DragonEggEntity egg && egg.isLocationValid()) {
-            this.walk(this.Egg1, 0.3F, 0.3F, true, 1, 0, animationProgress, 1);
-            this.flap(this.Egg1, 0.3F, 0.3F, false, 0, 0, animationProgress, 1);
+        if (entity instanceof DragonEggEntity egg) {
+            boolean isLocationValid = false;
+            if (egg.getEggType().getType() == IafDragonTypes.FIRE)
+                isLocationValid = egg.getWorld().getBlockState(egg.getBlockPos()).isIn(BlockTags.FIRE);
+            else if (egg.getEggType().getType() == IafDragonTypes.LIGHTNING)
+                isLocationValid = egg.getWorld().hasRain(egg.getBlockPos());
+            else if (egg.getEggType().getType() == IafDragonTypes.NETHER)
+                isLocationValid = egg.getWorld().getBlockState(egg.getBlockPos()).isOf(Blocks.SOUL_FIRE);
+            if (isLocationValid) {
+                this.walk(this.Egg1, 0.3F, 0.3F, true, 1, 0, animationProgress, 1);
+                this.flap(this.Egg1, 0.3F, 0.3F, false, 0, 0, animationProgress, 1);
+            }
         }
     }
 

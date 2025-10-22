@@ -396,12 +396,12 @@ public class NetherDragonEntity extends DragonBaseEntity {
 
     @Override
     public Item getFleshItem() {
-        return IafItems.FIRE_DRAGON_FLESH.get();
+        return IafItems.NETHER_DRAGON_FLESH.get();
     }
 
     @Override
     public ItemConvertible getHeartItem() {
-        return IafItems.FIRE_DRAGON_HEART.get();
+        return IafItems.NETHER_DRAGON_HEART.get();
     }
 
     public static net.minecraft.entity.attribute.DefaultAttributeContainer.Builder bakeAttributes() {

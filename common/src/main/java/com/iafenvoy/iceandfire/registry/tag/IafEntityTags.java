@@ -23,7 +23,6 @@ public final class IafEntityTags {
     public static final TagKey<EntityType<?>> COCKATRICE_TARGETS = create("cockatrice_targets");
     public static final TagKey<EntityType<?>> CYCLOPS_UNLIFTABLES = create("cyclops_unliftables");
     public static final TagKey<EntityType<?>> BLINDED = create("blinded");
-    public static final TagKey<EntityType<?>> SIREN_CHARMABLE = create("siren_charmable");
 
     private static TagKey<EntityType<?>> create(String id) {
         return TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(IceAndFire.MOD_ID, id));

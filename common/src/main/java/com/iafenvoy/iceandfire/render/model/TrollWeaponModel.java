@@ -77,6 +77,7 @@ public class TrollWeaponModel extends AdvancedEntityModel<Entity> {
 
     @Override
     public void setAngles(Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+
     }
 
     @Override

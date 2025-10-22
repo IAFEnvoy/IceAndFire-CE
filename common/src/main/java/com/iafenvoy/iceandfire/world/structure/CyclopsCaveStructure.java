@@ -81,9 +81,6 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
 
         @Override
         public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
-                return;
-
             int size = 16;
             generateShell(world, pivot, random, size);
 
@@ -233,11 +230,10 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
             return Blocks.OAK_FENCE.getDefaultState().with(FenceBlock.EAST, east).with(FenceBlock.WEST, west).with(FenceBlock.NORTH, north).with(FenceBlock.SOUTH, south);
         }
 
-        private void generateShell(StructureWorldAccess world, BlockPos origin, Random random, int size) {
+        private static void generateShell(StructureWorldAccess world, BlockPos origin, Random random, int size) {
             int x = size + random.nextInt(2);
             int y = 12 + random.nextInt(2);
             int z = size + random.nextInt(2);
-            super.boundingBox = new BlockBox(origin.getX() - x + 2, origin.getY(), origin.getZ() - z + 2, origin.getX() + x - 2, origin.getY() + y, origin.getZ() + z - 2);
             float radius = (x + y + z) * 0.333F + 0.5F;
 
             for (BlockPos position : BlockPos.stream(origin.add(-x, -y, -z), origin.add(x, y, z)).map(BlockPos::toImmutable).collect(Collectors.toSet())) {

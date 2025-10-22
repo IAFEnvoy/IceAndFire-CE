@@ -28,8 +28,6 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class PixieVillageStructure extends Structure {
@@ -71,21 +69,15 @@ public class PixieVillageStructure extends Structure {
 
         @Override
         public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-            if (!chunkBox.contains(pivot))
-                return;
-
             int maxRoads = IafCommonConfig.INSTANCE.pixie.size.getValue() + random.nextInt(5);
             BlockPos buildPosition = pivot;
             int placedRoads = 0;
-            List<BlockPos> posesInBB = new ArrayList<BlockPos>();
             while (placedRoads < maxRoads) {
                 int roadLength = 10 + random.nextInt(15);
                 Direction buildingDirection = Direction.fromHorizontal(random.nextInt(3));
                 for (int i = 0; i < roadLength; i++) {
                     BlockPos buildPosition2 = buildPosition.offset(buildingDirection, i);
                     buildPosition2 = world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, buildPosition2).down();
-                    if (chunkBox.expand(16, 0, 16).contains(buildPosition2))
-                        posesInBB.add(buildPosition2);
                     if (world.getBlockState(buildPosition2).getFluidState().isEmpty()) {
                         world.setBlockState(buildPosition2, Blocks.DIRT_PATH.getDefaultState(), 2);
                     } else {
@@ -126,7 +118,6 @@ public class PixieVillageStructure extends Structure {
                 buildPosition = buildPosition.offset(buildingDirection, random.nextInt(roadLength));
                 placedRoads++;
             }
-            super.boundingBox = BlockBox.encompassPositions(posesInBB).orElseGet(super::getBoundingBox).expand(0, 2, 0);
         }
     }
 }

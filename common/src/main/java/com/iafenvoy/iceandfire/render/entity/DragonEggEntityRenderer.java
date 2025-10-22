@@ -6,13 +6,13 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.util.Identifier;
 
-public class DragonEggEntityRenderer extends LivingEntityRenderer<DragonEggEntity, DragonEggModel> {
+public class DragonEggEntityRenderer extends LivingEntityRenderer<DragonEggEntity, DragonEggModel<DragonEggEntity>> {
     public DragonEggEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new DragonEggModel(), 0.3F);
+        super(context, new DragonEggModel<>(), 0.3F);
     }
 
     @Override
     public Identifier getTexture(DragonEggEntity entity) {
-        return entity.getEggType().getTextureProvider().getEggTexture();
+        return entity.getEggType().getEggTexture();
     }
 }

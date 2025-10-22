@@ -50,21 +50,17 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     private final PropertyDelegate delegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
-            return switch (index) {
-                case 0 -> DragonForgeBlockEntity.this.cookTime;
-                case 1 -> DragonForgeBlockEntity.this.getMaxCookTime();
-                default -> 0;
-            };
+            return DragonForgeBlockEntity.this.cookTime;
         }
 
         @Override
         public void set(int index, int value) {
-            if (index == 0) DragonForgeBlockEntity.this.cookTime = value;
+            DragonForgeBlockEntity.this.cookTime = value;
         }
 
         @Override
         public int size() {
-            return 2;
+            return 1;
         }
     };
 

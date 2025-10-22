@@ -1,0 +1,6 @@
+{
+  "type": "iceandfire:nether_dragon_cave",
+  "biomes": "#iceandfire:structure_gen/nether",
+  "spawn_overrides": {},
+  "step": "underground_structures"
+}

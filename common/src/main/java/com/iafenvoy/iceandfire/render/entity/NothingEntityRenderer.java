@@ -11,6 +11,7 @@ public class NothingEntityRenderer<T extends Entity> extends EntityRenderer<T> {
         super(context);
     }
 
+    // Only render if the debug bboxes are enabled
     @Override
     public boolean shouldRender(T livingEntityIn, Frustum camera, double camX, double camY, double camZ) {
         if (!this.dispatcher.shouldRenderHitboxes()) return false;

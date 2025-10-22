@@ -15,6 +15,8 @@ public final class IafStructurePieces {
     public static final RegistrySupplier<StructurePieceType> FIRE_DRAGON_ROOST = register("fire_dragon_roost", () -> FireDragonRoostStructure.FireDragonRoostPiece::new);
     public static final RegistrySupplier<StructurePieceType> ICE_DRAGON_ROOST = register("ice_dragon_roost", () -> IceDragonRoostStructure.IceDragonRoostPiece::new);
     public static final RegistrySupplier<StructurePieceType> LIGHTNING_DRAGON_ROOST = register("lightning_dragon_roost", () -> LightningDragonRoostStructure.LightningDragonRoostPiece::new);
+    public static final RegistrySupplier<StructurePieceType> NETHER_DRAGON_ROOST = register("nether_dragon_roost", () -> NetherDragonRoostStructure.NetherDragonRoostPiece::new);
+    public static final RegistrySupplier<StructurePieceType> NETHER_DRAGON_CAVE = register("nether_dragon_cave", () -> NetherDragonCaveStructure.NetherDragonCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> FIRE_DRAGON_CAVE = register("fire_dragon_cave", () -> FireDragonCaveStructure.FireDragonCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> ICE_DRAGON_CAVE = register("ice_dragon_cave", () -> IceDragonCaveStructure.IceDragonCavePiece::new);
     public static final RegistrySupplier<StructurePieceType> LIGHTNING_DRAGON_CAVE = register("lightning_dragon_cave", () -> LightningDragonCaveStructure.LightningDragonCavePiece::new);

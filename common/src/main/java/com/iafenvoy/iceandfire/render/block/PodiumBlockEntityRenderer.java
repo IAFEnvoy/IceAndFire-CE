@@ -19,7 +19,7 @@ public class PodiumBlockEntityRenderer<T extends PodiumBlockEntity> implements B
     }
 
     protected static RenderLayer getEggTexture(DragonColor type) {
-        return RenderLayer.getEntityCutout(type.getTextureProvider().getEggTexture());
+        return RenderLayer.getEntityCutout(type.getEggTexture());
     }
 
     @Override
