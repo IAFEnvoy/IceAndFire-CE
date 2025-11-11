@@ -15,6 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
+import java.util.Optional;
 
 // Based on code from TelepathicGrunts RepurposedStructures
 @Mixin(LakeFeature.class)
@@ -25,8 +26,8 @@ public class LakeFeatureMixin {
             return;
         Registry<Structure> configuredStructureFeatureRegistry = context.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE);
         StructureAccessor structureManager = context.getWorld().toServerWorld().getStructureAccessor();
-        var availableStructures = List.of(configuredStructureFeatureRegistry.getOrEmpty(IafStructures.MAUSOLEUM), configuredStructureFeatureRegistry.getOrEmpty(IafStructures.GRAVEYARD), configuredStructureFeatureRegistry.getOrEmpty(IafStructures.GORGON_TEMPLE));
-        for (var structure : availableStructures)
+        List<Optional<Structure>> availableStructures = List.of(configuredStructureFeatureRegistry.getOrEmpty(IafStructures.MAUSOLEUM), configuredStructureFeatureRegistry.getOrEmpty(IafStructures.GRAVEYARD), configuredStructureFeatureRegistry.getOrEmpty(IafStructures.GORGON_TEMPLE));
+        for (Optional<Structure> structure : availableStructures)
             if (structure.isPresent() && structureManager.getStructureAt(context.getOrigin(), structure.get()).hasChildren()) {
                 cir.setReturnValue(false);
                 return;
