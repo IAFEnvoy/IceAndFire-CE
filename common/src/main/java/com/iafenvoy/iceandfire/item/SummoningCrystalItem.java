@@ -31,7 +31,7 @@ public class SummoningCrystalItem extends Item {
     }
 
     public static boolean hasDragon(ItemStack stack) {
-        NbtCompound nbt = stack.get(IafDataComponents.NBT_COMPOUND.get());
+        NbtCompound nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (stack.getItem() instanceof SummoningCrystalItem && nbt != null)
             for (String tagInfo : nbt.getKeys())
                 if (tagInfo.contains("Dragon"))
@@ -46,7 +46,7 @@ public class SummoningCrystalItem extends Item {
         String desc = "entity.iceandfire.fire_dragon";
         if (stack.getItem() == IafItems.SUMMONING_CRYSTAL_ICE.get()) desc = "entity.iceandfire.ice_dragon";
         if (stack.getItem() == IafItems.SUMMONING_CRYSTAL_LIGHTNING.get()) desc = "entity.iceandfire.lightning_dragon";
-        NbtCompound nbt = stack.get(IafDataComponents.NBT_COMPOUND.get());
+        NbtCompound nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (nbt != null)
             for (String tagInfo : nbt.getKeys())
                 if (tagInfo.contains("Dragon")) {
@@ -71,7 +71,7 @@ public class SummoningCrystalItem extends Item {
         BlockPos offsetPos = context.getBlockPos().offset(context.getSide());
         float yaw = context.getPlayer().getYaw();
         boolean displayError = false;
-        NbtCompound nbt = stack.get(IafDataComponents.NBT_COMPOUND.get());
+        NbtCompound nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (nbt != null && stack.getItem() == this && hasDragon(stack)) {
             for (String tagInfo : nbt.getKeys()) {
                 if (tagInfo.contains("Dragon")) {
@@ -111,7 +111,7 @@ public class SummoningCrystalItem extends Item {
                 context.getPlayer().playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
                 context.getPlayer().swingHand(context.getHand());
                 context.getPlayer().sendMessage(Text.translatable("message.iceandfire.dragonTeleport"), true);
-                stack.remove(IafDataComponents.NBT_COMPOUND.get());
+                stack.remove(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
             } else if (displayError)
                 context.getPlayer().sendMessage(Text.translatable("message.iceandfire.noDragonTeleport"), true);
         }

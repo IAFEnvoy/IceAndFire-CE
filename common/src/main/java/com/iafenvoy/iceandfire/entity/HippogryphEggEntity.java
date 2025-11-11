@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.entity;
 
+import com.iafenvoy.iceandfire.data.HippogryphType;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
@@ -60,7 +61,7 @@ public class HippogryphEggEntity extends EggEntity {
             hippogryph.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
             hippogryph.initialize(serverWorld, serverWorld.getLocalDifficulty(this.getBlockPos()), SpawnReason.SPAWN_EGG, null);
             if (this.itemstack != null) {
-                String variant = this.itemstack.get(IafDataComponents.STRING.get());
+                HippogryphType variant = this.itemstack.get(IafDataComponents.HIPPOGRYPH_EGG.get());
                 if (variant != null) hippogryph.setVariant(variant);
             }
             if (thrower instanceof PlayerEntity player)

@@ -1097,7 +1097,7 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
                     if (this.getCustomName() != null)
                         dragonTag.putString("CustomName", this.getCustomName().getString());
                     compound.put("Dragon", dragonTag);
-                    stack.set(IafDataComponents.NBT_COMPOUND.get(), compound);
+                    stack.set(IafDataComponents.CRYSTAL_DRAGON_DATA.get(), compound);
                     this.playSound(SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, 1);
                     player.swingHand(hand);
                     return ActionResult.SUCCESS;

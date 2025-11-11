@@ -245,7 +245,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
         boolean isDev = s.equals("Alexthe666") || s.equals("Raptorfarian") || s.equals("tweakbsd");
         if (this.isTamed() && this.isOwner(player)) {
             if (itemstack.getItem() == Items.RED_DYE && this.getEnumVariant() != IafHippogryphTypes.ALEX && isDev) {
-                this.setEnumVariant(IafHippogryphTypes.ALEX);
+                this.setVariant(IafHippogryphTypes.ALEX);
                 if (!player.isCreative())
                     itemstack.decrement(1);
                 this.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1, 1);
@@ -254,7 +254,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
                 return ActionResult.SUCCESS;
             }
             if (itemstack.getItem() == Items.LIGHT_GRAY_DYE && this.getEnumVariant() != IafHippogryphTypes.RAPTOR && isDev) {
-                this.setEnumVariant(IafHippogryphTypes.RAPTOR);
+                this.setVariant(IafHippogryphTypes.RAPTOR);
                 if (!player.isCreative())
                     itemstack.decrement(1);
                 this.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1, 1);
@@ -289,7 +289,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
                 return ActionResult.SUCCESS;
             }
             if (itemstack.getItem() == Items.GLISTERING_MELON_SLICE && this.getEnumVariant() != IafHippogryphTypes.DODO) {
-                this.setEnumVariant(IafHippogryphTypes.DODO);
+                this.setVariant(IafHippogryphTypes.DODO);
                 if (!player.isCreative())
                     itemstack.decrement(1);
                 this.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1, 1);
@@ -447,7 +447,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
         return IafRegistries.HIPPOGRYPH_TYPE.get(IceAndFire.id(this.getVariant()));
     }
 
-    public void setEnumVariant(HippogryphType variant) {
+    public void setVariant(HippogryphType variant) {
         this.setVariant(variant.name());
     }
 
@@ -558,7 +558,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
     @Override
     public EntityData initialize(ServerWorldAccess worldIn, LocalDifficulty difficultyIn, SpawnReason reason, EntityData spawnDataIn) {
         EntityData data = super.initialize(worldIn, difficultyIn, reason, spawnDataIn);
-        this.setEnumVariant(HippogryphType.getBiomeType(worldIn.getBiome(this.getBlockPos())));
+        this.setVariant(HippogryphType.getBiomeType(worldIn.getBiome(this.getBlockPos())));
         return data;
     }
 
