@@ -7,7 +7,9 @@ import com.iafenvoy.iceandfire.data.SeaSerpentType;
 import com.iafenvoy.iceandfire.data.TrollType;
 import com.iafenvoy.iceandfire.item.component.BestiaryPageComponent;
 import com.iafenvoy.iceandfire.registry.*;
+import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.screen.handler.BestiaryScreenHandler;
+import com.iafenvoy.iceandfire.util.ItemRandomizer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -300,9 +302,7 @@ public class BestiaryScreen extends HandledScreen<BestiaryScreenHandler> {
                 this.drawImage(ms, DRAWINGS_0, 151, 190, 425, 187, 61, 36, 512F);
                 this.drawImage(ms, DRAWINGS_0, 90, 230, 425, 223, 61, 35, 512F);
                 ms.getMatrices().pop();
-
-                // TODO :: Loop through tag (IafItemTags.TAME_HIPPOGRYPH)
-                this.drawItemStack(ms, new ItemStack(Items.RABBIT_FOOT), 70, 20, 3.75F);
+                this.drawItemStack(ms, new ItemStack(ItemRandomizer.random(IafItemTags.TAME_HIPPOGRYPH)), 70, 20, 3.75F);
             }
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 16, 24, 3.75F);
@@ -316,8 +316,7 @@ public class BestiaryScreen extends HandledScreen<BestiaryScreenHandler> {
                 this.drawItemStack(ms, new ItemStack(drawType == 0 ? Items.IRON_HORSE_ARMOR : drawType == 1 ? Items.GOLDEN_HORSE_ARMOR : Items.DIAMOND_HORSE_ARMOR), 180, 31, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Items.FEATHER), 199, 31, 1.35F);
                 this.drawItemStack(ms, new ItemStack(drawType == 0 ? IafItems.IRON_HIPPOGRYPH_ARMOR.get() : drawType == 1 ? IafItems.GOLD_HIPPOGRYPH_ARMOR.get() : IafItems.DIAMOND_HIPPOGRYPH_ARMOR.get()), 151, 18, 2F);
-                // TODO :: Loop through tag (IafItemTags.BREED_HIPPOGRYPH)
-                this.drawItemStack(ms, new ItemStack(Items.RABBIT_STEW), 70, 23, 3.75F);
+                this.drawItemStack(ms, new ItemStack(ItemRandomizer.random(IafItemTags.BREED_HIPPOGRYPH)), 70, 23, 3.75F);
             }
         } else if (this.pageType.equals(IafBestiaryPages.GORGON)) {
             if (bookPages == 0) {
@@ -499,8 +498,7 @@ public class BestiaryScreen extends HandledScreen<BestiaryScreenHandler> {
                 ms.getMatrices().pop();
             }
             if (bookPages == 1) {
-                // TODO :: Loop through tag
-                this.drawItemStack(ms, new ItemStack(Items.KELP), 37, 33, 2.25F);
+                this.drawItemStack(ms, new ItemStack(ItemRandomizer.random(IafItemTags.TEMPT_HIPPOCAMPUS)), 37, 33, 2.25F);
                 this.drawItemStack(ms, new ItemStack(Items.PRISMARINE_CRYSTALS), 37, 73, 2.25F);
             }
             if (bookPages == 2) {

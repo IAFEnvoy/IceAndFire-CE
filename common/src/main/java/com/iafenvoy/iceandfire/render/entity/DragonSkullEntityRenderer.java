@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.DragonSkullEntity;
+import com.iafenvoy.iceandfire.entity.util.dragon.DragonSize;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.registry.IafRenderers;
@@ -34,13 +35,6 @@ import java.util.function.Consumer;
 
 public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity> {
     public static final Event<Consumer<BiConsumer<DragonType, net.minecraft.util.Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>>>> COLLECT_DRAGON_SKULL_MODELS = new Event<>(callbacks -> consumer -> callbacks.forEach(x -> x.accept(consumer)));
-    //FIXME::Do not use array
-    private static final float[] GROWTH_STAGE_1 = new float[]{1F, 3F};
-    private static final float[] GROWTH_STAGE_2 = new float[]{3F, 7F};
-    private static final float[] GROWTH_STAGE_3 = new float[]{7F, 12.5F};
-    private static final float[] GROWTH_STAGE_4 = new float[]{12.5F, 20F};
-    private static final float[] GROWTH_STAGE_5 = new float[]{20F, 30F};
-    private static final float[][] GROWTH_STAGES = new float[][]{GROWTH_STAGE_1, GROWTH_STAGE_2, GROWTH_STAGE_3, GROWTH_STAGE_4, GROWTH_STAGE_5};
     private final Map<DragonType, Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
 
     static {
@@ -88,9 +82,10 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
     }
 
     public float getRenderSize(DragonSkullEntity skull) {
-        float step = (GROWTH_STAGES[skull.getDragonStage() - 1][1] - GROWTH_STAGES[skull.getDragonStage() - 1][0]) / 25;
-        if (skull.getDragonAge() > 125) return GROWTH_STAGES[skull.getDragonStage() - 1][0] + ((step * 25));
-        return GROWTH_STAGES[skull.getDragonStage() - 1][0] + ((step * this.getAgeFactor(skull)));
+        DragonSize size = DragonSize.getSize(skull.getDragonStage());
+        float step = size.step() / 25;
+        if (skull.getDragonAge() > 125) return size.x0() + ((step * 25));
+        return size.x0() + ((step * this.getAgeFactor(skull)));
     }
 
     private int getAgeFactor(DragonSkullEntity skull) {

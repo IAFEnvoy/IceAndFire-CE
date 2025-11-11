@@ -110,12 +110,6 @@ import java.util.UUID;
 
 public abstract class DragonBaseEntity extends TameableEntity implements ExtendedMenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, InventoryChangedListener {
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
-    public static final float[] growth_stage_1 = new float[]{1F, 3F};
-    public static final float[] growth_stage_2 = new float[]{3F, 7F};
-    public static final float[] growth_stage_3 = new float[]{7F, 12.5F};
-    public static final float[] growth_stage_4 = new float[]{12.5F, 20F};
-    public static final float[] growth_stage_5 = new float[]{20F, 30F};
-    public static final float[][] GROWTH_STAGES = new float[][]{growth_stage_1, growth_stage_2, growth_stage_3, growth_stage_4, growth_stage_5};
     private static final Identifier ARMOR_MODIFIER = Identifier.of(IceAndFire.MOD_ID, "armor_modifier");
     private static final TrackedData<Integer> HUNGER = DataTracker.registerData(DragonBaseEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> AGE_TICKS = DataTracker.registerData(DragonBaseEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -1716,11 +1710,10 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
     }
 
     public float getRenderSize() {
-        final int stage = this.getDragonStage() - 1;
-        final float step = (GROWTH_STAGES[stage][1] - GROWTH_STAGES[stage][0]) / 25;
-        if (this.getAgeInDays() > 125)
-            return GROWTH_STAGES[stage][0] + (step * 25);
-        return GROWTH_STAGES[stage][0] + (step * this.getAgeFactor());
+        DragonSize size = DragonSize.getSize(this.getDragonStage());
+        final float step = size.step() / 25;
+        if (this.getAgeInDays() > 125) return size.x0() + (step * 25);
+        return size.x0() + (step * this.getAgeFactor());
     }
 
     private int getAgeFactor() {

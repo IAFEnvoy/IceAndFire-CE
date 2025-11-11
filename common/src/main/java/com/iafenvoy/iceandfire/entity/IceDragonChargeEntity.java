@@ -50,6 +50,4 @@ public class IceDragonChargeEntity extends DragonChargeEntity {
     protected boolean isBurning() {
         return false;
     }
-
-
 }

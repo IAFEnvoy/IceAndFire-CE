@@ -24,8 +24,6 @@ public final class IafParticles {
     public static final RegistrySupplier<SimpleParticleType> HYDRA_BREATH = register("hydra_breath", () -> new SimpleParticleType(true));
     public static final RegistrySupplier<SimpleParticleType> PIXIE_DUST = register("pixie_dust", () -> new SimpleParticleType(true));
     public static final RegistrySupplier<SimpleParticleType> SERPENT_BUBBLE = register("serpent_bubble", () -> new SimpleParticleType(true));
-    //TODO::What is this?
-    public static final RegistrySupplier<SimpleParticleType> SIREN_APPEARANCE = register("siren_appearance", () -> new SimpleParticleType(true));
     public static final RegistrySupplier<SimpleParticleType> SIREN_MUSIC = register("siren_music", () -> new SimpleParticleType(true));
 
     private static <T extends ParticleType<?>> RegistrySupplier<T> register(String name, Supplier<T> obj) {

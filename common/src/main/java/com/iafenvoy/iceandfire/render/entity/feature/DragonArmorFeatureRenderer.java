@@ -16,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -30,19 +31,18 @@ public class DragonArmorFeatureRenderer<T extends DragonBaseEntity> extends Feat
     public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int light, T dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         EntityModel<T> model = this.getContextModel();
         for (EquipmentSlot slot : ARMOR_SLOTS) {
-            ItemStack stack = dragon.getEquippedStack(slot);
-            if (stack.isEmpty()) continue;
-            Identifier texture = getArmorTexture(stack, slot);
+            Identifier texture = getArmorTexture(dragon.getEquippedStack(slot), slot);
+            if (texture == null) continue;
             VertexConsumer vertexConsumer = bufferIn.getBuffer(RenderLayer.getEntityCutoutNoCull(texture));
             model.render(matrixStackIn, vertexConsumer, light, OverlayTexture.DEFAULT_UV, -1);
         }
     }
 
+    @Nullable
     public static Identifier getArmorTexture(ItemStack stack, EquipmentSlot slot) {
         DragonArmorPart part = DragonArmorPart.fromSlot(slot);
         if (part != null && !stack.isEmpty() && stack.getItem() instanceof DragonArmorItem armorItem)
             return Identifier.of(IceAndFire.MOD_ID, "textures/entity/dragon_armor/armor_%s_%s.png".formatted(part.getId(), armorItem.type.name()));
-        else return Identifier.ofVanilla("missingno");
-        //TODO: Event and disable render when missing
+        else return null;
     }
 }

@@ -28,6 +28,7 @@ import dev.architectury.registry.item.ItemPropertiesRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.util.Identifier;
 
@@ -105,7 +106,6 @@ public final class IafRenderers {
         consumer.accept(new ParticleProviderHolder<>(IafParticles.HYDRA_BREATH.get(), HydraBreathParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.PIXIE_DUST.get(), PixieDustParticle::factory));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.SERPENT_BUBBLE.get(), SerpentBubbleParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.SIREN_APPEARANCE.get(), SirenAppearanceParticle.factory()));
         consumer.accept(new ParticleProviderHolder<>(IafParticles.SIREN_MUSIC.get(), SirenMusicParticle::factory));
     }
 
@@ -117,7 +117,7 @@ public final class IafRenderers {
         BlockEntityRendererRegistry.register(IafBlockEntities.PIXIE_JAR.get(), JarBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(IafBlockEntities.DREAD_PORTAL.get(), DreadPortalBlockEntityRenderer::new);
         BlockEntityRendererRegistry.register(IafBlockEntities.DREAD_SPAWNER.get(), DreadSpawnerBlockEntityRenderer::new);
-        BlockEntityRendererRegistry.register(IafBlockEntities.GHOST_CHEST.get(), GhostChestBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(IafBlockEntities.GHOST_CHEST.get(), ChestBlockEntityRenderer::new);
     }
 
     public static void registerArmorRenderers() {

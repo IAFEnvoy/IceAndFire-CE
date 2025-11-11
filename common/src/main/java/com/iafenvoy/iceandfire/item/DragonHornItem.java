@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.item.component.DragonHornComponent;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafEntities;
+import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -46,28 +47,26 @@ public class DragonHornItem extends Item {
     }
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
-        ItemStack trueStack = playerIn.getStackInHand(hand);
-        if (!playerIn.getWorld().isClient && trueStack.isOf(this) && !stack.contains(IafDataComponents.DRAGON_HORN.get())) {
-            //TODO: Multipart check
-            if (target instanceof DragonBaseEntity dragon && dragon.isOwner(playerIn)) {
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
+        stack = player.getStackInHand(hand);
+        if (stack.isOf(IafItems.DRAGON_HORN.get()) && !stack.contains(IafDataComponents.DRAGON_HORN.get())) {
+            if (!player.getWorld().isClient && (Entity) target instanceof DragonBaseEntity dragon && dragon.isOwner(player)) {
                 NbtCompound entityTag = new NbtCompound();
                 target.saveNbt(entityTag);
-                trueStack.set(IafDataComponents.DRAGON_HORN.get(), new DragonHornComponent(Registries.ENTITY_TYPE.getId(target.getType()), target.getUuid(), entityTag));
-                playerIn.swingHand(hand);
-                playerIn.getWorld().playSound(playerIn, playerIn.getBlockPos(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.NEUTRAL, 3.0F, 0.75F);
+                stack.set(IafDataComponents.DRAGON_HORN.get(), new DragonHornComponent(Registries.ENTITY_TYPE.getId(target.getType()), target.getUuid(), entityTag));
+                player.swingHand(hand);
+                player.getWorld().playSound(player, player.getBlockPos(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CONVERTED, SoundCategory.NEUTRAL, 3.0F, 0.75F);
                 target.remove(Entity.RemovalReason.DISCARDED);
                 return ActionResult.SUCCESS;
             }
+            return ActionResult.CONSUME;
         }
-        return ActionResult.FAIL;
+        return ActionResult.PASS;
     }
-
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if (context.getSide() != Direction.UP)
-            return ActionResult.FAIL;
+        if (context.getSide() != Direction.UP) return ActionResult.PASS;
         ItemStack stack = context.getStack();
         if (stack.contains(IafDataComponents.DRAGON_HORN.get())) {
             DragonHornComponent component = stack.get(IafDataComponents.DRAGON_HORN.get());
