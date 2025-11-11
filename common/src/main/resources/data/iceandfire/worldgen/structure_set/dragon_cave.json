@@ -1,0 +1,26 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 9821379,
+    "separation": 12,
+    "spacing": 18,
+    "exclusion_zone": {
+      "chunk_count": 10,
+      "other_set": "minecraft:villages"
+    }
+  },
+  "structures": [
+    {
+      "structure": "iceandfire:fire_dragon_cave",
+      "weight": 1
+    },
+    {
+      "structure": "iceandfire:ice_dragon_cave",
+      "weight": 1
+    },
+    {
+      "structure": "iceandfire:lightning_dragon_cave",
+      "weight": 1
+    }
+  ]
+}
