@@ -147,8 +147,9 @@ public class DeathWormEntity extends TameableEntity implements ISyncMount, ICust
 
     @Override
     public void setConfigurableAttributes() {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(Math.max(6, IafCommonConfig.INSTANCE.deathworm.maxHealth.getValue()));
-        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(Math.max(1, IafCommonConfig.INSTANCE.deathworm.attackDamage.getValue()));
+        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(Math.min(0.2D, 0.15D * this.getScaleFactor()));
+        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(Math.max(1, IafCommonConfig.INSTANCE.deathworm.attackDamage.getValue() * this.getScaleFactor()));
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(Math.max(6, IafCommonConfig.INSTANCE.deathworm.maxHealth.getValue() * this.getScaleFactor()));
         this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).setBaseValue(IafCommonConfig.INSTANCE.deathworm.targetSearchLength.getValue());
     }
 
@@ -468,10 +469,7 @@ public class DeathWormEntity extends TameableEntity implements ISyncMount, ICust
     }
 
     private void updateAttributes() {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(Math.min(0.2D, 0.15D * this.getScaleFactor()));
-        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(Math.max(1, IafCommonConfig.INSTANCE.deathworm.attackDamage.getValue() * this.getScaleFactor()));
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(Math.max(6, IafCommonConfig.INSTANCE.deathworm.maxHealth.getValue() * this.getScaleFactor()));
-        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).setBaseValue(IafCommonConfig.INSTANCE.deathworm.targetSearchLength.getValue());
+        this.setConfigurableAttributes();
         this.setHealth((float) this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).getBaseValue());
     }
 
@@ -615,28 +613,15 @@ public class DeathWormEntity extends TameableEntity implements ISyncMount, ICust
         if (this.isInSand()) {
             BlockPos pos = new BlockPos(this.getBlockX(), this.getSurface(this.getBlockX(), this.getBlockY(), this.getBlockZ()), this.getBlockZ()).down();
             BlockState state = this.getWorld().getBlockState(pos);
-            if (state.isOpaqueFullCube(this.getWorld(), pos)) {
-                if (this.getWorld().isClient) {
-                    this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), this.getX() + (double) (this.random.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
-                }
-            }
-            if (this.age % 10 == 0) {
-                this.playSound(SoundEvents.BLOCK_SAND_BREAK, 1, 0.5F);
-            }
+            if (state.isOpaqueFullCube(this.getWorld(), pos) && this.getWorld().isClient)
+                this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), this.getX() + (double) (this.random.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
+            if (this.age % 10 == 0) this.playSound(SoundEvents.BLOCK_SAND_BREAK, 1, 0.5F);
         }
-        if (this.up() && this.isOnGround()) {
-            this.jump();
-        }
+        if (this.up() && this.isOnGround()) this.jump();
         boolean inSand = this.isInSand() || this.getControllingPassenger() == null;
-        if (inSand && !this.isSandNavigator) {
-            this.switchNavigator(true);
-        }
-        if (!inSand && this.isSandNavigator) {
-            this.switchNavigator(false);
-        }
-        if (this.getWorld().isClient) {
-            this.tail_buffer.calculateChainSwingBuffer(90, 20, 5F, this);
-        }
+        if (inSand && !this.isSandNavigator) this.switchNavigator(true);
+        if (!inSand && this.isSandNavigator) this.switchNavigator(false);
+        if (this.getWorld().isClient) this.tail_buffer.calculateChainSwingBuffer(90, 20, 5F, this);
 
         AnimationHandler.INSTANCE.updateAnimations(this);
     }
