@@ -33,7 +33,8 @@ public class DragonForgeScreen extends HandledScreen<DragonForgeScreenHandler> {
         int k = (this.width - this.backgroundWidth) / 2;
         int l = (this.height - this.backgroundHeight) / 2;
         pGuiGraphics.drawTexture(texture, k, l, 0, 0, this.backgroundWidth, this.backgroundHeight);
-        pGuiGraphics.drawTexture(texture, k + 12, l + 23, 0, 166, 125 * this.handler.getCookTime() / this.handler.getMaxCookTime(), 38);
+        if (this.handler.getMaxCookTime() > 0)
+            pGuiGraphics.drawTexture(texture, k + 12, l + 23, 0, 166, 125 * this.handler.getCookTime() / this.handler.getMaxCookTime(), 38);
     }
 
     @Override
