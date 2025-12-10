@@ -39,7 +39,7 @@ dependencies {
     modImplementation(include("com.github.IAFEnvoy.Integration:integration-neoforge:$integration_version"))
 
     modImplementation "maven.modrinth:uranus:BBb3HOQ5"
-    modImplementation "maven.modrinth:jupiter:I4i9vhEW"
+    modImplementation "maven.modrinth:jupiter:bjogSV4z"
 
     modLocalRuntime "dev.emi:emi-neoforge:$emi_version"
 
