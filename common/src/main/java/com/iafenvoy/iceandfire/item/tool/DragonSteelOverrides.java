@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.StaticVariables;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import com.iafenvoy.jupiter.network.ByteBufUtil;
+import com.iafenvoy.jupiter.network.ByteBufHelper;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityGroup;
@@ -120,7 +120,7 @@ public interface DragonSteelOverrides<T extends ToolItem> {
                     }
                 }
                 for (ServerPlayerEntity player : world.getPlayers(player1 -> player1.distanceTo(attacker) < 64)) {
-                    PacketByteBuf buf = ByteBufUtil.create();
+                    PacketByteBuf buf = ByteBufHelper.create();
                     buf.writeInt(lightnings.size());
                     for (Pair<Vec3d, Vec3d> pair : lightnings) {
                         Vec3d p1 = pair.getLeft(), p2 = pair.getRight();

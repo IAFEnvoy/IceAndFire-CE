@@ -17,6 +17,6 @@ public class IceAndFireForgeClient {
     @SubscribeEvent
     public static void init(FMLClientSetupEvent event) {
         event.enqueueWork(IceAndFireClient::process);
-        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> new ConfigSelectScreen<>(Text.translatable("config.iceandfire.title"), parent, IafCommonConfig.INSTANCE, IafClientConfig.INSTANCE)));
+        ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> ConfigSelectScreen.builder(Text.translatable("config.iceandfire.title"), parent).server(IafCommonConfig.INSTANCE).client(IafClientConfig.INSTANCE).build()));
     }
 }
