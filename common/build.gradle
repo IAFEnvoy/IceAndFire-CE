@@ -16,7 +16,7 @@ dependencies {
     modImplementation "dev.architectury:architectury:$rootProject.architectury_api_version"
 
     modImplementation "maven.modrinth:uranus:TICNdyfo"
-    modImplementation "maven.modrinth:jupiter:YT6XLhJp"
+    modImplementation "maven.modrinth:jupiter:sRd3tYqT"
 
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
 

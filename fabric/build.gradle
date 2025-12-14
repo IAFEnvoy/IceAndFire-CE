@@ -41,7 +41,7 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
     modImplementation "maven.modrinth:uranus:TICNdyfo"
-    modImplementation "maven.modrinth:jupiter:YT6XLhJp"
+    modImplementation "maven.modrinth:jupiter:sRd3tYqT"
 
     // CCA
     modImplementation(include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"))

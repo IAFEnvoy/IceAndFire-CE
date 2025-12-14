@@ -46,7 +46,7 @@ dependencies {
     implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))
 
     modImplementation "maven.modrinth:uranus:Xgpvchiq"
-    modImplementation "maven.modrinth:jupiter:k8IXqO6g"
+    modImplementation "maven.modrinth:jupiter:visAlDuj"
 
     modLocalRuntime "dev.emi:emi-forge:${emi_version}"
 
