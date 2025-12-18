@@ -648,6 +648,7 @@
   "config.iceandfire.dragonAuto3rdPerson": "自动转换第三人称",
   "config.iceandfire.empty": "空",
   "config.iceandfire.fire_dragon_forge": "龙炎锻炉",
+  "config.iceandfire.ghost.alwaysSpawnFromChest": "从单个箱子多次生成幽灵",
   "config.iceandfire.ghost.attackDamage": "攻击伤害",
   "config.iceandfire.ghost.fromPlayerDeaths": "玩家死亡时生成",
   "config.iceandfire.ghost.generateGraveyards": "生成墓地",

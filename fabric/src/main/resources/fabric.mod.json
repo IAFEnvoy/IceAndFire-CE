@@ -23,7 +23,7 @@
       "com.iafenvoy.iceandfire.fabric.IceAndFireFabric"
     ],
     "client": [
-      "com.iafenvoy.iceandfire.fabric.client.IceAndFireFabricClient"
+      "com.iafenvoy.iceandfire.fabric.IceAndFireFabricClient"
     ],
     "emi": [
       "com.iafenvoy.iceandfire.compat.emi.IceAndFireEmiPlugin"

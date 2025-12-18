@@ -648,6 +648,7 @@
   "config.iceandfire.dragonAuto3rdPerson": "Auto 3rd Person Perspective",
   "config.iceandfire.empty": "Empty",
   "config.iceandfire.fire_dragon_forge": "Fire Dragon Forge",
+  "config.iceandfire.ghost.alwaysSpawnFromChest": "Always Spawn From Single Chest",
   "config.iceandfire.ghost.attackDamage": "Attack Damage",
   "config.iceandfire.ghost.fromPlayerDeaths": "From Player Deaths",
   "config.iceandfire.ghost.generateGraveyards": "Generate Graveyards",

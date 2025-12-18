@@ -22,7 +22,7 @@ public class GraveyardSoilBlock extends Block {
 
     @SuppressWarnings("deprecation")
     @Override
-    public void scheduledTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
+    public void randomTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {
         if (!worldIn.isClient) {
             if (!worldIn.isRegionLoaded(pos.add(-3, -3, -3), pos.add(3, 3, 3))) return;
             if (!worldIn.isDay() && !worldIn.getBlockState(pos.up()).isOpaque() && rand.nextInt(9) == 0 && worldIn.getDifficulty() != Difficulty.PEACEFUL) {

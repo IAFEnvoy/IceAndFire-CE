@@ -1,4 +1,4 @@
-package com.iafenvoy.iceandfire.fabric.client;
+package com.iafenvoy.iceandfire.fabric;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.IceAndFireClient;
