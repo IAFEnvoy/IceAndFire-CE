@@ -24,6 +24,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+import java.util.Locale;
+
 public class JarBlock extends BlockWithEntity {
     private static final MapCodec<? extends BlockWithEntity> CODEC = createCodec(s -> new JarBlock(-1));
     protected static final VoxelShape AABB = Block.createCuboidShape(3, 0, 3, 13, 16, 13);
@@ -38,7 +40,7 @@ public class JarBlock extends BlockWithEntity {
 
     public static String name(int pixieType) {
         if (pixieType == -1) return "pixie_jar_empty";
-        return "pixie_jar_%d".formatted(pixieType);
+        return String.format(Locale.ROOT, "pixie_jar_%d", pixieType);
     }
 
     @Override

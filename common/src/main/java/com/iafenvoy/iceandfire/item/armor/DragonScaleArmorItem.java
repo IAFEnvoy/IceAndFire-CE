@@ -27,7 +27,7 @@ public class DragonScaleArmorItem extends ArmorItem {
 
     @Override
     public String getTranslationKey() {
-        return "item.%s.dragon_%s".formatted(IceAndFire.MOD_ID, this.type.getName());
+        return String.format(Locale.ROOT, "item.%s.dragon_%s", IceAndFire.MOD_ID, this.type.getName());
     }
 
     @Override

@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 
 public class DragonArmorFeatureRenderer<T extends DragonBaseEntity> extends FeatureRenderer<T, TabulaModel<T>> {
     private static final List<EquipmentSlot> ARMOR_SLOTS = List.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET);
@@ -42,7 +43,7 @@ public class DragonArmorFeatureRenderer<T extends DragonBaseEntity> extends Feat
     public static Identifier getArmorTexture(ItemStack stack, EquipmentSlot slot) {
         DragonArmorPart part = DragonArmorPart.fromSlot(slot);
         if (part != null && !stack.isEmpty() && stack.getItem() instanceof DragonArmorItem armorItem)
-            return Identifier.of(IceAndFire.MOD_ID, "textures/entity/dragon_armor/armor_%s_%s.png".formatted(part.getId(), armorItem.type.name()));
+            return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/entity/dragon_armor/armor_%s_%s.png", part.getId(), armorItem.type.name()));
         else return null;
     }
 }

@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class EarPlugsArmorItem extends ArmorItem {
     public EarPlugsArmorItem() {
@@ -25,7 +26,7 @@ public class EarPlugsArmorItem extends ArmorItem {
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        return isAprilFool() ? "item.%s.air_pods".formatted(IceAndFire.MOD_ID) : super.getTranslationKey(stack);
+        return isAprilFool() ? String.format(Locale.ROOT, "item.%s.air_pods", IceAndFire.MOD_ID) : super.getTranslationKey(stack);
     }
 
     @Override

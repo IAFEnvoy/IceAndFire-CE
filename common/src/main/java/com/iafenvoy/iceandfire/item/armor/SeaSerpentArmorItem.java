@@ -17,6 +17,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Locale;
 
 public class SeaSerpentArmorItem extends ArmorItem {
     public final SeaSerpentType armorType;
@@ -34,7 +35,7 @@ public class SeaSerpentArmorItem extends ArmorItem {
 
     @Override
     public String getTranslationKey() {
-        return "item.%s.sea_serpent_%s".formatted(IceAndFire.MOD_ID, this.type.getName());
+        return String.format(Locale.ROOT, "item.%s.sea_serpent_%s", IceAndFire.MOD_ID, this.type.getName());
     }
 
     @Override

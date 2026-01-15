@@ -11,6 +11,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.Locale;
+
 public class DragonForgeScreen extends HandledScreen<DragonForgeScreenHandler> {
     public DragonForgeScreen(DragonForgeScreenHandler container, PlayerInventory inv, Text name) {
         super(container, inv, name);
@@ -28,7 +30,7 @@ public class DragonForgeScreen extends HandledScreen<DragonForgeScreenHandler> {
     @Override
     protected void drawBackground(DrawContext pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        Identifier texture = Identifier.of(IceAndFire.MOD_ID, "textures/gui/dragonforge_%s.png".formatted(this.handler.getDragonType().name()));
+        Identifier texture = Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/gui/dragonforge_%s.png", this.handler.getDragonType().name()));
 
         int k = (this.width - this.backgroundWidth) / 2;
         int l = (this.height - this.backgroundHeight) / 2;

@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 //FIXME::Introduce a base block class for all dragon forge blocks
@@ -37,7 +38,7 @@ public class DragonForgeCoreBlock extends BlockWithEntity implements DragonProof
     }
 
     public static String name(DragonType dragonType, boolean activated) {
-        return "dragonforge_%s_core%s".formatted(dragonType.name(), activated ? "" : "_disabled");
+        return String.format(Locale.ROOT, "dragonforge_%s_core%s", dragonType.name(), activated ? "" : "_disabled");
     }
 
     public static void setState(DragonType dragonType, World worldIn, BlockPos pos) {
