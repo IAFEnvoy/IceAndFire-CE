@@ -27,6 +27,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 //FIXME::Introduce a base block class for all dragon forge blocks
@@ -43,7 +44,7 @@ public class DragonForgeBrickBlock extends BlockWithEntity implements DragonProo
     }
 
     public static String name(DragonType dragonType) {
-        return "dragonforge_%s_brick".formatted(dragonType.name());
+        return String.format(Locale.ROOT, "dragonforge_%s_brick", dragonType.name());
     }
 
     public static Block getBlockByType(DragonType type) {

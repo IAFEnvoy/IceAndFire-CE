@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
+import java.util.Locale;
 
 public class TrollArmorItem extends ArmorItem {
     private final TrollType trollType;
@@ -27,7 +28,7 @@ public class TrollArmorItem extends ArmorItem {
     }
 
     public static String getName(TrollType trollType, Type type) {
-        return "%s_troll_leather_%s".formatted(trollType.getName(), type.getName());
+        return String.format(Locale.ROOT, "%s_troll_leather_%s", trollType.getName(), type.getName());
     }
 
     @Override
@@ -38,6 +39,6 @@ public class TrollArmorItem extends ArmorItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         super.appendTooltip(stack, context, tooltip, type);
-        tooltip.add(Text.translatable("item.%s.troll_leather_armor_%s.desc".formatted(IceAndFire.MOD_ID, this.type.getName())).formatted(Formatting.GREEN));
+        tooltip.add(Text.translatable(String.format(Locale.ROOT, "item.%s.troll_leather_armor_%s.desc", IceAndFire.MOD_ID, this.type.getName())).formatted(Formatting.GREEN));
     }
 }

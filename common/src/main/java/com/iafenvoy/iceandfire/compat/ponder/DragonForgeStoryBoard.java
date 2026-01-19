@@ -16,6 +16,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
 import java.util.function.Function;
 
 public class DragonForgeStoryBoard<T extends DragonBaseEntity> implements PonderStoryBoard {
@@ -28,7 +29,7 @@ public class DragonForgeStoryBoard<T extends DragonBaseEntity> implements Ponder
     }
 
     public static Identifier id(DragonType type) {
-        return Identifier.of(IceAndFire.MOD_ID, "%s_dragon_forge".formatted(type.name()));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "%s_dragon_forge", type.name()));
     }
 
     @Override

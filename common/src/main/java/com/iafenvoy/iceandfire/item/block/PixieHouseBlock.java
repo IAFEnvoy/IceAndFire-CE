@@ -16,6 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.Locale;
+
 public class PixieHouseBlock extends BlockWithEntity {
     private static final MapCodec<? extends BlockWithEntity> CODEC = createCodec(s -> new PixieHouseBlock());
     public static final DirectionProperty FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
@@ -26,7 +28,7 @@ public class PixieHouseBlock extends BlockWithEntity {
     }
 
     public static String name(String type) {
-        return "pixie_house_%s".formatted(type);
+        return String.format(Locale.ROOT, "pixie_house_%s", type);
     }
 
     @Override
