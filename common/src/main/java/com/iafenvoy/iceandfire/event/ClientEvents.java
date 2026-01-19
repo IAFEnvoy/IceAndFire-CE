@@ -79,8 +79,10 @@ public final class ClientEvents {
         if (world == null) return;
         miscData.checkScepterTarget(world.entityManager.getLookup()::get);
         //Cockatrice Beam
-        for (UUID target : miscData.getTargetedByScepters())
-            CockatriceBeamRenderer.render(entity, world.entityManager.getLookup().get(target), matrixStack, buffers, partialRenderTick);
+        for (UUID target : miscData.getTargetedByScepters()) {
+            Entity e = world.entityManager.getLookup().get(target);
+            if (e != null) CockatriceBeamRenderer.render(entity, e, matrixStack, buffers, partialRenderTick);
+        }
         //Frozen
         StatusEffectInstance effect = entity.getStatusEffect(Registries.STATUS_EFFECT.getEntry(IafStatusEffects.FROZEN.get()));
         if (effect != null) FrozenStateRenderer.render(entity, matrixStack, buffers, light, effect.getDuration());
