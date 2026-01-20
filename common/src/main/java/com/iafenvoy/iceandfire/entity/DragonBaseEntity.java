@@ -757,8 +757,6 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
         if (this.dragonInventory != null)
             compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.dragonInventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));
         compound.putBoolean("CrystalBound", this.isBoundToCrystal());
-        if (this.hasCustomName())
-            compound.put("CustomName", TextCodecs.CODEC.encodeStart(NbtOps.INSTANCE, this.getCustomName()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtCompound()));
         this.removeParts();
         this.lastScale = 0;
         compound.putInt("BrushedTime", this.brushedTime);
@@ -794,9 +792,6 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
             this.dragonInventory.setStack(i, stacks.get(i));
 
         this.setCrystalBound(compound.getBoolean("CrystalBound"));
-        if (compound.contains("CustomName", 8) && !compound.getString("CustomName").startsWith("TextComponent"))
-            this.setCustomName(TextCodecs.CODEC.parse(NbtOps.INSTANCE, compound.get("CustomName")).resultOrPartial(IceAndFire.LOGGER::error).orElse(Text.empty()));
-
         this.setConfigurableAttributes();
         this.updateAttributes();
         this.brushedTime = compound.getInt("BrushedTime");

@@ -19,10 +19,6 @@ Join our [Discord](https://discord.gg/NDzz2upqAk) and check
 
 Netherite Related things.
 
-(Planned) Complete the Dread Land.
-
-(Planned) Rewrite myrmex series.
-
 ## Capability
 
 ✅: Fully Supported<br>
