@@ -7,7 +7,6 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public final class IafEntityTags {
-    public static final TagKey<EntityType<?>> DEATHWORM = create("deathworm");
     public static final TagKey<EntityType<?>> FIRE_DRAGON = create("fire_dragon");
     public static final TagKey<EntityType<?>> ICE_DRAGON = create("ice_dragon");
     public static final TagKey<EntityType<?>> LIGHTNING_DRAGON = create("lightning_dragon");
@@ -24,6 +23,7 @@ public final class IafEntityTags {
     public static final TagKey<EntityType<?>> CYCLOPS_UNLIFTABLES = create("cyclops_unliftables");
     public static final TagKey<EntityType<?>> BLINDED = create("blinded");
     public static final TagKey<EntityType<?>> SIREN_CHARMABLE = create("siren_charmable");
+    public static final TagKey<EntityType<?>> CHAIN_UNTIEABLE = create("chain_untieable");
 
     private static TagKey<EntityType<?>> create(String id) {
         return TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(IceAndFire.MOD_ID, id));
