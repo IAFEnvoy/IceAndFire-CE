@@ -55,7 +55,7 @@ public class TrollType {
 
     public static void initArmors() {
         for (TrollType troll : TYPES) {
-            troll.leather = IafItems.register("troll_leather_%s".formatted(troll.name.toLowerCase(Locale.ROOT)), () -> new Item(new Item.Settings()));
+            troll.leather = IafItems.register(String.format(Locale.ROOT, "troll_leather_%s", troll.name.toLowerCase(Locale.ROOT)), () -> new Item(new Item.Settings()));
             troll.helmet = IafItems.register(ItemTrollArmor.getName(troll, EquipmentSlot.HEAD), () -> new ItemTrollArmor(troll, ArmorItem.Type.HELMET));
             troll.chestplate = IafItems.register(ItemTrollArmor.getName(troll, EquipmentSlot.CHEST), () -> new ItemTrollArmor(troll, ArmorItem.Type.CHESTPLATE));
             troll.leggings = IafItems.register(ItemTrollArmor.getName(troll, EquipmentSlot.LEGS), () -> new ItemTrollArmor(troll, ArmorItem.Type.LEGGINGS));

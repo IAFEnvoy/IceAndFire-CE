@@ -11,6 +11,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ItemTrollArmor extends ArmorItem {
     public final TrollType troll;
@@ -21,7 +22,7 @@ public class ItemTrollArmor extends ArmorItem {
     }
 
     public static String getName(TrollType troll, EquipmentSlot slot) {
-        return "%s_troll_leather_%s".formatted(troll.getName(), getArmorPart(slot));
+        return String.format(Locale.ROOT, "%s_troll_leather_%s", troll.getName(), getArmorPart(slot));
     }
 
     private static String getArmorPart(EquipmentSlot slot) {

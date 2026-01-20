@@ -25,6 +25,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.Locale;
+
 public class BlockDragonForgeCore extends BlockWithEntity implements IDragonProof, INoTab {
     private final int isFire;
     private final boolean activated;
@@ -36,7 +38,7 @@ public class BlockDragonForgeCore extends BlockWithEntity implements IDragonProo
     }
 
     public static String name(int dragonType, boolean activated) {
-        return "dragonforge_%s_core%s".formatted(DragonType.getNameFromInt(dragonType), activated ? "" : "_disabled");
+        return String.format(Locale.ROOT, "dragonforge_%s_core%s", DragonType.getNameFromInt(dragonType), activated ? "" : "_disabled");
     }
 
     public static void setState(int dragonType, boolean active, World worldIn, BlockPos pos) {

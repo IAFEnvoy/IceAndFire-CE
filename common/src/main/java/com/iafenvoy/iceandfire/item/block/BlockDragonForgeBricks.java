@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.Locale;
+
 public class BlockDragonForgeBricks extends BlockWithEntity implements IDragonProof {
     public static final BooleanProperty GRILL = BooleanProperty.of("grill");
     private final int isFire;
@@ -33,7 +35,7 @@ public class BlockDragonForgeBricks extends BlockWithEntity implements IDragonPr
     }
 
     public static String name(int dragonType) {
-        return "dragonforge_%s_brick".formatted(DragonType.getNameFromInt(dragonType));
+        return String.format(Locale.ROOT, "dragonforge_%s_brick", DragonType.getNameFromInt(dragonType));
     }
 
     @Override

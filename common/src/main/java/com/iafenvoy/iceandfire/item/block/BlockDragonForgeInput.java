@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
+import java.util.Locale;
+
 public class BlockDragonForgeInput extends BlockWithEntity implements IDragonProof {
     public static final BooleanProperty ACTIVE = BooleanProperty.of("active");
     private final int dragonType;
@@ -33,7 +35,7 @@ public class BlockDragonForgeInput extends BlockWithEntity implements IDragonPro
     }
 
     public static String name(int dragonType) {
-        return "dragonforge_%s_input".formatted(DragonType.getNameFromInt(dragonType));
+        return String.format(Locale.ROOT, "dragonforge_%s_input", DragonType.getNameFromInt(dragonType));
     }
 
     @Override
