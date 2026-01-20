@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.item;
 
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
 import com.iafenvoy.iceandfire.entity.EntityChainTie;
+import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.WallBlock;
 import net.minecraft.client.item.TooltipContext;
@@ -61,6 +62,8 @@ public class ItemChain extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand) {
+        if (target.getType().isIn(IafEntityTags.CHAIN_UNTIEABLE)) return ActionResult.PASS;
+
         IafEntityData targetData = IafEntityData.get(target);
         if (targetData.chainData.isChainedTo(playerIn))
             return ActionResult.PASS;
