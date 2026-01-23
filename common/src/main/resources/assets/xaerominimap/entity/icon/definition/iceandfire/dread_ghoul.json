@@ -1,0 +1,14 @@
+{
+	"variants" : {
+        "iceandfire:textures/models/dread/dread_ghoul_closed_1.png" : "sprite:iceandfire/dread_ghoul_1.png",
+        "iceandfire:textures/models/dread/dread_ghoul_mid_1.png" : "sprite:iceandfire/dread_ghoul_1.png",
+        "iceandfire:textures/models/dread/dread_ghoul_open_1.png" : "sprite:iceandfire/dread_ghoul_1.png",
+        "iceandfire:textures/models/dread/dread_ghoul_closed_2.png" : "sprite:iceandfire/dread_ghoul_2.png",
+        "iceandfire:textures/models/dread/dread_ghoul_mid_2.png" : "sprite:iceandfire/dread_ghoul_2.png",
+        "iceandfire:textures/models/dread/dread_ghoul_open_2.png" : "sprite:iceandfire/dread_ghoul_2.png",
+        "iceandfire:textures/models/dread/dread_ghoul_closed_3.png" : "sprite:iceandfire/dread_ghoul_3.png",
+        "iceandfire:textures/models/dread/dread_ghoul_mid_3.png" : "sprite:iceandfire/dread_ghoul_3.png",
+        "iceandfire:textures/models/dread/dread_ghoul_open_3.png" : "sprite:iceandfire/dread_ghoul_3.png",
+		"default" : "sprite:iceandfire/dread_ghoul_1.png"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"variants" : {
+		"iceandfire:textures/models/hippocampus/hippocampus_0.png" : "sprite:iceandfire/hippocampus_0.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_0_blinking.png" : "sprite:iceandfire/hippocampus_0.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_1.png" : "sprite:iceandfire/hippocampus_1.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_1_blinking.png" : "sprite:iceandfire/hippocampus_1.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_2.png" : "sprite:iceandfire/hippocampus_2.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_2_blinking.png" : "sprite:iceandfire/hippocampus_2.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_3.png" : "sprite:iceandfire/hippocampus_3.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_3_blinking.png" : "sprite:iceandfire/hippocampus_3.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_4.png" : "sprite:iceandfire/hippocampus_4.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_4_blinking.png" : "sprite:iceandfire/hippocampus_4.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_5.png" : "sprite:iceandfire/hippocampus_5.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_5_blinking.png" : "sprite:iceandfire/hippocampus_5.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_rainbow.png" : "sprite:iceandfire/hippocampus_rainbow.png",
+        "iceandfire:textures/models/hippocampus/hippocampus_rainbow_blinking.png" : "sprite:iceandfire/hippocampus_rainbow.png",
+		"default" : "sprite:iceandfire/hippocampus_0.png"
+	}
+}

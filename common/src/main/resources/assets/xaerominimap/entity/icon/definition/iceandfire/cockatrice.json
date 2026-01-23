@@ -1,0 +1,9 @@
+{
+	"variants" : {
+        "iceandfire:textures/models/cockatrice/cockatrice_0.png" : "sprite:iceandfire/cockatrice_0.png",
+        "iceandfire:textures/models/cockatrice/cockatrice_0_chick.png" : "sprite:iceandfire/cockatrice_0_chick.png",
+        "iceandfire:textures/models/cockatrice/cockatrice_1.png" : "sprite:iceandfire/cockatrice_1.png",
+        "iceandfire:textures/models/cockatrice/cockatrice_1_chick.png" : "sprite:iceandfire/cockatrice_1_chick.png",
+		"default" : "sprite:iceandfire/cockatrice_0_.png"
+	}
+}

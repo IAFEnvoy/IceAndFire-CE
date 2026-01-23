@@ -1,0 +1,8 @@
+{
+	"variants" : {
+		"iceandfire:textures/models/deathworm/deathworm_red.png" : "sprite:iceandfire/deathworm_red.png",
+        "iceandfire:textures/models/deathworm/deathworm_white.png" : "sprite:iceandfire/deathworm_white.png",
+        "iceandfire:textures/models/deathworm/deathworm_yellow.png" : "sprite:iceandfire/deathworm_yellow.png",
+		"default" : "sprite:iceandfire/deathworm_red.png"
+	}
+}

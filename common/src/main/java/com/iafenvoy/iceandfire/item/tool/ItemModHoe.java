@@ -21,7 +21,7 @@ public class ItemModHoe extends HoeItem implements DragonSteelOverrides<ItemModH
     private Multimap<EntityAttribute, EntityAttributeModifier> dragonsteelModifiers;
 
     public ItemModHoe(ToolMaterial toolmaterial) {
-        super(toolmaterial, 5, -3.0F, new Settings());
+        super(toolmaterial, -(int) toolmaterial.getAttackDamage(), -3, new Settings());
     }
 
     @Override

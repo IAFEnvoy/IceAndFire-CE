@@ -115,7 +115,7 @@ public class ModelDeathWormGauntlet extends ModelDragonBase {
         if (!(holder instanceof LivingEntity livingEntity)) return;
 
         IafEntityData data = IafEntityData.get(livingEntity);
-        float lungeTicks = data.miscData.lungeTicks + partialTick;
+        float lungeTicks = data.miscData.lungeTicks == 0 ? 0 : data.miscData.lungeTicks + partialTick;
         this.progressRotation(this.TopJaw, lungeTicks, (float) Math.toRadians(-30), 0, 0);
         this.progressRotation(this.BottomJaw, lungeTicks, (float) Math.toRadians(30), 0, 0);
         this.progressPosition(this.JawExtender, lungeTicks, 0, 0, -4);

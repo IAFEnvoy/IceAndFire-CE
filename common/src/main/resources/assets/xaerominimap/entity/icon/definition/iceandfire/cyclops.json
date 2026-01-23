@@ -1,0 +1,17 @@
+{
+	"variants" : {
+		"iceandfire:textures/models/cyclops/cyclops_0.png" : "sprite:iceandfire/cyclops_0.png",
+        "iceandfire:textures/models/cyclops/cyclops_0_blink.png" : "sprite:iceandfire/cyclops_0.png",
+        "iceandfire:textures/models/cyclops/cyclops_0_injured.png" : "sprite:iceandfire/cyclops_0_injured.png",
+        "iceandfire:textures/models/cyclops/cyclops_1.png" : "sprite:iceandfire/cyclops_1.png",
+        "iceandfire:textures/models/cyclops/cyclops_1_blink.png" : "sprite:iceandfire/cyclops_1.png",
+        "iceandfire:textures/models/cyclops/cyclops_1_injured.png" : "sprite:iceandfire/cyclops_1_injured.png",
+        "iceandfire:textures/models/cyclops/cyclops_2.png" : "sprite:iceandfire/cyclops_2.png",
+        "iceandfire:textures/models/cyclops/cyclops_2_blink.png" : "sprite:iceandfire/cyclops_2.png",
+        "iceandfire:textures/models/cyclops/cyclops_2_injured.png" : "sprite:iceandfire/cyclops_2_injured.png",
+        "iceandfire:textures/models/cyclops/cyclops_3.png" : "sprite:iceandfire/cyclops_3.png",
+        "iceandfire:textures/models/cyclops/cyclops_3_blink.png" : "sprite:iceandfire/cyclops_3.png",
+        "iceandfire:textures/models/cyclops/cyclops_3_injured.png" : "sprite:iceandfire/cyclops_3_injured.png",
+		"default" : "sprite:iceandfire/cyclops_0.png"
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"variants" : {
+		"iceandfire:textures/models/hippogryph/alex.png" : "sprite:iceandfire/hippogryph_alex.png",
+        "iceandfire:textures/models/hippogryph/alex_blink.png" : "sprite:iceandfire/hippogryph_alex.png",
+        "iceandfire:textures/models/hippogryph/black.png" : "sprite:iceandfire/hippogryph_black.png",
+        "iceandfire:textures/models/hippogryph/black_blink.png" : "sprite:iceandfire/hippogryph_black.png",
+        "iceandfire:textures/models/hippogryph/brown.png" : "sprite:iceandfire/hippogryph_brown.png",
+        "iceandfire:textures/models/hippogryph/brown_blink.png" : "sprite:iceandfire/hippogryph_brown.png",
+        "iceandfire:textures/models/hippogryph/chestnut.png" : "sprite:iceandfire/hippogryph_chestnut.png",
+        "iceandfire:textures/models/hippogryph/chestnut_blink.png" : "sprite:iceandfire/hippogryph_chestnut.png",
+        "iceandfire:textures/models/hippogryph/creamy.png" : "sprite:iceandfire/hippogryph_creamy.png",
+        "iceandfire:textures/models/hippogryph/creamy_blink.png" : "sprite:iceandfire/hippogryph_creamy.png",
+        "iceandfire:textures/models/hippogryph/dark_brown.png" : "sprite:iceandfire/hippogryph_dark_brown.png",
+        "iceandfire:textures/models/hippogryph/dark_brown_blink.png" : "sprite:iceandfire/hippogryph_dark_brown.png",
+        "iceandfire:textures/models/hippogryph/dodo.png" : "sprite:iceandfire/hippogryph_dodo.png",
+        "iceandfire:textures/models/hippogryph/dodo_blink.png" : "sprite:iceandfire/hippogryph_dodo.png",
+        "iceandfire:textures/models/hippogryph/gray.png" : "sprite:iceandfire/hippogryph_gray.png",
+        "iceandfire:textures/models/hippogryph/gray_blink.png" : "sprite:iceandfire/hippogryph_gray.png",
+        "iceandfire:textures/models/hippogryph/raptor.png" : "sprite:iceandfire/hippogryph_raptor.png",
+        "iceandfire:textures/models/hippogryph/raptor_blink.png" : "sprite:iceandfire/hippogryph_raptor.png",
+        "iceandfire:textures/models/hippogryph/white.png" : "sprite:iceandfire/hippogryph_white.png",
+        "iceandfire:textures/models/hippogryph/white_blink.png" : "sprite:iceandfire/hippogryph_white.png",
+		"default" : "sprite:iceandfire/hippogryph_brown.png"
+	}
+}

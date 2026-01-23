@@ -1,0 +1,8 @@
+{
+    "variants" : {
+        "iceandfire:textures/models/troll/troll_forest.png" : "sprite:iceandfire/troll_forest.png",
+        "iceandfire:textures/models/troll/troll_frost.png" : "sprite:iceandfire/troll_frost.png",
+        "iceandfire:textures/models/troll/troll_mountain.png" : "sprite:iceandfire/troll_mountain.png",
+        "default" : "sprite:iceandfire/troll_forest.png"
+    }
+}

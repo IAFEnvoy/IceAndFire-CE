@@ -1,0 +1,11 @@
+{
+	"variants" : {
+		"iceandfire:textures/models/siren/siren_0.png" : "sprite:iceandfire/siren_0.png",
+        "iceandfire:textures/models/siren/siren_0_aggressive.png" : "sprite:iceandfire/siren_0_aggressive.png",
+        "iceandfire:textures/models/siren/siren_1.png" : "sprite:iceandfire/siren_1.png",
+        "iceandfire:textures/models/siren/siren_1_aggressive.png" : "sprite:iceandfire/siren_1_aggressive.png",
+        "iceandfire:textures/models/siren/siren_2.png" : "sprite:iceandfire/siren_2.png",
+        "iceandfire:textures/models/siren/siren_2_aggressive.png" : "sprite:iceandfire/siren_2_aggressive.png",
+		"default" : "sprite:iceandfire/siren_0.png"
+	}
+}

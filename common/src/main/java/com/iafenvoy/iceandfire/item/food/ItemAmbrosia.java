@@ -22,8 +22,11 @@ public class ItemAmbrosia extends ItemGenericFood {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World worldIn, LivingEntity livingEntity) {
-        super.finishUsing(stack, worldIn, livingEntity);
-        return livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).getAbilities().creativeMode ? stack : new ItemStack(Items.BOWL);
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        ItemStack itemStack = super.finishUsing(stack, world, user);
+        ItemStack remainder = new ItemStack(Items.BOWL);
+        if (itemStack.isEmpty()) return remainder;
+        if (user instanceof PlayerEntity player && !player.isCreative()) player.getInventory().offerOrDrop(remainder);
+        return itemStack;
     }
 }

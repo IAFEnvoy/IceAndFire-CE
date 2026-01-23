@@ -1,0 +1,10 @@
+{
+    "variants" : {
+        "iceandfire:textures/models/pixie/pixie_0.png" : "sprite:iceandfire/pixie_0.png",
+        "iceandfire:textures/models/pixie/pixie_1.png" : "sprite:iceandfire/pixie_1.png",
+        "iceandfire:textures/models/pixie/pixie_2.png" : "sprite:iceandfire/pixie_2.png",
+        "iceandfire:textures/models/pixie/pixie_3.png" : "sprite:iceandfire/pixie_3.png",
+        "iceandfire:textures/models/pixie/pixie_4.png" : "sprite:iceandfire/pixie_4.png",
+        "default" : "sprite:iceandfire/pixie_0.png"
+    }
+}

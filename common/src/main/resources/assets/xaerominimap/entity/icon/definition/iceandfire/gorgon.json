@@ -1,0 +1,7 @@
+{
+	"variants" : {
+		"iceandfire:textures/models/gorgon/gorgon_active.png" : "sprite:iceandfire/gorgon_active.png",
+        "iceandfire:textures/models/gorgon/gorgon_passive.png" : "sprite:iceandfire/gorgon_passive.png",
+		"default" : "sprite:iceandfire/gorgon_passive.png"
+	}
+}

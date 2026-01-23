@@ -1,0 +1,19 @@
+{
+    "variants" : {
+        "iceandfire:textures/models/seaserpent/seaserpent_blue.png" : "sprite:iceandfire/seaserpent_blue.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_blue_blink.png" : "sprite:iceandfire/seaserpent_blue.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_bronze.png" : "sprite:iceandfire/seaserpent_bronze.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_bronze_blink.png" : "sprite:iceandfire/seaserpent_bronze.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_darkblue.png" : "sprite:iceandfire/seaserpent_darkblue.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_darkblue_blink.png" : "sprite:iceandfire/seaserpent_darkblue.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_green.png" : "sprite:iceandfire/seaserpent_green.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_green_blink.png" : "sprite:iceandfire/seaserpent_green.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_purple.png" : "sprite:iceandfire/seaserpent_purple.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_purple_blink.png" : "sprite:iceandfire/seaserpent_purple.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_red.png" : "sprite:iceandfire/seaserpent_red.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_red_blink.png" : "sprite:iceandfire/seaserpent_red.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_teal.png" : "sprite:iceandfire/seaserpent_teal.png",
+        "iceandfire:textures/models/seaserpent/seaserpent_teal_blink.png" : "sprite:iceandfire/seaserpent_teal.png",
+        "default" : "sprite:iceandfire/seaserpent_blue.png"
+    }
+}
