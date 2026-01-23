@@ -90,7 +90,6 @@ public interface DragonSteelOverrides<T extends ToolItem> {
             if (IafCommonConfig.INSTANCE.armors.dragonLightningAbility.getValue() && attacker.getWorld() instanceof ServerWorld world && target instanceof MobEntity mob) {
                 Vec3d pos = attacker.getPos();
                 Collection<EntityAttributeModifier> damages = stack.getAttributeModifiers(EquipmentSlot.MAINHAND).get(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                //TODO: config
                 double searchRange = IafCommonConfig.INSTANCE.armors.dragonLightningSearchRange.getValue();
                 List<Pair<Vec3d, Vec3d>> lightnings = new LinkedList<>();
                 //Cache for BFS
@@ -116,7 +115,7 @@ public interface DragonSteelOverrides<T extends ToolItem> {
                         if (attacked.size() + bfsQueue.size() >= IafCommonConfig.INSTANCE.armors.dragonLightningMaxSearchCount.getValue())
                             break;
                         bfsQueue.add(new Pair<>(m, damage * IafCommonConfig.INSTANCE.armors.dragonLightningDamageReduction.getValue()));
-                        lightnings.add(new Pair<>(mobEntity.getPos(), m.getPos()));
+                        lightnings.add(new Pair<>(mobEntity.getBoundingBox().getCenter(), m.getBoundingBox().getCenter()));
                     }
                 }
                 for (ServerPlayerEntity player : world.getPlayers(player1 -> player1.distanceTo(attacker) < 64)) {

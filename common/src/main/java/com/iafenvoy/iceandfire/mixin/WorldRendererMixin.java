@@ -31,7 +31,7 @@ public class WorldRendererMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getEntities()Ljava/lang/Iterable;"))
     private void renderBolts(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f projectionMatrix, CallbackInfo ci) {
         matrices.push();
-        Vec3d pos = MinecraftClient.getInstance().player.getPos();
+        Vec3d pos = camera.getPos();
         matrices.translate(-pos.x, -pos.y, -pos.z);
         for (Pair<Vec3d, Vec3d> pair : ClientEvents.LIGHTNINGS) {
             LightningBoltData bolt = new LightningBoltData(LightningBoltData.BoltRenderInfo.ELECTRICITY, pair.getLeft(), pair.getRight(), 4)
