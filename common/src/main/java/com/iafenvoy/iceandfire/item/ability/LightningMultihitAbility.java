@@ -49,7 +49,7 @@ public class LightningMultihitAbility implements PostHitAbility {
                         if (attacked.size() + bfsQueue.size() >= IafCommonConfig.INSTANCE.tools.dragonLightningMaxSearchCount.getValue())
                             break;
                         bfsQueue.add(new Pair<>(m, damage * IafCommonConfig.INSTANCE.tools.dragonLightningDamageReduction.getValue()));
-                        lightnings.add(new Pair<>(mobEntity.getPos(), m.getPos()));
+                        lightnings.add(new Pair<>(mobEntity.getBoundingBox().getCenter(), m.getBoundingBox().getCenter()));
                     }
                 }
                 for (ServerPlayerEntity player : world.getPlayers(player1 -> player1.distanceTo(attacker) < 64))

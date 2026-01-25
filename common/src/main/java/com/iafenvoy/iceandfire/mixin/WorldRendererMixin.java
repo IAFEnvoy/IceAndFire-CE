@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilderStorage;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -31,10 +32,10 @@ public class WorldRendererMixin {
     private final LightningRenderer iceandfire$lightningRenderer = new LightningRenderer();
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getEntities()Ljava/lang/Iterable;"))
-    private void renderBolts(CallbackInfo ci, @Local(argsOnly = true) RenderTickCounter tickCounter, @Local MatrixStack matrices) {
+    private void renderBolts(CallbackInfo ci, @Local(argsOnly = true) RenderTickCounter tickCounter, @Local(argsOnly = true) Camera camera, @Local MatrixStack matrices) {
         float tickDelta = tickCounter.getTickDelta(false);
         matrices.push();
-        Vec3d pos = MinecraftClient.getInstance().player.getPos();
+        Vec3d pos = camera.getPos();
         matrices.translate(-pos.x, -pos.y, -pos.z);
         for (Pair<Vec3d, Vec3d> pair : ClientEvents.LIGHTNINGS) {
             LightningBoltData bolt = new LightningBoltData(LightningBoltData.BoltRenderInfo.ELECTRICITY, pair.getLeft(), pair.getRight(), 4)

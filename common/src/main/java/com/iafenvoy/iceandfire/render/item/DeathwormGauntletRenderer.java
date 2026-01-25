@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.render.entity.DeathWormEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.DeathWormGauntletModel;
 import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -24,7 +25,7 @@ public class DeathwormGauntletRenderer implements DynamicItemRenderer {
             texture = RenderLayer.getEntityCutout(DeathWormEntityRenderer.TEXTURE_YELLOW);
         matrices.push();
         matrices.translate(0.5F, 0.5F, 0.5F);
-        MODEL.animate(stack);
+        MODEL.animate(stack, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(true));
         MODEL.render(matrices, vertexConsumers.getBuffer(texture), light, overlay, -1);
         matrices.pop();
     }

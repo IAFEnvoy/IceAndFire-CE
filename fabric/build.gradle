@@ -41,7 +41,7 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
     modImplementation "maven.modrinth:uranus:FH0tB0dy"
-    modImplementation "maven.modrinth:jupiter:lnadq2l0"
+    modImplementation "maven.modrinth:jupiter:5pNXzmee"
     modImplementation(include("com.github.IAFEnvoy.Integration:integration-fabric:$integration_version"))
 
     // Optional dependencies

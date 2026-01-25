@@ -1,10 +1,13 @@
 package com.iafenvoy.iceandfire.compat.delight;
 
 import dev.architectury.platform.Platform;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
+import net.minecraft.world.World;
 
 import java.util.List;
 

@@ -37,13 +37,14 @@ Netherite Related things.
 | Farmer's Delight            | Food based on IAF                     |   🚧   | Will be move to standalone mod.                                                                                           |
 | Iron's Spells 'n Spellbooks | IAF Spellbooks                        |   🔲   |                                                                                                                           |
 | Jade                        | Additional crosshair information      |   ✅    |                                                                                                                           |
+| Journey Map                 | Map Mod                               |   🚧   | Will release standalone resource pack                                                                                     |
 | Just Enough Items           | Recipe view                           |   ✅    | MC 1.21+ only                                                                                                             |
 | Ponder                      | Dragon Forge Structure Tutorial       |   ✅    | MC 1.21+ only                                                                                                             |
 | ProjectE                    | EMC & Dragon Forge Recipe Calculation |   ✅    |                                                                                                                           |
 | Roughly Enough Items        | Recipe view                           |   ❌    |                                                                                                                           |
 | Tinkers' Construct          | New materials                         |   🔲   |                                                                                                                           |
 | Thaumcraft 7                | New vis                               |   🔲   | TC7 is not published yet but is planned so I added here lol                                                               |
-| Touhou Little Maid          | Armors&Tools effects                  |   🚧   | MC 1.21+ only                                                                                                             |
+| Xaero's Minimap & Worldmap  | Map Mod                               |   🚧   | Will release standalone resource pack                                                                                     |
 
 Also, there's a recipe extension pack for updated and harder crafts using netherite:
 [Ice And Fire Smithing](https://modrinth.com/datapack/iceandfire_smithing)
@@ -52,7 +53,8 @@ Also, there's a recipe extension pack for updated and harder crafts using nether
 
 ### Will new contents in 1.21.1 be updated in 1.20.1?
 
-No. 1.20.1 now only receive bug fixes since parallel update is very hard.
+No. 1.20.1 now only receive bug fixes since parallel update is very hard. That means code are very different on 2
+versions. If you are addon developers and confused when upgrading version, join my discord and feel free to ask me.
 
 ### Other Minecraft Version?
 

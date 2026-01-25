@@ -22,24 +22,10 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-@SuppressWarnings("ALL")
 public class DreadLichSkullEntity extends PersistentProjectileEntity {
     public DreadLichSkullEntity(EntityType<? extends PersistentProjectileEntity> type, World worldIn) {
         super(type, worldIn);
         this.setDamage(6F);
-    }
-
-    public DreadLichSkullEntity(EntityType<? extends PersistentProjectileEntity> type, World worldIn, double x, double y, double z) {
-        this(type, worldIn);
-        this.setPosition(x, y, z);
-        this.setDamage(6F);
-    }
-
-    public DreadLichSkullEntity(EntityType<? extends PersistentProjectileEntity> type, World worldIn, LivingEntity shooter, double x, double y, double z) {
-        super(type, worldIn);
-        this.setOwner(shooter);
-        this.setDamage(6);
-        this.setPos(x, y, z);
     }
 
     public DreadLichSkullEntity(EntityType<? extends PersistentProjectileEntity> type, World worldIn, LivingEntity shooter, double dmg) {
@@ -59,8 +45,8 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
         if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.inGround) && this.age > 5)
             this.remove(RemovalReason.DISCARDED);
         Entity shootingEntity = this.getOwner();
-        if (shootingEntity instanceof MobEntity && ((MobEntity) shootingEntity).getTarget() != null) {
-            LivingEntity target = ((MobEntity) shootingEntity).getTarget();
+        if (shootingEntity instanceof MobEntity mob && mob.getTarget() != null) {
+            LivingEntity target = mob.getTarget();
             double minusX = target.getX() - this.getX();
             double minusY = target.getY() - this.getY();
             double minusZ = target.getZ() - this.getZ();
@@ -75,9 +61,9 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
                 LivingEntity closest = null;
                 if (!list.isEmpty()) {
                     for (Entity e : list) {
-                        if (e instanceof LivingEntity && !e.getUuid().equals(shootingEntity.getUuid()) && e instanceof Monster) {
+                        if (e instanceof LivingEntity living && !e.getUuid().equals(shootingEntity.getUuid()) && e instanceof Monster) {
                             if (closest == null || closest.distanceTo(shootingEntity) > e.distanceTo(shootingEntity)) {
-                                closest = (LivingEntity) e;
+                                closest = living;
                             }
                         }
                     }
@@ -124,11 +110,7 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
     protected void onEntityHit(EntityHitResult raytraceResultIn) {
         Entity entity = raytraceResultIn.getEntity();
         Entity shootingEntity = this.getOwner();
-        if (entity != null) {
-            if (shootingEntity != null && entity.isTeammate(shootingEntity)) {
-                return;
-            }
-        }
+        if (entity != null && shootingEntity != null && entity.isTeammate(shootingEntity)) return;
         super.onEntityHit(raytraceResultIn);
     }
 
@@ -136,11 +118,9 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
     protected void onHit(LivingEntity living) {
         super.onHit(living);
         Entity shootingEntity = this.getOwner();
-        if (living != null && (shootingEntity == null || !living.isPartOf(shootingEntity))) {
-            if (living instanceof PlayerEntity) {
-                this.damageShield((PlayerEntity) living, (float) this.getDamage());
-            }
-        }
+        if (living != null && (shootingEntity == null || !living.isPartOf(shootingEntity)))
+            if (living instanceof PlayerEntity player)
+                this.damageShield(player, (float) this.getDamage());
     }
 
     @Override
@@ -154,7 +134,6 @@ public class DreadLichSkullEntity extends PersistentProjectileEntity {
             player.getActiveItem().damage(i, player, LivingEntity.getSlotForHand(player.getActiveHand()));
 
             if (player.getActiveItem().isEmpty()) {
-                Hand hand = player.getActiveHand();
                 player.clearActiveItem();
                 this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.getWorld().random.nextFloat() * 0.4F);
             }

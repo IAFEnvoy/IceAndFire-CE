@@ -39,7 +39,7 @@ dependencies {
     modImplementation(include("com.github.IAFEnvoy.Integration:integration-neoforge:$integration_version"))
 
     modImplementation "maven.modrinth:uranus:BBb3HOQ5"
-    modImplementation "maven.modrinth:jupiter:Ypjuw83q"
+    modImplementation "maven.modrinth:jupiter:m2itNS7Z"
 
     modLocalRuntime "dev.emi:emi-neoforge:$emi_version"
 
@@ -49,8 +49,6 @@ dependencies {
     modCompileOnly "curse.maven:projecte-226410:6611984"
 
     modCompileOnly "net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"
-
-    modCompileOnly "curse.maven:touhou-little-maid-355044:6988538"
 
     // Ars Nouveau
     modCompileOnly "com.hollingsworth.ars_nouveau:ars_nouveau-$minecraft_version:$ars_version"
