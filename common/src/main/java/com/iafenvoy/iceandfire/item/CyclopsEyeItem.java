@@ -19,13 +19,13 @@ import java.util.List;
 
 public class CyclopsEyeItem extends Item {
     public CyclopsEyeItem() {
-        super(new Settings().maxDamage(500).component(IafDataComponents.INT.get(), 0));
+        super(new Settings().maxDamage(500).component(IafDataComponents.TICK_COUNTER.get(), 0));
     }
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
         if (entity instanceof LivingEntity living) {
-            int tick = stack.get(IafDataComponents.INT.get());
+            int tick = stack.getOrDefault(IafDataComponents.TICK_COUNTER.get(), 0);
             if (living.getMainHandStack() == stack || living.getOffHandStack() == stack) {
                 double range = 15;
                 boolean inflictedDamage = false;
@@ -41,7 +41,7 @@ public class CyclopsEyeItem extends Item {
                 stack.damage(1, living, LivingEntity.getSlotForHand(living.getActiveHand()));
                 tick = 0;
             }
-            stack.set(IafDataComponents.INT.get(), tick);
+            stack.set(IafDataComponents.TICK_COUNTER.get(), tick);
         }
     }
 

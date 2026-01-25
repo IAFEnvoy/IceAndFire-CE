@@ -3,13 +3,11 @@ package com.iafenvoy.iceandfire.item;
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafSounds;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Box;
@@ -20,7 +18,7 @@ import java.util.List;
 
 public class DeathwormGauntletItem extends Item {
     public DeathwormGauntletItem() {
-        super(new Settings().maxDamage(500).component(IafDataComponents.INT.get(), -1));
+        super(new Settings().maxDamage(500).component(IafDataComponents.USER_ID.get(), -1));
     }
 
     @Override
@@ -42,14 +40,14 @@ public class DeathwormGauntletItem extends Item {
 
     @Override
     public void usageTick(World level, LivingEntity entity, ItemStack stack, int remainingUseTicks) {
-        if (stack.getOrDefault(IafDataComponents.INT.get(), -1) != entity.getId())
-            stack.set(IafDataComponents.INT.get(), entity.getId());
+        if (stack.getOrDefault(IafDataComponents.USER_ID.get(), -1) != entity.getId())
+            stack.set(IafDataComponents.USER_ID.get(), entity.getId());
         MiscData.get(entity).setLungeTicks(this.getMaxUseTime(stack, entity) - remainingUseTicks);
     }
 
     @Override
     public void onStoppedUsing(ItemStack stack, World worldIn, LivingEntity user, int timeLeft) {
-        stack.set(IafDataComponents.INT.get(), -1);
+        stack.set(IafDataComponents.USER_ID.get(), -1);
     }
 
     @Override
@@ -71,7 +69,7 @@ public class DeathwormGauntletItem extends Item {
             player.getItemCooldownManager().set(this, 20);
         }
         user.playSound(IafSounds.DEATHWORM_ATTACK.get(), 1F, 1F);
-        stack.set(IafDataComponents.INT.get(), -1);
+        stack.set(IafDataComponents.USER_ID.get(), -1);
 
         return super.finishUsing(stack, world, user);
     }

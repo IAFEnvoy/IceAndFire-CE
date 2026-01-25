@@ -24,7 +24,7 @@ public class GorgonHeadRenderer implements DynamicItemRenderer {
 
     @Override
     public void render(ItemStack stack, ModelTransformationMode type, MatrixStack stackIn, VertexConsumerProvider bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        boolean active = stack.getItem() == IafItems.GORGON_HEAD.get() && stack.contains(IafDataComponents.BOOL.get()) && stack.get(IafDataComponents.BOOL.get());
+        boolean active = stack.getItem() == IafItems.GORGON_HEAD.get() && stack.contains(IafDataComponents.ACTIVE.get());
         AdvancedEntityModel<Entity> model = active ? ACTIVE_MODEL : INACTIVE_MODEL;
         stackIn.push();
         stackIn.translate(0.5F, active ? 1.5F : 1.25F, 0.5F);

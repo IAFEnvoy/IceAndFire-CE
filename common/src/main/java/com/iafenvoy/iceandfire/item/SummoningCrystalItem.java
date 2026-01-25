@@ -30,6 +30,16 @@ public class SummoningCrystalItem extends Item {
         super(new Settings().maxCount(1));
     }
 
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        super.inventoryTick(stack, world, entity, slot, selected);
+        //Data Fix
+        if (stack.contains(IafDataComponents.NBT_COMPOUND.get())) {
+            stack.set(IafDataComponents.CRYSTAL_DRAGON_DATA.get(), stack.get(IafDataComponents.NBT_COMPOUND.get()));
+            stack.remove(IafDataComponents.NBT_COMPOUND.get());
+        }
+    }
+
     public static boolean hasDragon(ItemStack stack) {
         NbtCompound nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (stack.getItem() instanceof SummoningCrystalItem && nbt != null)

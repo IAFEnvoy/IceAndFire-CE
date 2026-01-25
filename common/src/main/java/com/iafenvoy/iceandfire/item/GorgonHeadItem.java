@@ -26,7 +26,7 @@ import java.util.Optional;
 
 public class GorgonHeadItem extends Item {
     public GorgonHeadItem() {
-        super(new Settings().maxDamage(1).component(IafDataComponents.BOOL.get(), false));
+        super(new Settings().maxDamage(1));
     }
 
     @Override
@@ -96,21 +96,20 @@ public class GorgonHeadItem extends Item {
                     stack.decrement(1);
             }
         }
-        stack.set(IafDataComponents.BOOL.get(), false);
+        stack.remove(IafDataComponents.ACTIVE.get());
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
         ItemStack itemStackIn = playerIn.getStackInHand(hand);
         playerIn.setCurrentHand(hand);
-        itemStackIn.set(IafDataComponents.BOOL.get(), true);
+        itemStackIn.set(IafDataComponents.ACTIVE.get(), Unit.INSTANCE);
         return new TypedActionResult<>(ActionResult.SUCCESS, itemStackIn);
     }
 
     @Override
     public void usageTick(World level, LivingEntity player, ItemStack stack, int count) {
     }
-
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {

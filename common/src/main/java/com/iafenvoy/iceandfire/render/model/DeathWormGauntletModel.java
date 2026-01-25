@@ -108,9 +108,8 @@ public class DeathWormGauntletModel extends DragonBaseModel {
 
     public void animate(ItemStack stack, float partialTick) {
         this.resetToDefaultPose();
-        if (!stack.contains(IafDataComponents.INT.get())) return;
         assert MinecraftClient.getInstance().world != null;
-        Entity holder = MinecraftClient.getInstance().world.getEntityById(stack.get(IafDataComponents.INT.get()));
+        Entity holder = MinecraftClient.getInstance().world.getEntityById(stack.getOrDefault(IafDataComponents.USER_ID.get(), -1));
         if (!(holder instanceof LivingEntity livingEntity)) return;
 
         MiscData miscData = MiscData.get(livingEntity);

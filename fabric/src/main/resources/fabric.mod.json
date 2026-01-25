@@ -41,7 +41,7 @@
   "accessWidener": "iceandfire.accesswidener",
   "depends": {
     "minecraft": "1.21.x",
-    "jupiter": ">=2",
+    "jupiter": ">=2.3",
     "uranus": ">=2.3.2"
   }
 }
