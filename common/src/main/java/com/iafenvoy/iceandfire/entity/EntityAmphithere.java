@@ -462,11 +462,6 @@ public class EntityAmphithere extends TameableEntity implements ISyncMount, IAni
     }
 
     @Override
-    public boolean isFlapping() {
-        return this.isFlappingWings();
-    }
-
-    @Override
     public boolean isSitting() {
         if (this.getWorld().isClient) {
             boolean isSitting = (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0;
