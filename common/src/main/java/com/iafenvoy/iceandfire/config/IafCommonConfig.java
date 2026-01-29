@@ -252,22 +252,22 @@ public class IafCommonConfig extends AutoInitConfigContainer {
 
     @SuppressWarnings("unused")
     public static class ArmorsConfig extends AutoInitConfigCategoryBase {
-        public final BooleanEntry dragonFireAbility = BooleanEntry.builder("iceandfire.armors.dragonFireAbility", true).key("dragonFireAbility").build();
-        public final BooleanEntry dragonIceAbility = BooleanEntry.builder("iceandfire.armors.dragonIceAbility", true).key("dragonIceAbility").build();
-        public final BooleanEntry dragonLightningAbility = BooleanEntry.builder("iceandfire.armors.dragonLightningAbility", true).key("dragonLightningAbility").build();
+        public final BooleanEntry dragonFireAbility = BooleanEntry.builder("config.iceandfire.armors.dragonFireAbility", true).key("dragonFireAbility").build();
+        public final BooleanEntry dragonIceAbility = BooleanEntry.builder("config.iceandfire.armors.dragonIceAbility", true).key("dragonIceAbility").build();
+        public final BooleanEntry dragonLightningAbility = BooleanEntry.builder("config.iceandfire.armors.dragonLightningAbility", true).key("dragonLightningAbility").build();
         public final SeparatorEntry s1 = SeparatorEntry.builder().build();
-        public final DoubleEntry dragonSteelBaseDamage = DoubleEntry.builder("iceandfire.armors.dragonSteelBaseDamage", 25).min(0).key("dragonSteelBaseDamage").build();
-        public final IntegerEntry dragonSteelBaseArmor = IntegerEntry.builder("iceandfire.armors.dragonSteelBaseArmor", 12).min(0).key("dragonSteelBaseArmor").build();
-        public final DoubleEntry dragonSteelBaseArmorToughness = DoubleEntry.builder("iceandfire.armors.dragonSteelBaseArmorToughness", 6).min(0).key("dragonSteelBaseArmorToughness").build();
-        public final IntegerEntry dragonSteelBaseDurability = IntegerEntry.builder("iceandfire.armors.dragonSteelBaseDurability", 8000).min(0).key("dragonSteelBaseDurability").build();
-        public final IntegerEntry dragonSteelBaseDurabilityEquipment = IntegerEntry.builder("iceandfire.armors.dragonSteelBaseDurabilityEquipment", 8000).min(0).key("dragonSteelBaseDurabilityEquipment").build();
+        public final DoubleEntry dragonSteelBaseDamage = DoubleEntry.builder("config.iceandfire.armors.dragonSteelBaseDamage", 25).min(0).key("dragonSteelBaseDamage").build();
+        public final IntegerEntry dragonSteelBaseArmor = IntegerEntry.builder("config.iceandfire.armors.dragonSteelBaseArmor", 12).min(0).key("dragonSteelBaseArmor").build();
+        public final DoubleEntry dragonSteelBaseArmorToughness = DoubleEntry.builder("config.iceandfire.armors.dragonSteelBaseArmorToughness", 6).min(0).key("dragonSteelBaseArmorToughness").build();
+        public final IntegerEntry dragonSteelBaseDurability = IntegerEntry.builder("config.iceandfire.armors.dragonSteelBaseDurability", 8000).min(0).key("dragonSteelBaseDurability").build();
+        public final IntegerEntry dragonSteelBaseDurabilityEquipment = IntegerEntry.builder("config.iceandfire.armors.dragonSteelBaseDurabilityEquipment", 8000).min(0).key("dragonSteelBaseDurabilityEquipment").build();
         public final SeparatorEntry s2 = SeparatorEntry.builder().build();
-        public final DoubleEntry dragonLightningSearchRange = DoubleEntry.builder("iceandfire.armors.dragonLightningSearchRange", 10).range(0, 128).key("dragonLightningSearchRange").build();
-        public final DoubleEntry dragonLightningDamageReduction = DoubleEntry.builder("iceandfire.armors.dragonLightningDamageReduction", 0.5).range(0, 1).key("dragonLightningDamageReduction").build();
-        public final IntegerEntry dragonLightningMaxSearchCount = IntegerEntry.builder("iceandfire.armors.dragonLightningMaxSearchCount", 10).range(0, 1024).key("dragonLightningMaxSearchCount").build();
+        public final DoubleEntry dragonLightningSearchRange = DoubleEntry.builder("config.iceandfire.armors.dragonLightningSearchRange", 10).range(0, 128).key("dragonLightningSearchRange").build();
+        public final DoubleEntry dragonLightningDamageReduction = DoubleEntry.builder("config.iceandfire.armors.dragonLightningDamageReduction", 0.5).range(0, 1).key("dragonLightningDamageReduction").build();
+        public final IntegerEntry dragonLightningMaxSearchCount = IntegerEntry.builder("config.iceandfire.armors.dragonLightningMaxSearchCount", 10).range(0, 1024).key("dragonLightningMaxSearchCount").build();
 
         public ArmorsConfig() {
-            super("armors", "iceandfire.category.armors");
+            super("armors", "config.iceandfire.category.armors");
         }
     }
 
