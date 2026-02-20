@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.world.structure;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.CyclopsEntity;
-import com.iafenvoy.iceandfire.item.block.GoldPileBlock;
+import com.iafenvoy.iceandfire.item.block.PileBlock;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafStructurePieces;
@@ -112,11 +112,11 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
                     }
 
                     if (random.nextInt(80) == 0 && this.isTouchingAir(world, position.up())) {
-                        world.setBlockState(position.up(), IafBlocks.GOLD_PILE.get().getDefaultState().with(GoldPileBlock.LAYERS, 8), 3);
-                        world.setBlockState(position.up().north(), IafBlocks.GOLD_PILE.get().getDefaultState().with(GoldPileBlock.LAYERS, 1 + random.nextInt(7)), 3);
-                        world.setBlockState(position.up().south(), IafBlocks.GOLD_PILE.get().getDefaultState().with(GoldPileBlock.LAYERS, 1 + random.nextInt(7)), 3);
-                        world.setBlockState(position.up().west(), IafBlocks.GOLD_PILE.get().getDefaultState().with(GoldPileBlock.LAYERS, 1 + random.nextInt(7)), 3);
-                        world.setBlockState(position.up().east(), IafBlocks.GOLD_PILE.get().getDefaultState().with(GoldPileBlock.LAYERS, 1 + random.nextInt(7)), 3);
+                        world.setBlockState(position.up(), IafBlocks.GOLD_PILE.get().getDefaultState().with(PileBlock.LAYERS, 8), 3);
+                        world.setBlockState(position.up().north(), IafBlocks.GOLD_PILE.get().getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)), 3);
+                        world.setBlockState(position.up().south(), IafBlocks.GOLD_PILE.get().getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)), 3);
+                        world.setBlockState(position.up().west(), IafBlocks.GOLD_PILE.get().getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)), 3);
+                        world.setBlockState(position.up().east(), IafBlocks.GOLD_PILE.get().getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)), 3);
                         world.setBlockState(position.up(2), Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.Type.HORIZONTAL.random(random)), 2);
 
                         if (world.getBlockState(position.up(2)).getBlock() instanceof AbstractChestBlock) {

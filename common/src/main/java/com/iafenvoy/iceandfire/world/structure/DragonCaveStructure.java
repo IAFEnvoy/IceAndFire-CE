@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.world.structure;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.HomePosition;
-import com.iafenvoy.iceandfire.item.block.GoldPileBlock;
+import com.iafenvoy.iceandfire.item.block.PileBlock;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
@@ -222,7 +222,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
                 int chance = random.nextInt(99) + 1;
                 if (chance < 60) {
                     boolean generateGold = random.nextDouble() < IafCommonConfig.INSTANCE.dragon.generateDenGoldChance.getValue() * (this.male ? 1 : 2);
-                    world.setBlockState(pos, generateGold ? this.getTreasurePile().with(GoldPileBlock.LAYERS, 1 + random.nextInt(7)) : Blocks.AIR.getDefaultState(), 3);
+                    world.setBlockState(pos, generateGold ? this.getTreasurePile().with(PileBlock.LAYERS, 1 + random.nextInt(7)) : Blocks.AIR.getDefaultState(), 3);
                 } else if (chance == 61) {
                     world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.Type.HORIZONTAL.random(random)), Block.NOTIFY_LISTENERS);
                     if (world.getBlockState(pos).getBlock() instanceof ChestBlock) {

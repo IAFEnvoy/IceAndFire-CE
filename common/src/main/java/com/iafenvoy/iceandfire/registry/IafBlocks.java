@@ -35,9 +35,9 @@ public final class IafBlocks {
     public static final RegistrySupplier<Block> FIRE_LILY = register("fire_lily", ElementalFlowerBlock::new);
     public static final RegistrySupplier<Block> FROST_LILY = register("frost_lily", ElementalFlowerBlock::new);
     public static final RegistrySupplier<Block> LIGHTNING_LILY = register("lightning_lily", ElementalFlowerBlock::new);
-    public static final RegistrySupplier<Block> GOLD_PILE = register("gold_pile", GoldPileBlock::new);
-    public static final RegistrySupplier<Block> SILVER_PILE = register("silver_pile", GoldPileBlock::new);
-    public static final RegistrySupplier<Block> COPPER_PILE = register("copper_pile", GoldPileBlock::new);
+    public static final RegistrySupplier<Block> GOLD_PILE = register("gold_pile", PileBlock::new);
+    public static final RegistrySupplier<Block> SILVER_PILE = register("silver_pile", PileBlock::new);
+    public static final RegistrySupplier<Block> COPPER_PILE = register("copper_pile", PileBlock::new);
     public static final RegistrySupplier<Block> SILVER_ORE = register("silver_ore", () -> new ExperienceDroppingBlock(ConstantIntProvider.create(2), AbstractBlock.Settings.create().mapColor(MapColor.STONE_GRAY).strength(3, 3).requiresTool()));
     public static final RegistrySupplier<Block> DEEPSLATE_SILVER_ORE = register("deepslate_silver_ore", () -> new ExperienceDroppingBlock(ConstantIntProvider.create(2), AbstractBlock.Settings.create().mapColor(MapColor.DEEPSLATE_GRAY).strength(3, 3).requiresTool()));
     public static final RegistrySupplier<Block> SILVER_BLOCK = register("silver_block", () -> GenericBlock.builder(3.0F, 5.0F, BlockSoundGroup.METAL, MapColor.IRON_GRAY, null, null, false));

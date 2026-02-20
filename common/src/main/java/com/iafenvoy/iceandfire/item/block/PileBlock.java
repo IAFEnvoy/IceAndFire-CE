@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.item.block;
 
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.block.*;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,12 +22,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class GoldPileBlock extends Block {
+public class PileBlock extends Block {
     public static final IntProperty LAYERS = IntProperty.of("layers", 1, 8);
     protected static final VoxelShape[] SHAPES = new VoxelShape[]{VoxelShapes.empty(), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 
-    public GoldPileBlock() {
-        super(Settings.create().mapColor(MapColor.DIRT_BROWN).strength(0.3F, 1).ticksRandomly().sounds(new BlockSoundGroup(1.0F, 1.0F, IafSounds.GOLD_PILE_BREAK.get(), IafSounds.GOLD_PILE_STEP.get(), IafSounds.GOLD_PILE_BREAK.get(), IafSounds.GOLD_PILE_STEP.get(), IafSounds.GOLD_PILE_STEP.get())));
+    public PileBlock() {
+        super(Settings.create().mapColor(MapColor.DIRT_BROWN).strength(0.3F, 1).ticksRandomly().sounds(new BlockSoundGroup(1.0F, 1.0F, IafSounds.GOLD_PILE_BREAK.get(), IafSounds.GOLD_PILE_STEP.get(), IafSounds.GOLD_PILE_BREAK.get(), IafSounds.GOLD_PILE_STEP.get(), IafSounds.GOLD_PILE_STEP.get())).pistonBehavior(PistonBehavior.DESTROY));
         this.setDefaultState(this.stateManager.getDefaultState().with(LAYERS, 1));
     }
 
@@ -56,7 +57,7 @@ public class GoldPileBlock extends Block {
         Block block = blockstate.getBlock();
         if (block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER) {
             if (block != Blocks.HONEY_BLOCK && block != Blocks.SOUL_SAND)
-                return Block.isFaceFullSquare(blockstate.getCollisionShape(worldIn, pos.down()), Direction.UP) || block instanceof GoldPileBlock && blockstate.get(LAYERS) == 8;
+                return Block.isFaceFullSquare(blockstate.getCollisionShape(worldIn, pos.down()), Direction.UP) || block instanceof PileBlock && blockstate.get(LAYERS) == 8;
             else return true;
         } else return false;
     }

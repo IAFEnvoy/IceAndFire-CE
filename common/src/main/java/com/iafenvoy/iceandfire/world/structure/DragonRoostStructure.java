@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.world.structure;
 
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.HomePosition;
-import com.iafenvoy.iceandfire.item.block.GoldPileBlock;
+import com.iafenvoy.iceandfire.item.block.PileBlock;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
@@ -272,18 +272,18 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
                     if (position.getSquaredDistance(origin) <= circularArea) {
                         position = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, position);
 
-                        if (this.treasureBlock instanceof GoldPileBlock) {
+                        if (this.treasureBlock instanceof PileBlock) {
                             BlockState state = world.getBlockState(position);
                             boolean placed = false;
                             if (state.isAir()) {
-                                world.setBlockState(position, this.treasureBlock.getDefaultState().with(GoldPileBlock.LAYERS, 1 + random.nextInt(7)), Block.NOTIFY_LISTENERS);
+                                world.setBlockState(position, this.treasureBlock.getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)), Block.NOTIFY_LISTENERS);
                                 placed = true;
                             } else if (state.getBlock() instanceof SnowBlock) {
-                                world.setBlockState(position.down(), this.treasureBlock.getDefaultState().with(GoldPileBlock.LAYERS, state.get(SnowBlock.LAYERS)), Block.NOTIFY_LISTENERS);
+                                world.setBlockState(position.down(), this.treasureBlock.getDefaultState().with(PileBlock.LAYERS, state.get(SnowBlock.LAYERS)), Block.NOTIFY_LISTENERS);
                                 placed = true;
                             }
-                            if (placed && world.getBlockState(position.down()).getBlock() instanceof GoldPileBlock)
-                                world.setBlockState(position.down(), this.treasureBlock.getDefaultState().with(GoldPileBlock.LAYERS, 8), Block.NOTIFY_LISTENERS);
+                            if (placed && world.getBlockState(position.down()).getBlock() instanceof PileBlock)
+                                world.setBlockState(position.down(), this.treasureBlock.getDefaultState().with(PileBlock.LAYERS, 8), Block.NOTIFY_LISTENERS);
                         }
                     }
                 }
