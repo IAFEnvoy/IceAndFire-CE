@@ -27,6 +27,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -79,10 +80,8 @@ public final class ClientEvents {
         if (world == null) return;
         miscData.checkScepterTarget(world.entityManager.getLookup()::get);
         //Cockatrice Beam
-        for (UUID target : miscData.getTargetedByScepters()) {
-            Entity e = world.entityManager.getLookup().get(target);
-            if (e != null) CockatriceBeamRenderer.render(entity, e, matrixStack, buffers, partialRenderTick);
-        }
+        for (Entity target : miscData.getTargetedByScepters().stream().filter(Objects::nonNull).map(x -> world.entityManager.getLookup().get(x)).filter(Objects::nonNull).toList())
+            CockatriceBeamRenderer.render(entity, target, matrixStack, buffers, partialRenderTick);
         //Frozen
         StatusEffectInstance effect = entity.getStatusEffect(Registries.STATUS_EFFECT.getEntry(IafStatusEffects.FROZEN.get()));
         if (effect != null) FrozenStateRenderer.render(entity, matrixStack, buffers, light, effect.getDuration());

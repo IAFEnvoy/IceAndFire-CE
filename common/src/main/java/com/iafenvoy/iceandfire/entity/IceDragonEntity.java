@@ -4,8 +4,6 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import com.iafenvoy.iceandfire.entity.util.dragon.IafDragonAttacks;
-import com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager;
-import com.iafenvoy.iceandfire.event.IafEvents;
 import com.iafenvoy.iceandfire.particle.DragonFrostParticleType;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.registry.IafEntities;
@@ -29,8 +27,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -38,7 +36,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
@@ -241,7 +238,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                     }
                     HitResult mop = this.rayTraceRider(controller, 10 * this.getDragonStage(), 1.0F);
                     if (mop != null) {
-                        this.stimulateFire(mop.getPos().x, mop.getPos().y, mop.getPos().z, 1);
+                        this.breathAttack(mop.getPos().x, mop.getPos().y, mop.getPos().z, false);
                     }
                 }
             } else {
@@ -418,7 +415,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                         if (this.age % 5 == 0) {
                             this.playSound(IafSounds.ICEDRAGON_BREATH.get(), 4, 1);
                         }
-                        this.stimulateFire(entity.getX(), entity.getY(), entity.getZ(), 1);
+                        this.breathAttack(entity.getX(), entity.getY(), entity.getZ(), false);
                         if (!entity.isAlive()) {
                             this.setBreathingFire(false);
                             this.usingGroundAttack = true;
@@ -433,64 +430,14 @@ public class IceDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public void stimulateFire(double burnX, double burnY, double burnZ, int syncType) {
-        if (IafEvents.ON_DRAGON_FIRE_BLOCK.invoker().onFireBlock(this, burnX, burnY, burnZ)) return;
-        if (syncType > 2 && syncType < 6) {
-            if (this.getAnimation() != ANIMATION_FIRECHARGE) {
-                this.setAnimation(ANIMATION_FIRECHARGE);
-            } else if (this.getAnimationTick() == 20) {
-                this.setYaw(this.bodyYaw);
-                Vec3d headVec = this.getHeadPosition();
-                double d2 = burnX - headVec.x;
-                double d3 = burnY - headVec.y;
-                double d4 = burnZ - headVec.z;
-                float inaccuracy = 1.0F;
-                d2 = d2 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d3 = d3 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                d4 = d4 + this.random.nextGaussian() * 0.007499999832361937D * inaccuracy;
-                this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
-                IceDragonChargeEntity charge = new IceDragonChargeEntity(IafEntities.ICE_DRAGON_CHARGE.get(), this.getWorld(), this, d2, d3, d4);
-                charge.setPosition(headVec.x, headVec.y, headVec.z);
-                if (!this.getWorld().isClient) this.getWorld().spawnEntity(charge);
-            }
-            return;
-        }
-        this.getNavigation().stop();
-        this.burnParticleX = burnX;
-        this.burnParticleY = burnY;
-        this.burnParticleZ = burnZ;
-        Vec3d headPos = this.getHeadPosition();
-        double d2 = burnX - headPos.x;
-        double d3 = burnY - headPos.y;
-        double d4 = burnZ - headPos.z;
-        double distance = Math.max(2.5F * Math.sqrt(this.squaredDistanceTo(burnX, burnY, burnZ)), 0);
-        double conqueredDistance = this.burnProgress / 40D * distance;
-        int increment = (int) Math.ceil(conqueredDistance / 100);
-        int particleCount = this.getDragonStage() <= 3 ? 6 : 3;
-        for (int i = 0; i < conqueredDistance; i += increment) {
-            double progressX = headPos.x + d2 * (i / (float) distance);
-            double progressY = headPos.y + d3 * (i / (float) distance);
-            double progressZ = headPos.z + d4 * (i / (float) distance);
-            if (this.canPositionBeSeen(progressX, progressY, progressZ)) {
-                if (this.random.nextInt(particleCount) == 0) {
-                    Vec3d velocity = new Vec3d(progressX, progressY, progressZ).subtract(headPos);
-                    if (this.getWorld() instanceof ServerWorld serverWorld)
-                        serverWorld.spawnParticles(new DragonFrostParticleType(this.getScaleFactor()), headPos.x, headPos.y, headPos.z, 0, velocity.x, velocity.y, velocity.z, 1);
-                }
-            } else if (!this.getWorld().isClient) {
-                HitResult result = this.getWorld().raycast(new RaycastContext(new Vec3d(this.getX(), this.getY() + this.getStandingEyeHeight(), this.getZ()), new Vec3d(progressX, progressY, progressZ), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
-                Vec3d vec3 = result.getPos();
-                BlockPos pos = BlockPos.ofFloored(vec3);
-                IafDragonDestructionManager.destroyAreaBreath(this.getWorld(), pos, this);
-            }
-        }
-        if (this.burnProgress >= 40D && this.canPositionBeSeen(burnX, burnY, burnZ)) {
-            double spawnX = burnX + (this.random.nextFloat() * 3.0) - 1.5;
-            double spawnY = burnY + (this.random.nextFloat() * 3.0) - 1.5;
-            double spawnZ = burnZ + (this.random.nextFloat() * 3.0) - 1.5;
-            if (!this.getWorld().isClient)
-                IafDragonDestructionManager.destroyAreaBreath(this.getWorld(), BlockPos.ofFloored(spawnX, spawnY, spawnZ), this);
-        }
+    public Entity createCharge(double velocityX, double velocityY, double velocityZ) {
+        this.playSound(IafSounds.ICEDRAGON_BREATH.get(), 4, 1);
+        return new IceDragonChargeEntity(IafEntities.ICE_DRAGON_CHARGE.get(), this.getWorld(), this, velocityX, velocityY, velocityZ);
+    }
+
+    @Override
+    public ParticleEffect createBreathParticle() {
+        return new DragonFrostParticleType(this.getScaleFactor());
     }
 
     @Override
@@ -549,7 +496,7 @@ public class IceDragonEntity extends DragonBaseEntity {
                 if (this.age % 5 == 0) {
                     this.playSound(IafSounds.ICEDRAGON_BREATH.get(), 4, 1);
                 }
-                this.stimulateFire(burningTarget.getX() + 0.5F, burningTarget.getY() + 0.5F, burningTarget.getZ() + 0.5F, 1);
+                this.breathAttack(burningTarget.getX() + 0.5F, burningTarget.getY() + 0.5F, burningTarget.getZ() + 0.5F, false);
             }
         } else {
             this.setBreathingFire(true);

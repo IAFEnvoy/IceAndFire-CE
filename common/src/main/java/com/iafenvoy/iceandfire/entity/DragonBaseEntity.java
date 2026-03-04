@@ -79,6 +79,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryKey;
@@ -91,7 +92,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -2561,13 +2561,79 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
         return new Vec3d(headPosX, headPosY, headPosZ);
     }
 
-    //FIXME::int syncType param?
-    public abstract void stimulateFire(double burnX, double burnY, double burnZ, int syncType);
+    public final void breathAttack(double burnX, double burnY, double burnZ, boolean useCharge) {
+        if (IafEvents.ON_DRAGON_FIRE_BLOCK.invoker().onFireBlock(this, burnX, burnY, burnZ)) return;
+        if (useCharge) this.performChargeAttack(burnX, burnY, burnZ);
+        else this.performNormalBreathAttack(burnX, burnY, burnZ);
+    }
+
+    protected void performNormalBreathAttack(double burnX, double burnY, double burnZ) {
+        this.getNavigation().stop();
+        this.burnParticleX = burnX;
+        this.burnParticleY = burnY;
+        this.burnParticleZ = burnZ;
+        Vec3d headPos = this.getHeadPosition();
+        double d2 = burnX - headPos.x;
+        double d3 = burnY - headPos.y;
+        double d4 = burnZ - headPos.z;
+        double distance = Math.max(2.5F * Math.sqrt(this.squaredDistanceTo(burnX, burnY, burnZ)), 0);
+        double conqueredDistance = this.burnProgress / 40D * distance;
+        int increment = (int) Math.ceil(conqueredDistance / 100);
+        int particleCount = this.getDragonStage() <= 3 ? 6 : 3;
+        for (int i = 0; i < conqueredDistance; i += increment) {
+            double progressX = headPos.x + d2 * i / distance;
+            double progressY = headPos.y + d3 * i / distance;
+            double progressZ = headPos.z + d4 * i / distance;
+            if (this.canPositionBeSeen(progressX, progressY, progressZ)) {
+                if (this.random.nextInt(particleCount) == 0) {
+                    Vec3d velocity = new Vec3d(progressX, progressY, progressZ).subtract(headPos);
+                    if (this.getWorld() instanceof ServerWorld serverWorld)
+                        serverWorld.spawnParticles(this.createBreathParticle(), headPos.x, headPos.y, headPos.z, 0, velocity.x, velocity.y, velocity.z, 1);
+                }
+            } else if (!this.getWorld().isClient) {
+                HitResult result = this.getWorld().raycast(new RaycastContext(new Vec3d(this.getX(), this.getY() + this.getStandingEyeHeight(), this.getZ()), new Vec3d(progressX, progressY, progressZ), RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
+                Vec3d vec3 = result.getPos();
+                BlockPos pos = BlockPos.ofFloored(vec3);
+                IafDragonDestructionManager.destroyAreaBreath(this.getWorld(), pos, this);
+            }
+        }
+        if (this.burnProgress >= 40D && this.canPositionBeSeen(burnX, burnY, burnZ)) {
+            double spawnX = burnX + (this.random.nextFloat() * 3.0) - 1.5;
+            double spawnY = burnY + (this.random.nextFloat() * 3.0) - 1.5;
+            double spawnZ = burnZ + (this.random.nextFloat() * 3.0) - 1.5;
+            if (!this.getWorld().isClient)
+                IafDragonDestructionManager.destroyAreaBreath(this.getWorld(), BlockPos.ofFloored(spawnX, spawnY, spawnZ), this);
+        }
+    }
+
+    protected void performChargeAttack(double burnX, double burnY, double burnZ) {
+        if (this.getAnimation() != ANIMATION_FIRECHARGE)
+            this.setAnimation(ANIMATION_FIRECHARGE);
+        else if (this.getAnimationTick() == 20) {
+            this.setYaw(this.bodyYaw);
+            Vec3d headVec = this.getHeadPosition();
+            double d2 = burnX - headVec.x;
+            double d3 = burnY - headVec.y;
+            double d4 = burnZ - headVec.z;
+            float inaccuracy = 1.0F;
+            d2 = d2 + this.random.nextGaussian() * 0.0075 * inaccuracy;
+            d3 = d3 + this.random.nextGaussian() * 0.0075 * inaccuracy;
+            d4 = d4 + this.random.nextGaussian() * 0.0075 * inaccuracy;
+            this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
+            Entity charge = this.createCharge(d2, d3, d4);
+            charge.setPosition(headVec.x, headVec.y, headVec.z);
+            if (!this.getWorld().isClient) this.getWorld().spawnEntity(charge);
+            this.randomizeAttacks();
+        }
+    }
+
+    public abstract Entity createCharge(double velocityX, double velocityY, double velocityZ);
+
+    public abstract ParticleEffect createBreathParticle();
 
     public void randomizeAttacks() {
         this.airAttack = IafDragonAttacks.Air.values()[this.getRandom().nextInt(IafDragonAttacks.Air.values().length)];
         this.groundAttack = IafDragonAttacks.Ground.values()[this.getRandom().nextInt(IafDragonAttacks.Ground.values().length)];
-
     }
 
     @Override
@@ -2586,7 +2652,7 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
                     if (this.age % 5 == 0)
                         this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
                     int breathTicks = MathHelper.clamp(this.fireBreathTicks, 0, 40);
-                    this.stimulateFire(this.getX() + distX * breathTicks / 40, entity.getY(), this.getZ() + distZ * breathTicks / 40, 1);
+                    this.breathAttack(this.getX() + distX * breathTicks / 40, entity.getY(), this.getZ() + distZ * breathTicks / 40, false);
                 }
             } else {
                 this.setBreathingFire(true);
