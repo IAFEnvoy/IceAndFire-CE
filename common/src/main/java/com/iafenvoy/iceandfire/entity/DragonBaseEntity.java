@@ -84,6 +84,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -755,7 +756,7 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
         compound.putBoolean("AgingDisabled", this.isAgingDisabled());
         compound.putInt("Command", this.getCommand());
         if (this.dragonInventory != null)
-            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.dragonInventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));
+            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), this.dragonInventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));
         compound.putBoolean("CrystalBound", this.isBoundToCrystal());
         this.removeParts();
         this.lastScale = 0;
@@ -787,7 +788,7 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
         this.setCommand(compound.getInt("Command"));
 
         this.createInventory();
-        List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(NbtOps.INSTANCE, compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
         for (int i = 0; i < stacks.size() && i < this.dragonInventory.size(); i++)
             this.dragonInventory.setStack(i, stacks.get(i));
 

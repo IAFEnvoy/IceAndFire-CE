@@ -668,7 +668,7 @@
   "config.iceandfire.lightning_dragon_forge": "龙霆锻炉",
   "config.iceandfire.misc.allowAttributeOverriding": "允许属性覆盖",
   "config.iceandfire.misc.allowAttributeOverriding.comment": "未使用",
-  "config.iceandfire.misc.dreadQueenMaxHealth": "恐蚁女皇最大生命值",
+  "config.iceandfire.misc.dreadQueenMaxHealth": "悚域女皇最大生命值",
   "config.iceandfire.misc.enableDragonSeeker": "启用寻龙杖",
   "config.iceandfire.pixie.size": "每次生成数量",
   "config.iceandfire.pixie.spawnChance": "生成概率",

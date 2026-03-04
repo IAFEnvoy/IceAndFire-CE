@@ -51,6 +51,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -397,7 +398,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
         compound.putInt("Armor", this.getArmor());
         compound.putInt("Feedings", this.feedings);
         if (this.hippogryphInventory != null)
-            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.hippogryphInventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));
+            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), this.hippogryphInventory.getHeldStacks()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new NbtList()));
         compound.putBoolean("HasHomePosition", this.hasHomePosition);
         if (this.homePos != null && this.hasHomePosition) {
             compound.putInt("HomeAreaX", this.homePos.getX());
@@ -419,7 +420,7 @@ public class HippogryphEntity extends TameableEntity implements ExtendedMenuProv
         this.feedings = compound.getInt("Feedings");
 
         this.initHippogryphInv();
-        List<ItemStack> inv = ItemStack.OPTIONAL_CODEC.listOf().parse(NbtOps.INSTANCE, compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> inv = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.of(NbtOps.INSTANCE, this.getWorld().getRegistryManager()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
         for (int i = 0; i < inv.size() && i < this.hippogryphInventory.size(); i++)
             this.hippogryphInventory.setStack(i, inv.get(i));
 

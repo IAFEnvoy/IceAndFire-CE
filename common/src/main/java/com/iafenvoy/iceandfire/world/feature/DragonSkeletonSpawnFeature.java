@@ -2,11 +2,14 @@ package com.iafenvoy.iceandfire.world.feature;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
+import com.iafenvoy.uranus.util.RandomHelper;
 import com.mojang.serialization.Codec;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -35,6 +38,7 @@ public class DragonSkeletonSpawnFeature extends Feature<DefaultFeatureConfig> {
             dragon.setModelDead(true);
             dragon.setDeathStage(age / 10);
             dragon.setYaw(random.nextInt(360));
+            dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
             world.spawnEntity(dragon);
         }
         return true;
