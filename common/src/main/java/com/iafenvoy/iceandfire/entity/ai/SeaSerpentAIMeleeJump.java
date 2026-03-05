@@ -77,8 +77,10 @@ public class SeaSerpentAIMeleeJump extends DiveJumpingGoal {
         if (target != null) {
             if (this.dolphin.distanceTo(target) < 3F && this.attackCooldown <= 0) {
                 this.attackCooldown = 20;
-            } else if (this.dolphin.distanceTo(target) < 5F)
+            } else if (this.dolphin.distanceTo(target) < 5F) {
                 this.dolphin.setAnimation(EntitySeaSerpent.ANIMATION_BITE);
+                this.dolphin.setAnimationTick(0);
+            }
         }
 
         Vec3d vector3d = this.dolphin.getVelocity();

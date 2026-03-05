@@ -28,8 +28,8 @@ public class ItemDragonFlute extends Item {
         ItemStack itemStackIn = player.getStackInHand(hand);
         player.getItemCooldownManager().set(this, 60);
 
-        float chunksize = 16 * IafCommonConfig.INSTANCE.dragon.fluteDistance.getValue();
-        List<Entity> list = worldIn.getOtherEntities(player, (new Box(player.getX(), player.getY(), player.getZ(), player.getX() + 1.0D, player.getY() + 1.0D, player.getZ() + 1.0D)).expand(chunksize, 256, chunksize));
+        float range = 16 * IafCommonConfig.INSTANCE.dragon.fluteDistance.getValue();
+        List<Entity> list = worldIn.getOtherEntities(player, (new Box(player.getX(), player.getY(), player.getZ(), player.getX() + 1.0D, player.getY() + 1.0D, player.getZ() + 1.0D)).expand(range, 256, range));
         list.sort(new Sorter(player));
         List<IDragonFlute> dragons = new ArrayList<>();
         for (Entity entity : list) {

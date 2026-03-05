@@ -1,7 +1,9 @@
 package com.iafenvoy.iceandfire.world.feature;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
+import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
+import com.iafenvoy.uranus.util.RandomHelper;
 import com.mojang.serialization.Codec;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
@@ -11,6 +13,8 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+
+import java.util.List;
 
 public class SpawnDragonSkeleton extends Feature<DefaultFeatureConfig> {
     protected final EntityType<? extends EntityDragonBase> dragonType;
@@ -37,6 +41,8 @@ public class SpawnDragonSkeleton extends Feature<DefaultFeatureConfig> {
                 dragon.setModelDead(true);
                 dragon.setDeathStage((dragonage / 5) / 2);
                 dragon.setYaw(rand.nextInt(360));
+                List<DragonColor> colors = DragonColor.getColorsByType(dragon.dragonType);
+                dragon.setVariant(colors.get(new java.util.Random().nextInt(colors.size())).name());
                 worldIn.spawnEntity(dragon);
             }
         }
