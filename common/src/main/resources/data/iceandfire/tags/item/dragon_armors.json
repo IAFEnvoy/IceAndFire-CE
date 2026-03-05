@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "#iceandfire:dragon/chest_armor"
+    "#iceandfire:dragon_armor_head",
+    "#iceandfire:dragon_armor_neck",
+    "#iceandfire:dragon_armor_body",
+    "#iceandfire:dragon_armor_tail"
   ]
 }
