@@ -10,7 +10,6 @@ import net.minecraft.util.Identifier;
 
 
 public class RenderAmphithere extends MobEntityRenderer<EntityAmphithere, ModelAmphithere> {
-
     public static final Identifier TEXTURE_BLUE = Identifier.of(IceAndFire.MOD_ID, "textures/models/amphithere/amphithere_blue.png");
     public static final Identifier TEXTURE_BLUE_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/models/amphithere/amphithere_blue_blink.png");
     public static final Identifier TEXTURE_GREEN = Identifier.of(IceAndFire.MOD_ID, "textures/models/amphithere/amphithere_green.png");

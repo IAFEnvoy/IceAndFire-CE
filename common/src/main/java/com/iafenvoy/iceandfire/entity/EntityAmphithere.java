@@ -295,8 +295,8 @@ public class EntityAmphithere extends TameableEntity implements ISyncMount, IAni
     public void updatePassengerPosition(Entity passenger, PositionUpdater callback) {
         super.updatePassengerPosition(passenger, callback);
         if (this.hasPassenger(passenger) && this.isTamed()) {
-            this.setBodyYaw(passenger.getYaw());
-            this.setHeadYaw(passenger.getHeadYaw());
+            this.setBodyYaw(passenger.getYaw() % 360);
+            this.setHeadYaw(passenger.getHeadYaw() % 360);
         }
         if (!this.getWorld().isClient && !this.isTamed() && passenger instanceof PlayerEntity && this.getAnimation() == NO_ANIMATION && this.random.nextInt(15) == 0)
             this.setAnimation(ANIMATION_BITE_RIDER);
