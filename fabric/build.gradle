@@ -60,6 +60,9 @@ dependencies {
 
     // Jade
     modImplementation "maven.modrinth:jade:Lvyx1o7I"
+
+    //Trinkets
+    modApi "dev.emi:trinkets:${trinkets_version}"
 }
 
 processResources {

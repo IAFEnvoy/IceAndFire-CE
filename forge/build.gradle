@@ -52,6 +52,8 @@ dependencies {
 
     modImplementation "maven.modrinth:jade:bzWVE2db"
 
+    modApi "top.theillusivec4.curios:curios-forge:${curios_version}"
+
     //ProjectE
     modApi "curse.maven:projecte-226410:4901949"
 }

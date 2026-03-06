@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.forge;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.IceAndFireClient;
+import com.iafenvoy.iceandfire.forge.compat.curios.CuriosRegistry;
 import com.iafenvoy.iceandfire.forge.component.EntityDataProvider;
 import com.iafenvoy.iceandfire.forge.component.PortalDataProvider;
 import com.iafenvoy.uranus.forge.component.CapabilitySyncHelper;
@@ -10,6 +11,7 @@ import dev.architectury.platform.forge.EventBuses;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -30,5 +32,6 @@ public final class IceAndFireForge {
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
         event.enqueueWork(IceAndFire::process);
+        if (ModList.get().isLoaded("curios")) CuriosRegistry.registerItems();
     }
 }

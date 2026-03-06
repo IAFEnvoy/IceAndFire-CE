@@ -19,6 +19,7 @@ dependencies {
     modImplementation "maven.modrinth:jupiter:TsmQ7KHX"
 
     modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
 
     modImplementation "maven.modrinth:jade:Lvyx1o7I"
 }
