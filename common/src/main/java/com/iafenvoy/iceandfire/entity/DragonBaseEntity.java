@@ -2827,6 +2827,11 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
         }
     }
 
+    @Override
+    public boolean canSprintAsVehicle() {
+        return true;
+    }
+
     @Override // TODO :: Block collision performance impact (due to the multi-part entity)?
     public Vec3d applyMovementInput(Vec3d pDeltaMovement, float pFriction) {
         if (this.moveControl instanceof IafDragonFlightManager.PlayerFlightMoveHelper)

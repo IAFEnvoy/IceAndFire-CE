@@ -12,7 +12,7 @@ import net.minecraft.util.math.RotationAxis;
 
 public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobEntityRenderer<T, TabulaModel<T>> {
     public DragonBaseEntityRenderer(EntityRendererFactory.Context context, TabulaModel<T> model) {
-        super(context, model, 0.025F);
+        super(context, model, 0.0025F);
         this.addFeature(new DragonMaleOverlayFeatureRenderer<>(this));
         this.addFeature(new DragonEyesFeatureRenderer<>(this));
         this.addFeature(new DragonRiderFeatureRenderer<>(this, false));

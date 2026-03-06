@@ -8,7 +8,6 @@ import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-
 public class AmphithereEntityRenderer extends MobEntityRenderer<AmphithereEntity, AmphithereModel> {
     public static final Identifier TEXTURE_BLUE = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue.png");
     public static final Identifier TEXTURE_BLUE_BLINK = Identifier.of(IceAndFire.MOD_ID, "textures/entity/amphithere/amphithere_blue_blink.png");

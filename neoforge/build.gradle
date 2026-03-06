@@ -45,6 +45,8 @@ dependencies {
 
     modImplementation "maven.modrinth:jade:JkFFfEao"
 
+    modApi "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
     //ProjectE
     modCompileOnly "curse.maven:projecte-226410:6611984"
 

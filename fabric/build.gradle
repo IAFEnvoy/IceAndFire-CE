@@ -54,6 +54,11 @@ dependencies {
     // Jade
     modImplementation "maven.modrinth:jade:pA0xvozk"
 
+    //Trinkets
+    modApi "maven.modrinth:trinkets:JagCscwi"
+    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+    modApi "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+
     modCompileOnly "net.createmod.ponder:Ponder-Fabric-${minecraft_version}:${ponder_version}"
 }
 

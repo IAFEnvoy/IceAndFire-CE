@@ -397,7 +397,7 @@ public class DeathWormEntity extends TameableEntity implements ISyncMount, ICust
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (this.getWormAge() > 4 && player.getVehicle() == null && (player.getMainHandStack().isOf(Items.FISHING_ROD) || player.getOffHandStack().isOf(Items.FISHING_ROD))) {
+        if (this.getWormAge() > 4 && player.getVehicle() == null && player.getMainHandStack().isOf(Items.FISHING_ROD) && player.getOffHandStack().isOf(Items.FISHING_ROD)) {
             player.startRiding(this);
             return ActionResult.success(this.getWorld().isClient);
         }
