@@ -37,6 +37,6 @@ public class IceAndFireNeoForgeClient {
     @SubscribeEvent
     public static void onAddPackFinders(AddPackFindersEvent event) {
         if (!Platform.isDevelopmentEnvironment())
-            event.addPackFinders(Identifier.of(IceAndFire.MOD_ID, "resourcepacks/legacy"), ResourceType.CLIENT_RESOURCES, Text.translatable("resourcePack.iceandfire.legacy.name"), ResourcePackSource.BUILTIN, false, ResourcePackProfile.InsertionPosition.TOP);
+            event.addPackFinders(Identifier.of(IceAndFire.MOD_ID, "resourcepacks/iaf_legacy"), ResourceType.CLIENT_RESOURCES, Text.translatable("resourcePack.iceandfire.legacy.name"), ResourcePackSource.BUILTIN, false, ResourcePackProfile.InsertionPosition.TOP);
     }
 }

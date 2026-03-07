@@ -19,6 +19,6 @@ public final class IceAndFireFabricClient implements ClientModInitializer {
         IceAndFireClient.process();
         IafRenderers.registerParticleRenderers(holder -> holder.applyRegister(ParticleFactoryRegistry.getInstance()::register, (t, f) -> ParticleFactoryRegistry.getInstance().register(t, f::create)));
         if (!Platform.isDevelopmentEnvironment())
-            FabricLoader.getInstance().getModContainer(IceAndFire.MOD_ID).ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of(IceAndFire.MOD_ID, "legacy"), container, Text.translatable("resourcePack.iceandfire.legacy.name"), ResourcePackActivationType.NORMAL));
+            FabricLoader.getInstance().getModContainer(IceAndFire.MOD_ID).ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of(IceAndFire.MOD_ID, "iaf_legacy"), container, Text.translatable("resourcePack.iceandfire.legacy.name"), ResourcePackActivationType.NORMAL));
     }
 }
