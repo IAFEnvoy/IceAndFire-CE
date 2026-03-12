@@ -7,11 +7,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 @AutoRegisterCapability
-public class EntityDataStorage implements ITickableCapability {
-    private final IafEntityData data;
-
+public record EntityDataStorage(IafEntityData data) implements ITickableCapability {
     public EntityDataStorage(LivingEntity living) {
-        this.data = new IafEntityData(living);
+        this(new IafEntityData(living));
     }
 
     @Override
@@ -24,10 +22,6 @@ public class EntityDataStorage implements ITickableCapability {
     @Override
     public void deserializeNBT(NbtCompound compound) {
         this.data.deserialize(compound);
-    }
-
-    public IafEntityData getData() {
-        return this.data;
     }
 
     @Override

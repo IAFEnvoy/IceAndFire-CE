@@ -7,11 +7,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 @AutoRegisterCapability
-public class PortalDataStorage implements ITickableCapability {
-    private final PortalData data;
-
+public record PortalDataStorage(PortalData data) implements ITickableCapability {
     public PortalDataStorage(PlayerEntity player) {
-        this.data = new PortalData(player);
+        this(new PortalData(player));
     }
 
     @Override
@@ -24,10 +22,6 @@ public class PortalDataStorage implements ITickableCapability {
     @Override
     public void deserializeNBT(NbtCompound compound) {
         this.data.readFromNbt(compound);
-    }
-
-    public PortalData getData() {
-        return this.data;
     }
 
     @Override

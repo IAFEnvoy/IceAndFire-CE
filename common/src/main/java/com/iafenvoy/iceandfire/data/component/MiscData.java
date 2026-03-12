@@ -32,7 +32,7 @@ public class MiscData extends NeedUpdateData {
             this.loveTicks--;
 
             if (this.loveTicks == 0) {
-                this.triggerUpdate();
+                this.markDirty();
                 if (entity instanceof MobEntity mob)
                     mob.getNavigation().recalculatePath();
                 return;
@@ -61,13 +61,13 @@ public class MiscData extends NeedUpdateData {
             return;
 
         this.targetedByScepter.add(target);
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void removeScepterTarget(final LivingEntity target) {
         if (this.targetedByScepter == null) return;
         this.targetedByScepter.remove(target);
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void checkScepterTarget() {
@@ -77,17 +77,17 @@ public class MiscData extends NeedUpdateData {
 
     public void setLoveTicks(int loveTicks) {
         this.loveTicks = loveTicks;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void setLungeTicks(int lungeTicks) {
         this.lungeTicks = lungeTicks;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void setDismounted(boolean hasDismounted) {
         this.hasDismounted = hasDismounted;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void serialize(final NbtCompound tag) {

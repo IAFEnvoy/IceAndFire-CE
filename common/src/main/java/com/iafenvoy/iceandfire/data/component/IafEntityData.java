@@ -12,7 +12,6 @@ public class IafEntityData {
     public final ChickenData chickenData = new ChickenData();
     public final MiscData miscData = new MiscData();
     private final LivingEntity entity;
-    private boolean isDirty = false;
 
     public IafEntityData(LivingEntity entity) {
         this.entity = entity;
@@ -40,13 +39,10 @@ public class IafEntityData {
         this.sirenData.tickCharmed(this.entity);
         this.chickenData.tickChicken(this.entity);
         this.miscData.tickMisc(this.entity);
-        this.isDirty = this.frozenData.doesClientNeedUpdate() || this.chainData.doesClientNeedUpdate() || this.sirenData.doesClientNeedUpdate() || this.miscData.doesClientNeedUpdate();
     }
 
     public boolean isDirty() {
-        boolean d = this.isDirty;
-        this.isDirty = false;
-        return d;
+        return this.frozenData.isDirty() | this.chainData.isDirty() | this.sirenData.isDirty() | this.miscData.isDirty();
     }
 
     public static IafEntityData get(LivingEntity living) {

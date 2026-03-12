@@ -40,8 +40,7 @@ public class EntityDataComponent implements ComponentV3, AutoSyncedComponent, Co
     @Override
     public void tick() {
         this.data.tick();
-        if (this.data.isDirty())
-            COMPONENT.sync(this.entity);
+        if (this.data.isDirty()) COMPONENT.sync(this.entity);
     }
 
     public IafEntityData getData() {

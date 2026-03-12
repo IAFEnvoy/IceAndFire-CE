@@ -1,15 +1,15 @@
 package com.iafenvoy.iceandfire.data.component;
 
 public class NeedUpdateData {
-    private boolean triggerClientUpdate;
+    private boolean dirty;
 
-    public void triggerUpdate() {
-        this.triggerClientUpdate = true;
+    public void markDirty() {
+        this.dirty = true;
     }
 
-    public boolean doesClientNeedUpdate() {
-        if (!this.triggerClientUpdate) return false;
-        this.triggerClientUpdate = false;
+    public boolean isDirty() {
+        if (!this.dirty) return false;
+        this.dirty = false;
         return true;
     }
 }

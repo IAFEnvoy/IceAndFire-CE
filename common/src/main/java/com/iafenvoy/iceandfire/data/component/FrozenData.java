@@ -52,7 +52,7 @@ public class FrozenData extends NeedUpdateData {
 
         this.frozenTicks = duration;
         this.isFrozen = true;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     private void clearFrozen(final LivingEntity entity) {
@@ -69,7 +69,7 @@ public class FrozenData extends NeedUpdateData {
 
         this.isFrozen = false;
         this.frozenTicks = 0;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void serialize(final NbtCompound tag) {

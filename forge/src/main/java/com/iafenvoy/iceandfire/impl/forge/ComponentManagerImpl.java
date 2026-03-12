@@ -11,10 +11,10 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class ComponentManagerImpl {
     public static IafEntityData getIafEntityData(LivingEntity living) {
-        return living.getCapability(EntityDataProvider.CAPABILITY).orElse(new EntityDataStorage(living)).getData();
+        return living.getCapability(EntityDataProvider.CAPABILITY).orElse(new EntityDataStorage(living)).data();
     }
 
     public static PortalData getPortalData(PlayerEntity player) {
-        return player.getCapability(PortalDataProvider.CAPABILITY).orElse(new PortalDataStorage(player)).getData();
+        return player.getCapability(PortalDataProvider.CAPABILITY).orElse(new PortalDataStorage(player)).data();
     }
 }

@@ -97,14 +97,14 @@ public class SirenData extends NeedUpdateData {
 
         this.charmedBy = siren;
         this.isCharmed = true;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void clearCharm() {
         this.charmTime = 0;
         this.isCharmed = false;
         this.charmedBy = null;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void serialize(final NbtCompound tag) {
@@ -150,7 +150,7 @@ public class SirenData extends NeedUpdateData {
             Entity entity = serverLevel.getEntity(this.charmedByUUID);
 
             if (entity instanceof EntitySiren siren) {
-                this.triggerUpdate();
+                this.markDirty();
                 this.charmedByUUID = null;
                 this.charmedBy = siren;
             }

@@ -42,7 +42,7 @@ public class ChainData extends NeedUpdateData {
     public void clearChains() {
         if (this.chainedTo == null) return;
         this.chainedTo = null;
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void attachChain(final Entity chain) {
@@ -50,15 +50,15 @@ public class ChainData extends NeedUpdateData {
             this.chainedTo = new ArrayList<>();
         } else if (this.chainedTo.contains(chain)) return;
         this.chainedTo.add(chain);
-        this.triggerUpdate();
+        this.markDirty();
     }
 
     public void removeChain(final Entity chain) {
         if (this.chainedTo == null) return;
         this.chainedTo.remove(chain);
-        this.triggerUpdate();
         if (this.chainedTo.isEmpty())
             this.chainedTo = null;
+        this.markDirty();
     }
 
     public boolean isChainedTo(final Entity toCheck) {
@@ -112,7 +112,7 @@ public class ChainData extends NeedUpdateData {
                 if (entity != null)
                     entities.add(entity);
             }
-            this.triggerUpdate();
+            this.markDirty();
         } else if (this.chainedToIds != null)
             for (int id : this.chainedToIds) {
                 if (id == -1) continue;
