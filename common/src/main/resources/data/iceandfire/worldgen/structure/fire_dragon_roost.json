@@ -1,7 +1,36 @@
 {
-  "type": "iceandfire:fire_dragon_roost",
+  "type": "iceandfire:dragon_roost",
   "biomes": "#iceandfire:structure_gen/fire",
   "spawn_overrides": {},
   "step": "surface_structures",
-  "terrain_adaptation": "beard_thin"
+  "terrain_adaptation": "beard_thin",
+  "dragon_type": "iceandfire:fire_dragon",
+  "loot_table": "iceandfire:chest/fire_dragon_roost",
+  "treasure_block": "iceandfire:gold_pile",
+  "pile_block": "iceandfire:ash",
+  "generate_spires": false,
+  "block_transform": [
+    { "from": "minecraft:grass_block",    "to": "iceandfire:chared_grass" },
+    { "from": "minecraft:dirt_path",      "to": "iceandfire:chared_dirt_path" },
+    { "from": "minecraft:gravel",         "to": "iceandfire:chared_gravel" },
+    { "from": "minecraft:dirt",           "to": "iceandfire:chared_dirt" },
+    { "from": "minecraft:coarse_dirt",    "to": "iceandfire:chared_dirt" },
+    { "from": "minecraft:stone",          "to": "iceandfire:chared_stone" },
+    { "from": "minecraft:cobblestone",    "to": "iceandfire:chared_cobblestone" },
+    { "from": "minecraft:mossy_cobblestone", "to": "iceandfire:chared_cobblestone" },
+    { "from": "minecraft:short_grass",    "to": "minecraft:air" },
+    { "from": "minecraft:tall_grass",     "to": "minecraft:air" },
+    { "from": "minecraft:oak_log",        "to": "iceandfire:ash" },
+    { "from": "minecraft:spruce_log",     "to": "iceandfire:ash" },
+    { "from": "minecraft:birch_log",      "to": "iceandfire:ash" },
+    { "from": "minecraft:jungle_log",     "to": "iceandfire:ash" },
+    { "from": "minecraft:acacia_log",     "to": "iceandfire:ash" },
+    { "from": "minecraft:dark_oak_log",   "to": "iceandfire:ash" },
+    { "from": "minecraft:oak_planks",     "to": "iceandfire:ash" },
+    { "from": "minecraft:spruce_planks",  "to": "iceandfire:ash" },
+    { "from": "minecraft:birch_planks",   "to": "iceandfire:ash" },
+    { "from": "minecraft:jungle_planks",  "to": "iceandfire:ash" },
+    { "from": "minecraft:acacia_planks",  "to": "iceandfire:ash" },
+    { "from": "minecraft:dark_oak_planks","to": "iceandfire:ash" }
+  ]
 }
