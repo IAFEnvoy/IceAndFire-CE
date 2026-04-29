@@ -2,6 +2,8 @@
   "type": "iceandfire:spawn_hippocampus",
   "config": {
     "spawn_chance": 0.025,
-    "entity_type": "iceandfire:hippocampus"
+    "max_count": 5,
+    "y_scatter": 30,
+    "variant_count": 6
   }
 }
