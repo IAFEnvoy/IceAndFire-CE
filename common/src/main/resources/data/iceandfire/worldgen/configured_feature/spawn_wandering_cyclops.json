@@ -2,6 +2,7 @@
   "type": "iceandfire:spawn_wandering_cyclops",
   "config": {
     "spawn_chance": 0.0011,
-    "entity_type": "iceandfire:cyclops"
+    "sheep_min": 3,
+    "sheep_max": 5
   }
 }

@@ -2,6 +2,7 @@
   "type": "iceandfire:spawn_stymphalian_bird",
   "config": {
     "spawn_chance": 0.0125,
-    "entity_type": "iceandfire:stymphalian_bird"
+    "flock_min": 4,
+    "flock_max": 7
   }
 }
