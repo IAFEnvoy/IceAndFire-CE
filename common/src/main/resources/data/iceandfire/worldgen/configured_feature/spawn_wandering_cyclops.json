@@ -1,4 +1,7 @@
 {
   "type": "iceandfire:spawn_wandering_cyclops",
-  "config": {}
+  "config": {
+    "spawn_chance": 0.0011,
+    "entity_type": "iceandfire:cyclops"
+  }
 }

@@ -1,4 +1,7 @@
 {
   "type": "iceandfire:spawn_stymphalian_bird",
-  "config": {}
+  "config": {
+    "spawn_chance": 0.0125,
+    "entity_type": "iceandfire:stymphalian_bird"
+  }
 }

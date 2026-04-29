@@ -1,4 +1,7 @@
 {
-  "type": "iceandfire:spawn_dragon_skeleton_fire",
-  "config": {}
+  "type": "iceandfire:spawn_dragon_skeleton",
+  "config": {
+    "spawn_chance": 0.0033,
+    "entity_type": "iceandfire:fire_dragon"
+  }
 }

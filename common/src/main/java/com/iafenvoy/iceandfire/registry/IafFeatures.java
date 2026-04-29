@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.registry;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
 import com.iafenvoy.iceandfire.world.feature.*;
+import com.iafenvoy.iceandfire.world.feature.config.EntitySpawnFeatureConfig;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -21,14 +22,12 @@ import java.util.function.Supplier;
 public final class IafFeatures {
     public static final DeferredRegister<Feature<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.FEATURE);
 
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_DEATH_WORM = feature("spawn_death_worm", () -> new DeathWormSpawnFeature(DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_DRAGON_SKELETON_L = feature("spawn_dragon_skeleton_lightning", () -> new DragonSkeletonSpawnFeature(IafEntities.LIGHTNING_DRAGON.get(), DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_DRAGON_SKELETON_F = feature("spawn_dragon_skeleton_fire", () -> new DragonSkeletonSpawnFeature(IafEntities.FIRE_DRAGON.get(), DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_DRAGON_SKELETON_I = feature("spawn_dragon_skeleton_ice", () -> new DragonSkeletonSpawnFeature(IafEntities.ICE_DRAGON.get(), DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_HIPPOCAMPUS = feature("spawn_hippocampus", () -> new HippocampusSpawnFeature(DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_SEA_SERPENT = feature("spawn_sea_serpent", () -> new SeaSerpentSpawnFeature(DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_STYMPHALIAN_BIRD = feature("spawn_stymphalian_bird", () -> new StymphalianBirdSpawnFeature(DefaultFeatureConfig.CODEC));
-    public static final RegistrySupplier<Feature<DefaultFeatureConfig>> SPAWN_WANDERING_CYCLOPS = feature("spawn_wandering_cyclops", () -> new WanderingCyclopsSpawnFeature(DefaultFeatureConfig.CODEC));
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_DEATH_WORM = feature("spawn_death_worm", DeathWormSpawnFeature::new);
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_DRAGON_SKELETON = feature("spawn_dragon_skeleton", DragonSkeletonSpawnFeature::new);
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_HIPPOCAMPUS = feature("spawn_hippocampus", HippocampusSpawnFeature::new);
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_SEA_SERPENT = feature("spawn_sea_serpent", SeaSerpentSpawnFeature::new);
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_STYMPHALIAN_BIRD = feature("spawn_stymphalian_bird", StymphalianBirdSpawnFeature::new);
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_WANDERING_CYCLOPS = feature("spawn_wandering_cyclops", WanderingCyclopsSpawnFeature::new);
 
     private static <F extends Feature<? extends FeatureConfig>> RegistrySupplier<F> feature(String name, Supplier<F> feature) {
         return REGISTRY.register(name, feature);

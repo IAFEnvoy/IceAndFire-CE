@@ -1,4 +1,7 @@
 {
   "type": "iceandfire:spawn_death_worm",
-  "config": {}
+  "config": {
+    "spawn_chance": 0.033,
+    "entity_type": "iceandfire:deathworm"
+  }
 }
