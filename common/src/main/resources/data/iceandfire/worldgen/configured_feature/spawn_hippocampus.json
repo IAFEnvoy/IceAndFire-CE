@@ -1,4 +1,7 @@
 {
   "type": "iceandfire:spawn_hippocampus",
-  "config": {}
+  "config": {
+    "spawn_chance": 0.025,
+    "entity_type": "iceandfire:hippocampus"
+  }
 }
