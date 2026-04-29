@@ -2,6 +2,6 @@
   "type": "iceandfire:spawn_sea_serpent",
   "config": {
     "spawn_chance": 0.004,
-    "entity_type": "iceandfire:sea_serpent"
+    "dangerous_radius": 1000.0
   }
 }
