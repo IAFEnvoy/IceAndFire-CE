@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
 import com.iafenvoy.iceandfire.world.feature.*;
 import com.iafenvoy.iceandfire.world.feature.config.DeathWormFeatureConfig;
+import com.iafenvoy.iceandfire.world.feature.config.DragonSkeletonFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.EntitySpawnFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.SeaSerpentFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.StymphalianBirdFeatureConfig;
@@ -27,12 +28,9 @@ public final class IafFeatures {
     public static final DeferredRegister<Feature<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.FEATURE);
 
     public static final RegistrySupplier<Feature<DeathWormFeatureConfig>> SPAWN_DEATH_WORM = feature("spawn_death_worm", DeathWormSpawnFeature::new);
-    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_DRAGON_SKELETON = feature("spawn_dragon_skeleton", DragonSkeletonSpawnFeature::new);
+    public static final RegistrySupplier<Feature<DragonSkeletonFeatureConfig>> SPAWN_DRAGON_SKELETON = feature("spawn_dragon_skeleton", DragonSkeletonSpawnFeature::new);
     public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_HIPPOCAMPUS = feature("spawn_hippocampus", HippocampusSpawnFeature::new);
     public static final RegistrySupplier<Feature<SeaSerpentFeatureConfig>> SPAWN_SEA_SERPENT = feature("spawn_sea_serpent", SeaSerpentSpawnFeature::new);
-    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_STYMPHALIAN_BIRD = feature("spawn_stymphalian_bird", StymphalianBirdSpawnFeature::new);
-    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_WANDERING_CYCLOPS = feature("spawn_wandering_cyclops", WanderingCyclopsSpawnFeature::new);
-    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_SEA_SERPENT = feature("spawn_sea_serpent", SeaSerpentSpawnFeature::new);
     public static final RegistrySupplier<Feature<StymphalianBirdFeatureConfig>> SPAWN_STYMPHALIAN_BIRD = feature("spawn_stymphalian_bird", StymphalianBirdSpawnFeature::new);
     public static final RegistrySupplier<Feature<WanderingCyclopsFeatureConfig>> SPAWN_WANDERING_CYCLOPS = feature("spawn_wandering_cyclops", WanderingCyclopsSpawnFeature::new);
 
