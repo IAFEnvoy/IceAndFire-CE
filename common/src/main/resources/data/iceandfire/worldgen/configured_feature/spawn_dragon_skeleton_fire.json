@@ -1,7 +1,9 @@
 {
   "type": "iceandfire:spawn_dragon_skeleton",
   "config": {
+    "entity_type": "iceandfire:fire_dragon",
     "spawn_chance": 0.0033,
-    "entity_type": "iceandfire:fire_dragon"
+    "age_min": 10,
+    "age_max": 110
   }
 }
