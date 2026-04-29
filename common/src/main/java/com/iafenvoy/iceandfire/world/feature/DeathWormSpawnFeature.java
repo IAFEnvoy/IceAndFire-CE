@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.world.feature;
 
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
-import com.iafenvoy.iceandfire.world.feature.config.EntitySpawnFeatureConfig;
+import com.iafenvoy.iceandfire.world.feature.config.DeathWormFeatureConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SpawnReason;
@@ -11,13 +11,13 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
-public class DeathWormSpawnFeature extends Feature<EntitySpawnFeatureConfig> implements DangerousGeneration {
+public class DeathWormSpawnFeature extends Feature<DeathWormFeatureConfig> implements DangerousGeneration {
     public DeathWormSpawnFeature() {
-        super(EntitySpawnFeatureConfig.CODEC);
+        super(DeathWormFeatureConfig.CODEC);
     }
 
     @Override
-    public boolean generate(FeatureContext<EntitySpawnFeatureConfig> context) {
+    public boolean generate(FeatureContext<DeathWormFeatureConfig> context) {
         StructureWorldAccess world = context.getWorld();
         BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, context.getOrigin().add(8, 0, 8));
         if (this.isFarEnoughFromSpawn(world, pos) && context.getRandom().nextDouble() < context.getConfig().spawnChance()) {
