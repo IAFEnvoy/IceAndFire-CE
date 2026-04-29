@@ -27,7 +27,7 @@ public class DragonSkeletonSpawnFeature extends Feature<DragonSkeletonFeatureCon
             Entity entity = config.entityType().create(world.toServerWorld());
             if (entity instanceof DragonBaseEntity dragon) {
                 dragon.setPosition(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-                int age = config.ageMin() + random.nextInt(config.ageMax() - config.ageMin());
+                int age = config.ageMin() + (config.ageMax() > config.ageMin() ? random.nextInt(config.ageMax() - config.ageMin()) : 0);
                 dragon.growDragon(age);
                 dragon.modelDeadProgress = 20;
                 dragon.setModelDead(true);
