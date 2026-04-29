@@ -3,20 +3,27 @@ package com.iafenvoy.iceandfire.world.structure;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.HomePosition;
 import com.iafenvoy.iceandfire.item.block.PileBlock;
+import com.iafenvoy.iceandfire.registry.IafStructurePieces;
+import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -27,51 +34,116 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureType;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class DragonRoostStructure extends Structure implements DangerousGeneration {
-    protected DragonRoostStructure(Config config) {
+public class DragonRoostStructure extends Structure implements DangerousGeneration {
+    public static final MapCodec<DragonRoostStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(
+                    configCodecBuilder(instance),
+                    BlockTransformRule.CODEC.listOf().fieldOf("block_transform").forGetter(s -> s.blockTransform),
+                    Registries.ENTITY_TYPE.getCodec().fieldOf("dragon_type").forGetter(s -> s.dragonType),
+                    Identifier.CODEC.fieldOf("loot_table").forGetter(s -> s.lootTable),
+                    Registries.BLOCK.getCodec().fieldOf("treasure_block").forGetter(s -> s.treasureBlock),
+                    Registries.BLOCK.getCodec().optionalFieldOf("pile_block").forGetter(s -> Optional.ofNullable(s.pileBlock)),
+                    Codec.BOOL.optionalFieldOf("generate_spires", false).forGetter(s -> s.generateSpires),
+                    Codec.doubleRange(0.0, 1.0).optionalFieldOf("generate_chance", 0.5).forGetter(s -> s.generateChance)
+            ).apply(instance, DragonRoostStructure::new));
+
+    private final List<BlockTransformRule> blockTransform;
+    private final EntityType<?> dragonType;
+    private final Identifier lootTable;
+    private final Block treasureBlock;
+    private final Block pileBlock;
+    private final boolean generateSpires;
+    private final double generateChance;
+
+    public DragonRoostStructure(Config config, List<BlockTransformRule> blockTransform, EntityType<?> dragonType,
+                                 Identifier lootTable, Block treasureBlock, Optional<Block> pileBlock,
+                                 boolean generateSpires, double generateChance) {
         super(config);
+        this.blockTransform = blockTransform;
+        this.dragonType = dragonType;
+        this.lootTable = lootTable;
+        this.treasureBlock = treasureBlock;
+        this.pileBlock = pileBlock.orElse(null);
+        this.generateSpires = generateSpires;
+        this.generateChance = generateChance;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= this.getGenerateChance())
+        if (context.random().nextDouble() >= this.generateChance)
             return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
         if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.world().getBottomY() + 2)
             return Optional.empty();
-        return Optional.of(new StructurePosition(blockPos, collector -> collector.addPiece(this.createPiece(new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ()), context.random().nextBoolean()))));
+        return Optional.of(new StructurePosition(blockPos, collector -> collector.addPiece(
+                new DragonRoostPiece(0,
+                        new BlockBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ()),
+                        this.treasureBlock, context.random().nextBoolean(),
+                        this.blockTransform, this.dragonType, this.lootTable, this.pileBlock, this.generateSpires))));
     }
 
-    protected abstract DragonRoostPiece createPiece(BlockBox boundingBox, boolean isMale);
+    @Override
+    public StructureType<?> getType() {
+        return IafStructureTypes.DRAGON_ROOST.get();
+    }
 
-    protected abstract double getGenerateChance();
-
-    protected static abstract class DragonRoostPiece extends StructurePiece {
-        protected final Block treasureBlock;
+    public static class DragonRoostPiece extends StructurePiece {
+        private final Block treasureBlock;
         private final boolean isMale;
+        private final List<BlockTransformRule> blockTransform;
+        private final EntityType<?> dragonType;
+        private final Identifier lootTable;
+        private final Block pileBlock;
+        private final boolean generateSpires;
 
-        protected DragonRoostPiece(StructurePieceType type, int length, BlockBox boundingBox, Block treasureBlock, boolean isMale) {
-            super(type, length, boundingBox);
+        protected DragonRoostPiece(int length, BlockBox boundingBox, Block treasureBlock, boolean isMale,
+                                    List<BlockTransformRule> blockTransform, EntityType<?> dragonType,
+                                    Identifier lootTable, Block pileBlock, boolean generateSpires) {
+            super(IafStructurePieces.DRAGON_ROOST.get(), length, boundingBox);
             this.treasureBlock = treasureBlock;
             this.isMale = isMale;
+            this.blockTransform = blockTransform;
+            this.dragonType = dragonType;
+            this.lootTable = lootTable;
+            this.pileBlock = pileBlock;
+            this.generateSpires = generateSpires;
         }
 
-        public DragonRoostPiece(StructurePieceType type, NbtCompound nbt) {
-            super(type, nbt);
+        public DragonRoostPiece(StructureContext context, NbtCompound nbt) {
+            super(IafStructurePieces.DRAGON_ROOST.get(), nbt);
             this.treasureBlock = Registries.BLOCK.get(Identifier.tryParse(nbt.getString("treasureBlock")));
             this.isMale = nbt.getBoolean("isMale");
+            this.dragonType = Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("dragonType")));
+            this.lootTable = Identifier.tryParse(nbt.getString("lootTable"));
+            String pileBlockStr = nbt.getString("pileBlock");
+            this.pileBlock = pileBlockStr.isEmpty() ? null : Registries.BLOCK.get(Identifier.tryParse(pileBlockStr));
+            this.generateSpires = nbt.getBoolean("generateSpires");
+            NbtElement transformNbt = nbt.get("blockTransform");
+            this.blockTransform = transformNbt != null
+                    ? BlockTransformRule.CODEC.listOf().parse(NbtOps.INSTANCE, transformNbt).result().orElse(List.of())
+                    : List.of();
         }
 
         @Override
         protected void writeNbt(StructureContext context, NbtCompound nbt) {
             nbt.putString("treasureBlock", Registries.BLOCK.getId(this.treasureBlock).toString());
             nbt.putBoolean("isMale", this.isMale);
+            nbt.putString("dragonType", Registries.ENTITY_TYPE.getId(this.dragonType).toString());
+            nbt.putString("lootTable", this.lootTable.toString());
+            nbt.putString("pileBlock", this.pileBlock != null ? Registries.BLOCK.getId(this.pileBlock).toString() : "");
+            nbt.putBoolean("generateSpires", this.generateSpires);
+            BlockTransformRule.CODEC.listOf()
+                    .encodeStart(NbtOps.INSTANCE, this.blockTransform)
+                    .result()
+                    .ifPresent(encoded -> nbt.put("blockTransform", encoded));
         }
 
         @Override
@@ -89,8 +161,19 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             this.generateDecoration(world, pivot, random, radius, this.isMale);
         }
 
+        private BlockState transform(BlockState state) {
+            return this.blockTransform.stream()
+                    .filter(r -> state.isOf(r.from()))
+                    .findFirst()
+                    .map(r -> r.to().getDefaultState())
+                    .orElse(state);
+        }
 
-        protected void generateRoostPile(StructureWorldAccess level, Random random, BlockPos position, Block block) {
+        private BlockState transform(Block block) {
+            return this.transform(block.getDefaultState());
+        }
+
+        private void generateRoostPile(StructureWorldAccess level, Random random, BlockPos position, Block block) {
             int radius = random.nextInt(4);
 
             for (int i = 0; i < radius; i++) {
@@ -106,22 +189,18 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             }
         }
 
-        protected double getCircularArea(int radius, int height) {
+        private double getCircularArea(int radius, int height) {
             double area = (radius + height + radius) * 0.333F + 0.5F;
             return MathHelper.floor(area * area);
         }
 
-        protected double getCircularArea(int radius) {
+        private double getCircularArea(int radius) {
             double area = (radius + radius) * 0.333F + 0.5F;
             return MathHelper.floor(area * area);
         }
 
-        protected BlockPos getSurfacePosition(StructureWorldAccess level, BlockPos position) {
+        private BlockPos getSurfacePosition(StructureWorldAccess level, BlockPos position) {
             return level.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, position);
-        }
-
-        protected BlockState transform(Block block) {
-            return this.transform(block.getDefaultState());
         }
 
         private void generateDecoration(StructureWorldAccess world, BlockPos origin, Random random, int radius, boolean isMale) {
@@ -157,13 +236,71 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
                         if (wasPlaced) {
                             BlockEntity blockEntity = world.getBlockEntity(surfacePosition);
                             if (blockEntity instanceof ChestBlockEntity chest)
-                                chest.setLootTable(this.getRoostLootTable(), random.nextLong());
+                                chest.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, this.lootTable), random.nextLong());
                         }
                     }
                     if (random.nextInt(5000) == 0)
                         this.generateArch(world, random, this.getSurfacePosition(world, position), this.transform(Blocks.COBBLESTONE).getBlock());
                 }
             });
+        }
+
+        private void handleCustomGeneration(StructureWorldAccess world, BlockPos origin, Random random, BlockPos position, double distance) {
+            if (this.pileBlock != null && random.nextInt(1000) == 0)
+                this.generateRoostPile(world, random, this.getSurfacePosition(world, position), this.pileBlock);
+            if (this.generateSpires) {
+                if (distance > 0.05D && random.nextInt(800) == 0)
+                    this.generateSpire(world, random, this.getSurfacePosition(world, position));
+                if (distance > 0.05D && random.nextInt(1000) == 0)
+                    this.generateSpike(world, random, this.getSurfacePosition(world, position), Direction.Type.HORIZONTAL.random(random));
+            }
+        }
+
+        private void generateSpike(WorldAccess worldIn, Random rand, BlockPos position, Direction direction) {
+            Block stoneBlock = this.transform(Blocks.STONE).getBlock();
+            int radius = 5;
+            for (int i = 0; i < 5; i++) {
+                int j = Math.max(0, radius - (int) (i * 1.75F));
+                int l = radius - i;
+                int k = Math.max(0, radius - (int) (i * 1.5F));
+                float f = (float) (j + l) * 0.333F + 0.5F;
+                BlockPos up = position.up().offset(direction, i);
+                int xOrZero = direction.getAxis() == Direction.Axis.Z ? j : 0;
+                int zOrZero = direction.getAxis() == Direction.Axis.Z ? 0 : k;
+                for (BlockPos blockpos : BlockPos.stream(up.add(-xOrZero, -l, -zOrZero), up.add(xOrZero, l, zOrZero)).map(BlockPos::toImmutable).collect(Collectors.toSet())) {
+                    if (blockpos.getSquaredDistance(position) <= (double) (f * f)) {
+                        int height = Math.max(blockpos.getY() - up.getY(), 0);
+                        if (i == 0) {
+                            if (rand.nextFloat() < height * 0.3F)
+                                worldIn.setBlockState(blockpos, stoneBlock.getDefaultState(), 2);
+                        } else worldIn.setBlockState(blockpos, stoneBlock.getDefaultState(), 2);
+                    }
+                }
+            }
+        }
+
+        private void generateSpire(WorldAccess worldIn, Random rand, BlockPos position) {
+            Block stoneBlock = this.transform(Blocks.STONE).getBlock();
+            Block gravelBlock = this.transform(Blocks.GRAVEL).getBlock();
+            Block cobbleBlock = this.transform(Blocks.COBBLESTONE).getBlock();
+            int height = 5 + rand.nextInt(5);
+            Direction bumpDirection = Direction.NORTH;
+            for (int i = 0; i < height; i++) {
+                worldIn.setBlockState(position.up(i), stoneBlock.getDefaultState(), 2);
+                if (rand.nextBoolean()) {
+                    bumpDirection = bumpDirection.rotateYClockwise();
+                }
+                int offset = 1;
+                if (i < 4) {
+                    worldIn.setBlockState(position.up(i).north(), gravelBlock.getDefaultState(), 2);
+                    worldIn.setBlockState(position.up(i).south(), gravelBlock.getDefaultState(), 2);
+                    worldIn.setBlockState(position.up(i).east(), gravelBlock.getDefaultState(), 2);
+                    worldIn.setBlockState(position.up(i).west(), gravelBlock.getDefaultState(), 2);
+                    offset = 2;
+                }
+                if (i < height - 2)
+                    worldIn.setBlockState(position.up(i).offset(bumpDirection, offset), cobbleBlock.getDefaultState(), 2);
+            }
         }
 
         public void generateBoulder(WorldAccess worldIn, Random rand, BlockPos position, Block block, int startRadius, boolean replaceAir) {
@@ -291,26 +428,19 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         }
 
         private void spawnDragon(StructureWorldAccess world, BlockPos origin, Random random, int ageOffset, boolean isMale) {
-            DragonBaseEntity dragon = this.getDragonType().create(world.toServerWorld());
-            assert dragon != null;
-            dragon.setGender(isMale);
-            dragon.growDragon(40 + ageOffset);
-            dragon.setAgingDisabled(true);
-            dragon.setHealth(dragon.getMaxHealth());
-            dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.updatePositionAndAngles(origin.getX() + 0.5, world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
-            dragon.homePos = new HomePosition(origin, world.toServerWorld());
-            dragon.hasHomePosition = true;
-            dragon.setHunger(50);
-            world.spawnEntity(dragon);
+            Entity entity = this.dragonType.create(world.toServerWorld());
+            if (entity instanceof DragonBaseEntity dragon) {
+                dragon.setGender(isMale);
+                dragon.growDragon(40 + ageOffset);
+                dragon.setAgingDisabled(true);
+                dragon.setHealth(dragon.getMaxHealth());
+                dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
+                dragon.updatePositionAndAngles(origin.getX() + 0.5, world.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
+                dragon.homePos = new HomePosition(origin, world.toServerWorld());
+                dragon.hasHomePosition = true;
+                dragon.setHunger(50);
+                world.spawnEntity(dragon);
+            }
         }
-
-        protected abstract EntityType<? extends DragonBaseEntity> getDragonType();
-
-        protected abstract RegistryKey<LootTable> getRoostLootTable();
-
-        protected abstract BlockState transform(BlockState block);
-
-        protected abstract void handleCustomGeneration(StructureWorldAccess world, BlockPos origin, Random random, BlockPos position, double distance);
     }
 }
