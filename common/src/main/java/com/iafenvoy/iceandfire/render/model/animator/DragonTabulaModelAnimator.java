@@ -67,11 +67,11 @@ public abstract class DragonTabulaModelAnimator<T extends DragonBaseEntity> exte
 
         TabulaModel<T> currentPosition = swimming ? this.swimPoses[currentIndex] : walking ? this.walkPoses[currentIndex] : this.flyPoses[currentIndex];
         TabulaModel<T> prevPosition = swimming ? this.swimPoses[prevIndex] : walking ? this.walkPoses[prevIndex] : this.flyPoses[prevIndex];
-        float delta = ((walking ? entity.walkCycle : entity.flightCycle) / 10.0F) % 1.0F;
-        if (swimming) delta = (entity.swimCycle / 10.0F) % 1.0F;
         float partialTick = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-        float deltaTicks = delta + (partialTick / 10.0F);
-        if (delta == 0) deltaTicks = 0;
+        float cyclePos = swimming ? entity.swimCycle : walking ? entity.walkCycle : entity.flightCycle;
+        float tickAdvance = (walking || swimming) ? 1.0F : 2.0F;
+        float smoothCycle = cyclePos + partialTick * tickAdvance;
+        float deltaTicks = (smoothCycle / 10.0F) % 1.0F;
 
         float speed_walk = 0.2F;
         float speed_idle = entity.isSleeping() ? 0.025F : 0.05F;

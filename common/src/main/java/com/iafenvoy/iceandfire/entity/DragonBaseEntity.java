@@ -1610,6 +1610,17 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
     @Override
     public void tick() {
         super.tick();
+        // Capture previous animation progress BEFORE they are updated this tick,
+        // so the renderer can properly interpolate between frames.
+        this.prevModelDeadProgress = this.modelDeadProgress;
+        this.prevDiveProgress = this.diveProgress;
+        this.prevAnimationProgresses[0] = this.sitProgress;
+        this.prevAnimationProgresses[1] = this.sleepProgress;
+        this.prevAnimationProgresses[2] = this.hoverProgress;
+        this.prevAnimationProgresses[3] = this.flyProgress;
+        this.prevAnimationProgresses[4] = this.fireBreathProgress;
+        this.prevAnimationProgresses[5] = this.ridingProgress;
+        this.prevAnimationProgresses[6] = this.tackleProgress;
         //TODO: Better detect logic
         if (!IntegrationExecutor.getWhenLoad("ponder", () -> () -> this.getWorld() instanceof SchematicLevel, () -> false)) {
             this.calculateDimensions();
@@ -1666,15 +1677,6 @@ public abstract class DragonBaseEntity extends TameableEntity implements Extende
     @Override
     public void tickMovement() {
         super.tickMovement();
-        this.prevModelDeadProgress = this.modelDeadProgress;
-        this.prevDiveProgress = this.diveProgress;
-        this.prevAnimationProgresses[0] = this.sitProgress;
-        this.prevAnimationProgresses[1] = this.sleepProgress;
-        this.prevAnimationProgresses[2] = this.hoverProgress;
-        this.prevAnimationProgresses[3] = this.flyProgress;
-        this.prevAnimationProgresses[4] = this.fireBreathProgress;
-        this.prevAnimationProgresses[5] = this.ridingProgress;
-        this.prevAnimationProgresses[6] = this.tackleProgress;
         if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL && this.getTarget() instanceof PlayerEntity) {
             this.setTarget(null);
         }
