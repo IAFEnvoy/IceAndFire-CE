@@ -86,44 +86,40 @@ public class HippocampusScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack quickMove(PlayerEntity playerIn, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
-        if (slot.hasStack()) {
-            ItemStack itemstack1 = slot.getStack();
-            itemstack = itemstack1.copy();
-            int containerSize = this.hippocampusInventory.size();
-            if (index < containerSize) {
-                if (!this.insertItem(itemstack1, containerSize, this.slots.size(), true))
+    public ItemStack quickMove(PlayerEntity player, int slot) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot2 = this.slots.get(slot);
+        if (slot2.hasStack()) {
+            ItemStack itemStack2 = slot2.getStack();
+            itemStack = itemStack2.copy();
+            int i = this.hippocampusInventory.size() + 1;
+            if (slot < i) {
+                if (!this.insertItem(itemStack2, i, this.slots.size(), true))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(1).canInsert(itemstack1) && !this.getSlot(1).hasStack()) {
-                if (!this.insertItem(itemstack1, 1, 2, false))
+            } else if (this.getSlot(1).canInsert(itemStack2) && !this.getSlot(1).hasStack()) {
+                if (!this.insertItem(itemStack2, 1, 2, false))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(2).canInsert(itemstack1) && !this.getSlot(2).hasStack()) {
-                if (!this.insertItem(itemstack1, 2, 3, false))
+            } else if (this.getSlot(0).canInsert(itemStack2)) {
+                if (!this.insertItem(itemStack2, 0, 1, false))
                     return ItemStack.EMPTY;
-            } else if (this.getSlot(0).canInsert(itemstack1)) {
-                if (!this.insertItem(itemstack1, 0, 1, false))
-                    return ItemStack.EMPTY;
-            } else if (containerSize <= 3 || !this.insertItem(itemstack1, 3, containerSize, false)) {
-                int j = containerSize + 27;
-                int k = j + 9;
-                if (index >= j && index < k) {
-                    if (!this.insertItem(itemstack1, containerSize, j, false))
+            } else if (i <= 1 || !this.insertItem(itemStack2, 2, i, false)) {
+                int k = i + 27;
+                int m = k + 9;
+                if (slot >= k && slot < m) {
+                    if (!this.insertItem(itemStack2, i, k, false))
                         return ItemStack.EMPTY;
-                } else if (index < j) {
-                    if (!this.insertItem(itemstack1, j, k, false))
+                } else if (slot < k) {
+                    if (!this.insertItem(itemStack2, k, m, false))
                         return ItemStack.EMPTY;
-                } else if (!this.insertItem(itemstack1, j, j, false))
+                } else if (!this.insertItem(itemStack2, k, k, false))
                     return ItemStack.EMPTY;
                 return ItemStack.EMPTY;
             }
-            if (itemstack1.isEmpty())
-                slot.setStackNoCallbacks(ItemStack.EMPTY);
-            else
-                slot.markDirty();
+            if (itemStack2.isEmpty()) slot2.setStack(ItemStack.EMPTY);
+            else slot2.markDirty();
         }
-        return itemstack;
+
+        return itemStack;
     }
 
     @Override
