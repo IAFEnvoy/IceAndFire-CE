@@ -55,7 +55,7 @@ public class IafDragonDestructionManager {
         if (dragon.getDragonStage() <= 3) {
             BlockPos.stream(center.add(-1, -1, -1), center.add(1, 1, 1)).forEach(position -> {
                 if (level.getBlockEntity(position) instanceof DragonForgeInputBlockEntity forge) {
-                    forge.onHitWithFlame();
+                    forge.onHitWithFlame(dragon);
                     return;
                 }
                 if (canBreakBlocks && DragonUtils.canGrief(dragon) && dragon.getRandom().nextBoolean())
@@ -73,7 +73,7 @@ public class IafDragonDestructionManager {
 
             BlockPos.stream(center.add(-x, -y, -z), center.add(x, y, z)).forEach(position -> {
                 if (level.getBlockEntity(position) instanceof DragonForgeInputBlockEntity forge) {
-                    forge.onHitWithFlame();
+                    forge.onHitWithFlame(dragon);
                     return;
                 }
                 if (canBreakBlocks && center.getSquaredDistance(position) <= ff)

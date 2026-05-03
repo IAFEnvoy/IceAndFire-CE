@@ -3,11 +3,14 @@ package com.iafenvoy.iceandfire.item.block.entity;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.item.block.DragonForgeInputBlock;
+import com.iafenvoy.iceandfire.registry.IafAttributes;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
@@ -48,9 +51,13 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
             forgeInput.lureDragons();
     }
 
-    public void onHitWithFlame() {
+    public void onHitWithFlame(LivingEntity entity) {
+        this.onHitWithFlame(entity.getAttributeValue(IafAttributes.DRAGON_FORGE_SPEED));
+    }
+
+    public void onHitWithFlame(double amount) {
         if (this.core != null)
-            this.core.transferPower(1);
+            this.core.transferPower(amount);
     }
 
     @Override

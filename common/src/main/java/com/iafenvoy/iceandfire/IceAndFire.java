@@ -54,6 +54,7 @@ public class IceAndFire {
         IafSkullType.initItems();
         TrollType.initArmors();
 
+        IafAttributes.REGISTRY.register();
         IafArmorMaterials.REGISTRY.register();
         IafSounds.REGISTRY.register();
         IafBlocks.REGISTRY.register();

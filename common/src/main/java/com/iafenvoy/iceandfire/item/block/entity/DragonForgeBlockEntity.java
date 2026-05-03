@@ -44,15 +44,14 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
     public int lastDragonFlameTimer = 0;
     private DefaultedList<ItemStack> forgeItemStacks = DefaultedList.ofSize(3, ItemStack.EMPTY);
     private boolean prevAssembled;
-    private boolean canAddFlameAgain = true;
-    private int cookTime = 0;
+    private double cookTime = 0;
     //FIXME::Also add total cook time like what vanilla do
     private final PropertyDelegate delegate = new PropertyDelegate() {
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> DragonForgeBlockEntity.this.cookTime;
-                case 1 -> DragonForgeBlockEntity.this.getMaxCookTime();
+                case 0 -> (int) DragonForgeBlockEntity.this.cookTime;
+                case 1 -> (int) DragonForgeBlockEntity.this.getMaxCookTime();
                 default -> 0;
             };
         }
@@ -110,8 +109,6 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         }
 
         if (flag1) blockEntity.markDirty();
-        if (!blockEntity.canAddFlameAgain)
-            blockEntity.canAddFlameAgain = true;
     }
 
     @Override
@@ -206,7 +203,7 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         return 0;
     }
 
-    public int getMaxCookTime() {
+    public double getMaxCookTime() {
         return this.getCurrentRecipe().map(DragonForgeRecipe::getCookTime).orElse(100);
     }
 
@@ -318,15 +315,11 @@ public class DragonForgeBlockEntity extends LockableContainerBlockEntity impleme
         this.forgeItemStacks = inventory;
     }
 
-    public void transferPower(int i) {
+    public void transferPower(double i) {
         assert this.world != null;
         if (!this.world.isClient) {
-            if (this.canSmelt()) {
-                if (this.canAddFlameAgain) {
-                    this.cookTime = Math.min(this.getMaxCookTime() + 1, this.cookTime + i);
-                    this.canAddFlameAgain = false;
-                }
-            } else this.cookTime = 0;
+            if (this.canSmelt()) this.cookTime = Math.min(this.getMaxCookTime() + 1, this.cookTime + i);
+            else this.cookTime = 0;
         }
         this.lastDragonFlameTimer = 40;
     }
