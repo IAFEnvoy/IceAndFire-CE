@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.world.feature;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.iceandfire.world.feature.config.DeathWormFeatureConfig;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
