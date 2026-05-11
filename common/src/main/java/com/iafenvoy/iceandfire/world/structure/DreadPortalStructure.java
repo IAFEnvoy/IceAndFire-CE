@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.world.structure;
 
-import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
+import com.iafenvoy.iceandfire.world.StructureGenerationConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -28,19 +28,24 @@ public class DreadPortalStructure extends IafJigsawStructure {
                     Codec.intRange(0, 30).fieldOf("size").forGetter(s -> s.size),
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(s -> s.startHeight),
                     Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(s -> s.projectStartToHeightmap),
-                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(s -> s.maxDistanceFromCenter)
+                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(s -> s.maxDistanceFromCenter),
+                    StructureGenerationConfig.CODEC.optionalFieldOf("generation", StructureGenerationConfig.DEFAULT)
+                            .forGetter(s -> s.generationConfig)
             ).apply(instance, DreadPortalStructure::new));
+
+    private final StructureGenerationConfig generationConfig;
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public DreadPortalStructure(Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName,
                                  int size, HeightProvider startHeight, Optional<Heightmap.Type> projectStartToHeightmap,
-                                 int maxDistanceFromCenter) {
+                                 int maxDistanceFromCenter, StructureGenerationConfig generationConfig) {
         super(config, startPool, startJigsawName, size, startHeight, projectStartToHeightmap, maxDistanceFromCenter);
+        this.generationConfig = generationConfig;
     }
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateDreadPortalChance.getValue())
+        if (context.random().nextDouble() >= this.generationConfig.generateChance())
             return Optional.empty();
         BlockPos blockPos = context.chunkPos().getCenterAtY(1);
         return StructurePoolBasedGenerator.generate(

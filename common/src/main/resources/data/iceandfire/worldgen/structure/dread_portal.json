@@ -10,5 +10,8 @@
   },
   "start_pool": "iceandfire:dread_portal/start_pool",
   "step": "surface_structures",
-  "terrain_adaptation": "beard_thin"
+  "terrain_adaptation": "beard_thin",
+  "generation": {
+    "generate_chance": 0.2
+  }
 }
