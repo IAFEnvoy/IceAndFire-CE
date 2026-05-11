@@ -4,26 +4,34 @@ import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.HomePosition;
 import com.iafenvoy.iceandfire.item.block.PileBlock;
+import com.iafenvoy.iceandfire.registry.IafStructurePieces;
+import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
 import com.iafenvoy.uranus.util.ShapeBuilder;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -35,20 +43,56 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureType;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class DragonCaveStructure extends Structure implements DangerousGeneration {
-    protected DragonCaveStructure(Config config) {
+public class DragonCaveStructure extends Structure implements DangerousGeneration {
+    public static final MapCodec<DragonCaveStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(
+                    configCodecBuilder(instance),
+                    Registries.ENTITY_TYPE.getCodec().fieldOf("entity_type").forGetter(s -> s.entityType),
+                    Registries.BLOCK.getCodec().fieldOf("stalactite_block").forGetter(s -> s.stalactiteBlock),
+                    Codec.INT.optionalFieldOf("stalactite_max_height", 3).forGetter(s -> s.stalactiteMaxHeight),
+                    Registries.BLOCK.getCodec().fieldOf("treasure_pile_block").forGetter(s -> s.treasurePileBlock),
+                    Registries.BLOCK.getCodec().listOf().fieldOf("palette").forGetter(s -> s.paletteBlocks),
+                    Identifier.CODEC.xmap(id -> TagKey.of(RegistryKeys.BLOCK, id), TagKey::id).fieldOf("ore_tag").forGetter(s -> s.oreTag),
+                    Identifier.CODEC.fieldOf("loot_table_male").forGetter(s -> s.lootTableMale),
+                    Identifier.CODEC.fieldOf("loot_table_female").forGetter(s -> s.lootTableFemale),
+                    Codec.doubleRange(0.0, 1.0).optionalFieldOf("generate_chance", 0.5).forGetter(s -> s.generateChance)
+            ).apply(instance, DragonCaveStructure::new));
+
+    private final EntityType<?> entityType;
+    private final Block stalactiteBlock;
+    private final int stalactiteMaxHeight;
+    private final Block treasurePileBlock;
+    private final List<Block> paletteBlocks;
+    private final TagKey<Block> oreTag;
+    private final Identifier lootTableMale;
+    private final Identifier lootTableFemale;
+    private final double generateChance;
+
+    public DragonCaveStructure(Config config, EntityType<?> entityType, Block stalactiteBlock, int stalactiteMaxHeight,
+                                Block treasurePileBlock, List<Block> paletteBlocks, TagKey<Block> oreTag,
+                                Identifier lootTableMale, Identifier lootTableFemale, double generateChance) {
         super(config);
+        this.entityType = entityType;
+        this.stalactiteBlock = stalactiteBlock;
+        this.stalactiteMaxHeight = stalactiteMaxHeight;
+        this.treasurePileBlock = treasurePileBlock;
+        this.paletteBlocks = paletteBlocks;
+        this.oreTag = oreTag;
+        this.lootTableMale = lootTableMale;
+        this.lootTableFemale = lootTableFemale;
+        this.generateChance = generateChance;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= this.getGenerateChance())
+        if (context.random().nextDouble() >= this.generateChance)
             return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
@@ -62,33 +106,70 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
-                collector.addPiece(this.createPiece(new BlockBox(pos.getX() + i * 32, y - 12, pos.getZ() + j * 32, pos.getX() + i * 32, y + 12, pos.getZ() + j * 32), male, new BlockPos(i * 32, 0, j * 32), y, seed));
+                collector.addPiece(new DragonCavePiece(0,
+                        new BlockBox(pos.getX() + i * 32, y - 12, pos.getZ() + j * 32, pos.getX() + i * 32, y + 12, pos.getZ() + j * 32),
+                        male, new BlockPos(i * 32, 0, j * 32), y, seed,
+                        this.entityType, this.stalactiteBlock, this.stalactiteMaxHeight,
+                        this.treasurePileBlock, this.paletteBlocks, this.oreTag,
+                        this.lootTableMale, this.lootTableFemale));
     }
 
-    protected abstract DragonCavePiece createPiece(BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed);
+    @Override
+    public StructureType<?> getType() {
+        return IafStructureTypes.DRAGON_CAVE.get();
+    }
 
-    protected abstract double getGenerateChance();
-
-    protected abstract static class DragonCavePiece extends StructurePiece {
+    public static class DragonCavePiece extends StructurePiece {
         private final boolean male;
         private final BlockPos offset;
         private final int y;
         private final long seed;
+        private final EntityType<?> entityType;
+        private final Block stalactiteBlock;
+        private final int stalactiteMaxHeight;
+        private final Block treasurePileBlock;
+        private final List<Block> paletteBlocks;
+        private final TagKey<Block> oreTag;
+        private final Identifier lootTableMale;
+        private final Identifier lootTableFemale;
 
-        protected DragonCavePiece(StructurePieceType type, int length, BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
-            super(type, length, boundingBox);
+        protected DragonCavePiece(int length, BlockBox boundingBox, boolean male, BlockPos offset, int y, long seed,
+                                   EntityType<?> entityType, Block stalactiteBlock, int stalactiteMaxHeight,
+                                   Block treasurePileBlock, List<Block> paletteBlocks, TagKey<Block> oreTag,
+                                   Identifier lootTableMale, Identifier lootTableFemale) {
+            super(IafStructurePieces.DRAGON_CAVE.get(), length, boundingBox);
             this.male = male;
             this.offset = offset;
             this.y = y;
             this.seed = seed;
+            this.entityType = entityType;
+            this.stalactiteBlock = stalactiteBlock;
+            this.stalactiteMaxHeight = stalactiteMaxHeight;
+            this.treasurePileBlock = treasurePileBlock;
+            this.paletteBlocks = paletteBlocks;
+            this.oreTag = oreTag;
+            this.lootTableMale = lootTableMale;
+            this.lootTableFemale = lootTableFemale;
         }
 
-        public DragonCavePiece(StructurePieceType type, NbtCompound nbt) {
-            super(type, nbt);
+        public DragonCavePiece(StructureContext context, NbtCompound nbt) {
+            super(IafStructurePieces.DRAGON_CAVE.get(), nbt);
             this.male = nbt.getBoolean("male");
             this.offset = BlockPos.fromLong(nbt.getLong("offset"));
             this.y = nbt.getInt("down");
             this.seed = nbt.getLong("seed");
+            this.entityType = Registries.ENTITY_TYPE.get(Identifier.tryParse(nbt.getString("entityType")));
+            this.stalactiteBlock = Registries.BLOCK.get(Identifier.tryParse(nbt.getString("stalactiteBlock")));
+            this.stalactiteMaxHeight = nbt.getInt("stalactiteMaxHeight");
+            this.treasurePileBlock = Registries.BLOCK.get(Identifier.tryParse(nbt.getString("treasurePileBlock")));
+            NbtList paletteNbt = nbt.getList("palette", NbtElement.STRING_TYPE);
+            List<Block> palette = new ArrayList<>();
+            for (int i = 0; i < paletteNbt.size(); i++)
+                palette.add(Registries.BLOCK.get(Identifier.tryParse(paletteNbt.getString(i))));
+            this.paletteBlocks = palette;
+            this.oreTag = TagKey.of(RegistryKeys.BLOCK, Identifier.tryParse(nbt.getString("oreTag")));
+            this.lootTableMale = Identifier.tryParse(nbt.getString("lootTableMale"));
+            this.lootTableFemale = Identifier.tryParse(nbt.getString("lootTableFemale"));
         }
 
         @Override
@@ -97,6 +178,17 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             nbt.putLong("offset", this.offset.asLong());
             nbt.putInt("down", this.y);
             nbt.putLong("seed", this.seed);
+            nbt.putString("entityType", Registries.ENTITY_TYPE.getId(this.entityType).toString());
+            nbt.putString("stalactiteBlock", Registries.BLOCK.getId(this.stalactiteBlock).toString());
+            nbt.putInt("stalactiteMaxHeight", this.stalactiteMaxHeight);
+            nbt.putString("treasurePileBlock", Registries.BLOCK.getId(this.treasurePileBlock).toString());
+            NbtList paletteNbt = new NbtList();
+            for (Block block : this.paletteBlocks)
+                paletteNbt.add(NbtString.of(Registries.BLOCK.getId(block).toString()));
+            nbt.put("palette", paletteNbt);
+            nbt.putString("oreTag", this.oreTag.id().toString());
+            nbt.putString("lootTableMale", this.lootTableMale.toString());
+            nbt.putString("lootTableFemale", this.lootTableFemale.toString());
         }
 
         @Override
@@ -162,7 +254,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             List<Block> rareOres = this.getBlockList(IafBlockTags.DRAGON_CAVE_RARE_ORES);
             List<Block> uncommonOres = this.getBlockList(IafBlockTags.DRAGON_CAVE_UNCOMMON_ORES);
             List<Block> commonOres = this.getBlockList(IafBlockTags.DRAGON_CAVE_COMMON_ORES);
-            List<Block> dragonTypeOres = this.getBlockList(this.getOreTag());
+            List<Block> dragonTypeOres = this.getBlockList(this.oreTag);
             positions.forEach(blockPos -> {
                 if (!(worldIn.getBlockState(blockPos).getBlock() instanceof BlockWithEntity) && worldIn.getBlockState(blockPos).getHardness(worldIn, blockPos) >= 0) {
                     boolean doOres = rand.nextDouble() < IafCommonConfig.INSTANCE.dragon.generateOreRatio.getValue();
@@ -204,8 +296,9 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             for (SphereInfo sphere : spheres) {
                 BlockPos pos = sphere.pos();
                 int radius = sphere.radius();
+                WorldGenCaveStalactites stalactites = new WorldGenCaveStalactites(this.stalactiteBlock, this.stalactiteMaxHeight);
                 for (int i = 0; i < 15 + random.nextInt(10); i++)
-                    this.getCeilingDecoration().generate(worldIn, random, pos.up(radius / 2 - 1).add(random.nextInt(radius) - radius / 2, 0, random.nextInt(radius) - radius / 2));
+                    stalactites.generate(worldIn, random, pos.up(radius / 2 - 1).add(random.nextInt(radius) - radius / 2, 0, random.nextInt(radius) - radius / 2));
             }
 
             positions.forEach(blockPos -> {
@@ -222,20 +315,26 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
                 int chance = random.nextInt(99) + 1;
                 if (chance < 60) {
                     boolean generateGold = random.nextDouble() < IafCommonConfig.INSTANCE.dragon.generateDenGoldChance.getValue() * (this.male ? 1 : 2);
-                    world.setBlockState(pos, generateGold ? this.getTreasurePile().with(PileBlock.LAYERS, 1 + random.nextInt(7)) : Blocks.AIR.getDefaultState(), 3);
+                    world.setBlockState(pos, generateGold ? this.treasurePileBlock.getDefaultState().with(PileBlock.LAYERS, 1 + random.nextInt(7)) : Blocks.AIR.getDefaultState(), 3);
                 } else if (chance == 61) {
                     world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.Type.HORIZONTAL.random(random)), Block.NOTIFY_LISTENERS);
                     if (world.getBlockState(pos).getBlock() instanceof ChestBlock) {
                         BlockEntity blockEntity = world.getBlockEntity(pos);
                         if (blockEntity instanceof ChestBlockEntity chestBlockEntity)
-                            chestBlockEntity.setLootTable(this.getChestTable(this.male), random.nextLong());
+                            chestBlockEntity.setLootTable(RegistryKey.of(RegistryKeys.LOOT_TABLE, this.male ? this.lootTableMale : this.lootTableFemale), random.nextLong());
                     }
                 }
             }
         }
 
+        private BlockState getPaletteBlock(Random random) {
+            if (this.paletteBlocks.isEmpty()) return Blocks.STONE.getDefaultState();
+            return this.paletteBlocks.get(random.nextInt(this.paletteBlocks.size())).getDefaultState();
+        }
+
+        @SuppressWarnings("unchecked")
         private DragonBaseEntity createDragon(final StructureWorldAccess worldGen, final Random random, final BlockPos position, int dragonAge) {
-            DragonBaseEntity dragon = this.getDragonType().create(worldGen.toServerWorld());
+            DragonBaseEntity dragon = ((EntityType<? extends DragonBaseEntity>) this.entityType).create(worldGen.toServerWorld());
             assert dragon != null;
             dragon.setGender(this.male);
             dragon.growDragon(dragonAge);
@@ -248,18 +347,6 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             dragon.setHunger(50);
             return dragon;
         }
-
-        protected abstract TagKey<Block> getOreTag();
-
-        protected abstract WorldGenCaveStalactites getCeilingDecoration();
-
-        protected abstract BlockState getTreasurePile();
-
-        protected abstract BlockState getPaletteBlock(Random random);
-
-        protected abstract RegistryKey<LootTable> getChestTable(boolean male);
-
-        protected abstract EntityType<? extends DragonBaseEntity> getDragonType();
     }
 
     public record SphereInfo(int radius, BlockPos pos) {

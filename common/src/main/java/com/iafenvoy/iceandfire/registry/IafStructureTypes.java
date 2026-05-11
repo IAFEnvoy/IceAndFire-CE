@@ -17,9 +17,7 @@ public final class IafStructureTypes {
     public static final RegistrySupplier<StructureType<MausoleumStructure>> MAUSOLEUM = registerType("mausoleum", () -> () -> MausoleumStructure.CODEC);
     public static final RegistrySupplier<StructureType<GorgonTempleStructure>> GORGON_TEMPLE = registerType("gorgon_temple", () -> () -> GorgonTempleStructure.CODEC);
     public static final RegistrySupplier<StructureType<DragonRoostStructure>> DRAGON_ROOST = registerType("dragon_roost", () -> () -> DragonRoostStructure.CODEC);
-    public static final RegistrySupplier<StructureType<FireDragonCaveStructure>> FIRE_DRAGON_CAVE = registerType("fire_dragon_cave", () -> () -> FireDragonCaveStructure.CODEC);
-    public static final RegistrySupplier<StructureType<IceDragonCaveStructure>> ICE_DRAGON_CAVE = registerType("ice_dragon_cave", () -> () -> IceDragonCaveStructure.CODEC);
-    public static final RegistrySupplier<StructureType<LightningDragonCaveStructure>> LIGHTNING_DRAGON_CAVE = registerType("lightning_dragon_cave", () -> () -> LightningDragonCaveStructure.CODEC);
+    public static final RegistrySupplier<StructureType<DragonCaveStructure>> DRAGON_CAVE = registerType("dragon_cave", () -> () -> DragonCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<CyclopsCaveStructure>> CYCLOPS_CAVE = registerType("cyclops_cave", () -> () -> CyclopsCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<HydraCaveStructure>> HYDRA_CAVE = registerType("hydra_cave", () -> () -> HydraCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<SirenIslandStructure>> SIREN_ISLAND = registerType("siren_island", () -> () -> SirenIslandStructure.CODEC);
