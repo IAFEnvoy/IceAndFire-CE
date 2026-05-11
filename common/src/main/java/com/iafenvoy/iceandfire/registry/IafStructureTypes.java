@@ -22,6 +22,8 @@ public final class IafStructureTypes {
     public static final RegistrySupplier<StructureType<HydraCaveStructure>> HYDRA_CAVE = registerType("hydra_cave", () -> () -> HydraCaveStructure.CODEC);
     public static final RegistrySupplier<StructureType<SirenIslandStructure>> SIREN_ISLAND = registerType("siren_island", () -> () -> SirenIslandStructure.CODEC);
     public static final RegistrySupplier<StructureType<PixieVillageStructure>> PIXIE_VILLAGE = registerType("pixie_village", () -> () -> PixieVillageStructure.CODEC);
+    public static final RegistrySupplier<StructureType<DreadRuinStructure>> DREAD_RUIN = registerType("dread_ruin", () -> () -> DreadRuinStructure.CODEC);
+    public static final RegistrySupplier<StructureType<DreadPortalStructure>> DREAD_PORTAL = registerType("dread_portal", () -> () -> DreadPortalStructure.CODEC);
 
     private static <P extends Structure> RegistrySupplier<StructureType<P>> registerType(String name, Supplier<StructureType<P>> factory) {
         return REGISTRY.register(name, factory);

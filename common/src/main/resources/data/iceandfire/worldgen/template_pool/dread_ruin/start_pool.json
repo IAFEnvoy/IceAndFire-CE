@@ -1,0 +1,122 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_0",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_1",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_2",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_3",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_4",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_5",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_6",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_7",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_8",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_9",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_10",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_11",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "iceandfire:dread_ruin_12",
+        "processors": "iceandfire:dread_ruin_processors",
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ],
+  "fallback": "minecraft:empty"
+}

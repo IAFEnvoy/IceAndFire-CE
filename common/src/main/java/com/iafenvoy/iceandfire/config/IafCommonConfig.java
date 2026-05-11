@@ -307,6 +307,8 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry generateMausoleumChance = DoubleEntry.builder("config.iceandfire.worldgen.generateMausoleumChance", 0.5).range(0, 1).key("generateMausoleumChance").build();
         public final DoubleEntry generatePixieVillageChance = DoubleEntry.builder("config.iceandfire.worldgen.generatePixieVillageChance", 0.5).range(0, 1).key("generatePixieVillageChance").build();
         public final DoubleEntry generateSirenIslandChance = DoubleEntry.builder("config.iceandfire.worldgen.generateSirenIslandChance", 0.5).range(0, 1).key("generateSirenIslandChance").build();
+        public final DoubleEntry generateDreadRuinChance = DoubleEntry.builder("config.iceandfire.worldgen.generateDreadRuinChance", 0.5).range(0, 1).key("generateDreadRuinChance").build();
+        public final DoubleEntry generateDreadPortalChance = DoubleEntry.builder("config.iceandfire.worldgen.generateDreadPortalChance", 0.2).range(0, 1).key("generateDreadPortalChance").build();
 
         public WorldGenConfig() {
             super("worldgen", "config.iceandfire.category.worldgen");
