@@ -1,11 +1,11 @@
 package com.iafenvoy.iceandfire.world.structure;
 
-import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.SirenEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafStructurePieces;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
+import com.iafenvoy.iceandfire.world.StructureGenerationConfig;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
@@ -31,16 +31,22 @@ import java.util.Optional;
 
 public class SirenIslandStructure extends Structure implements DangerousGeneration {
     public static final MapCodec<SirenIslandStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(configCodecBuilder(instance)).apply(instance, SirenIslandStructure::new));
+            instance.group(configCodecBuilder(instance),
+                    StructureGenerationConfig.CODEC.optionalFieldOf("generation", StructureGenerationConfig.DEFAULT)
+                            .forGetter(s -> s.generationConfig)
+            ).apply(instance, SirenIslandStructure::new));
 
-    protected SirenIslandStructure(Config config) {
+    private final StructureGenerationConfig generationConfig;
+
+    protected SirenIslandStructure(Config config, StructureGenerationConfig generationConfig) {
         super(config);
+        this.generationConfig = generationConfig;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateSirenIslandChance.getValue())
+        if (context.random().nextDouble() >= this.generationConfig.generateChance())
             return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);
