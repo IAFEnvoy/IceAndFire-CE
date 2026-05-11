@@ -1,0 +1,10 @@
+{
+  "type": "iceandfire:siren_island",
+  "biomes": "#iceandfire:structure_gen/siren_island",
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin",
+  "generation": {
+    "generate_chance": 0.5
+  }
+}
