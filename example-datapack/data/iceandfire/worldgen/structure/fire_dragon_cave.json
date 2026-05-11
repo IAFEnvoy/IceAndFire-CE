@@ -1,4 +1,15 @@
 {
+  "_comment": [
+    "generate_chance: float 0.0–1.0. Per-chunk probability gate. 0.0 = never, 0.5 = 50% of candidate chunks (default), 1.0 = every candidate chunk.",
+    "entity_type: The dragon spawned inside the cave.",
+    "stalactite_block: Block used to build ceiling stalactites.",
+    "stalactite_max_height: Tallest stalactite in blocks.",
+    "treasure_pile_block: Block scattered as treasure on the cave floor.",
+    "palette: [primary_wall_block, secondary_wall_block] used to build the cave shell.",
+    "ore_tag: Block tag for ore veins that can appear in the cave walls.",
+    "loot_table_male / loot_table_female: Chest loot depending on the resident dragon's sex.",
+    "biomes: Biome tag controlling eligible spawn biomes. Override separately with a datapack tag file."
+  ],
   "type": "iceandfire:dragon_cave",
   "biomes": "#iceandfire:structure_gen/fire",
   "spawn_overrides": {},

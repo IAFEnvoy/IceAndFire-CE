@@ -1,4 +1,17 @@
 {
+  "_comment": [
+    "generate_chance: float 0.0–1.0. Per-chunk probability gate. 0.0 = never, 0.5 = 50% of candidate chunks (default), 1.0 = every candidate chunk.",
+    "generate_spires: Whether to generate rocky stone spires around the roost footprint. Default false.",
+    "dragon_type: The dragon entity spawned at the roost.",
+    "loot_table: Loot table for treasure chests placed within the roost.",
+    "treasure_block: Block used for scattered treasure piles.",
+    "pile_block: Optional decorative scatter block (e.g. ash, ice). Remove the field entirely to disable.",
+    "block_transform: Terrain replacement rules applied within the roost footprint.",
+    "  Each entry replaces every 'from' block found in the area with the 'to' block,",
+    "  giving each dragon type a distinct visual theme (charred, frozen, crackled terrain).",
+    "biomes: Biome tag controlling eligible spawn biomes. Override separately with a datapack tag file.",
+    "terrain_adaptation: How vanilla terrain shapes around the structure: none, beard_thin, beard_box, bury, encapsulate."
+  ],
   "type": "iceandfire:dragon_roost",
   "biomes": "#iceandfire:structure_gen/fire",
   "spawn_overrides": {},

@@ -1,4 +1,10 @@
 {
+  "_comment": [
+    "generation.generate_chance: float 0.0–1.0. Per-chunk probability gate. 0.0 = never, 0.5 = 50% of candidate chunks (default), 1.0 = every candidate chunk.",
+    "  Omit the entire 'generation' block to use the default of 0.5.",
+    "biomes: Biome tag controlling eligible spawn biomes. Override separately with a datapack tag file.",
+    "terrain_adaptation: How vanilla terrain shapes around the structure: none, beard_thin, beard_box, bury, encapsulate."
+  ],
   "type": "iceandfire:pixie_village",
   "biomes": "#iceandfire:structure_gen/pixie_village",
   "spawn_overrides": {},
