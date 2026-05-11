@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafStructurePieces;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
+import com.iafenvoy.iceandfire.world.StructureGenerationConfig;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
@@ -34,16 +35,22 @@ import java.util.Optional;
 
 public class PixieVillageStructure extends Structure {
     public static final MapCodec<PixieVillageStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(configCodecBuilder(instance)).apply(instance, PixieVillageStructure::new));
+            instance.group(configCodecBuilder(instance),
+                    StructureGenerationConfig.CODEC.optionalFieldOf("generation", StructureGenerationConfig.DEFAULT)
+                            .forGetter(s -> s.generationConfig)
+            ).apply(instance, PixieVillageStructure::new));
 
-    protected PixieVillageStructure(Config config) {
+    private final StructureGenerationConfig generationConfig;
+
+    protected PixieVillageStructure(Config config, StructureGenerationConfig generationConfig) {
         super(config);
+        this.generationConfig = generationConfig;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generatePixieVillageChance.getValue())
+        if (context.random().nextDouble() >= this.generationConfig.generateChance())
             return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);

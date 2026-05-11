@@ -19,6 +19,8 @@ public final class IafBiomeTags {
     public static final TagKey<Biome> HYDRA_CAVE = create("structure_gen/hydra_cave");
     public static final TagKey<Biome> PIXIE_VILLAGE = create("structure_gen/pixie_village");
     public static final TagKey<Biome> SIREN_ISLAND = create("structure_gen/siren_island");
+    public static final TagKey<Biome> DREAD_RUIN = create("structure_gen/dread_ruin");
+    public static final TagKey<Biome> DREAD_PORTAL = create("structure_gen/dread_portal");
 
     public static final TagKey<Biome> SILVER_ORE = create("ore_gen/silver");
     public static final TagKey<Biome> SAPPHIRE_ORE = create("ore_gen/sapphire");

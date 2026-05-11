@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.world.structure;
 
-import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
+import com.iafenvoy.iceandfire.world.StructureGenerationConfig;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -29,17 +29,22 @@ public class GorgonTempleStructure extends IafJigsawStructure implements Dangero
                     Codec.intRange(0, 30).fieldOf("size").forGetter(structure -> structure.size),
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
                     Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
-                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
+                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
+                    StructureGenerationConfig.CODEC.optionalFieldOf("generation", StructureGenerationConfig.DEFAULT)
+                            .forGetter(s -> s.generationConfig)
             ).apply(instance, GorgonTempleStructure::new));
 
+    private final StructureGenerationConfig generationConfig;
+
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public GorgonTempleStructure(Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter) {
+    public GorgonTempleStructure(Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter, StructureGenerationConfig generationConfig) {
         super(config, startPool, startJigsawName, size, startHeight, projectStartToHeightmap, maxDistanceFromCenter);
+        this.generationConfig = generationConfig;
     }
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateGorgonTempleChance.getValue())
+        if (context.random().nextDouble() >= this.generationConfig.generateChance())
             return Optional.empty();
         ChunkPos pos = context.chunkPos();
         BlockPos blockpos = pos.getCenterAtY(1);

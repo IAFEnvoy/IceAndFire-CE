@@ -554,7 +554,6 @@ public class AmphithereEntity extends TameableEntity implements ISyncMount, IAni
         this.setConfigurableAttributes();
     }
 
-    //TODO: Create entity placements
     public boolean getCanSpawnHere() {
         int i = MathHelper.floor(this.getX());
         int j = MathHelper.floor(this.getBoundingBox().minY);

@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "generation.generate_chance: float 0.0–1.0. Per-chunk probability gate. 0.0 = never, 0.5 = 50% of candidate chunks (default), 1.0 = every candidate chunk.",
+    "  Omit the entire 'generation' block to use the default of 0.5.",
+    "biomes: Biome tag controlling eligible spawn biomes. Override separately with a datapack tag file.",
+    "terrain_adaptation: How vanilla terrain shapes around the structure: none, beard_thin, beard_box, bury, encapsulate.",
+    "start_pool: Root jigsaw pool that controls which structure pieces can generate.",
+    "size: Jigsaw branch depth — how many additional pieces can connect outward from the starting piece.",
+    "start_height: Y offset applied to the spawn position. {absolute: 0} means no offset.",
+    "project_start_to_heightmap: Snaps the starting Y to this heightmap before applying start_height. WORLD_SURFACE_WG is standard for surface structures.",
+    "max_distance_from_center: Maximum distance in blocks that any jigsaw piece may be placed from the structure origin."
+  ],
+  "type": "iceandfire:graveyard",
+  "biomes": "#iceandfire:structure_gen/graveyard",
+  "spawn_overrides": {},
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin",
+  "start_pool": "iceandfire:graveyard/start_pool",
+  "size": 1,
+  "start_height": {
+    "absolute": 0
+  },
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "max_distance_from_center": 16,
+  "generation": {
+    "generate_chance": 0.5
+  }
+}

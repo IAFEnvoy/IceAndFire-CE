@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#bigglobe:cold",
+    "bigglobe:glacier",
+    "#bigglobe:swamps",
+    "bigglobe:hot_dense_forest",
+    "#bigglobe:beach"
+  ]
+}

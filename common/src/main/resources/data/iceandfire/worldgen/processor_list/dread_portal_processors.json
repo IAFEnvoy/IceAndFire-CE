@@ -1,0 +1,7 @@
+{
+  "processors": [
+    {
+      "processor_type": "iceandfire:dread_portal_processor"
+    }
+  ]
+}

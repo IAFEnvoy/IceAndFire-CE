@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.world.structure;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.CyclopsEntity;
 import com.iafenvoy.iceandfire.item.block.PileBlock;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
@@ -9,6 +8,7 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafStructurePieces;
 import com.iafenvoy.iceandfire.registry.IafStructureTypes;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
+import com.iafenvoy.iceandfire.world.StructureGenerationConfig;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.*;
@@ -42,16 +42,23 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CyclopsCaveStructure extends Structure implements DangerousGeneration {
-    public static final MapCodec<CyclopsCaveStructure> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(configCodecBuilder(instance)).apply(instance, CyclopsCaveStructure::new));
+    public static final MapCodec<CyclopsCaveStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(configCodecBuilder(instance),
+                    StructureGenerationConfig.CODEC.optionalFieldOf("generation", StructureGenerationConfig.DEFAULT)
+                            .forGetter(s -> s.generationConfig)
+            ).apply(instance, CyclopsCaveStructure::new));
 
-    protected CyclopsCaveStructure(Config config) {
+    private final StructureGenerationConfig generationConfig;
+
+    protected CyclopsCaveStructure(Config config, StructureGenerationConfig generationConfig) {
         super(config);
+        this.generationConfig = generationConfig;
     }
 
     @SuppressWarnings("deprecation")
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        if (context.random().nextDouble() >= IafCommonConfig.INSTANCE.worldGen.generateCyclopsCaveChance.getValue())
+        if (context.random().nextDouble() >= this.generationConfig.generateChance())
             return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
         BlockPos blockPos = this.getShiftedPos(context, blockRotation);

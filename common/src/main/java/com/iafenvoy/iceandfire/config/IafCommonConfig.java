@@ -294,19 +294,6 @@ public class IafCommonConfig extends AutoInitConfigContainer {
 
     public static class WorldGenConfig extends AutoInitConfigCategoryBase {
         public final DoubleEntry dangerousDistanceLimit = DoubleEntry.builder("config.iceandfire.worldgen.dangerousDistanceLimit", 1000).min(0).key("dangerousDistanceLimit").build();
-        public final DoubleEntry generateFireDragonCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateFireDragonCaveChance", 0.5).range(0, 1).key("generateFireDragonCaveChance").build();
-        public final DoubleEntry generateFireDragonRoostChance = DoubleEntry.builder("config.iceandfire.worldgen.generateFireDragonRoostChance", 0.5).range(0, 1).key("generateFireDragonRoostChance").build();
-        public final DoubleEntry generateIceDragonCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateIceDragonCaveChance", 0.5).range(0, 1).key("generateIceDragonCaveChance").build();
-        public final DoubleEntry generateIceDragonRoostChance = DoubleEntry.builder("config.iceandfire.worldgen.generateIceDragonRoostChance", 0.5).range(0, 1).key("generateIceDragonRoostChance").build();
-        public final DoubleEntry generateLightningDragonCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateLightningDragonCaveChance", 0.5).range(0, 1).key("generateLightningDragonCaveChance").build();
-        public final DoubleEntry generateLightningDragonRoostChance = DoubleEntry.builder("config.iceandfire.worldgen.generateLightningDragonRoostChance", 0.5).range(0, 1).key("generateLightningDragonRoostChance").build();
-        public final DoubleEntry generateCyclopsCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateCyclopsCaveChance", 0.5).range(0, 1).key("generateCyclopsCaveChance").build();
-        public final DoubleEntry generateGorgonTempleChance = DoubleEntry.builder("config.iceandfire.worldgen.generateGorgonTempleChance", 0.5).range(0, 1).key("generateGorgonTempleChance").build();
-        public final DoubleEntry generateGraveYardChance = DoubleEntry.builder("config.iceandfire.worldgen.generateGraveYardChance", 0.5).range(0, 1).key("generateGraveYardChance").build();
-        public final DoubleEntry generateHydraCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateHydraCaveChance", 0.5).range(0, 1).key("generateHydraCaveChance").build();
-        public final DoubleEntry generateMausoleumChance = DoubleEntry.builder("config.iceandfire.worldgen.generateMausoleumChance", 0.5).range(0, 1).key("generateMausoleumChance").build();
-        public final DoubleEntry generatePixieVillageChance = DoubleEntry.builder("config.iceandfire.worldgen.generatePixieVillageChance", 0.5).range(0, 1).key("generatePixieVillageChance").build();
-        public final DoubleEntry generateSirenIslandChance = DoubleEntry.builder("config.iceandfire.worldgen.generateSirenIslandChance", 0.5).range(0, 1).key("generateSirenIslandChance").build();
 
         public WorldGenConfig() {
             super("worldgen", "config.iceandfire.category.worldgen");
