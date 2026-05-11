@@ -1,0 +1,7 @@
+{
+  "type": "iceandfire:spawn_amphithere",
+  "config": {
+    "spawn_chance": 0.033,
+    "entity_type": "iceandfire:amphithere"
+  }
+}

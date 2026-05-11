@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
 import com.iafenvoy.iceandfire.world.feature.*;
 import com.iafenvoy.iceandfire.world.feature.config.DeathWormFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.DragonSkeletonFeatureConfig;
+import com.iafenvoy.iceandfire.world.feature.config.EntitySpawnFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.HippocampusFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.SeaSerpentFeatureConfig;
 import com.iafenvoy.iceandfire.world.feature.config.StymphalianBirdFeatureConfig;
@@ -27,6 +28,7 @@ import java.util.function.Supplier;
 public final class IafFeatures {
     public static final DeferredRegister<Feature<?>> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.FEATURE);
 
+    public static final RegistrySupplier<Feature<EntitySpawnFeatureConfig>> SPAWN_AMPHITHERE = feature("spawn_amphithere", AmphithereSpawnFeature::new);
     public static final RegistrySupplier<Feature<DeathWormFeatureConfig>> SPAWN_DEATH_WORM = feature("spawn_death_worm", DeathWormSpawnFeature::new);
     public static final RegistrySupplier<Feature<DragonSkeletonFeatureConfig>> SPAWN_DRAGON_SKELETON = feature("spawn_dragon_skeleton", DragonSkeletonSpawnFeature::new);
     public static final RegistrySupplier<Feature<HippocampusFeatureConfig>> SPAWN_HIPPOCAMPUS = feature("spawn_hippocampus", HippocampusSpawnFeature::new);
@@ -41,6 +43,7 @@ public final class IafFeatures {
     public static final RegistryKey<ConfiguredFeature<?, ?>> DREADWOOD = configuredFeature("dreadwood");
     public static final RegistryKey<ConfiguredFeature<?, ?>> DREADWOOD_LARGE = configuredFeature("dreadwood_large");
 
+    public static final RegistryKey<PlacedFeature> PLACED_SPAWN_AMPHITHERE = placeFeature("spawn_amphithere");
     public static final RegistryKey<PlacedFeature> PLACED_SPAWN_DEATH_WORM = placeFeature("spawn_death_worm");
     public static final RegistryKey<PlacedFeature> PLACED_SPAWN_DRAGON_SKELETON_L = placeFeature("spawn_dragon_skeleton_lightning");
     public static final RegistryKey<PlacedFeature> PLACED_SPAWN_DRAGON_SKELETON_F = placeFeature("spawn_dragon_skeleton_fire");
@@ -77,6 +80,7 @@ public final class IafFeatures {
         addFeatureToBiome(IafBiomeTags.SAPPHIRE_ORE, PLACED_SAPPHIRE_ORE, GenerationStep.Feature.UNDERGROUND_ORES);
 
         addFeatureToBiome(IafBiomeTags.DEATHWORM, PLACED_SPAWN_DEATH_WORM, GenerationStep.Feature.SURFACE_STRUCTURES);
+        addFeatureToBiome(IafBiomeTags.AMPHITHERE, PLACED_SPAWN_AMPHITHERE, GenerationStep.Feature.SURFACE_STRUCTURES);
         addFeatureToBiome(IafBiomeTags.WANDERING_CYCLOPS, PLACED_SPAWN_WANDERING_CYCLOPS, GenerationStep.Feature.SURFACE_STRUCTURES);
         addFeatureToBiome(IafBiomeTags.HIPPOCAMPUS, PLACED_SPAWN_HIPPOCAMPUS, GenerationStep.Feature.SURFACE_STRUCTURES);
         addFeatureToBiome(IafBiomeTags.SEA_SERPENT, PLACED_SPAWN_SEA_SERPENT, GenerationStep.Feature.SURFACE_STRUCTURES);
