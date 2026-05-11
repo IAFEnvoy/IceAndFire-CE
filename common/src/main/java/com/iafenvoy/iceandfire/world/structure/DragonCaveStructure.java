@@ -102,20 +102,23 @@ public class DragonCaveStructure extends Structure implements DangerousGeneratio
         if (context.random().nextDouble() >= this.generateChance)
             return Optional.empty();
         BlockRotation blockRotation = BlockRotation.random(context.random());
-        BlockPos blockPos = this.getShiftedPos(context, blockRotation);
-        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.world().getBottomY() + 2)
+        BlockPos surfacePos = this.getShiftedPos(context, blockRotation);
+        if (!this.isFarEnoughFromSpawn(surfacePos))
             return Optional.empty();
-        return Optional.of(new StructurePosition(blockPos, collector -> this.addPieces(collector, blockPos, context, context.random().nextBoolean())));
+        int y = this.yBase + context.random().nextInt(this.yRange);
+        if (y <= context.world().getBottomY() + 2)
+            return Optional.empty();
+        BlockPos cavePos = new BlockPos(surfacePos.getX(), y, surfacePos.getZ());
+        return Optional.of(new StructurePosition(cavePos, collector -> this.addPieces(collector, cavePos, context, context.random().nextBoolean())));
     }
 
     private void addPieces(StructurePiecesCollector collector, BlockPos pos, Context context, boolean male) {
-        int y = this.yBase + context.random().nextInt(this.yRange);
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
                 collector.addPiece(new DragonCavePiece(0,
-                        new BlockBox(pos.getX() + i * 32, y - 12, pos.getZ() + j * 32, pos.getX() + i * 32, y + 12, pos.getZ() + j * 32),
-                        male, new BlockPos(i * 32, 0, j * 32), y, seed,
+                        new BlockBox(pos.getX() + i * 32, pos.getY() - 12, pos.getZ() + j * 32, pos.getX() + i * 32, pos.getY() + 12, pos.getZ() + j * 32),
+                        male, new BlockPos(i * 32, 0, j * 32), pos.getY(), seed,
                         this.entityType, this.stalactiteBlock, this.stalactiteMaxHeight,
                         this.treasurePileBlock, this.paletteBlocks, this.oreTag,
                         this.lootTableMale, this.lootTableFemale));
