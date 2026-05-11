@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.world.structure;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.PixieEntity;
 import com.iafenvoy.iceandfire.item.block.PixieHouseBlock;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
