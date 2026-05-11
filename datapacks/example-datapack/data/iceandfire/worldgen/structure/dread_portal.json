@@ -1,8 +1,8 @@
 {
   "_comment": [
     "generation.generate_chance: float 0.0–1.0. Per-chunk probability gate. 0.0 = never, 1.0 = every candidate chunk.",
-    "  The dread portal defaults to 0.2 (20%) — intentionally rarer than other structures.",
-    "  Omit the entire 'generation' block to keep the 0.2 default.",
+    "  The mod ships dread_portal with 0.2 (20%) — intentionally rarer than other structures.",
+    "  If your datapack file omits the 'generation' block entirely, the codec default of 0.5 applies (not 0.2).",
     "biomes: Biome tag controlling eligible spawn biomes. Override separately with a datapack tag file.",
     "terrain_adaptation: How vanilla terrain shapes around the structure: none, beard_thin, beard_box, bury, encapsulate.",
     "start_pool: Root jigsaw pool that controls which structure pieces can generate.",

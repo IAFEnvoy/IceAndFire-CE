@@ -1,0 +1,20 @@
+{
+  "type": "iceandfire:dragon_cave",
+  "biomes": "#iceandfire:structure_gen/ice",
+  "spawn_overrides": {},
+  "step": "underground_structures",
+  "entity_type": "iceandfire:ice_dragon",
+  "stalactite_block": "iceandfire:frozen_stone",
+  "stalactite_max_height": 3,
+  "treasure_pile_block": "iceandfire:silver_pile",
+  "palette": [
+    "iceandfire:frozen_stone",
+    "iceandfire:frozen_cobblestone"
+  ],
+  "ore_tag": "iceandfire:ice_dragon_cave_ores",
+  "loot_table_male": "iceandfire:chest/ice_dragon_male_cave",
+  "loot_table_female": "iceandfire:chest/ice_dragon_female_cave",
+  "generate_chance": 0.5,
+  "y_base": -100,
+  "y_range": 80
+}

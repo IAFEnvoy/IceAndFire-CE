@@ -1,0 +1,89 @@
+{
+	"type": "script",
+	"dispatcher": [
+		";IAF+BigGlobe compat: surface entity spawns, dragon skeleton spawns, and lilies",
+		";Biome is sampled once at the chunk centre and reused for all feature checks.",
+		";x and z are declared once here and reassigned per placement to avoid re-declaration errors.",
+
+		"int*(cx = minModifiableX | 8, cz = minModifiableZ | 8)",
+		"int csy = world_traits.`bigglobe:y_level_on_surface`(cx, cz)",
+		"Biome biome = `bigglobe:overworld/biome`(cx, csy, cz)",
+		"int*(x = 0, z = 0)",
+
+		";--- Hot biomes (fire dragons, death worms, fire lilies) ---",
+		";Matches iceandfire:structure_gen/fire + iceandfire:entity_gen/deathworm",
+		"if (biome.isIn('#iaf_bigglobe_compat:hot_with_volcano'):",
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_death_worm')",
+
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_dragon_skeleton_fire')",
+
+			";Fire lily: 1/32 chance per chunk",
+			"if (random.nextInt(32) == 0:",
+				"x = minModifiableX | random.nextInt(16)",
+				"z = minModifiableZ | random.nextInt(16)",
+				"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:fire_lily')",
+			")",
+		")",
+
+		";--- Cold biomes (ice dragons, frost lilies) ---",
+		";Matches iceandfire:structure_gen/ice",
+		"if (biome.isIn('#iaf_bigglobe_compat:cold_with_glacier'):",
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_dragon_skeleton_ice')",
+
+			";Frost lily: 1/32 chance per chunk",
+			"if (random.nextInt(32) == 0:",
+				"x = minModifiableX | random.nextInt(16)",
+				"z = minModifiableZ | random.nextInt(16)",
+				"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:frost_lily')",
+			")",
+		")",
+
+		";--- Lightning biomes (swamps + warm biomes) ---",
+		";Matches iceandfire:structure_gen/lightning (vanilla: swamp, mangrove, jungle, badlands, savanna)",
+		"if (biome.isIn('#bigglobe:swamps') || biome.isIn('#bigglobe:warm'):",
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_dragon_skeleton_lightning')",
+
+			";Stymphalian bird - swamp biomes only (matches iceandfire:entity_gen/stymphalian_bird)",
+			"if (biome.isIn('#bigglobe:swamps'):",
+				"x = minModifiableX | random.nextInt(16)",
+				"z = minModifiableZ | random.nextInt(16)",
+				"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_stymphalian_bird')",
+			")",
+
+			";Lightning lily: 1/32 chance per chunk",
+			"if (random.nextInt(32) == 0:",
+				"x = minModifiableX | random.nextInt(16)",
+				"z = minModifiableZ | random.nextInt(16)",
+				"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:lightning_lily')",
+			")",
+		")",
+
+		";--- Ocean biomes (sea serpents, hippocampi) ---",
+		";Matches iceandfire:entity_gen/sea_serpent and iceandfire:entity_gen/hippocampus",
+		"if (biome.isIn('#bigglobe:ocean'):",
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_sea_serpent')",
+
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_hippocampus')",
+		")",
+
+		";--- Temperate + cold plains (wandering cyclops) ---",
+		";Matches iceandfire:entity_gen/wandering_cyclops (vanilla: plains, snowy_plains, meadow, sunflower_plains)",
+		"if (biome.isIn('#iaf_bigglobe_compat:cyclops_plains'):",
+			"x = minModifiableX | random.nextInt(16)",
+			"z = minModifiableZ | random.nextInt(16)",
+			"placeFeature(x, world_traits.`bigglobe:y_level_on_surface`(x, z), z, 'iceandfire:spawn_wandering_cyclops')",
+		")"
+	]
+}

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#bigglobe:dense_forest",
+    "bigglobe:hot_light_forest",
+    "bigglobe:warm_light_forest",
+    "bigglobe:cold_light_forest",
+    "bigglobe:temperate_light_forest",
+    "bigglobe:cherry_forest",
+    "bigglobe:swamp_forest"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+	"type": "script",
+	"dispatcher": [
+		";IAF+BigGlobe compat: underground ore generation",
+
+		";Silver ore - 16 veins per chunk, all overworld biomes (matches iceandfire:ore_gen/silver = #minecraft:is_overworld)",
+		"repeat (16:",
+			"int*(x = minModifiableX | random.nextInt(16), z = minModifiableZ | random.nextInt(16))",
+			"int y = random.nextInt(129) - 16",
+			"placeFeature(x, y, z, 'iceandfire:silver_ore')",
+		")",
+
+		";Sapphire ore - 4 veins per chunk, cold biomes + glacier only (matches iceandfire:ore_gen/sapphire)",
+		"int*(cx = minModifiableX | 8, cz = minModifiableZ | 8)",
+		"Biome centerBiome = `bigglobe:overworld/biome`(cx, world_traits.`bigglobe:y_level_on_surface`(cx, cz), cz)",
+		"if (centerBiome.isIn('#iaf_bigglobe_compat:cold_with_glacier'):",
+			"repeat (4:",
+				"int*(x = minModifiableX | random.nextInt(16), z = minModifiableZ | random.nextInt(16))",
+				"int y = random.nextInt(129) - 16",
+				"placeFeature(x, y, z, 'iceandfire:sapphire_ore')",
+			")",
+		")"
+	]
+}

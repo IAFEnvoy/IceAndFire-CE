@@ -33,13 +33,15 @@ to `1.0` does not flood the world — it just removes the extra probability gate
 
 ### `iceandfire:dragon_cave` — fire / ice / lightning
 
-`generate_chance` lives at the **top level** of the JSON (not inside a
+`generate_chance`, `y_base`, and `y_range` live at the **top level** of the JSON (not inside a
 `"generation"` block).
 
 | Field | Type | Description |
 |---|---|---|
 | `generate_chance` | float 0–1 | Extra per-chunk probability gate. Default `0.5`. |
-| `biomes` | biome tag | Which biomes the cave may generate in. |
+| `y_base` | int | Minimum absolute Y coordinate for the cave centre. Default `-24`. |
+| `y_range` | int | Random offset added to `y_base`. Actual Y = `y_base + random(0, y_range-1)`. Default `30`. Defaults place caves at Y -24 to +5, matching vanilla behaviour. |
+| `biomes` | biome tag | Which biomes the cave may generate in. Checked at cave Y — use cave biomes for underground world-gen mods. |
 | `step` | string | Worldgen step. Dragon caves use `underground_structures`. |
 | `entity_type` | entity id | Dragon entity spawned inside the cave. |
 | `stalactite_block` | block id | Block used to build stalactites on the cave ceiling. |
