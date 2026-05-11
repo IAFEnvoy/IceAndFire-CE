@@ -1,6 +1,8 @@
 {
   "_comment": [
     "generate_chance: float 0.0–1.0. Per-chunk probability gate. 0.0 = never, 0.5 = 50% of candidate chunks (default), 1.0 = every candidate chunk.",
+    "y_base: int. Minimum absolute Y coordinate at which the cave centre is placed (default: -24). Increase for shallower caves, decrease for deeper ones. Works correctly in any world height (vanilla, BigGlobe, etc.).",
+    "y_range: int. Random Y offset added on top of y_base, in blocks (default: 30). Actual Y = y_base + random(0, y_range-1). Defaults replicate vanilla behaviour: Y -24 to +5.",
     "entity_type: The dragon spawned inside the cave.",
     "stalactite_block: Block used to build ceiling stalactites.",
     "stalactite_max_height: Tallest stalactite in blocks.",
@@ -25,5 +27,7 @@
   "ore_tag": "iceandfire:fire_dragon_cave_ores",
   "loot_table_male": "iceandfire:chest/fire_dragon_male_cave",
   "loot_table_female": "iceandfire:chest/fire_dragon_female_cave",
-  "generate_chance": 0.5
+  "generate_chance": 0.5,
+  "y_base": -24,
+  "y_range": 30
 }

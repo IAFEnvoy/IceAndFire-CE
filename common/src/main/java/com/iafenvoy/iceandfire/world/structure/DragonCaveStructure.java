@@ -61,7 +61,9 @@ public class DragonCaveStructure extends Structure implements DangerousGeneratio
                     Identifier.CODEC.xmap(id -> TagKey.of(RegistryKeys.BLOCK, id), TagKey::id).fieldOf("ore_tag").forGetter(s -> s.oreTag),
                     Identifier.CODEC.fieldOf("loot_table_male").forGetter(s -> s.lootTableMale),
                     Identifier.CODEC.fieldOf("loot_table_female").forGetter(s -> s.lootTableFemale),
-                    Codec.doubleRange(0.0, 1.0).optionalFieldOf("generate_chance", 0.5).forGetter(s -> s.generateChance)
+                    Codec.doubleRange(0.0, 1.0).optionalFieldOf("generate_chance", 0.5).forGetter(s -> s.generateChance),
+                    Codec.INT.optionalFieldOf("y_base", -24).forGetter(s -> s.yBase),
+                    Codec.INT.optionalFieldOf("y_range", 30).forGetter(s -> s.yRange)
             ).apply(instance, DragonCaveStructure::new));
 
     private final EntityType<?> entityType;
@@ -73,10 +75,13 @@ public class DragonCaveStructure extends Structure implements DangerousGeneratio
     private final Identifier lootTableMale;
     private final Identifier lootTableFemale;
     private final double generateChance;
+    private final int yBase;
+    private final int yRange;
 
     public DragonCaveStructure(Config config, EntityType<?> entityType, Block stalactiteBlock, int stalactiteMaxHeight,
                                 Block treasurePileBlock, List<Block> paletteBlocks, TagKey<Block> oreTag,
-                                Identifier lootTableMale, Identifier lootTableFemale, double generateChance) {
+                                Identifier lootTableMale, Identifier lootTableFemale, double generateChance,
+                                int yBase, int yRange) {
         super(config);
         this.entityType = entityType;
         this.stalactiteBlock = stalactiteBlock;
@@ -87,6 +92,8 @@ public class DragonCaveStructure extends Structure implements DangerousGeneratio
         this.lootTableMale = lootTableMale;
         this.lootTableFemale = lootTableFemale;
         this.generateChance = generateChance;
+        this.yBase = yBase;
+        this.yRange = yRange;
     }
 
     @SuppressWarnings("deprecation")
@@ -102,7 +109,7 @@ public class DragonCaveStructure extends Structure implements DangerousGeneratio
     }
 
     private void addPieces(StructurePiecesCollector collector, BlockPos pos, Context context, boolean male) {
-        int y = context.world().getBottomY() + 40 + context.random().nextInt(30);
+        int y = this.yBase + context.random().nextInt(this.yRange);
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
