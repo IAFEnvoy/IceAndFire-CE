@@ -56,7 +56,7 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
 
     @SuppressWarnings("deprecation")
     @Override
-    public ResourceLocation getTextureLocation(StoneStatueEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull StoneStatueEntity entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 

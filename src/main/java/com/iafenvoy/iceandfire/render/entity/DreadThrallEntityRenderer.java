@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadThrallEntityRenderer extends MobRenderer<DreadThrallEntity, DreadThrallModel> implements IHasArmorVariantResource {
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_thrall.png");
@@ -63,7 +64,7 @@ public class DreadThrallEntityRenderer extends MobRenderer<DreadThrallEntity, Dr
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadThrallEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull DreadThrallEntity entity) {
         return TEXTURE;
     }
 }

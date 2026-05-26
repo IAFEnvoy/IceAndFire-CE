@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.entity.ChainTieEntity;
 import com.iafenvoy.uranus.client.model.basic.BasicEntityModel;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
+import org.jetbrains.annotations.NotNull;
 
 public class ChainTieModel extends BasicEntityModel<ChainTieEntity> {
     public final BasicModelPart knotRenderer;
@@ -19,7 +20,7 @@ public class ChainTieModel extends BasicEntityModel<ChainTieEntity> {
     }
 
     @Override
-    public void setupAnim(ChainTieEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull ChainTieEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.knotRenderer.rotateAngleY = headYaw * 0.017453292F;
         this.knotRenderer.rotateAngleX = headPitch * 0.017453292F;
     }

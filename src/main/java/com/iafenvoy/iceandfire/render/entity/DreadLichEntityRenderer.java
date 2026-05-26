@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadLichEntityRenderer extends MobRenderer<DreadLichEntity, DreadLichModel> {
     public static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_lich_eyes.png");
@@ -38,7 +39,7 @@ public class DreadLichEntityRenderer extends MobRenderer<DreadLichEntity, DreadL
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadLichEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(DreadLichEntity entity) {
         return switch (entity.getVariant()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

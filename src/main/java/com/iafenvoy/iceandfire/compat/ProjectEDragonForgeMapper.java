@@ -70,8 +70,7 @@ public class ProjectEDragonForgeMapper implements IRecipeTypeMapper {
 
     public static boolean convertIngredient(Ingredient ingredient, Object2IntMap<NormalizedSimpleStack> ingredientMap, List<Tuple<NormalizedSimpleStack, List<Object2IntMap<NormalizedSimpleStack>>>> fakeGroupMap, INSSFakeGroupManager fakeGroupManager, String recipeID) {
         ItemStack[] matches = ingredient.getItems();
-        if (matches == null) return false;
-        else if (matches.length == 1) return !addIngredient(ingredientMap, matches[0].copy());
+        if (matches.length == 1) return !addIngredient(ingredientMap, matches[0].copy());
         else if (matches.length > 0) {
             Set<NormalizedSimpleStack> rawNSSMatches = new HashSet<>();
             List<ItemStack> stacks = new ArrayList<>();

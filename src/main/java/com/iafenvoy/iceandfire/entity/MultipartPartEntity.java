@@ -232,7 +232,7 @@ public abstract class MultipartPartEntity extends Entity implements OwnableEntit
     }
 
     public boolean shouldContinuePersisting() {
-        return this.level() != null || this.isRemoved();
+        return true;
     }
 
     @Override

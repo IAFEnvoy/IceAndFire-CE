@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class PixieEntityRenderer extends MobRenderer<PixieEntity, PixieModel> {
     public static final ResourceLocation TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/pixie/pixie_0.png");
@@ -34,7 +35,7 @@ public class PixieEntityRenderer extends MobRenderer<PixieEntity, PixieModel> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(PixieEntity pixie) {
+    public @NotNull ResourceLocation getTextureLocation(PixieEntity pixie) {
         return switch (pixie.getColor()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

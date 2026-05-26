@@ -26,7 +26,7 @@ public class GorgonEntityRenderer extends MobRenderer<GorgonEntity, GorgonModel>
     }
 
     @Override
-    public ResourceLocation getTextureLocation(GorgonEntity gorgon) {
+    public @NotNull ResourceLocation getTextureLocation(GorgonEntity gorgon) {
         if (gorgon.getAnimation() == GorgonEntity.ANIMATION_SCARE) return AGRESSIVE_TEXTURE;
         else if (gorgon.deathTime > 0) return DEAD_TEXTURE;
         else return PASSIVE_TEXTURE;

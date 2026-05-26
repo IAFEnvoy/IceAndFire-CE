@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PixieHouseBlockEntityRenderer<T extends PixieHouseBlockEntity> implements BlockEntityRenderer<T> {
     private static final PixieHouseModel MODEL = new PixieHouseModel();
@@ -31,7 +32,7 @@ public class PixieHouseBlockEntityRenderer<T extends PixieHouseBlockEntity> impl
     }
 
     @Override
-    public void render(@NotNull T entity, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(@Nullable T entity, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         int rotation = 0;
         int meta = 0;
         if (entity != null && entity.getLevel() != null && entity.getBlockState().getBlock() instanceof PixieHouseBlock) {

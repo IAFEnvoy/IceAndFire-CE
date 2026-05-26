@@ -227,7 +227,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     public void setCombatTask() {
-        if (this.level() != null && !this.level().isClientSide) {
+        if (!this.level().isClientSide) {
             this.goalSelector.removeGoal(this.aiAttackOnCollide);
             this.goalSelector.removeGoal(this.aiArrowAttack);
             ItemStack itemstack = this.getMainHandItem();

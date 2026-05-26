@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class LightningDragonChargeEntityRenderer extends EntityRenderer<LightningDragonChargeEntity> {
     public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/lightningdragon/charge.png");
@@ -62,7 +63,7 @@ public class LightningDragonChargeEntityRenderer extends EntityRenderer<Lightnin
     }
 
     @Override
-    public ResourceLocation getTextureLocation(LightningDragonChargeEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull LightningDragonChargeEntity entity) {
         return TEXTURE;
     }
 }

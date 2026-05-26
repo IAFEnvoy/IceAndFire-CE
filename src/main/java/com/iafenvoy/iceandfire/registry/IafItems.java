@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.registry;
 
-import com.hollingsworth.arsnouveau.setup.registry.CreativeTabRegistry;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.compat.delight.DelightFoodItem;
 import com.iafenvoy.iceandfire.data.DragonArmorMaterial;

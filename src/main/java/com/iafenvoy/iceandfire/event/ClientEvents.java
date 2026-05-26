@@ -9,15 +9,17 @@ import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
 import com.iafenvoy.iceandfire.registry.IafKeybindings;
 import com.iafenvoy.iceandfire.registry.IafStatusEffects;
 import com.iafenvoy.iceandfire.render.RenderVariables;
+import com.iafenvoy.iceandfire.render.entity.feature.DragonRiderFeatureRenderer;
 import com.iafenvoy.iceandfire.render.misc.ChainRenderer;
 import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
 import com.iafenvoy.iceandfire.render.misc.FrozenStateRenderer;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.player.RemotePlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -35,6 +37,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -115,5 +118,14 @@ public final class ClientEvents {
         //Chain
         ChainData chainData = ChainData.get(entity);
         ChainRenderer.render(entity, matrixStack, buffers, light, chainData.getChainedTo());
+    }
+
+    @SubscribeEvent
+    public static void disablePlayerRenderWhenNeed(RenderPlayerEvent.Pre event) {
+        Player player = event.getEntity();
+        if (player.getVehicle() instanceof DragonBaseEntity && player instanceof LocalPlayer && (Minecraft.getInstance().options.getCameraType().isFirstPerson() || !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player)))
+            event.setCanceled(true);
+        if (player instanceof RemotePlayer && player.getVehicle() instanceof DragonBaseEntity && !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player))
+            event.setCanceled(true);
     }
 }

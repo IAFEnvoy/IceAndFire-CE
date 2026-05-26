@@ -34,7 +34,7 @@ public class TideTridentEntityRenderer extends EntityRenderer<TideTridentEntity>
     }
 
     @Override
-    public ResourceLocation getTextureLocation(TideTridentEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull TideTridentEntity entity) {
         return TRIDENT;
     }
 }

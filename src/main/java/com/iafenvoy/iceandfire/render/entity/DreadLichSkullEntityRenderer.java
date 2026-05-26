@@ -39,7 +39,7 @@ public class DreadLichSkullEntityRenderer extends EntityRenderer<DreadLichSkullE
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadLichSkullEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull DreadLichSkullEntity entity) {
         return TEXTURE;
     }
 }

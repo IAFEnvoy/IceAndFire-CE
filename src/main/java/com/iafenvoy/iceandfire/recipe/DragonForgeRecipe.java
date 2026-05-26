@@ -61,7 +61,7 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
     }
 
     @Override
-    public ItemStack assemble(DragonForgeBlockEntity.DragonForgeRecipeInput input, HolderLookup.Provider lookup) {
+    public @NotNull ItemStack assemble(DragonForgeBlockEntity.@NotNull DragonForgeRecipeInput input, HolderLookup.@NotNull Provider lookup) {
         return this.result;
     }
 

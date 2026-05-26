@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * Avoid log spam for dragon caves (some blocks can exceed the writable worldgen area due to their size)
  */
 @Mixin(WorldGenRegion.class)
-public class ChunkRegionMixin {
+public class WorldGenRegionMixin {
     @Shadow
     private Supplier<String> currentlyGenerating;
 

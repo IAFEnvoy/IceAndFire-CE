@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mob.class)
-public abstract class MobEntityMixin extends Entity {
-    public MobEntityMixin(EntityType<?> type, Level world) {
+public abstract class MobMixin extends Entity {
+    public MobMixin(EntityType<?> type, Level world) {
         super(type, world);
     }
 
@@ -26,9 +26,9 @@ public abstract class MobEntityMixin extends Entity {
         return WitherSkeleton.class.isAssignableFrom(entity.getClass());
     }
 
-    @Inject(method = "dropFromLootTable", at = @At("HEAD"))
+    @Inject(method = "dropFromLootTable", at = @At("HEAD"))//FIXME::Loot table modifiers
     public void dropHandler(DamageSource damageSource, boolean causedByPlayer, CallbackInfo ci) {
-        if (causedByPlayer && damageSource.getDirectEntity() instanceof Player player)
+        if (causedByPlayer && damageSource.getDirectEntity() instanceof Player)
             if (iceandfire$isSkeleton(this))
                 this.spawnAtLocation(new ItemStack(IafItems.WITHERBONE.get(), this.random.nextInt(2)));
     }

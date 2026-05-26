@@ -155,13 +155,11 @@ public class IafDragonFlightManager {
                 float f7 = f2 * f6 - f3 * f5;
                 float f8 = f3 * f6 + f2 * f5;
                 PathNavigation pathnavigate = this.mob.getNavigation();
-                if (pathnavigate != null) {
-                    NodeEvaluator nodeprocessor = pathnavigate.getNodeEvaluator();
-                    if (nodeprocessor != null && nodeprocessor.getPathType(new PathfindingContext(this.mob.level(), this.mob), Mth.floor(this.mob.getX() + (double) f7), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + (double) f8)) != PathType.WALKABLE) {
-                        this.strafeForwards = 1.0F;
-                        this.strafeRight = 0.0F;
-                        f1 = f;
-                    }
+                NodeEvaluator nodeprocessor = pathnavigate.getNodeEvaluator();
+                if (nodeprocessor.getPathType(new PathfindingContext(this.mob.level(), this.mob), Mth.floor(this.mob.getX() + (double) f7), Mth.floor(this.mob.getY()), Mth.floor(this.mob.getZ() + (double) f8)) != PathType.WALKABLE) {
+                    this.strafeForwards = 1.0F;
+                    this.strafeRight = 0.0F;
+                    f1 = f;
                 }
                 this.mob.setSpeed(f1);
                 this.mob.setZza(this.strafeForwards);

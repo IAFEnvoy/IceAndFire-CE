@@ -88,7 +88,7 @@ public class SummoningCrystalItem extends Item {
                 if (tagInfo.contains("Dragon")) {
                     CompoundTag dragonTag = nbt.getCompound(tagInfo);
                     UUID id = dragonTag.getUUID("DragonUUID");
-                    if (id != null && !context.getLevel().isClientSide) {
+                    if (!context.getLevel().isClientSide) {
                         try {
                             Entity entity = context.getLevel().getServer().getLevel(context.getPlayer().level().dimension()).getEntity(id);
                             if (entity != null) {

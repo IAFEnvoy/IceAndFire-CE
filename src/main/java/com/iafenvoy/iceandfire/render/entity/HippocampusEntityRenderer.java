@@ -42,7 +42,7 @@ public class HippocampusEntityRenderer extends MobRenderer<HippocampusEntity, Hi
     }
 
     @Override
-    public ResourceLocation getTextureLocation(HippocampusEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(HippocampusEntity entity) {
         return switch (entity.getVariant()) {
             case 1 -> entity.isBlinking() ? VARIANT_1_BLINK : VARIANT_1;
             case 2 -> entity.isBlinking() ? VARIANT_2_BLINK : VARIANT_2;

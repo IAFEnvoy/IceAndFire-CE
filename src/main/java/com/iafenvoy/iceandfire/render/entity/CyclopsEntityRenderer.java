@@ -33,7 +33,7 @@ public class CyclopsEntityRenderer extends MobRenderer<CyclopsEntity, CyclopsMod
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CyclopsEntity cyclops) {
+    public @NotNull ResourceLocation getTextureLocation(CyclopsEntity cyclops) {
         switch (cyclops.getVariant()) {
             case 0 -> {
                 if (cyclops.isBlinded()) return BLINDED_0_TEXTURE;

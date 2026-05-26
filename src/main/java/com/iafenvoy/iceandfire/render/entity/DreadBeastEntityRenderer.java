@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadBeastEntityRenderer extends MobRenderer<DreadBeastEntity, DreadBeastModel> {
     public static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_beast_eyes.png");
@@ -25,7 +26,7 @@ public class DreadBeastEntityRenderer extends MobRenderer<DreadBeastEntity, Drea
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadBeastEntity beast) {
+    public @NotNull ResourceLocation getTextureLocation(DreadBeastEntity beast) {
         return beast.getVariant() == 1 ? TEXTURE_1 : TEXTURE_0;
     }
 }

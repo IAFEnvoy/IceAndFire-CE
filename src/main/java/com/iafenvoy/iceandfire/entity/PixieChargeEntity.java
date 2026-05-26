@@ -74,7 +74,7 @@ public class PixieChargeEntity extends Fireball {
         if (!this.level().isClientSide) {
             if (movingObject.getType() == HitResult.Type.ENTITY && !((EntityHitResult) movingObject).getEntity().is(shootingEntity)) {
                 Entity entity = ((EntityHitResult) movingObject).getEntity();
-                if (shootingEntity != null && shootingEntity.equals(entity)) flag = true;
+                if (shootingEntity.equals(entity)) flag = true;
                 else {
                     if (entity instanceof LivingEntity living) {
                         living.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 100, 0));

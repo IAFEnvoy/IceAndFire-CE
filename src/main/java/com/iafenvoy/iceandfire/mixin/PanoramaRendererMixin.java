@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = PanoramaRenderer.class, priority = 900)
-public abstract class RotatingCubeMapRendererMixin {
+public abstract class PanoramaRendererMixin {
     @Unique
     private int iceandfire$slowTick = 0;
 

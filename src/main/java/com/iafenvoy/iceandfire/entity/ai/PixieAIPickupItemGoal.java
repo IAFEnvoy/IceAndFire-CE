@@ -82,15 +82,16 @@ public class PixieAIPickupItemGoal<T extends ItemEntity> extends TargetGoal {
             this.stop();
         else if (this.mob.distanceToSqr(this.targetEntity) < 1) {
             PixieEntity pixie = (PixieEntity) this.mob;
-            if (this.targetEntity.getItem() != null && this.targetEntity.getItem().getItem() != null)
-                if (this.targetEntity.getItem().is(IafItemTags.HEAL_PIXIE)) {
-                    pixie.heal(5);
-                } else if (this.targetEntity.getItem().is(IafItemTags.TAME_PIXIE))
-                    if (!pixie.isTame() && this.targetEntity.getOwner() instanceof Player player) {
-                        pixie.tame(player);
-                        pixie.setPixieSitting(true);
-                        pixie.setOnGround(true);  //  Entity.onGround = true
-                    }
+            this.targetEntity.getItem();
+            this.targetEntity.getItem();
+            if (this.targetEntity.getItem().is(IafItemTags.HEAL_PIXIE)) {
+                pixie.heal(5);
+            } else if (this.targetEntity.getItem().is(IafItemTags.TAME_PIXIE))
+                if (!pixie.isTame() && this.targetEntity.getOwner() instanceof Player player) {
+                    pixie.tame(player);
+                    pixie.setPixieSitting(true);
+                    pixie.setOnGround(true);  //  Entity.onGround = true
+                }
 
             pixie.setItemInHand(InteractionHand.MAIN_HAND, this.targetEntity.getItem());
             this.targetEntity.getItem().shrink(1);

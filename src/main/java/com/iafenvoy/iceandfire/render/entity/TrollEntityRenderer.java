@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.render.model.TrollModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class TrollEntityRenderer extends MobRenderer<TrollEntity, TrollModel> {
     public TrollEntityRenderer(EntityRendererProvider.Context context) {
@@ -16,7 +17,7 @@ public class TrollEntityRenderer extends MobRenderer<TrollEntity, TrollModel> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(TrollEntity troll) {
+    public @NotNull ResourceLocation getTextureLocation(TrollEntity troll) {
         return troll.getTrollType().getTexture();
     }
 }

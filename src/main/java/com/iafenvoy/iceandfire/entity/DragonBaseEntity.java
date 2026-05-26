@@ -555,7 +555,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
+    public void writeClientSideData(@NotNull AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
         buffer.writeInt(this.getId());
     }
 
@@ -1183,7 +1183,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 }
             }
         } else if (!this.level().isClientSide && this.getDeathStage() < lastDeathStage && player.mayBuild()) {
-            if (!stack.isEmpty() && stack.getItem() != null && stack.getItem() == Items.GLASS_BOTTLE && this.getDeathStage() < lastDeathStage / 2 && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue()) {
+            if (!stack.isEmpty() && stack.getItem() == Items.GLASS_BOTTLE && this.getDeathStage() < lastDeathStage / 2 && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue()) {
                 if (!player.isCreative()) stack.shrink(1);
                 this.setDeathStage(this.getDeathStage() + 1);
                 player.getInventory().add(new ItemStack(this.getBloodItem(), 1));
@@ -1245,9 +1245,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         assert this.getServer() != null;
         LootTable lootTable = this.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, this.getDeadLootTable()));
         LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, this.level().damageSources().generic());
-        if (lootTable != null)
-            for (ItemStack itemstack : lootTable.getRandomItems(lootparams$builder.create(LootContextParamSets.ENTITY)))
-                return itemstack;
+        for (ItemStack itemstack : lootTable.getRandomItems(lootparams$builder.create(LootContextParamSets.ENTITY)))
+            return itemstack;
         return ItemStack.EMPTY;
     }
 

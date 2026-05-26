@@ -129,7 +129,7 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(MobSkullEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(MobSkullEntity entity) {
         return this.getSkullTexture(entity.getSkullType());
     }
 

@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class DeathWormEntityRenderer extends MobRenderer<DeathWormEntity, DeathWormModel> {
     public static final ResourceLocation TEXTURE_RED = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/deathworm/deathworm_red.png");
@@ -27,17 +28,17 @@ public class DeathWormEntityRenderer extends MobRenderer<DeathWormEntity, DeathW
 
 
     @Override
-    protected int getBlockLightLevel(DeathWormEntity entityIn, BlockPos partialTicks) {
+    protected int getBlockLightLevel(DeathWormEntity entityIn, @NotNull BlockPos partialTicks) {
         return entityIn.isOnFire() ? 15 : entityIn.getWormBrightness(false);
     }
 
     @Override
-    protected int getSkyLightLevel(DeathWormEntity entity, BlockPos pos) {
+    protected int getSkyLightLevel(DeathWormEntity entity, @NotNull BlockPos pos) {
         return entity.getWormBrightness(true);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DeathWormEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(DeathWormEntity entity) {
         return entity.getVariant() == 2 ? TEXTURE_WHITE : entity.getVariant() == 1 ? TEXTURE_RED : TEXTURE_YELLOW;
     }
 }

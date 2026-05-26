@@ -43,9 +43,9 @@ public class StymphalianFeatherEntity extends AbstractArrow {
     @Override
     protected void onHitEntity(@NotNull EntityHitResult entityHit) {
         Entity shootingEntity = this.getOwner();
-        if (!(shootingEntity instanceof StymphalianBirdEntity) || entityHit.getEntity() == null || !(entityHit.getEntity() instanceof StymphalianBirdEntity)) {
+        if (!(shootingEntity instanceof StymphalianBirdEntity) || !(entityHit.getEntity() instanceof StymphalianBirdEntity)) {
             super.onHitEntity(entityHit);
-            if (entityHit.getEntity() != null && entityHit.getEntity() instanceof StymphalianBirdEntity bird)
+            if (entityHit.getEntity() instanceof StymphalianBirdEntity bird)
                 bird.setArrowCount(bird.getArrowCount() - 1);
         }
     }

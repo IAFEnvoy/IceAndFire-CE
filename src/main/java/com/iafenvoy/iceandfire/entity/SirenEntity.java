@@ -170,7 +170,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     private boolean isPathOnHighGround() {
-        if (this.navigation != null && this.navigation.getPath() != null && this.navigation.getPath().getEndNode() != null) {
+        if (this.navigation.getPath() != null && this.navigation.getPath().getEndNode() != null) {
             BlockPos target = new BlockPos(this.navigation.getPath().getEndNode().x, this.navigation.getPath().getEndNode().y, this.navigation.getPath().getEndNode().z);
             BlockPos siren = this.blockPosition();
             return this.level().isEmptyBlock(siren.above()) && this.level().isEmptyBlock(target.above()) && target.getY() >= siren.getY();

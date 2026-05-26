@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class SeaSerpentEntityRenderer extends MobRenderer<SeaSerpentEntity, AdvancedEntityModel<SeaSerpentEntity>> {
     public SeaSerpentEntityRenderer(EntityRendererProvider.Context context) {
@@ -26,7 +27,7 @@ public class SeaSerpentEntityRenderer extends MobRenderer<SeaSerpentEntity, Adva
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SeaSerpentEntity serpent) {
+    public @NotNull ResourceLocation getTextureLocation(SeaSerpentEntity serpent) {
         return IafRegistries.SEA_SERPENT_TYPE.get(IceAndFire.id(serpent.getVariant())).getTexture(serpent.isBlinking());
     }
 }

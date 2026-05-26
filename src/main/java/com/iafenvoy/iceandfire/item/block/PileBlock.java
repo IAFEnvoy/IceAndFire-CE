@@ -91,7 +91,7 @@ public class PileBlock extends Block {
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull BlockHitResult hit) {
         ItemStack item = player.getInventory().getSelected();
 
-        if (!item.isEmpty() && item.getItem() != null && item.getItem() == this.asItem() && state.getValue(LAYERS) < 8) {
+        if (!item.isEmpty() && item.getItem() == this.asItem() && state.getValue(LAYERS) < 8) {
             world.setBlock(pos, state.setValue(LAYERS, state.getValue(LAYERS) + 1), 3);
             if (!player.isCreative()) {
                 item.shrink(1);

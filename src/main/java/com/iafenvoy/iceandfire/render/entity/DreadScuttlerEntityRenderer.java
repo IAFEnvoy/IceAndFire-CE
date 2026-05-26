@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadScuttlerEntityRenderer extends MobRenderer<DreadScuttlerEntity, DreadScuttlerModel> {
     public static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_scuttler_eyes.png");
@@ -24,7 +25,7 @@ public class DreadScuttlerEntityRenderer extends MobRenderer<DreadScuttlerEntity
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadScuttlerEntity beast) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull DreadScuttlerEntity beast) {
         return TEXTURE;
     }
 }

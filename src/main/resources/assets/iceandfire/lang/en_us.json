@@ -1741,5 +1741,6 @@
   "tc.aspect.draco": "Dragon",
   "tc.aspect.mythus": "Mythological Creature, Legendary Being, Cryptid, Fearsome Critter",
   "text.iceandfire.not_enable": "Enable this feature in config first!",
-  "warning.iceandfire.dreadland.not_complete": "Dreadland not complete yet. Please do not report contents loss bugs!"
+  "warning.iceandfire.dreadland.not_complete": "Dreadland not complete yet. Please do not report contents loss bugs!",
+  "attribute.name.generic.dragon_forge_speed": "Dragon Forge Speed"
 }

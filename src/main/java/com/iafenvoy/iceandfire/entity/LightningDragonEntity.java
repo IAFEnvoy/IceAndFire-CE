@@ -389,7 +389,7 @@ public class LightningDragonEntity extends DragonBaseEntity {
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem() != null && stack.getItem() == IafItems.LIGHTNING_STEW.get();
+        return !stack.isEmpty() && stack.getItem() == IafItems.LIGHTNING_STEW.get();
     }
 
     @Override

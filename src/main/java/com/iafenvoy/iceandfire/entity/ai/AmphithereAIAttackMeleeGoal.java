@@ -109,7 +109,6 @@ public class AmphithereAIAttackMeleeGoal extends Goal {
             this.attacker.getMoveControl().setWantedPosition(LivingEntity.getX(), LivingEntity.getY() + LivingEntity.getEyeHeight(), LivingEntity.getZ(), 0.1D);
         }
         this.attacker.getLookControl().setLookAt(LivingEntity, 30.0F, 30.0F);
-        assert LivingEntity != null;
         double d0 = this.attacker.distanceToSqr(LivingEntity.getX(), LivingEntity.getBoundingBox().minY, LivingEntity.getZ());
         --this.delayCounter;
 

@@ -182,8 +182,6 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     @Override
     public @NotNull ItemStack equipItemIfPossible(@NotNull ItemStack itemStackIn) {
-        if (itemStackIn == null)
-            return ItemStack.EMPTY;
         EquipmentSlot equipmentSlot = this.getEquipmentSlotForItem(itemStackIn);
         int j = equipmentSlot.getIndex() - 500 + 2;
         if (j >= 0 && j < this.inventory.getContainerSize()) {
@@ -576,12 +574,12 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory inv, Player player) {
+    public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory inv, @NotNull Player player) {
         return new HippocampusScreenHandler(syncId, this.inventory, inv, this);
     }
 
     @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buf) {
+    public void writeClientSideData(@NotNull AbstractContainerMenu menu, RegistryFriendlyByteBuf buf) {
         buf.writeInt(this.getId());
     }
 

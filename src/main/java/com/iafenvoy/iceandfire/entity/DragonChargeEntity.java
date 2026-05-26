@@ -77,7 +77,7 @@ public abstract class DragonChargeEntity extends Fireball implements IDragonProj
                 if (shootingEntity instanceof DragonBaseEntity dragon)
                     if (dragon.isAlliedTo(entity) || dragon.is(entity) || dragon.isPart(entity))
                         return;
-                if (entity == null || entity != shootingEntity && shootingEntity instanceof DragonBaseEntity) {
+                if (entity != shootingEntity && shootingEntity instanceof DragonBaseEntity) {
                     assert shootingEntity instanceof DragonBaseEntity;
                     DragonBaseEntity dragon = (DragonBaseEntity) shootingEntity;
                     if (entity instanceof TamableAnimal && dragon.isOwnedBy(((DragonBaseEntity) shootingEntity).getOwner()))
@@ -85,8 +85,8 @@ public abstract class DragonChargeEntity extends Fireball implements IDragonProj
                     dragon.randomizeAttacks();
                     this.remove(RemovalReason.DISCARDED);
                 }
-                if (entity != null && !entity.is(shootingEntity)) {
-                    if (shootingEntity != null && (entity.is(shootingEntity) || (shootingEntity instanceof DragonBaseEntity && entity instanceof TamableAnimal && ((DragonBaseEntity) shootingEntity).getOwner() == ((TamableAnimal) entity).getOwner()))) {
+                if (!entity.is(shootingEntity)) {
+                    if (entity.is(shootingEntity) || shootingEntity instanceof DragonBaseEntity && entity instanceof TamableAnimal && ((DragonBaseEntity) shootingEntity).getOwner() == ((TamableAnimal) entity).getOwner()) {
                         return;
                     }
                     if (shootingEntity instanceof DragonBaseEntity shootingDragon) {

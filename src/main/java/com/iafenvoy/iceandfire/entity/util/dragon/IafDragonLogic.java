@@ -38,11 +38,7 @@ public class IafDragonLogic {
             this.dragon.lookingForRoostAIFlag = false;
         }
         if (IafCommonConfig.INSTANCE.dragon.sleep.getValue() && !this.dragon.isSleeping() && !this.dragon.isTimeToWake() && this.dragon.getPassengers().isEmpty() && this.dragon.getCommand() != 2) {
-            if (this.dragon.hasHomePosition
-                    && this.dragon.getRestrictCenter() != null
-                    && DragonUtils.isInHomeDimension(this.dragon)
-                    && this.dragon.getDistanceSquared(Vec3.atCenterOf(this.dragon.getRestrictCenter())) > this.dragon.getBbWidth() * 10
-                    && this.dragon.getCommand() != 2 && this.dragon.getCommand() != 1) {
+            if (this.dragon.hasHomePosition && DragonUtils.isInHomeDimension(this.dragon) && this.dragon.getDistanceSquared(Vec3.atCenterOf(this.dragon.getRestrictCenter())) > this.dragon.getBbWidth() * 10 && this.dragon.getCommand() != 2 && this.dragon.getCommand() != 1) {
                 this.dragon.lookingForRoostAIFlag = true;
             } else {
                 this.dragon.lookingForRoostAIFlag = false;

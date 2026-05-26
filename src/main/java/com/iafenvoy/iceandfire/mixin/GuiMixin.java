@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(Gui.class)
-public abstract class InGameHudMixin {
+public abstract class GuiMixin {
     @Shadow
     protected abstract void renderTextureOverlay(GuiGraphics context, ResourceLocation texture, float opacity);
 

@@ -36,7 +36,7 @@ public class DragonPosWorldData extends SavedData {
         if (world instanceof ServerLevel serverWorld) {
             DimensionDataStorage storage = serverWorld.getDataStorage();
             DragonPosWorldData data = storage.computeIfAbsent(TYPE, IDENTIFIER);
-            if (data != null) data.setDirty();
+            data.setDirty();
             return data;
         }
         return null;

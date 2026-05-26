@@ -26,7 +26,7 @@ public class HippogryphEntityRenderer extends MobRenderer<HippogryphEntity, Hipp
     }
 
     @Override
-    public ResourceLocation getTextureLocation(HippogryphEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(HippogryphEntity entity) {
         return entity.getEnumVariant().getTexture(entity.isBlinking());
     }
 

@@ -22,7 +22,7 @@ public class StymphalianBirdEntityRenderer extends MobRenderer<StymphalianBirdEn
     }
 
     @Override
-    public ResourceLocation getTextureLocation(StymphalianBirdEntity cyclops) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull StymphalianBirdEntity cyclops) {
         return TEXTURE;
     }
 }

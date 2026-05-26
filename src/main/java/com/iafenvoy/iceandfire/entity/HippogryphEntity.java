@@ -237,7 +237,6 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
         String s = ChatFormatting.stripFormatting(player.getName().getString());
-        assert s != null;
         boolean isDev = s.equals("Alexthe666") || s.equals("Raptorfarian") || s.equals("tweakbsd");
         if (this.isTame() && this.isOwnedBy(player)) {
             if (itemstack.getItem() == Items.RED_DYE && this.getEnumVariant() != IafHippogryphTypes.ALEX && isDev) {
@@ -979,12 +978,12 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int syncId, Inventory playerInventory, Player player) {
+    public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory playerInventory, @NotNull Player player) {
         return new HippogryphScreenHandler(syncId, this.hippogryphInventory, playerInventory, this);
     }
 
     @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buf) {
+    public void writeClientSideData(@NotNull AbstractContainerMenu menu, RegistryFriendlyByteBuf buf) {
         buf.writeInt(this.getId());
     }
 }

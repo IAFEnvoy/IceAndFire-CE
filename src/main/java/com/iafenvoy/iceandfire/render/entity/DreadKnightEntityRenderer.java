@@ -29,7 +29,7 @@ public class DreadKnightEntityRenderer extends MobRenderer<DreadKnightEntity, Dr
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadKnightEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(DreadKnightEntity entity) {
         return switch (entity.getArmorVariant()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

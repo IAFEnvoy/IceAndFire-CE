@@ -1,10 +1,6 @@
 package com.iafenvoy.iceandfire.network;
 
-import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.entity.*;
-import com.iafenvoy.iceandfire.entity.HippocampusEntity;
-import com.iafenvoy.iceandfire.entity.HippogryphEntity;
-import com.iafenvoy.iceandfire.entity.HydraEntity;
 import com.iafenvoy.iceandfire.entity.util.ISyncMount;
 import com.iafenvoy.iceandfire.event.ServerEvents;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
@@ -68,7 +64,7 @@ public final class ServerNetworkHelper {
     public static void handleMultipartInteract(MultipartInteractC2SPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player player = ctx.player();
-            if (player != null && player.level() instanceof ServerLevel serverLevel) {
+            if (player.level() instanceof ServerLevel serverLevel) {
                 Entity entity = serverLevel.getEntity(payload.creatureID());
                 if (entity instanceof LivingEntity livingEntity) {
                     double dist = player.distanceTo(livingEntity);
@@ -85,15 +81,13 @@ public final class ServerNetworkHelper {
     public static void handlePlayerHitMultipart(PlayerHitMultipartC2SPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player player = ctx.player();
-            if (player != null) {
-                Entity entity = player.level().getEntity(payload.entityId());
-                if (entity instanceof LivingEntity livingEntity) {
-                    double dist = player.distanceTo(livingEntity);
-                    if (dist < 100) {
-                        player.attack(livingEntity);
-                        if (livingEntity instanceof HydraEntity hydra)
-                            hydra.triggerHeadFlags(payload.index());
-                    }
+            Entity entity = player.level().getEntity(payload.entityId());
+            if (entity instanceof LivingEntity livingEntity) {
+                double dist = player.distanceTo(livingEntity);
+                if (dist < 100) {
+                    player.attack(livingEntity);
+                    if (livingEntity instanceof HydraEntity hydra)
+                        hydra.triggerHeadFlags(payload.index());
                 }
             }
         });
@@ -102,18 +96,16 @@ public final class ServerNetworkHelper {
     public static void handleStartRidingMob(StartRidingMobPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Player player = ctx.player();
-            if (player != null) {
-                Entity entity = player.level().getEntity(payload.dragonId());
-                if (entity instanceof ISyncMount && entity instanceof TamableAnimal tamable)
-                    if (tamable.isOwnedBy(player) && tamable.distanceTo(player) < 14)
-                        if (payload.ride()) {
-                            if (payload.baby()) tamable.startRiding(player, true);
-                            else player.startRiding(tamable, true);
-                        } else {
-                            if (payload.baby()) tamable.stopRiding();
-                            else player.stopRiding();
-                        }
-            }
+            Entity entity = player.level().getEntity(payload.dragonId());
+            if (entity instanceof ISyncMount && entity instanceof TamableAnimal tamable)
+                if (tamable.isOwnedBy(player) && tamable.distanceTo(player) < 14)
+                    if (payload.ride()) {
+                        if (payload.baby()) tamable.startRiding(player, true);
+                        else player.startRiding(tamable, true);
+                    } else {
+                        if (payload.baby()) tamable.stopRiding();
+                        else player.stopRiding();
+                    }
         });
     }
 }

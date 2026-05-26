@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadGhoulEntityRenderer extends MobRenderer<DreadGhoulEntity, DreadGhoulModel> {
     public static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_ghoul_eyes.png");
@@ -34,7 +35,7 @@ public class DreadGhoulEntityRenderer extends MobRenderer<DreadGhoulEntity, Drea
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DreadGhoulEntity ghoul) {
+    public @NotNull ResourceLocation getTextureLocation(DreadGhoulEntity ghoul) {
         return switch (ghoul.getScreamStage()) {
             case 2 -> switch (ghoul.getVariant()) {
                 case 1 -> TEXTURE_1_OPEN;

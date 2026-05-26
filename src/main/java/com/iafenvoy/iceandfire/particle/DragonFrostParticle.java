@@ -37,7 +37,7 @@ public class DragonFrostParticle extends TextureSheetParticle {
     public void tick() {
         super.tick();
         BlockState state = this.level.getBlockState(VecUtil.createBlockPos(this.x, this.y, this.z));
-        if (state != null && state.isSolid())
+        if (state.isSolid())
             this.remove();
     }
 

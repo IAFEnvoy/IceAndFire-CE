@@ -23,7 +23,7 @@ public class GhostSwordEntityRenderer extends EntityRenderer<GhostSwordEntity> {
 
     @SuppressWarnings("deprecation")
     @Override
-    public ResourceLocation getTextureLocation(GhostSwordEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull GhostSwordEntity entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 

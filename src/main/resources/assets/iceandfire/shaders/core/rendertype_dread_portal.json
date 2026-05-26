@@ -4,8 +4,8 @@
     "srcrgb": "srcalpha",
     "dstrgb": "1-srcalpha"
   },
-  "vertex": "rendertype_dread_portal",
-  "fragment": "rendertype_dread_portal",
+  "vertex": "iceandfire:rendertype_dread_portal",
+  "fragment": "iceandfire:rendertype_dread_portal",
   "attributes": [
     "Position",
     "Color"

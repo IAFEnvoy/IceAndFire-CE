@@ -90,7 +90,6 @@ public final class IceAndFire {
         IafRecipes.init();
         IafToolMaterials.init();
 
-
         IntegrationExecutor.runWhenLoad("ars_nouveau", () -> IceAndFireArsNouveauCompat::init);
         IntegrationExecutor.runWhenLoad("curios", () -> CuriosRegistry::registerItems);
     }
@@ -98,13 +97,5 @@ public final class IceAndFire {
     @SubscribeEvent
     public static void registerBrewing(RegisterBrewingRecipesEvent event) {
         event.getBuilder().addMix(Potions.WATER, IafItems.SHINY_SCALES.get(), Potions.WATER_BREATHING);
-    }
-
-    //Attribute Fix
-    @SubscribeEvent
-    public static void modifyDefaultAttributes(EntityAttributeModificationEvent event) {
-        event.add(IafEntities.FIRE_DRAGON.get(), IafAttributes.DRAGON_FORGE_SPEED, 0.025);
-        event.add(IafEntities.ICE_DRAGON.get(), IafAttributes.DRAGON_FORGE_SPEED, 0.025);
-        event.add(IafEntities.LIGHTNING_DRAGON.get(), IafAttributes.DRAGON_FORGE_SPEED, 0.025);
     }
 }

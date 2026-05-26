@@ -72,7 +72,7 @@ public class CockatriceEntityRenderer extends MobRenderer<CockatriceEntity, Adva
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CockatriceEntity cockatrice) {
+    public @NotNull ResourceLocation getTextureLocation(CockatriceEntity cockatrice) {
         return cockatrice.isBaby() ? cockatrice.isHen() ? TEXTURE_HEN_CHICK : TEXTURE_ROOSTER_CHICK : cockatrice.isHen() ? TEXTURE_HEN : TEXTURE_ROOSTER;
     }
 }

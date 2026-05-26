@@ -133,7 +133,7 @@ public class GhostEntityRenderer extends MobRenderer<GhostEntity, GhostModel> {
     }
 
     @Override
-    protected float getFlipDegrees(GhostEntity ghost) {
+    protected float getFlipDegrees(@NotNull GhostEntity ghost) {
         return 0.0F;
     }
 
@@ -148,7 +148,7 @@ public class GhostEntityRenderer extends MobRenderer<GhostEntity, GhostModel> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(GhostEntity ghost) {
+    public @NotNull ResourceLocation getTextureLocation(GhostEntity ghost) {
         return switch (ghost.getColor()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

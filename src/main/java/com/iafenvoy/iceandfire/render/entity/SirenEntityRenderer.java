@@ -35,7 +35,7 @@ public class SirenEntityRenderer extends MobRenderer<SirenEntity, SirenModel> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SirenEntity siren) {
+    public @NotNull ResourceLocation getTextureLocation(SirenEntity siren) {
         return switch (siren.getHairColor()) {
             case 1 -> siren.isAgressive() ? TEXTURE_1_AGGRESSIVE : TEXTURE_1;
             case 2 -> siren.isAgressive() ? TEXTURE_2_AGGRESSIVE : TEXTURE_2;

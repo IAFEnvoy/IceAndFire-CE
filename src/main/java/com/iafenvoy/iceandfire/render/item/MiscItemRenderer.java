@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.render.item;
 import com.iafenvoy.iceandfire.item.block.PixieHouseBlock;
 import com.iafenvoy.iceandfire.item.block.entity.DreadPortalBlockEntity;
 import com.iafenvoy.iceandfire.item.block.entity.GhostChestBlockEntity;
+import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.render.block.PixieHouseBlockEntityRenderer;
 import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
@@ -14,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 public class MiscItemRenderer implements DynamicItemRenderer {
     private final PixieHouseBlockEntityRenderer<?> pixieHouseBlockEntityRenderer;
@@ -31,7 +33,7 @@ public class MiscItemRenderer implements DynamicItemRenderer {
             blockEntityRenderDispatcher.renderItem(this.chest, stackIn, bufferIn, combinedLightIn, combinedOverlayIn);
         if (stack.getItem() == IafBlocks.DREAD_PORTAL.get().asItem())
             blockEntityRenderDispatcher.renderItem(this.portal, stackIn, bufferIn, combinedLightIn, combinedOverlayIn);
-        if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof PixieHouseBlock) {
+        if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof PixieHouseBlock block) {
             this.pixieHouseBlockEntityRenderer.metaOverride = (BlockItem) stack.getItem();
             this.pixieHouseBlockEntityRenderer.render(null, 0, stackIn, bufferIn, combinedLightIn, combinedOverlayIn);
         }

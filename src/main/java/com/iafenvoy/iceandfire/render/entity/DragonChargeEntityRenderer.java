@@ -24,7 +24,7 @@ public class DragonChargeEntityRenderer extends EntityRenderer<Fireball> {
 
     @SuppressWarnings("deprecation")
     @Override
-    public ResourceLocation getTextureLocation(Fireball entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull Fireball entity) {
         return TextureAtlas.LOCATION_BLOCKS;
     }
 

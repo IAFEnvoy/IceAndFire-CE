@@ -78,7 +78,7 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DragonSkullEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(DragonSkullEntity entity) {
         return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())).getSkeletonTexture(entity.getDragonStage());
     }
 

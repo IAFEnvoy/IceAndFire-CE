@@ -106,7 +106,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
     protected void onHitEntity(EntityHitResult raytraceResultIn) {
         Entity entity = raytraceResultIn.getEntity();
         Entity shootingEntity = this.getOwner();
-        if (entity != null && shootingEntity != null && entity.isAlliedTo(shootingEntity)) return;
+        if (shootingEntity != null && entity.isAlliedTo(shootingEntity)) return;
         super.onHitEntity(raytraceResultIn);
     }
 
@@ -114,7 +114,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
     protected void doPostHurtEffects(@NotNull LivingEntity living) {
         super.doPostHurtEffects(living);
         Entity shootingEntity = this.getOwner();
-        if (living != null && (shootingEntity == null || !living.is(shootingEntity)))
+        if (shootingEntity == null || !living.is(shootingEntity))
             if (living instanceof Player player)
                 this.damageShield(player, (float) this.getBaseDamage());
     }

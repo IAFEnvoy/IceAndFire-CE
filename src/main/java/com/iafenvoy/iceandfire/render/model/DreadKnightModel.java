@@ -119,7 +119,7 @@ public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
     @Override
     public void copyPropertiesTo(@NotNull EntityModel<DreadKnightEntity> model) {
         super.copyPropertiesTo(model);
-        if (model instanceof HumanoidModel bipedEntityModel) {
+        if (model instanceof HumanoidModel<?> bipedEntityModel) {
             bipedEntityModel.leftArmPose = this.leftArmPose;
             bipedEntityModel.rightArmPose = this.rightArmPose;
             bipedEntityModel.crouching = this.isSneak;

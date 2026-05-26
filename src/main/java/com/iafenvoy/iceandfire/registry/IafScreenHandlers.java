@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.screen.gui.*;
 import com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryScreen;
 import com.iafenvoy.iceandfire.screen.handler.*;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;

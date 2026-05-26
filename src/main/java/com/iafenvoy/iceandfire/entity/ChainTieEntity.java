@@ -50,7 +50,7 @@ public class ChainTieEntity extends HangingEntity {
         int k = pos.getZ();
 
         for (ChainTieEntity entityleashknot : worldIn.getEntitiesOfClass(ChainTieEntity.class, new AABB(i - 1.0D, j - 1.0D, k - 1.0D, i + 1.0D, j + 1.0D, k + 1.0D)))
-            if (entityleashknot != null && entityleashknot.pos != null && entityleashknot.pos.equals(pos))
+            if (entityleashknot != null && entityleashknot.pos.equals(pos))
                 return entityleashknot;
         return null;
     }

@@ -486,7 +486,7 @@ public class IceDragonEntity extends DragonBaseEntity {
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem() != null && stack.getItem() == IafItems.FROST_STEW.get();
+        return !stack.isEmpty() && stack.getItem() == IafItems.FROST_STEW.get();
     }
 
     @Override

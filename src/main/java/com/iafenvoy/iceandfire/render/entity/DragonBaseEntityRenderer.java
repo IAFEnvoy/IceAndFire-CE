@@ -9,6 +9,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobRenderer<T, TabulaModel<T>> {
     public DragonBaseEntityRenderer(EntityRendererProvider.Context context, TabulaModel<T> model) {
@@ -29,7 +30,7 @@ public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobRen
     }
 
     @Override
-    public ResourceLocation getTextureLocation(DragonBaseEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(DragonBaseEntity entity) {
         return DragonColor.getById(entity.getVariant()).getTextureProvider().getTextureByEntity(entity);
     }
 }

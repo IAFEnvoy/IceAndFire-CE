@@ -8,6 +8,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -118,6 +119,14 @@ public final class IafEntities {
         event.put(GHOST.get(), GhostEntity.bakeAttributes().build());
     }
 
+    //Attribute Fix
+    @SubscribeEvent
+    public static void modifyDefaultAttributes(EntityAttributeModificationEvent event) {
+        event.add(FIRE_DRAGON.get(), IafAttributes.DRAGON_FORGE_SPEED, 0.025);
+        event.add(ICE_DRAGON.get(), IafAttributes.DRAGON_FORGE_SPEED, 0.025);
+        event.add(LIGHTNING_DRAGON.get(), IafAttributes.DRAGON_FORGE_SPEED, 0.025);
+    }
+
     @SubscribeEvent
     public static void registerPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(HIPPOGRYPH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, HippogryphEntity::checkMobSpawnRules, RegisterSpawnPlacementsEvent.Operation.OR);
@@ -125,5 +134,10 @@ public final class IafEntities {
         event.register(DREAD_LICH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, DreadLichEntity::canLichSpawnOn, RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(COCKATRICE.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, CockatriceEntity::canCockatriceSpawn, RegisterSpawnPlacementsEvent.Operation.OR);
         event.register(AMPHITHERE.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, AmphithereEntity::canAmphithereSpawnOn, RegisterSpawnPlacementsEvent.Operation.OR);
+        //Patch in biome jsons
+        event.register(DREAD_KNIGHT.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, (a, b, c, d, e) -> true, RegisterSpawnPlacementsEvent.Operation.OR);
+        event.register(DREAD_BEAST.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, (a, b, c, d, e) -> true, RegisterSpawnPlacementsEvent.Operation.OR);
+        event.register(DREAD_THRALL.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, (a, b, c, d, e) -> true, RegisterSpawnPlacementsEvent.Operation.OR);
+        event.register(DREAD_GHOUL.get(), SpawnPlacementTypes.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, (a, b, c, d, e) -> true, RegisterSpawnPlacementsEvent.Operation.OR);
     }
 }

@@ -55,7 +55,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandle
     public BestiaryScreen(BestiaryScreenHandler container, Inventory inv, Component name) {
         super(container, inv, name);
         this.book = container.getBook();
-        if (!this.book.isEmpty() && this.book.getItem() != null && this.book.getItem() == IafItems.BESTIARY.get())
+        if (!this.book.isEmpty() && this.book.getItem() == IafItems.BESTIARY.get())
             if (this.book.has(IafDataComponents.BESTIARY_PAGES.get())) {
                 BestiaryPageComponent component = this.book.get(IafDataComponents.BESTIARY_PAGES.get());
                 if (component == null) component = new BestiaryPageComponent(List.of());

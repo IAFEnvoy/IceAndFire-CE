@@ -385,7 +385,7 @@ public class FireDragonEntity extends DragonBaseEntity {
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return !stack.isEmpty() && stack.getItem() != null && stack.getItem() == IafItems.FIRE_STEW.get();
+        return !stack.isEmpty() && stack.getItem() == IafItems.FIRE_STEW.get();
     }
 
     @Override

@@ -31,7 +31,7 @@ public class AmphithereEntityRenderer extends MobRenderer<AmphithereEntity, Amph
     }
 
     @Override
-    public ResourceLocation getTextureLocation(AmphithereEntity amphithere) {
+    public @NotNull ResourceLocation getTextureLocation(AmphithereEntity amphithere) {
         switch (amphithere.getVariant()) {
             case 0 -> {
                 if (amphithere.isBlinking()) return TEXTURE_BLUE_BLINK;

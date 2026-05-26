@@ -33,7 +33,7 @@ public class ChainTieEntityRenderer extends EntityRenderer<ChainTieEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(ChainTieEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull ChainTieEntity entity) {
         return TEXTURE;
     }
 }

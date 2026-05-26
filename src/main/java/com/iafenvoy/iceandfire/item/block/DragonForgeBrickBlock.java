@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.item.block;
 
-import com.hollingsworth.arsnouveau.setup.registry.MenuRegistry;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeBlockEntity;
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeBrickBlockEntity;
