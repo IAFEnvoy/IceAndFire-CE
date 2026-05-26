@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.item.ability;
 
-import com.iafenvoy.iceandfire.event.ServerEvents;
+import com.iafenvoy.iceandfire.event.handler.ServerEvents;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;

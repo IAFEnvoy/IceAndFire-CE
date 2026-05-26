@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
 import com.iafenvoy.iceandfire.data.TrollType;
-import com.iafenvoy.iceandfire.impl.ParticleProviderHolder;
 import com.iafenvoy.iceandfire.item.DragonHornItem;
 import com.iafenvoy.iceandfire.item.SummoningCrystalItem;
 import com.iafenvoy.iceandfire.particle.*;
@@ -30,6 +29,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 import java.util.function.Consumer;
 
@@ -109,17 +109,18 @@ public final class IafRenderers {
         event.registerBlockEntityRenderer(IafBlockEntities.GHOST_CHEST.get(), ChestRenderer::new);
     }
 
-    public static void registerParticleRenderers(Consumer<ParticleProviderHolder<?>> consumer) {
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.BLOOD.get(), BloodParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.DRAGON_FLAME.get(), DragonFlameParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.DRAGON_FROST.get(), DragonFrostParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.DREAD_PORTAL.get(), DreadPortalParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.DREAD_TORCH.get(), DreadTorchParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.GHOST_APPEARANCE.get(), GhostAppearanceParticle.factory()));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.HYDRA_BREATH.get(), HydraBreathParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.PIXIE_DUST.get(), PixieDustParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.SERPENT_BUBBLE.get(), SerpentBubbleParticle::factory));
-        consumer.accept(new ParticleProviderHolder<>(IafParticles.SIREN_MUSIC.get(), SirenMusicParticle::factory));
+    @SubscribeEvent
+    public static void registerParticleRenderers(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(IafParticles.BLOOD.get(), BloodParticle::factory);
+        event.registerSpriteSet(IafParticles.DRAGON_FLAME.get(), DragonFlameParticle::factory);
+        event.registerSpriteSet(IafParticles.DRAGON_FROST.get(), DragonFrostParticle::factory);
+        event.registerSpriteSet(IafParticles.DREAD_PORTAL.get(), DreadPortalParticle::factory);
+        event.registerSpriteSet(IafParticles.DREAD_TORCH.get(), DreadTorchParticle::factory);
+        event.registerSpecial(IafParticles.GHOST_APPEARANCE.get(), GhostAppearanceParticle.factory());
+        event.registerSpriteSet(IafParticles.HYDRA_BREATH.get(), HydraBreathParticle::factory);
+        event.registerSpriteSet(IafParticles.PIXIE_DUST.get(), PixieDustParticle::factory);
+        event.registerSpriteSet(IafParticles.SERPENT_BUBBLE.get(), SerpentBubbleParticle::factory);
+        event.registerSpriteSet(IafParticles.SIREN_MUSIC.get(), SirenMusicParticle::factory);
     }
 
     public static void registerArmorRenderers() {

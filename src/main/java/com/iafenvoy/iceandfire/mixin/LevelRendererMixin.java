@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.mixin;
 
-import com.iafenvoy.iceandfire.event.ClientEvents;
+import com.iafenvoy.iceandfire.event.handler.ClientEvents;
 import com.iafenvoy.iceandfire.render.misc.LightningBoltData;
 import com.iafenvoy.iceandfire.render.misc.LightningRenderer;
 import com.llamalad7.mixinextras.sugar.Local;

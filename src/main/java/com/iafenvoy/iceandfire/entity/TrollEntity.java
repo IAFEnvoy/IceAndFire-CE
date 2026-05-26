@@ -6,7 +6,7 @@ import com.iafenvoy.iceandfire.entity.ai.TrollAIFleeSunGoal;
 import com.iafenvoy.iceandfire.entity.util.IHasCustomizableAttributes;
 import com.iafenvoy.iceandfire.entity.util.IHumanoid;
 import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
-import com.iafenvoy.iceandfire.event.IafEvents;
+import com.iafenvoy.iceandfire.event.GriefBreakBlockEvent;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.IafTrollTypes;
@@ -51,6 +51,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
@@ -351,7 +352,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 float weaponY = (float) (this.getY() + (this.getEyeHeight() / 2));
                 //TODO: Recheck Explosion
                 Explosion explosion = new Explosion(this.level(), this, weaponX, weaponY, weaponZ, 1F + this.getRandom().nextFloat(), false, Explosion.BlockInteraction.KEEP);
-                if (!IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, weaponX, weaponY, weaponZ)) {
+                if (!NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, weaponX, weaponY, weaponZ)).isCanceled()) {
                     explosion.explode();
                     explosion.finalizeExplosion(true);
                 }

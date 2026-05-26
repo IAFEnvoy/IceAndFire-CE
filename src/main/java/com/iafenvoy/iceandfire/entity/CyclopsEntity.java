@@ -7,7 +7,7 @@ import com.iafenvoy.iceandfire.entity.ai.CyclopsAITargetSheepPlayersGoal;
 import com.iafenvoy.iceandfire.entity.pathfinding.CyclopsNavigation;
 import com.iafenvoy.iceandfire.entity.util.*;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
-import com.iafenvoy.iceandfire.event.IafEvents;
+import com.iafenvoy.iceandfire.event.GriefBreakBlockEvent;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.iafenvoy.uranus.animation.Animation;
@@ -48,6 +48,7 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
 public class CyclopsEntity extends Monster implements IAnimatedEntity, BlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
@@ -328,7 +329,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
                         Block block = state.getBlock();
                         if (!state.isAir() && !state.getShape(this.level(), pos).isEmpty() && !(block instanceof BushBlock) && block != Blocks.BEDROCK && (state.getBlock() instanceof LeavesBlock || state.is(BlockTags.LOGS))) {
                             this.getDeltaMovement().scale(0.6D);
-                            if (IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, a, b, c)) continue;
+                            if (NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, a, b, c)).isCanceled()) continue;
                             if (block != Blocks.AIR)
                                 if (!this.level().isClientSide)
                                     this.level().destroyBlock(pos, true);

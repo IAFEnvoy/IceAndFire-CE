@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.registry;
 
-import com.iafenvoy.iceandfire.event.ClientEvents;
+import com.iafenvoy.iceandfire.event.handler.ClientEvents;
 import net.minecraft.client.KeyMapping;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;

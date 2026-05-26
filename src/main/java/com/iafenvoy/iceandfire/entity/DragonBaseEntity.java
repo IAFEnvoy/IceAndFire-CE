@@ -9,7 +9,8 @@ import com.iafenvoy.iceandfire.data.component.ChainData;
 import com.iafenvoy.iceandfire.entity.ai.*;
 import com.iafenvoy.iceandfire.entity.util.*;
 import com.iafenvoy.iceandfire.entity.util.dragon.*;
-import com.iafenvoy.iceandfire.event.IafEvents;
+import com.iafenvoy.iceandfire.event.DragonFireEvent;
+import com.iafenvoy.iceandfire.event.GriefBreakBlockEvent;
 import com.iafenvoy.iceandfire.item.DragonArmorItem;
 import com.iafenvoy.iceandfire.item.SummoningCrystalItem;
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeInputBlockEntity;
@@ -93,6 +94,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1353,7 +1355,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public void breakBlock(final BlockPos position) {
-        if (IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, position.getX(), position.getY(), position.getZ()))
+        if (NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, position.getX(), position.getY(), position.getZ())).isCanceled())
             return;
 
         final BlockState state = this.level().getBlockState(position);
@@ -2556,7 +2558,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public final void breathAttack(double burnX, double burnY, double burnZ, boolean useCharge) {
-        if (IafEvents.ON_DRAGON_FIRE_BLOCK.invoker().onFireBlock(this, burnX, burnY, burnZ)) return;
+        if (NeoForge.EVENT_BUS.post(new DragonFireEvent(this, burnX, burnY, burnZ)).isCanceled()) return;
         if (useCharge) this.performChargeAttack(burnX, burnY, burnZ);
         else this.performNormalBreathAttack(burnX, burnY, burnZ);
     }

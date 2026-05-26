@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.entity.util.dragon;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.BlockLaunchExplosion;
-import com.iafenvoy.iceandfire.event.IafEvents;
+import com.iafenvoy.iceandfire.event.DragonFireDamageWorldEvent;
 import com.iafenvoy.iceandfire.item.block.CharedPathBlock;
 import com.iafenvoy.iceandfire.item.block.FallingReturningStateBlock;
 import com.iafenvoy.iceandfire.item.block.ReturningStateBlock;
@@ -29,10 +29,11 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SpreadingSnowyDirtBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.NeoForge;
 
 public class IafDragonDestructionManager {
     public static void destroyAreaBreath(final Level level, final BlockPos center, final DragonBaseEntity dragon) {
-        if (IafEvents.ON_DRAGON_DAMAGE_BLOCK.invoker().onDamageBlock(dragon, center.getX(), center.getY(), center.getZ()))
+        if (NeoForge.EVENT_BUS.post(new DragonFireDamageWorldEvent(dragon, center.getX(), center.getY(), center.getZ())).isCanceled())
             return;
 
         int statusDuration;
@@ -105,7 +106,7 @@ public class IafDragonDestructionManager {
 
     public static void destroyAreaCharge(final Level level, final BlockPos center, final DragonBaseEntity dragon) {
         if (dragon == null) return;
-        if (IafEvents.ON_DRAGON_DAMAGE_BLOCK.invoker().onDamageBlock(dragon, center.getX(), center.getY(), center.getZ()))
+        if (NeoForge.EVENT_BUS.post(new DragonFireDamageWorldEvent(dragon, center.getX(), center.getY(), center.getZ())).isCanceled())
             return;
 
         int x = 2;

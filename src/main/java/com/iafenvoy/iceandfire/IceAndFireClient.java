@@ -42,11 +42,6 @@ public class IceAndFireClient {
     }
 
     @SubscribeEvent
-    public static void registerParticles(RegisterParticleProvidersEvent event) {
-        IafRenderers.registerParticleRenderers(holder -> holder.applyRegister(event::registerSpecial, event::registerSpriteSet));
-    }
-
-    @SubscribeEvent
     public static void onAddPackFinders(AddPackFindersEvent event) {
         event.addPackFinders(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "resourcepacks/iaf_legacy"), PackType.CLIENT_RESOURCES, Component.translatable("resourcePack.iceandfire.legacy.name"), PackSource.BUILT_IN, false, Pack.Position.TOP);
     }

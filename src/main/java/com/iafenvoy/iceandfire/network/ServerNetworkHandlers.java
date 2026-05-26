@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.network;
 
 import com.iafenvoy.iceandfire.entity.*;
 import com.iafenvoy.iceandfire.entity.util.ISyncMount;
-import com.iafenvoy.iceandfire.event.ServerEvents;
+import com.iafenvoy.iceandfire.event.handler.ServerEvents;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
 import com.iafenvoy.iceandfire.network.payload.MultipartInteractC2SPayload;
 import com.iafenvoy.iceandfire.network.payload.PlayerHitMultipartC2SPayload;
@@ -16,8 +16,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.TamableAnimal;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public final class ServerNetworkHelper {
-    private ServerNetworkHelper() {
+public final class ServerNetworkHandlers {
+    private ServerNetworkHandlers() {
     }
 
     public static void handleDragonControl(DragonControlC2SPayload payload, IPayloadContext ctx) {

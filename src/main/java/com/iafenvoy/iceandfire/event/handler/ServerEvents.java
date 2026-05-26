@@ -1,4 +1,4 @@
-package com.iafenvoy.iceandfire.event;
+package com.iafenvoy.iceandfire.event.handler;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;

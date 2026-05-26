@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.network;
 import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.ISyncMount;
-import com.iafenvoy.iceandfire.event.ClientEvents;
+import com.iafenvoy.iceandfire.event.handler.ClientEvents;
 import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.iceandfire.item.block.entity.PodiumBlockEntity;
@@ -23,10 +23,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public final class ClientNetworkHelper {
+public final class ClientNetworkHandlers {
     private static CameraType prev = CameraType.FIRST_PERSON;
 
-    private ClientNetworkHelper() {
+    private ClientNetworkHandlers() {
     }
 
     public static void handleDragonSetBurnBlock(DragonSetBurnBlockS2CPayload payload, IPayloadContext ctx) {

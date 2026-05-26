@@ -7,7 +7,7 @@ import com.iafenvoy.iceandfire.entity.pathfinding.DeathWormLandNavigation;
 import com.iafenvoy.iceandfire.entity.pathfinding.DeathWormSandNavigation;
 import com.iafenvoy.iceandfire.entity.util.*;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
-import com.iafenvoy.iceandfire.event.IafEvents;
+import com.iafenvoy.iceandfire.event.GriefBreakBlockEvent;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
@@ -54,6 +54,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -228,7 +229,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             this.playSound(this.getAgeScale() > 3 ? IafSounds.DEATHWORM_GIANT_ATTACK.get() : IafSounds.DEATHWORM_ATTACK.get(), 1, 1);
         }
         if (this.getRandom().nextInt(3) == 0 && this.getAgeScale() > 1 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-            if (!IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, entityIn.getX(), entityIn.getY(), entityIn.getZ())) {
+            if (!NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, entityIn.getX(), entityIn.getY(), entityIn.getZ())).isCanceled()) {
                 BlockLaunchExplosion explosion = new BlockLaunchExplosion(this.level(), this, entityIn.getX(), entityIn.getY(), entityIn.getZ(), this.getAgeScale());
                 explosion.explode();
                 explosion.finalizeExplosion(true);
@@ -516,7 +517,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             this.setTarget(null);
         if (this.willExplode) {
             if (this.ticksTillExplosion == 0) {
-                if (!IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, this.getX(), this.getY(), this.getZ()))
+                if (!NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, this.getX(), this.getY(), this.getZ())).isCanceled())
                     this.level().explode(this.thrower, this.getX(), this.getY(), this.getZ(), 2.5F * this.getAgeScale(), false, Level.ExplosionInteraction.MOB);
                 this.thrower = null;
             } else this.ticksTillExplosion--;
