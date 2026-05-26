@@ -1,7 +1,7 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.entity.HippocampusEntity;
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -15,16 +15,16 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
-public class HippocampusScreenHandler extends AbstractContainerMenu {
+public class HippocampusMenu extends AbstractContainerMenu {
     private final Container hippocampusInventory;
     private final HippocampusEntity hippocampus;
 
-    public HippocampusScreenHandler(int i, Inventory playerInventory, FriendlyByteBuf buf) {
+    public HippocampusMenu(int i, Inventory playerInventory, FriendlyByteBuf buf) {
         this(i, new SimpleContainer(18), playerInventory, (HippocampusEntity) Minecraft.getInstance().level.getEntity(buf.readInt()));
     }
 
-    public HippocampusScreenHandler(int id, Container hippoInventory, Inventory playerInventory, HippocampusEntity hippocampus) {
-        super(IafScreenHandlers.HIPPOCAMPUS_SCREEN.get(), id);
+    public HippocampusMenu(int id, Container hippoInventory, Inventory playerInventory, HippocampusEntity hippocampus) {
+        super(IafMenus.HIPPOCAMPUS_SCREEN.get(), id);
         this.hippocampusInventory = hippoInventory;
         this.hippocampus = hippocampus;
         Player player = playerInventory.player;

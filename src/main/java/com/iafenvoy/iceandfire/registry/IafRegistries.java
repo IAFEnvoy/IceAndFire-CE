@@ -11,12 +11,12 @@ import net.minecraft.resources.ResourceKey;
 import java.util.Locale;
 
 public final class IafRegistries {
-    public static final DefaultedRegistry<BestiaryPage> BESTIARY_PAGE = create(String.format(Locale.ROOT, "%s:introduction", IceAndFire.MOD_ID), IafRegistryKeys.BESTIARY_PAGE);
-    public static final DefaultedRegistry<DragonColor> DRAGON_COLOR = create(String.format(Locale.ROOT, "%s:red", IceAndFire.MOD_ID), IafRegistryKeys.DRAGON_COLOR);
-    public static final DefaultedRegistry<DragonType> DRAGON_TYPE = create(String.format(Locale.ROOT, "%s:fire", IceAndFire.MOD_ID), IafRegistryKeys.DRAGON_TYPE);
-    public static final DefaultedRegistry<HippogryphType> HIPPOGRYPH_TYPE = create(String.format(Locale.ROOT, "%s:black", IceAndFire.MOD_ID), IafRegistryKeys.HIPPOGRYPH_TYPE);
-    public static final DefaultedRegistry<SeaSerpentType> SEA_SERPENT_TYPE = create(String.format(Locale.ROOT, "%s:blue", IceAndFire.MOD_ID), IafRegistryKeys.SEA_SERPENT_TYPE);
-    public static final DefaultedRegistry<TrollType> TROLL_TYPE = create(String.format(Locale.ROOT, "%s:forest", IceAndFire.MOD_ID), IafRegistryKeys.TROLL_TYPE);
+    public static final DefaultedRegistry<BestiaryPage> BESTIARY_PAGE = create(String.format(Locale.ROOT, "%s:introduction", IceAndFire.MOD_ID), IafResourceKeys.BESTIARY_PAGE);
+    public static final DefaultedRegistry<DragonColor> DRAGON_COLOR = create(String.format(Locale.ROOT, "%s:red", IceAndFire.MOD_ID), IafResourceKeys.DRAGON_COLOR);
+    public static final DefaultedRegistry<DragonType> DRAGON_TYPE = create(String.format(Locale.ROOT, "%s:fire", IceAndFire.MOD_ID), IafResourceKeys.DRAGON_TYPE);
+    public static final DefaultedRegistry<HippogryphType> HIPPOGRYPH_TYPE = create(String.format(Locale.ROOT, "%s:black", IceAndFire.MOD_ID), IafResourceKeys.HIPPOGRYPH_TYPE);
+    public static final DefaultedRegistry<SeaSerpentType> SEA_SERPENT_TYPE = create(String.format(Locale.ROOT, "%s:blue", IceAndFire.MOD_ID), IafResourceKeys.SEA_SERPENT_TYPE);
+    public static final DefaultedRegistry<TrollType> TROLL_TYPE = create(String.format(Locale.ROOT, "%s:forest", IceAndFire.MOD_ID), IafResourceKeys.TROLL_TYPE);
 
     private static <T> DefaultedRegistry<T> create(String defaultId, ResourceKey<Registry<T>> key) {
         return new DefaultedMappedRegistry<>(defaultId, key, Lifecycle.stable(), false);

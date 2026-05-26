@@ -1,7 +1,7 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -14,16 +14,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
-public class HippogryphScreenHandler extends AbstractContainerMenu {
+public class HippogryphMenu extends AbstractContainerMenu {
     private final Container hippogryphInventory;
     private final HippogryphEntity hippogryph;
 
-    public HippogryphScreenHandler(int i, Inventory playerInventory, FriendlyByteBuf buf) {
+    public HippogryphMenu(int i, Inventory playerInventory, FriendlyByteBuf buf) {
         this(i, new SimpleContainer(18), playerInventory, (HippogryphEntity) Minecraft.getInstance().level.getEntity(buf.readInt()));
     }
 
-    public HippogryphScreenHandler(int id, Container hippogryphInventory, Inventory playerInventory, HippogryphEntity hippogryph) {
-        super(IafScreenHandlers.HIPPOGRYPH_SCREEN.get(), id);
+    public HippogryphMenu(int id, Container hippogryphInventory, Inventory playerInventory, HippogryphEntity hippogryph) {
+        super(IafMenus.HIPPOGRYPH_SCREEN.get(), id);
         this.hippogryphInventory = hippogryphInventory;
         this.hippogryph = hippogryph;
         Player player = playerInventory.player;
@@ -37,8 +37,8 @@ public class HippogryphScreenHandler extends AbstractContainerMenu {
             @Override
             public void setChanged() {
                 super.setChanged();
-                if (HippogryphScreenHandler.this.hippogryph != null)
-                    HippogryphScreenHandler.this.hippogryph.setSaddled(this.hasItem() && this.getItem().is(Items.SADDLE));
+                if (HippogryphMenu.this.hippogryph != null)
+                    HippogryphMenu.this.hippogryph.setSaddled(this.hasItem() && this.getItem().is(Items.SADDLE));
             }
 
             @Override
@@ -55,8 +55,8 @@ public class HippogryphScreenHandler extends AbstractContainerMenu {
             @Override
             public void setChanged() {
                 super.setChanged();
-                if (HippogryphScreenHandler.this.hippogryph != null)
-                    HippogryphScreenHandler.this.hippogryph.setChested(this.hasItem() && this.getItem().is(Items.CHEST));
+                if (HippogryphMenu.this.hippogryph != null)
+                    HippogryphMenu.this.hippogryph.setChested(this.hasItem() && this.getItem().is(Items.CHEST));
             }
 
             @Override
@@ -78,8 +78,8 @@ public class HippogryphScreenHandler extends AbstractContainerMenu {
             @Override
             public void setChanged() {
                 super.setChanged();
-                if (HippogryphScreenHandler.this.hippogryph != null)
-                    HippogryphScreenHandler.this.hippogryph.setArmor(this.hasItem() ? HippogryphEntity.getIntFromArmor(this.getItem()) : 0);
+                if (HippogryphMenu.this.hippogryph != null)
+                    HippogryphMenu.this.hippogryph.setArmor(this.hasItem() ? HippogryphEntity.getIntFromArmor(this.getItem()) : 0);
             }
 
             @Override
@@ -93,12 +93,12 @@ public class HippogryphScreenHandler extends AbstractContainerMenu {
                 this.addSlot(new Slot(this.hippogryphInventory, 3 + l + k * 5, 80 + l * 18, 18 + k * 18) {
                     @Override
                     public boolean isActive() {
-                        return HippogryphScreenHandler.this.hippogryph != null && HippogryphScreenHandler.this.hippogryph.isChested();
+                        return HippogryphMenu.this.hippogryph != null && HippogryphMenu.this.hippogryph.isChested();
                     }
 
                     @Override
                     public boolean mayPlace(@NotNull ItemStack stack) {
-                        return HippogryphScreenHandler.this.hippogryph != null && HippogryphScreenHandler.this.hippogryph.isChested();
+                        return HippogryphMenu.this.hippogryph != null && HippogryphMenu.this.hippogryph.isChested();
                     }
                 });
 

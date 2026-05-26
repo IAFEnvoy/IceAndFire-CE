@@ -11,7 +11,7 @@ import com.iafenvoy.iceandfire.entity.util.ISyncMount;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
-import com.iafenvoy.iceandfire.screen.handler.HippocampusScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.HippocampusMenu;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
@@ -575,7 +575,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory inv, @NotNull Player player) {
-        return new HippocampusScreenHandler(syncId, this.inventory, inv, this);
+        return new HippocampusMenu(syncId, this.inventory, inv, this);
     }
 
     @Override

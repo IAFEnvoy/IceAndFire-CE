@@ -1,6 +1,6 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -10,15 +10,15 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class PodiumScreenHandler extends AbstractContainerMenu {
+public class PodiumMenu extends AbstractContainerMenu {
     public final Container podium;
 
-    public PodiumScreenHandler(int i, Inventory playerInventory) {
+    public PodiumMenu(int i, Inventory playerInventory) {
         this(i, new SimpleContainer(1), playerInventory);
     }
 
-    public PodiumScreenHandler(int id, Container furnaceInventory, Inventory playerInventory) {
-        super(IafScreenHandlers.PODIUM_SCREEN.get(), id);
+    public PodiumMenu(int id, Container furnaceInventory, Inventory playerInventory) {
+        super(IafMenus.PODIUM_SCREEN.get(), id);
         this.podium = furnaceInventory;
         furnaceInventory.startOpen(playerInventory.player);
         byte b0 = 51;

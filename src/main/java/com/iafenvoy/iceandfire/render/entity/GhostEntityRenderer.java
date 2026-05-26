@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.GhostEntity;
-import com.iafenvoy.iceandfire.registry.IafRenderLayers;
+import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.iafenvoy.iceandfire.render.model.GhostModel;
 import com.iafenvoy.iceandfire.util.Color4i;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -90,7 +90,7 @@ public class GhostEntityRenderer extends MobRenderer<GhostEntity, GhostModel> {
         this.model.prepareMobModel(entityIn, f5, f8, partialTicks);
         this.model.setupAnim(entityIn, f5, f8, f7, f2, f6);
         float alphaForRender = this.getAlphaForRender(entityIn, partialTicks);
-        RenderType rendertype = entityIn.isDaytimeMode() ? IafRenderLayers.getGhostDaytime(this.getTextureLocation(entityIn)) : IafRenderLayers.getGhost(this.getTextureLocation(entityIn));//this.getRenderType(entityIn, flag, flag1, flag2);
+        RenderType rendertype = entityIn.isDaytimeMode() ? IafRenderTypes.getGhostDaytime(this.getTextureLocation(entityIn)) : IafRenderTypes.getGhost(this.getTextureLocation(entityIn));//this.getRenderType(entityIn, flag, flag1, flag2);
         if (!entityIn.isInvisible()) {
             VertexConsumer ivertexbuilder = bufferIn.getBuffer(rendertype);
             int i = getOverlayCoords(entityIn, this.getWhiteOverlayProgress(entityIn, partialTicks));

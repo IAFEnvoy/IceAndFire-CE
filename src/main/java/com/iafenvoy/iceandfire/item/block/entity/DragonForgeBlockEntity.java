@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.item.block.DragonForgeBrickBlock;
 import com.iafenvoy.iceandfire.item.block.DragonForgeCoreBlock;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.registry.*;
-import com.iafenvoy.iceandfire.screen.handler.DragonForgeScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.DragonForgeMenu;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -382,7 +382,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     @Override
     protected @NotNull AbstractContainerMenu createMenu(int id, @NotNull Inventory player) {
-        return new DragonForgeScreenHandler(id, this, player, this.getDragonType(), this.delegate);
+        return new DragonForgeMenu(id, this, player, this.getDragonType(), this.delegate);
     }
 
     @Override

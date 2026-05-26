@@ -15,7 +15,7 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
-import com.iafenvoy.iceandfire.screen.handler.HippogryphScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.HippogryphMenu;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
@@ -979,7 +979,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new HippogryphScreenHandler(syncId, this.hippogryphInventory, playerInventory, this);
+        return new HippogryphMenu(syncId, this.hippogryphInventory, playerInventory, this);
     }
 
     @Override

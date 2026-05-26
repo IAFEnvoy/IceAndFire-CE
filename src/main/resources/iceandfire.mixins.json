@@ -4,16 +4,17 @@
   "package": "com.iafenvoy.iceandfire.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "WorldGenRegionMixin",
+    "ChickenMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
-    "MobMixin"
+    "MobMixin",
+    "WorldGenRegionMixin"
   ],
   "client": [
     "GuiMixin",
+    "LevelRendererMixin",
     "PanoramaRendererMixin",
-    "TitleScreenMixin",
-    "LevelRendererMixin"
+    "TitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -6,8 +6,8 @@ import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
-import com.iafenvoy.iceandfire.registry.IafKeybindings;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
+import com.iafenvoy.iceandfire.registry.IafKeyMappings;
+import com.iafenvoy.iceandfire.registry.IafMobEffects;
 import com.iafenvoy.iceandfire.render.RenderVariables;
 import com.iafenvoy.iceandfire.render.entity.feature.DragonRiderFeatureRenderer;
 import com.iafenvoy.iceandfire.render.misc.ChainRenderer;
@@ -87,10 +87,10 @@ public final class ClientEvents {
             Entity vehicle = player.getVehicle();
             byte previousState = controller.getControlState();
             controller.up(mc.options.keyJump.isDown());
-            controller.down(IafKeybindings.DRAGON_DOWN.isDown());
-            controller.attack(IafKeybindings.DRAGON_STRIKE.isDown());
+            controller.down(IafKeyMappings.DRAGON_DOWN.isDown());
+            controller.attack(IafKeyMappings.DRAGON_STRIKE.isDown());
             controller.dismount(mc.options.keyShift.isDown());
-            controller.strike(IafKeybindings.DRAGON_BREATH.isDown());
+            controller.strike(IafKeyMappings.DRAGON_BREATH.isDown());
             byte controlState = controller.getControlState();
             if (controlState != previousState)
                 PacketDistributor.sendToServer(new DragonControlC2SPayload(vehicle.getId(), controlState, vehicle.blockPosition()));
@@ -113,7 +113,7 @@ public final class ClientEvents {
         for (Entity target : miscData.getTargetedByScepters().stream().filter(Objects::nonNull).map(x -> world.entityStorage.getEntityGetter().get(x)).filter(Objects::nonNull).toList())
             CockatriceBeamRenderer.render(entity, target, matrixStack, buffers, partialRenderTick);
         //Frozen
-        MobEffectInstance effect = entity.getEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.FROZEN.get()));
+        MobEffectInstance effect = entity.getEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafMobEffects.FROZEN.get()));
         if (effect != null) FrozenStateRenderer.render(entity, matrixStack, buffers, light, effect.getDuration());
         //Chain
         ChainData chainData = ChainData.get(entity);

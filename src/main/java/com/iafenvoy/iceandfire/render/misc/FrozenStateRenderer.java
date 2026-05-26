@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.render.misc;
 
-import com.iafenvoy.iceandfire.registry.IafRenderLayers;
+import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -39,7 +39,7 @@ public class FrozenStateRenderer {
     }
 
     public static void renderMovingAABB(AABB boundingBox, PoseStack stack, MultiBufferSource bufferIn, int light, int alpha, int frozenTicks) {
-        RenderType rendertype = IafRenderLayers.getIce(getIceTexture(frozenTicks));
+        RenderType rendertype = IafRenderTypes.getIce(getIceTexture(frozenTicks));
         VertexConsumer vertexbuffer = bufferIn.getBuffer(rendertype);
         Matrix4f matrix4f = stack.last().pose();
 

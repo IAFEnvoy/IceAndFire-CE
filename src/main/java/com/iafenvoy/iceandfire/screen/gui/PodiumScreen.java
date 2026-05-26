@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.screen.gui;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.screen.handler.PodiumScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.PodiumMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,10 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
-public class PodiumScreen extends AbstractContainerScreen<PodiumScreenHandler> {
+public class PodiumScreen extends AbstractContainerScreen<PodiumMenu> {
     public static final ResourceLocation PODIUM_TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/podium.png");
 
-    public PodiumScreen(PodiumScreenHandler container, Inventory inv, Component name) {
+    public PodiumScreen(PodiumMenu container, Inventory inv, Component name) {
         super(container, inv, name);
         this.imageHeight = 133;
     }

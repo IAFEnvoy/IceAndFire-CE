@@ -1,8 +1,8 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,14 +13,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class BestiaryScreenHandler extends AbstractContainerMenu {
+public class BestiaryMenu extends AbstractContainerMenu {
     private ItemStack bookStack = ItemStack.EMPTY;
 
-    public BestiaryScreenHandler(int syncId, Inventory playerInventory) {
-        super(IafScreenHandlers.BESTIARY_SCREEN.get(), syncId);
+    public BestiaryMenu(int syncId, Inventory playerInventory) {
+        super(IafMenus.BESTIARY_SCREEN.get(), syncId);
     }
 
-    public BestiaryScreenHandler(int syncId, Inventory playerInventory, FriendlyByteBuf buf) {
+    public BestiaryMenu(int syncId, Inventory playerInventory, FriendlyByteBuf buf) {
         this(syncId, playerInventory);
         CompoundTag nbt = buf.readNbt();
         if (nbt != null)

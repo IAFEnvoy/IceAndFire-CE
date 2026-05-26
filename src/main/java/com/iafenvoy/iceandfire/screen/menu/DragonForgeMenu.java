@@ -1,9 +1,9 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.data.DragonType;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import com.iafenvoy.iceandfire.registry.IafRegistryKeys;
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafResourceKeys;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -14,18 +14,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class DragonForgeScreenHandler extends AbstractContainerMenu {
+public class DragonForgeMenu extends AbstractContainerMenu {
     protected final Level world;
     private final Container tileFurnace;
     private final DragonType dragonType;
     private final ContainerData propertyDelegate;
 
-    public DragonForgeScreenHandler(int syncId, Inventory playerInventory, FriendlyByteBuf buf) {
-        this(syncId, new SimpleContainer(3), playerInventory, IafRegistries.DRAGON_TYPE.get(buf.readResourceKey(IafRegistryKeys.DRAGON_TYPE)), new SimpleContainerData(2));
+    public DragonForgeMenu(int syncId, Inventory playerInventory, FriendlyByteBuf buf) {
+        this(syncId, new SimpleContainer(3), playerInventory, IafRegistries.DRAGON_TYPE.get(buf.readResourceKey(IafResourceKeys.DRAGON_TYPE)), new SimpleContainerData(2));
     }
 
-    public DragonForgeScreenHandler(int syncId, Container furnaceInventory, Inventory playerInventory, DragonType dragonType, ContainerData delegate) {
-        super(IafScreenHandlers.DRAGON_FORGE_SCREEN.get(), syncId);
+    public DragonForgeMenu(int syncId, Container furnaceInventory, Inventory playerInventory, DragonType dragonType, ContainerData delegate) {
+        super(IafMenus.DRAGON_FORGE_SCREEN.get(), syncId);
         this.tileFurnace = furnaceInventory;
         this.world = playerInventory.player.level();
         this.dragonType = dragonType;

@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.item.tool;
 
 import com.iafenvoy.iceandfire.data.TrollType;
-import com.iafenvoy.iceandfire.registry.IafToolMaterials;
+import com.iafenvoy.iceandfire.registry.IafTiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -20,7 +20,7 @@ public class TrollWeaponItem extends SwordItem {
     public final TrollType.ITrollWeapon weapon;
 
     public TrollWeaponItem(TrollType.ITrollWeapon weapon) {
-        super(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.TROLL_WEAPON_TOOL_MATERIAL, 15, -3.5F)));
+        super(IafTiers.TROLL_WEAPON_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.TROLL_WEAPON_TOOL_MATERIAL, 15, -3.5F)));
         this.weapon = weapon;
     }
 

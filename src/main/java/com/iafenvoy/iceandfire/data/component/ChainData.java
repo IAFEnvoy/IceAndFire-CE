@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.data.component;
 
-import com.iafenvoy.iceandfire.impl.ComponentManager;
+import com.iafenvoy.iceandfire.registry.IafAttachments;
 import com.iafenvoy.iceandfire.util.attachment.NeedUpdateData;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -73,6 +73,6 @@ public class ChainData extends NeedUpdateData<LivingEntity> {
     }
 
     public static ChainData get(LivingEntity living) {
-        return ComponentManager.getChainData(living);
+        return living.getData(IafAttachments.CHAIN_DATA);
     }
 }

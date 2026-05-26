@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.render;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafClientConfig;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
+import com.iafenvoy.iceandfire.registry.IafMobEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -26,7 +26,7 @@ public class SirenShaderRenderHelper {
         LocalPlayer player = minecraft.player;
         if (player == null) return;
         GameRenderer renderer = Minecraft.getInstance().gameRenderer;
-        if (IafClientConfig.INSTANCE.sirenShader.getValue() && player.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.SIREN_CHARM.get())))
+        if (IafClientConfig.INSTANCE.sirenShader.getValue() && player.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafMobEffects.SIREN_CHARM.get())))
             enableShader(renderer);
         else disableShader(renderer);
     }

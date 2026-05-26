@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.item.tool;
 
 import com.iafenvoy.iceandfire.registry.IafSounds;
-import com.iafenvoy.iceandfire.registry.IafToolMaterials;
+import com.iafenvoy.iceandfire.registry.IafTiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,7 +19,7 @@ import java.util.Random;
 
 public class AmphithereMacuahuitlItem extends SwordItem {
     public AmphithereMacuahuitlItem() {
-        super(IafToolMaterials.AMPHITHERE_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.AMPHITHERE_SWORD_TOOL_MATERIAL, 3, -2.4F)));
+        super(IafTiers.AMPHITHERE_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.AMPHITHERE_SWORD_TOOL_MATERIAL, 3, -2.4F)));
     }
 
     @Override

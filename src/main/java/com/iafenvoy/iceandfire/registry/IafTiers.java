@@ -10,7 +10,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
-public enum IafToolMaterials implements Tier {
+public enum IafTiers implements Tier {
     SILVER_TOOL_MATERIAL("silver", 460, 1.0F, 11.0F, 18, BlockTags.INCORRECT_FOR_IRON_TOOL),
     COPPER_TOOL_MATERIAL("copper", 300, 0.0F, 3.0F, 10, BlockTags.INCORRECT_FOR_IRON_TOOL),
     DRAGONBONE_TOOL_MATERIAL("dragon_bone", 1660, 4.0F, 10.0F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL),
@@ -36,7 +36,7 @@ public enum IafToolMaterials implements Tier {
     private final TagKey<Block> inverted;
     private Ingredient ingredient = Ingredient.of(Items.AIR);
 
-    IafToolMaterials(String name, int durability, float damage, float speed, int enchantability, TagKey<Block> inverted) {
+    IafTiers(String name, int durability, float damage, float speed, int enchantability, TagKey<Block> inverted) {
         this.name = name;
         this.durability = durability;
         this.damage = damage;

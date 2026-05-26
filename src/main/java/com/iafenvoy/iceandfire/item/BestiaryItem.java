@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.data.BestiaryPage;
 import com.iafenvoy.iceandfire.item.component.BestiaryPageComponent;
 import com.iafenvoy.iceandfire.registry.IafBestiaryPages;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
-import com.iafenvoy.iceandfire.screen.handler.BestiaryScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.BestiaryMenu;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -64,6 +64,6 @@ public class BestiaryItem extends Item implements MenuProvider {
 
     @Override
     public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new BestiaryScreenHandler(syncId, playerInventory);
+        return new BestiaryMenu(syncId, playerInventory);
     }
 }

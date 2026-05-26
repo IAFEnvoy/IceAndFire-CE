@@ -7,7 +7,6 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-//FIXME::Fix this f**king thing after port to NeoForge only
 public class IafAttributes {
     public static final DeferredRegister<Attribute> REGISTRY = DeferredRegister.create(Registries.ATTRIBUTE, IceAndFire.MOD_ID);
 

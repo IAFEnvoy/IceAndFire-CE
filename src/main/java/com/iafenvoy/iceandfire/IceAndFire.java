@@ -21,7 +21,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
-import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,7 +66,7 @@ public final class IceAndFire {
         IafBlockEntities.REGISTRY.register(bus);
         IafDataComponents.REGISTRY.register(bus);
         IafEntities.REGISTRY.register(bus);
-        IafItemGroups.REGISTRY.register(bus);
+        IafCreativeModeTabs.REGISTRY.register(bus);
         IafItems.REGISTRY.register(bus);
         IafLoots.REGISTRY.register(bus);
         IafRecipes.REGISTRY.register(bus);
@@ -75,8 +74,8 @@ public final class IceAndFire {
         IafParticles.REGISTRY.register(bus);
         IafProcessors.REGISTRY.register(bus);
         IafFeatures.REGISTRY.register(bus);
-        IafScreenHandlers.REGISTRY.register(bus);
-        IafStatusEffects.REGISTRY.register(bus);
+        IafMenus.REGISTRY.register(bus);
+        IafMobEffects.REGISTRY.register(bus);
         IafStructurePieces.REGISTRY.register(bus);
         IafStructureTypes.REGISTRY.register(bus);
         //Trade
@@ -88,7 +87,7 @@ public final class IceAndFire {
     public static void init(FMLCommonSetupEvent event) {
         IafTrades.init();
         IafRecipes.init();
-        IafToolMaterials.init();
+        IafTiers.init();
 
         IntegrationExecutor.runWhenLoad("ars_nouveau", () -> IceAndFireArsNouveauCompat::init);
         IntegrationExecutor.runWhenLoad("curios", () -> CuriosRegistry::registerItems);

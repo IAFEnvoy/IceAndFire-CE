@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.BestiaryPage;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import com.iafenvoy.iceandfire.screen.handler.LecternScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.LecternMenu;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -27,7 +27,7 @@ import org.joml.Matrix4f;
 
 import java.util.Random;
 
-public class LecternScreen extends AbstractContainerScreen<LecternScreenHandler> {
+public class LecternScreen extends AbstractContainerScreen<LecternMenu> {
     private static final ResourceLocation ENCHANTMENT_TABLE_GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/lectern.png");
     private static final ResourceLocation ENCHANTMENT_TABLE_BOOK_TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/lectern_book.png");
     private static BookModel bookModel;
@@ -43,7 +43,7 @@ public class LecternScreen extends AbstractContainerScreen<LecternScreenHandler>
     private ItemStack last = ItemStack.EMPTY;
     private int flapTimer = 0;
 
-    public LecternScreen(LecternScreenHandler container, Inventory inv, Component name) {
+    public LecternScreen(LecternMenu container, Inventory inv, Component name) {
         super(container, inv, name);
         this.nameable = name;
     }

@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public final class IafRegistryKeys {
+public final class IafResourceKeys {
     public static final ResourceKey<Registry<BestiaryPage>> BESTIARY_PAGE = createKey("bestiary_page");
     public static final ResourceKey<Registry<DragonColor>> DRAGON_COLOR = createKey("dragon_color");
     public static final ResourceKey<Registry<DragonType>> DRAGON_TYPE = createKey("dragon_type");

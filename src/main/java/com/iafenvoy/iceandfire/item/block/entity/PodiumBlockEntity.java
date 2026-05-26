@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.item.block.entity;
 import com.iafenvoy.iceandfire.item.DragonEggItem;
 import com.iafenvoy.iceandfire.network.payload.UpdatePodiumS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
-import com.iafenvoy.iceandfire.screen.handler.PodiumScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.PodiumMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -193,6 +193,6 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
 
     @Override
     public AbstractContainerMenu createMenu(int id, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new PodiumScreenHandler(id, this, playerInventory);
+        return new PodiumMenu(id, this, playerInventory);
     }
 }

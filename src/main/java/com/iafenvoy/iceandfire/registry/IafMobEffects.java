@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
-public final class IafStatusEffects {
+public final class IafMobEffects {
     public static final DeferredRegister<MobEffect> REGISTRY = DeferredRegister.create(Registries.MOB_EFFECT, IceAndFire.MOD_ID);
 
     public static final DeferredHolder<MobEffect, FrozenStatusEffect> FROZEN = register("frozen", FrozenStatusEffect::new);

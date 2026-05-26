@@ -12,7 +12,7 @@ import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafDamageTypes;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
+import com.iafenvoy.iceandfire.registry.IafMobEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.BlockTags;
@@ -233,7 +233,7 @@ public class IafDragonDestructionManager {
         if (dragon.dragonType == IafDragonTypes.FIRE)
             target.igniteForSeconds(statusDuration);
         else if (dragon.dragonType == IafDragonTypes.ICE)
-            target.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.FROZEN.get()), statusDuration));
+            target.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafMobEffects.FROZEN.get()), statusDuration));
         else if (dragon.dragonType == IafDragonTypes.LIGHTNING) {
             double x = dragon.getX() - target.getX();
             double y = dragon.getZ() - target.getZ();

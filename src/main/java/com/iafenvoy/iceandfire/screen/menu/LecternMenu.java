@@ -1,11 +1,11 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.data.BestiaryPage;
 import com.iafenvoy.iceandfire.item.BestiaryItem;
 import com.iafenvoy.iceandfire.item.block.entity.LecternBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.screen.slot.LecternSlot;
 import net.minecraft.sounds.SoundSource;
@@ -23,17 +23,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class LecternScreenHandler extends AbstractContainerMenu {
+public class LecternMenu extends AbstractContainerMenu {
     private final Container tileFurnace;
     private final int[] possiblePagesInt = new int[3];
     private final ContainerData propertyDelegate;
 
-    public LecternScreenHandler(int i, Inventory playerInventory) {
+    public LecternMenu(int i, Inventory playerInventory) {
         this(i, new SimpleContainer(2), playerInventory, new SimpleContainerData(3));
     }
 
-    public LecternScreenHandler(int id, Container furnaceInventory, Inventory playerInventory, ContainerData propertyDelegate) {
-        super(IafScreenHandlers.IAF_LECTERN_SCREEN.get(), id);
+    public LecternMenu(int id, Container furnaceInventory, Inventory playerInventory, ContainerData propertyDelegate) {
+        super(IafMenus.IAF_LECTERN_SCREEN.get(), id);
         this.tileFurnace = furnaceInventory;
         this.propertyDelegate = propertyDelegate;
         this.addDataSlots(propertyDelegate);

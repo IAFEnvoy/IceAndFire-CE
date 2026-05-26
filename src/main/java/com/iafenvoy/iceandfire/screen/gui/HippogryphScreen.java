@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.screen.gui;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
-import com.iafenvoy.iceandfire.screen.handler.HippogryphScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.HippogryphMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -13,10 +13,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
-public class HippogryphScreen extends AbstractContainerScreen<HippogryphScreenHandler> {
+public class HippogryphScreen extends AbstractContainerScreen<HippogryphMenu> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/hippogryph.png");
 
-    public HippogryphScreen(HippogryphScreenHandler handler, Inventory playerInv, Component name) {
+    public HippogryphScreen(HippogryphMenu handler, Inventory playerInv, Component name) {
         super(handler, playerInv, name);
     }
 

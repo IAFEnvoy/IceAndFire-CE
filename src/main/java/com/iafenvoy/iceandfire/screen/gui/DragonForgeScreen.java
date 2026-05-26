@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.screen.gui;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.screen.handler.DragonForgeScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.DragonForgeMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public class DragonForgeScreen extends AbstractContainerScreen<DragonForgeScreenHandler> {
-    public DragonForgeScreen(DragonForgeScreenHandler container, Inventory inv, Component name) {
+public class DragonForgeScreen extends AbstractContainerScreen<DragonForgeMenu> {
+    public DragonForgeScreen(DragonForgeMenu container, Inventory inv, Component name) {
         super(container, inv, name);
     }
 

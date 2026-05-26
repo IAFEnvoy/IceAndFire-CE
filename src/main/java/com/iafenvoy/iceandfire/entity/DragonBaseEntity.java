@@ -22,7 +22,7 @@ import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.render.model.IFChainBuffer;
 import com.iafenvoy.iceandfire.render.model.util.LegSolverQuadruped;
-import com.iafenvoy.iceandfire.screen.handler.DragonScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.DragonMenu;
 import com.iafenvoy.iceandfire.world.DragonPosWorldData;
 import com.iafenvoy.integration.IntegrationExecutor;
 import com.iafenvoy.uranus.animation.Animation;
@@ -551,7 +551,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int syncId, @NotNull Inventory inv, Player player) {
-        return new DragonScreenHandler(syncId, this.dragonInventory, player.getInventory(), this);
+        return new DragonMenu(syncId, this.dragonInventory, player.getInventory(), this);
     }
 
     @Override

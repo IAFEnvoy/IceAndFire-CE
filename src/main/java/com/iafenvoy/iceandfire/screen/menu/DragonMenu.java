@@ -1,8 +1,8 @@
-package com.iafenvoy.iceandfire.screen.handler;
+package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.data.DragonArmorPart;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import com.iafenvoy.iceandfire.screen.slot.BannerSlot;
 import com.iafenvoy.iceandfire.screen.slot.DragonArmorSlot;
 import net.minecraft.client.Minecraft;
@@ -16,16 +16,16 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class DragonScreenHandler extends AbstractContainerMenu {
+public class DragonMenu extends AbstractContainerMenu {
     private final Container dragonInventory;
     private final DragonBaseEntity dragon;
 
-    public DragonScreenHandler(int i, Inventory playerInventory, FriendlyByteBuf buf) {
+    public DragonMenu(int i, Inventory playerInventory, FriendlyByteBuf buf) {
         this(i, new SimpleContainer(5), playerInventory, (DragonBaseEntity) Minecraft.getInstance().level.getEntity(buf.readInt()));
     }
 
-    public DragonScreenHandler(int id, Container dragonInventory, Inventory playerInventory, DragonBaseEntity dragon) {
-        super(IafScreenHandlers.DRAGON_SCREEN.get(), id);
+    public DragonMenu(int id, Container dragonInventory, Inventory playerInventory, DragonBaseEntity dragon) {
+        super(IafMenus.DRAGON_SCREEN.get(), id);
         this.dragonInventory = dragonInventory;
         this.dragon = dragon;
         dragonInventory.startOpen(playerInventory.player);

@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.data.component;
 
-import com.iafenvoy.iceandfire.impl.ComponentManager;
+import com.iafenvoy.iceandfire.registry.IafAttachments;
 import com.iafenvoy.iceandfire.util.attachment.NeedUpdateData;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -105,6 +105,6 @@ public class MiscData extends NeedUpdateData<LivingEntity> {
     }
 
     public static MiscData get(LivingEntity living) {
-        return ComponentManager.getMiscData(living);
+        return living.getData(IafAttachments.MISC_DATA);
     }
 }

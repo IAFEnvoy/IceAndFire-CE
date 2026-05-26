@@ -14,7 +14,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public final class IafItemGroups {
+@SuppressWarnings("unused")
+public final class IafCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, IceAndFire.MOD_ID);
 
     public static final List<Holder<Item>> BLOCKS_LIST = new LinkedList<>(), ITEMS_LIST = new LinkedList<>(), TOOLS_WEAPONS_LIST = new LinkedList<>(), ARMORS_LIST = new LinkedList<>();

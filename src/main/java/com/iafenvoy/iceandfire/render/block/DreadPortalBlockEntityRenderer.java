@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.render.block;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.item.block.entity.DreadPortalBlockEntity;
-import com.iafenvoy.iceandfire.registry.IafRenderLayers;
+import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -57,6 +57,6 @@ public class DreadPortalBlockEntityRenderer<T extends DreadPortalBlockEntity> im
     }
 
     protected RenderType renderType() {
-        return IafRenderLayers.getDreadlandsPortal();
+        return IafRenderTypes.getDreadlandsPortal();
     }
 }

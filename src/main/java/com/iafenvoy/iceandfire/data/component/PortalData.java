@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.data.component;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.impl.ComponentManager;
+import com.iafenvoy.iceandfire.registry.IafAttachments;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
-import com.iafenvoy.iceandfire.registry.IafWorld;
+import com.iafenvoy.iceandfire.registry.IafLevels;
 import com.iafenvoy.iceandfire.util.attachment.NeedUpdateData;
 import com.iafenvoy.iceandfire.world.processor.DreadPortalProcessor;
 import com.mojang.serialization.Codec;
@@ -46,12 +46,12 @@ public class PortalData extends NeedUpdateData<LivingEntity> {
         if (!this.isTeleported() && this.getTeleportTick() == 0 && world instanceof ServerLevel serverWorld) {
             this.setTeleported(true);
             MinecraftServer server = serverWorld.getServer();
-            if (world.dimension().location().equals(IafWorld.DREAD_LAND.location()))
+            if (world.dimension().location().equals(IafLevels.DREAD_LAND.location()))
                 living.changeDimension(new DimensionTransition(server.overworld(), living.position(), Vec3.ZERO, living.yHeadRot, living.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
             else {
-                ServerLevel dreadLand = server.getLevel(IafWorld.DREAD_LAND);
+                ServerLevel dreadLand = server.getLevel(IafLevels.DREAD_LAND);
                 if (dreadLand == null) return;
-                living.changeDimension(new DimensionTransition(server.getLevel(IafWorld.DREAD_LAND), living.position(), Vec3.ZERO, living.yHeadRot, living.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
+                living.changeDimension(new DimensionTransition(server.getLevel(IafLevels.DREAD_LAND), living.position(), Vec3.ZERO, living.yHeadRot, living.getXRot(), DimensionTransition.PLAY_PORTAL_SOUND));
                 if (!dreadLand.getBlockState(living.blockPosition()).is(IafBlocks.DREAD_PORTAL.get()))
                     server.getStructureManager().get(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dread_exit_portal")).ifPresent(structureTemplate -> structureTemplate.placeInWorld(dreadLand, living.blockPosition().subtract(new BlockPos(2, 1, 2)), BlockPos.ZERO, new StructurePlaceSettings().addProcessor(new DreadPortalProcessor()), dreadLand.random, 2));
                 living.sendSystemMessage(Component.translatable("warning.iceandfire.dreadland.not_complete"));
@@ -85,6 +85,6 @@ public class PortalData extends NeedUpdateData<LivingEntity> {
     }
 
     public static PortalData get(Player player) {
-        return ComponentManager.getPortalData(player);
+        return player.getData(IafAttachments.PORTAL_DATA);
     }
 }

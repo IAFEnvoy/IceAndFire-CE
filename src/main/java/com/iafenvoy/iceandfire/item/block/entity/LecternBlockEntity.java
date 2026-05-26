@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.item.BestiaryItem;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import com.iafenvoy.iceandfire.screen.handler.LecternScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.LecternMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -256,6 +256,6 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
 
     @Override
     public AbstractContainerMenu createMenu(int id, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new LecternScreenHandler(id, this, playerInventory, this.propertyDelegate);
+        return new LecternMenu(id, this, playerInventory, this.propertyDelegate);
     }
 }

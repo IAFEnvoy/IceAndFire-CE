@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.item.tool;
 
-import com.iafenvoy.iceandfire.registry.IafToolMaterials;
+import com.iafenvoy.iceandfire.registry.IafTiers;
 import com.iafenvoy.uranus.object.RegistryHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class HippogryphSwordItem extends SwordItem {
     public HippogryphSwordItem() {
-        super(IafToolMaterials.HIPPOGRYPH_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.HIPPOGRYPH_SWORD_TOOL_MATERIAL, 3, -2.4F)));
+        super(IafTiers.HIPPOGRYPH_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.HIPPOGRYPH_SWORD_TOOL_MATERIAL, 3, -2.4F)));
     }
 
     @Override

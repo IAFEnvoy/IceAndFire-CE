@@ -12,7 +12,7 @@ import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.registry.IafSounds;
-import com.iafenvoy.iceandfire.registry.IafStatusEffects;
+import com.iafenvoy.iceandfire.registry.IafMobEffects;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
@@ -264,7 +264,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
                         .stream().filter(x -> !isWearingEarplugs(x)).filter(x -> x.distanceTo(this) >= 5).toList();
                 this.charmingEntities.keySet().removeIf(x -> !targets.contains(x));
                 targets.forEach(x -> this.charmingEntities.computeIfAbsent(x, e -> 0));
-                this.charmingEntities.keySet().forEach(x -> x.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafStatusEffects.SIREN_CHARM.get()), 30), this));
+                this.charmingEntities.keySet().forEach(x -> x.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafMobEffects.SIREN_CHARM.get()), 30), this));
             }
             this.setSinging(true);
             this.tickCharm();

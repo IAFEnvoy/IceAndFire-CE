@@ -10,7 +10,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(Dist.CLIENT)
-public final class IafKeybindings {
+public final class IafKeyMappings {
     public static final KeyMapping DRAGON_BREATH = new KeyMapping("key.dragon_fireAttack", GLFW.GLFW_KEY_R, "key.categories.gameplay");
     public static final KeyMapping DRAGON_STRIKE = new KeyMapping("key.dragon_strike", GLFW.GLFW_KEY_G, "key.categories.gameplay");
     public static final KeyMapping DRAGON_DOWN = new KeyMapping("key.dragon_down", GLFW.GLFW_KEY_X, "key.categories.gameplay");

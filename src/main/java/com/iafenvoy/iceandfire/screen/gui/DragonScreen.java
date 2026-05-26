@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.screen.gui;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import com.iafenvoy.iceandfire.screen.handler.DragonScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.DragonMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class DragonScreen extends AbstractContainerScreen<DragonScreenHandler> {
+public class DragonScreen extends AbstractContainerScreen<DragonMenu> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/dragon.png");
 
-    public DragonScreen(DragonScreenHandler dragonInv, Inventory playerInv, Component name) {
+    public DragonScreen(DragonMenu dragonInv, Inventory playerInv, Component name) {
         super(dragonInv, playerInv, name);
         this.imageHeight = 214;
     }

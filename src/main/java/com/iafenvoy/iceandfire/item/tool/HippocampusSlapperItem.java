@@ -1,6 +1,6 @@
 package com.iafenvoy.iceandfire.item.tool;
 
-import com.iafenvoy.iceandfire.registry.IafToolMaterials;
+import com.iafenvoy.iceandfire.registry.IafTiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public class HippocampusSlapperItem extends SwordItem {
     public HippocampusSlapperItem() {
-        super(IafToolMaterials.HIPPOCAMPUS_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafToolMaterials.HIPPOCAMPUS_SWORD_TOOL_MATERIAL, 3, -2.4F)));
+        super(IafTiers.HIPPOCAMPUS_SWORD_TOOL_MATERIAL, new Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.HIPPOCAMPUS_SWORD_TOOL_MATERIAL, 3, -2.4F)));
     }
 
     @Override

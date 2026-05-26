@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.HydraEntity;
 import com.iafenvoy.iceandfire.entity.StoneStatueEntity;
 import com.iafenvoy.iceandfire.entity.TrollEntity;
-import com.iafenvoy.iceandfire.registry.IafRenderLayers;
+import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.iafenvoy.iceandfire.render.entity.feature.HydraHeadFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.HydraBodyModel;
 import com.iafenvoy.iceandfire.render.model.ICustomStatueModel;
@@ -96,7 +96,7 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
             }
         } else
             fakeEntity = this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString());
-        RenderType tex = IafRenderLayers.getStoneMobRenderType(200, 200);
+        RenderType tex = IafRenderTypes.getStoneMobRenderType(200, 200);
         if (fakeEntity instanceof TrollEntity troll)
             tex = RenderType.entityCutout(troll.getTrollType().getStatueTexture());
 
@@ -126,7 +126,7 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
 
         if (entityIn.getCrackAmount() >= 1) {
             int i = Mth.clamp(entityIn.getCrackAmount() - 1, 0, DESTROY_STAGES.length - 1);
-            RenderType crackTex = IafRenderLayers.getStoneCrackRenderType(DESTROY_STAGES[i]);
+            RenderType crackTex = IafRenderTypes.getStoneCrackRenderType(DESTROY_STAGES[i]);
             VertexConsumer ivertexbuilder2 = bufferIn.getBuffer(crackTex);
             matrixStackIn.pushPose();
             matrixStackIn.pushPose();

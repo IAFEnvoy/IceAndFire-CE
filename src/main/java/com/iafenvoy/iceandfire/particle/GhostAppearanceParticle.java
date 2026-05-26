@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.particle;
 
 import com.iafenvoy.iceandfire.entity.GhostEntity;
-import com.iafenvoy.iceandfire.registry.IafRenderLayers;
+import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.iafenvoy.iceandfire.render.entity.GhostEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.GhostModel;
 import com.iafenvoy.iceandfire.util.Color4i;
@@ -57,7 +57,7 @@ public class GhostAppearanceParticle extends Particle {
             matrixstack.scale(-1.0F, -1.0F, 1.0F);
             matrixstack.translate(0.0D, 0.3F, 1.25D);
             MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
-            VertexConsumer consumer1 = immediate.getBuffer(IafRenderLayers.getGhost(GhostEntityRenderer.getGhostOverlayForType(ghostEntity.getColor())));
+            VertexConsumer consumer1 = immediate.getBuffer(IafRenderTypes.getGhost(GhostEntityRenderer.getGhostOverlayForType(ghostEntity.getColor())));
             this.model.setupAnim(ghostEntity, 0, 0, entity.tickCount + tickDelta, 0, 0);
             this.model.renderToBuffer(matrixstack, consumer1, 240, OverlayTexture.NO_OVERLAY, new Color4i(1.0F, 1.0F, 1.0F, f1).getIntValue());
             immediate.endBatch();

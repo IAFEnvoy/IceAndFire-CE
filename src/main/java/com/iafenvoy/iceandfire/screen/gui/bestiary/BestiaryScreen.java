@@ -8,7 +8,7 @@ import com.iafenvoy.iceandfire.data.TrollType;
 import com.iafenvoy.iceandfire.item.component.BestiaryPageComponent;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
-import com.iafenvoy.iceandfire.screen.handler.BestiaryScreenHandler;
+import com.iafenvoy.iceandfire.screen.menu.BestiaryMenu;
 import com.iafenvoy.iceandfire.util.ItemRandomizer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandler> {
+public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     protected static final int X = 390;
     protected static final int Y = 245;
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/bestiary.png");
@@ -52,7 +52,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryScreenHandle
     public int indexPagesTotal = 1;
     protected boolean index;
 
-    public BestiaryScreen(BestiaryScreenHandler container, Inventory inv, Component name) {
+    public BestiaryScreen(BestiaryMenu container, Inventory inv, Component name) {
         super(container, inv, name);
         this.book = container.getBook();
         if (!this.book.isEmpty() && this.book.getItem() == IafItems.BESTIARY.get())
