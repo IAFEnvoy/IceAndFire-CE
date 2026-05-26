@@ -1,0 +1,7 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "block/crop",
+  "textures": {
+    "crop": "iceandfire:block/dragon_ice_spikes"
+  }
+}

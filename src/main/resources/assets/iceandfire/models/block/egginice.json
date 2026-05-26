@@ -1,0 +1,8 @@
+{
+  "render_type": "minecraft:translucent",
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "block/ice"
+  }
+}
+

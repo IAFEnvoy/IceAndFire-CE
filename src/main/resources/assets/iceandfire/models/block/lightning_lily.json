@@ -1,0 +1,7 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "block/cross",
+  "textures": {
+    "cross": "iceandfire:block/lightning_lily"
+  }
+}

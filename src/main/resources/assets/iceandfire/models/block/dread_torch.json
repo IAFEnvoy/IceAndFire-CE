@@ -1,0 +1,7 @@
+{
+  "render_type": "minecraft:cutout",
+  "parent": "block/torch",
+  "textures": {
+    "torch": "iceandfire:block/dread_torch"
+  }
+}
