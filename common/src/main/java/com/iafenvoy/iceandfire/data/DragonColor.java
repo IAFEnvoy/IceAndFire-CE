@@ -8,10 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public record DragonColor(String name, Formatting color, DragonType dragonType, Supplier<Item> eggItem,
@@ -65,7 +62,7 @@ public record DragonColor(String name, Formatting color, DragonType dragonType, 
     }
 
     public Identifier getEggTexture() {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/egg_%s.png", this.dragonType.getName(), this.name));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/egg_%s.png", this.dragonType.getName(), this.name));
     }
 
     public Identifier getTextureByEntity(EntityDragonBase dragon) {
@@ -78,22 +75,22 @@ public record DragonColor(String name, Formatting color, DragonType dragonType, 
     }
 
     public Identifier getBodyTexture(int stage) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/%s_%d.png", this.dragonType.getName(), this.name, stage));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/%s_%d.png", this.dragonType.getName(), this.name, stage));
     }
 
     public Identifier getSleepTexture(int stage) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/%s_%d_sleeping.png", this.dragonType.getName(), this.name, stage));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/%s_%d_sleeping.png", this.dragonType.getName(), this.name, stage));
     }
 
     public Identifier getEyesTexture(int stage) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/%s_%d_eyes.png", this.dragonType.getName(), this.name, stage));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/%s_%d_eyes.png", this.dragonType.getName(), this.name, stage));
     }
 
     public Identifier getSkeletonTexture(int stage) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/%s_skeleton_%d.png", this.dragonType.getName(), this.dragonType.getName(), stage));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/%s_skeleton_%d.png", this.dragonType.getName(), this.dragonType.getName(), stage));
     }
 
     public Identifier getMaleOverlay() {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/male_%s.png", this.dragonType.getName(), this.name));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/male_%s.png", this.dragonType.getName(), this.name));
     }
 }

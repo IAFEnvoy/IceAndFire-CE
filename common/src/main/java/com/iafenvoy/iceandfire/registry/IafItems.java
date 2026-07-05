@@ -28,6 +28,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundEvents;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 
 import static com.iafenvoy.iceandfire.item.tool.DragonSteelToolMaterial.createMaterialWithRepairItem;
@@ -359,7 +360,7 @@ public final class IafItems {
     }
 
     public static RegistrySupplier<ItemDragonArmor> buildDragonArmor(DragonArmorPart type, DragonArmorMaterial material) {
-        return register(String.format("dragonarmor_%s_%s", material.getId(), type.getId()), () -> new ItemDragonArmor(material, type));
+        return register(String.format(Locale.ROOT, "dragonarmor_%s_%s", material.getId(), type.getId()), () -> new ItemDragonArmor(material, type));
     }
 
     public static <T extends Item> RegistrySupplier<T> register(String name, Supplier<T> item) {

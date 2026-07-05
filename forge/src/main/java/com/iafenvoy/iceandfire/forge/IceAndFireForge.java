@@ -5,10 +5,13 @@ import com.iafenvoy.iceandfire.IceAndFireClient;
 import com.iafenvoy.iceandfire.forge.compat.curios.CuriosRegistry;
 import com.iafenvoy.iceandfire.forge.component.EntityDataProvider;
 import com.iafenvoy.iceandfire.forge.component.PortalDataProvider;
+import com.iafenvoy.iceandfire.registry.IafTrades;
 import com.iafenvoy.uranus.forge.component.CapabilitySyncHelper;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -31,7 +34,12 @@ public final class IceAndFireForge {
 
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
-        event.enqueueWork(IceAndFire::process);
+        event.enqueueWork(() -> {
+            IceAndFire.process();
+            //Special Patch
+            for (BlockState state : IafTrades.SCRIBE_WORKSTATION.apply(IafTrades.SCRIBE_BLOCK.get()))
+                PointOfInterestTypes.POI_STATES_TO_TYPE.put(state, IafTrades.SCRIBE_POI.get());
+        });
         if (ModList.get().isLoaded("curios")) CuriosRegistry.registerItems();
     }
 }

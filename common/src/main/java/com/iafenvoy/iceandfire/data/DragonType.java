@@ -8,10 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class DragonType {
@@ -68,7 +65,7 @@ public class DragonType {
     }
 
     public Identifier getSkeletonTexture(int stage) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/%sdragon/%s_skeleton_%d.png", this.name, this.name, stage));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/%sdragon/%s_skeleton_%d.png", this.name, this.name, stage));
     }
 
     public Item getSkullItem() {

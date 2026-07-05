@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ItemDragonSeeker extends Item {
     private final SeekerType type;
@@ -49,7 +50,7 @@ public class ItemDragonSeeker extends Item {
             return TypedActionResult.fail(stack);
         }
         if (this.type.admin) {
-            String pos1 = String.format("[%d, %d, %d]", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ()), pos2 = String.format("/tp @s %d %d %d", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ());
+            String pos1 = String.format(Locale.ROOT, "[%d, %d, %d]", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ()), pos2 = String.format("/tp @s %d %d %d", (int) dragon.getX(), (int) dragon.getY(), (int) dragon.getZ());
             Text locationText = Text.literal(pos1).setStyle(Style.EMPTY.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, pos2)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip"))));
             user.sendMessage(Text.translatable("item.iceandfire.dragon_seeker.found_location").append(locationText));
         } else

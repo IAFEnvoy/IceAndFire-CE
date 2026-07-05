@@ -18,10 +18,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SeaSerpent {
     private static final List<SeaSerpent> TYPES = new ArrayList<>();
@@ -55,7 +52,7 @@ public class SeaSerpent {
     }
 
     public Identifier getTexture(boolean blink) {
-        return Identifier.of(IceAndFire.MOD_ID, String.format("textures/models/seaserpent/seaserpent_%s%s.png", this.name, blink ? "_blink" : ""));
+        return Identifier.of(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/models/seaserpent/seaserpent_%s%s.png", this.name, blink ? "_blink" : ""));
     }
 
     public static List<SeaSerpent> values() {

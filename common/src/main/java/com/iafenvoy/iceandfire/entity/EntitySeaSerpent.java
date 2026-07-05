@@ -445,7 +445,6 @@ public class EntitySeaSerpent extends AnimalEntity implements IAnimatedEntity, I
         boolean ground = !this.isTouchingWater() && this.isOnGround();
         boolean prevJumping = this.isJumpingOutOfWater();
         this.ticksSinceRoar++;
-        this.jumpCooldown++;
         this.prevJumpRot = this.jumpRot;
         if (this.ticksSinceRoar > TIME_BETWEEN_ROARS && this.isAtSurface() && this.getAnimation() != ANIMATION_BITE && this.jumpProgress == 0 && !this.isJumpingOutOfWater()) {
             this.setAnimation(ANIMATION_ROAR);

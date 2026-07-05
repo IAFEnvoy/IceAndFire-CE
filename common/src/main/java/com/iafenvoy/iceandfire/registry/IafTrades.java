@@ -26,14 +26,12 @@ public final class IafTrades {
     public static final DeferredRegister<VillagerProfession> PROFESSION_REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.VILLAGER_PROFESSION);
 
     private static final String SCRIBE = "scribe";
-    private static final RegistrySupplier<Block> SCRIBE_BLOCK = IafBlocks.LECTERN;
+    public static final RegistrySupplier<Block> SCRIBE_BLOCK = IafBlocks.LECTERN;
     public static final Function<Block, Set<BlockState>> SCRIBE_WORKSTATION = block -> new HashSet<>(block.getStateManager().getStates());
     public static final RegistrySupplier<PointOfInterestType> SCRIBE_POI = POI_REGISTRY.register(SCRIBE, () -> new PointOfInterestType(SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()), 1, 1));
     public static final RegistrySupplier<VillagerProfession> SCRIBE_PROFESSION = PROFESSION_REGISTRY.register(SCRIBE, () -> new VillagerProfession(SCRIBE, e -> e.matchesKey(SCRIBE_POI.getKey()), e -> e.matchesKey(SCRIBE_POI.getKey()), ImmutableSet.of(), ImmutableSet.of(), SoundEvents.ENTITY_VILLAGER_WORK_LIBRARIAN));
 
     public static void init() {
-        for (BlockState state : SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()))
-            PointOfInterestTypes.POI_STATES_TO_TYPE.put(state, Registries.POINT_OF_INTEREST_TYPE.getEntry(SCRIBE_POI.get()));
         VillagerProfession profession = SCRIBE_PROFESSION.get();
         final float emeraldForItemsMultiplier = 0.05F; //Values taken from VillagerTrades.java
         final float itemForEmeraldMultiplier = 0.05F;
