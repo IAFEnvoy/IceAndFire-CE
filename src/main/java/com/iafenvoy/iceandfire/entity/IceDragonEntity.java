@@ -65,7 +65,7 @@ public class IceDragonEntity extends DragonBaseEntity {
         if (entity instanceof DragonBaseEntity && !this.isTame()) {
             return entity.getType() != this.getType() && this.getBbWidth() >= entity.getBbWidth() && !((DragonBaseEntity) entity).isMobDead();
         }
-        return entity instanceof Player || DragonUtils.isDragonTargetable(entity, IafEntityTags.ICE_DRAGON_TARGETS) || entity instanceof WaterAnimal || !this.isTame() && DragonUtils.isVillager(entity);
+        return entity instanceof Player || DragonUtils.isDragonTargetable(entity, IafEntityTags.ICE_DRAGON_TARGETS) || !this.isTame() && DragonUtils.isVillager(entity);
     }
 
     @Override
