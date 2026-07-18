@@ -1,14 +1,6 @@
 package com.iafenvoy.iceandfire.network;
 
-import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
-import com.iafenvoy.iceandfire.network.payload.DragonSetBurnBlockS2CPayload;
-import com.iafenvoy.iceandfire.network.payload.LightningBoltS2CPayload;
-import com.iafenvoy.iceandfire.network.payload.MultipartInteractC2SPayload;
-import com.iafenvoy.iceandfire.network.payload.PlayerHitMultipartC2SPayload;
-import com.iafenvoy.iceandfire.network.payload.StartRidingMobPayload;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieHouseS2CPayload;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieJarS2CPayload;
-import com.iafenvoy.iceandfire.network.payload.UpdatePodiumS2CPayload;
+import com.iafenvoy.iceandfire.network.payload.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;

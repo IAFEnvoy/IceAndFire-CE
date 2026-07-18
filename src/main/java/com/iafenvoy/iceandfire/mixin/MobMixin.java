@@ -27,8 +27,8 @@ public abstract class MobMixin extends Entity {
     }
 
     @Inject(method = "dropFromLootTable", at = @At("HEAD"))//FIXME::Loot table modifiers
-    public void dropHandler(DamageSource damageSource, boolean causedByPlayer, CallbackInfo ci) {
-        if (causedByPlayer && damageSource.getDirectEntity() instanceof Player)
+    public void dropHandler(DamageSource damageSource, boolean attackedRecently, CallbackInfo ci) {
+        if (attackedRecently && damageSource.getDirectEntity() instanceof Player)
             if (iceandfire$isSkeleton(this))
                 this.spawnAtLocation(new ItemStack(IafItems.WITHERBONE.get(), this.random.nextInt(2)));
     }

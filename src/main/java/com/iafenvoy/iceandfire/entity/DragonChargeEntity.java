@@ -77,10 +77,9 @@ public abstract class DragonChargeEntity extends Fireball implements IDragonProj
                 if (shootingEntity instanceof DragonBaseEntity dragon)
                     if (dragon.isAlliedTo(entity) || dragon.is(entity) || dragon.isPart(entity))
                         return;
-                if (entity != shootingEntity && shootingEntity instanceof DragonBaseEntity) {
+                if (entity != shootingEntity && shootingEntity instanceof DragonBaseEntity dragon) {
                     assert shootingEntity instanceof DragonBaseEntity;
-                    DragonBaseEntity dragon = (DragonBaseEntity) shootingEntity;
-                    if (entity instanceof TamableAnimal && dragon.isOwnedBy(((DragonBaseEntity) shootingEntity).getOwner()))
+                    if (entity instanceof TamableAnimal && dragon.isOwnedBy(dragon.getOwner()))
                         return;
                     dragon.randomizeAttacks();
                     this.remove(RemovalReason.DISCARDED);

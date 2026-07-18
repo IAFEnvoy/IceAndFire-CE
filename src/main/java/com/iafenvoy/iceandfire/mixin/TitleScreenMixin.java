@@ -35,9 +35,9 @@ public abstract class TitleScreenMixin extends Screen {
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/LogoRenderer;renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IF)V"))
-    private void renderModBrand(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo ci, @Local(ordinal = 2) int i) {
+    private void renderModBrand(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci, @Local(name = "i") int i) {
         if (!IafClientConfig.INSTANCE.customMainMenu.getValue()) return;
         if (Minecraft.getInstance().screen instanceof TitleScreen)
-            TitleScreenRenderManager.drawModName(context, this.width, this.height, 16777215 | i);
+            TitleScreenRenderManager.drawModName(guiGraphics, this.width, this.height, 16777215 | i);
     }
 }

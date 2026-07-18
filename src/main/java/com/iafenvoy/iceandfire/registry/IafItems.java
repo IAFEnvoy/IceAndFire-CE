@@ -12,13 +12,11 @@ import com.iafenvoy.iceandfire.item.armor.EarPlugsArmorItem;
 import com.iafenvoy.iceandfire.item.tool.*;
 import com.iafenvoy.iceandfire.registry.tag.IafBannerPatternTags;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 

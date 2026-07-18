@@ -16,14 +16,14 @@ public abstract class PanoramaRendererMixin {
     private int iceandfire$slowTick = 0;
 
     @Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
-    private void onRenderBackground(GuiGraphics context, int width, int height, float alpha, float tickDelta, CallbackInfo ci) {
+    private void onRenderBackground(GuiGraphics guiGraphics, int width, int height, float fade, float partialTick, CallbackInfo ci) {
         if (!IafClientConfig.INSTANCE.customMainMenu.getValue()) return;
         this.iceandfire$slowTick++;
         if (this.iceandfire$slowTick >= 3) {
             this.iceandfire$slowTick = 0;
             TitleScreenRenderManager.tick();
         }
-        TitleScreenRenderManager.renderBackground(context, width, height);
+        TitleScreenRenderManager.renderBackground(guiGraphics, width, height);
         ci.cancel();
     }
 }

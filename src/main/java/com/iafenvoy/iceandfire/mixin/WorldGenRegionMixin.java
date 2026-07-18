@@ -20,7 +20,7 @@ public class WorldGenRegionMixin {
     private Supplier<String> currentlyGenerating;
 
     @Inject(method = "ensureCanWrite", at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;logAndPauseIfInIde(Ljava/lang/String;)V"), cancellable = true)
-    private void skipLog(final BlockPos position, final CallbackInfoReturnable<Boolean> callback) {
+    private void skipLog(final BlockPos pos, final CallbackInfoReturnable<Boolean> callback) {
         if (this.currentlyGenerating != null && this.currentlyGenerating.get().contains(IceAndFire.MOD_ID))
             callback.setReturnValue(false);
     }

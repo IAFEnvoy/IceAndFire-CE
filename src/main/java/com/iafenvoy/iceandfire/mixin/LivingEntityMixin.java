@@ -19,13 +19,13 @@ public abstract class LivingEntityMixin {
     public abstract ItemStack getItemInHand(InteractionHand hand);
 
     @Inject(method = "swing(Lnet/minecraft/world/InteractionHand;Z)V", at = @At("HEAD"))
-    private void onSwingHand(InteractionHand hand, boolean fromServerPlayer, CallbackInfo ci) {
+    private void onSwingHand(InteractionHand hand, boolean updateSelf, CallbackInfo ci) {
         if (this.getItemInHand(hand).is(IafItemTags.SUMMON_GHOST_SWORD) && BuiltinAbilities.SUMMON_GHOST_SWORD.isEnable())
             BuiltinAbilities.SUMMON_GHOST_SWORD.active((LivingEntity) (Object) this);
     }
 
     @Inject(method = "onEffectRemoved", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;refreshDirtyAttributes()V"))
-    private void handleFrozenEffectRemove(MobEffectInstance effect, CallbackInfo ci) {
-        if (effect.getEffect().value() instanceof FrozenStatusEffect e) e.onRemoved((LivingEntity) (Object) this);
+    private void handleFrozenEffectRemove(MobEffectInstance effectInstance, CallbackInfo ci) {
+        if (effectInstance.getEffect().value() instanceof FrozenStatusEffect e) e.onRemoved((LivingEntity) (Object) this);
     }
 }
