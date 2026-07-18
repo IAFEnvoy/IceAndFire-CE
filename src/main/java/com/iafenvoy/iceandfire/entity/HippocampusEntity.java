@@ -32,6 +32,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
@@ -62,6 +63,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class HippocampusEntity extends TamableAnimal implements MenuProvider, ISyncMount, IAnimatedEntity, ICustomMoveController, ContainerListener, Saddleable {
@@ -124,6 +126,9 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         this.goalSelector.addGoal(2, new AquaticAIGetInWaterGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new HippocampusAIWanderGoal(this, 1));
         this.goalSelector.addGoal(4, new BreedGoal(this, 1.0D));
+        this.goalSelector.addGoal(8, new HippocampusSurfaceGoal());
+        this.goalSelector.addGoal(9, new HippocampusDepthGoal());
+        this.goalSelector.addGoal(10, new HippocampusExplorationGoal());
 
         this.addBehaviourGoals();
     }
@@ -634,6 +639,47 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         return null;
     }
 
+    private boolean canAutonomouslySwim() {
+        return this.isInWater() && this.getControllingPassenger() == null && !this.isOrderedToSit() && this.getTarget() == null;
+    }
+
+    private int getWaterDepth() {
+        BlockPos pos = this.blockPosition();
+        if (!this.level().getFluidState(pos).is(FluidTags.WATER))
+            return 0;
+        int y = pos.getY();
+        while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(pos.getX(), y, pos.getZ())).is(FluidTags.WATER))
+            y++;
+        return y - pos.getY();
+    }
+
+    @Nullable
+    private Vec3 findWaterTarget(int preferredDepth, int range) {
+        for (int i = 0; i < 12; i++) {
+            int x = this.getBlockX() + this.random.nextInt(range * 2 + 1) - range;
+            int z = this.getBlockZ() + this.random.nextInt(range * 2 + 1) - range;
+            int surfaceY = this.findWaterSurface(x, z);
+            if (surfaceY == Integer.MIN_VALUE)
+                continue;
+            int targetY = surfaceY - preferredDepth;
+            BlockPos target = new BlockPos(x, targetY, z);
+            if (this.level().getFluidState(target).is(FluidTags.WATER))
+                return Vec3.atCenterOf(target);
+        }
+        return null;
+    }
+
+    private int findWaterSurface(int x, int z) {
+        for (int y = Math.min(this.level().getMaxBuildHeight() - 1, this.getBlockY() + 16); y >= this.level().getMinBuildHeight(); y--) {
+            if (this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER)) {
+                while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER))
+                    y++;
+                return y;
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
+
     public int getInventoryColumns() {
         return 5; // TODO :: Introduce upgrade item?
     }
@@ -663,8 +709,13 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         }
 
         private void updateSpeed() {
-            if (this.hippo.isInWater())
-                this.hippo.setDeltaMovement(this.hippo.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
+            if (this.hippo.canAutonomouslySwim()) {
+                int waterDepth = this.hippo.getWaterDepth();
+                if (waterDepth > 0 && waterDepth < 3)
+                    this.hippo.setDeltaMovement(this.hippo.getDeltaMovement().add(0.0D, -0.02D, 0.0D));
+                else if (waterDepth > 8)
+                    this.hippo.setDeltaMovement(this.hippo.getDeltaMovement().add(0.0D, 0.006D, 0.0D));
+            }
             else if (this.hippo.onGround())
                 this.hippo.setSpeed(Math.max(this.hippo.getSpeed() / 4.0F, 0.06F));
         }
@@ -695,6 +746,143 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
                 }
             } else
                 this.hippo.setSpeed(0.0F);
+        }
+    }
+
+    private class HippocampusDepthGoal extends net.minecraft.world.entity.ai.goal.Goal {
+        @Nullable
+        private Vec3 target;
+        private int cooldown;
+
+        HippocampusDepthGoal() {
+            this.setFlags(EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!HippocampusEntity.this.canAutonomouslySwim() || !HippocampusEntity.this.getNavigation().isDone())
+                return false;
+            if (this.cooldown > 0) {
+                this.cooldown--;
+                return false;
+            }
+            int depth = HippocampusEntity.this.getWaterDepth();
+            if (depth == 0 || depth >= 3 && depth <= 7)
+                return false;
+            this.target = HippocampusEntity.this.findWaterTarget(4, 8);
+            return this.target != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return HippocampusEntity.this.canAutonomouslySwim() && this.target != null && HippocampusEntity.this.distanceToSqr(this.target) > 2.0D;
+        }
+
+        @Override
+        public void start() {
+            HippocampusEntity.this.getNavigation().moveTo(this.target.x, this.target.y, this.target.z, 0.8D);
+        }
+
+        @Override
+        public void tick() {
+            HippocampusEntity.this.getNavigation().moveTo(this.target.x, this.target.y, this.target.z, 0.8D);
+        }
+
+        @Override
+        public void stop() {
+            this.target = null;
+            this.cooldown = 200;
+        }
+    }
+
+    private class HippocampusSurfaceGoal extends net.minecraft.world.entity.ai.goal.Goal {
+        @Nullable
+        private Vec3 target;
+        private int nextSurfaceTime = 1200 + HippocampusEntity.this.random.nextInt(1201);
+        private int breathingTicks;
+
+        HippocampusSurfaceGoal() {
+            this.setFlags(EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!HippocampusEntity.this.canAutonomouslySwim())
+                return false;
+            if (this.nextSurfaceTime > 0) {
+                this.nextSurfaceTime--;
+                return false;
+            }
+            int surfaceY = HippocampusEntity.this.findWaterSurface(HippocampusEntity.this.getBlockX(), HippocampusEntity.this.getBlockZ());
+            if (surfaceY == Integer.MIN_VALUE || HippocampusEntity.this.getWaterDepth() < 3)
+                return false;
+            this.target = new Vec3(HippocampusEntity.this.getX(), surfaceY - 1.8D, HippocampusEntity.this.getZ());
+            this.breathingTicks = 60;
+            return true;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return HippocampusEntity.this.canAutonomouslySwim() && this.target != null && (HippocampusEntity.this.distanceToSqr(this.target) > 4.0D || this.breathingTicks > 0);
+        }
+
+        @Override
+        public void tick() {
+            if (HippocampusEntity.this.distanceToSqr(this.target) > 4.0D)
+                HippocampusEntity.this.getNavigation().moveTo(this.target.x, this.target.y, this.target.z, 0.8D);
+            else {
+                HippocampusEntity.this.getNavigation().stop();
+                this.breathingTicks--;
+            }
+        }
+
+        @Override
+        public void stop() {
+            this.target = null;
+            this.nextSurfaceTime = 1200 + HippocampusEntity.this.random.nextInt(1201);
+        }
+    }
+
+    private class HippocampusExplorationGoal extends net.minecraft.world.entity.ai.goal.Goal {
+        @Nullable
+        private Vec3 target;
+        private int explorationTicks;
+
+        HippocampusExplorationGoal() {
+            this.setFlags(EnumSet.of(Flag.MOVE));
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!HippocampusEntity.this.canAutonomouslySwim() || !HippocampusEntity.this.getNavigation().isDone() || HippocampusEntity.this.random.nextInt(120) != 0)
+                return false;
+            this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.random.nextInt(3), 16);
+            return this.target != null;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return HippocampusEntity.this.canAutonomouslySwim() && this.explorationTicks > 0;
+        }
+
+        @Override
+        public void start() {
+            this.explorationTicks = 200 + HippocampusEntity.this.random.nextInt(400);
+        }
+
+        @Override
+        public void tick() {
+            this.explorationTicks--;
+            if (HippocampusEntity.this.distanceToSqr(this.target) < 8.0D || HippocampusEntity.this.getNavigation().isDone())
+                this.target = HippocampusEntity.this.findWaterTarget(4 + HippocampusEntity.this.random.nextInt(3), 16);
+            if (this.target != null)
+                HippocampusEntity.this.getNavigation().moveTo(this.target.x, this.target.y, this.target.z, 0.8D);
+        }
+
+        @Override
+        public void stop() {
+            this.target = null;
+            this.explorationTicks = 0;
         }
     }
 }
