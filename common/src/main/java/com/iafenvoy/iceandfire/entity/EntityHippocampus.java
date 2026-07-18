@@ -20,6 +20,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.pathing.AmphibiousSwimNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -47,6 +48,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
@@ -64,6 +66,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
 
 public class EntityHippocampus extends TameableEntity implements NamedScreenHandlerFactory, ISyncMount, IAnimatedEntity, ICustomMoveController, InventoryChangedListener, Saddleable {
     public static final int INV_SLOT_SADDLE = 0;
@@ -122,6 +126,9 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
         this.goalSelector.add(2, new AquaticAIGetInWater(this, 1.0D));
         this.goalSelector.add(3, new HippocampusAIWander(this, 1));
         this.goalSelector.add(4, new AnimalMateGoal(this, 1.0D));
+        this.goalSelector.add(8, new HippocampusSurfaceGoal());
+        this.goalSelector.add(9, new HippocampusDepthGoal());
+        this.goalSelector.add(10, new HippocampusExplorationGoal());
 
         this.addBehaviourGoals();
     }
@@ -647,6 +654,47 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
         return null;
     }
 
+    private boolean canAutonomouslySwim() {
+        return this.isTouchingWater() && this.getControllingPassenger() == null && !this.isSitting() && this.getTarget() == null;
+    }
+
+    private int getWaterDepth() {
+        BlockPos pos = this.getBlockPos();
+        if (!this.getWorld().getFluidState(pos).isIn(FluidTags.WATER))
+            return 0;
+        int y = pos.getY();
+        while (y < this.getWorld().getTopY() && this.getWorld().getFluidState(new BlockPos(pos.getX(), y, pos.getZ())).isIn(FluidTags.WATER))
+            y++;
+        return y - pos.getY();
+    }
+
+    @Nullable
+    private Vec3d findWaterTarget(int preferredDepth, int range) {
+        for (int i = 0; i < 12; i++) {
+            int x = this.getBlockX() + this.random.nextInt(range * 2 + 1) - range;
+            int z = this.getBlockZ() + this.random.nextInt(range * 2 + 1) - range;
+            int surfaceY = this.findWaterSurface(x, z);
+            if (surfaceY == Integer.MIN_VALUE)
+                continue;
+            int targetY = surfaceY - preferredDepth;
+            BlockPos target = new BlockPos(x, targetY, z);
+            if (this.getWorld().getFluidState(target).isIn(FluidTags.WATER))
+                return new Vec3d(x + 0.5D, targetY + 0.5D, z + 0.5D);
+        }
+        return null;
+    }
+
+    private int findWaterSurface(int x, int z) {
+        for (int y = Math.min(this.getWorld().getTopY() - 1, this.getBlockY() + 16); y >= this.getWorld().getBottomY(); y--) {
+            if (this.getWorld().getFluidState(new BlockPos(x, y, z)).isIn(FluidTags.WATER)) {
+                while (y < this.getWorld().getTopY() && this.getWorld().getFluidState(new BlockPos(x, y, z)).isIn(FluidTags.WATER))
+                    y++;
+                return y;
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
+
     @Override
     public void onInventoryChanged(Inventory pInvBasic) {
         boolean flag = this.isSaddled();
@@ -677,8 +725,13 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
         }
 
         private void updateSpeed() {
-            if (this.hippo.isTouchingWater())
-                this.hippo.setVelocity(this.hippo.getVelocity().add(0.0D, 0.005D, 0.0D));
+            if (this.hippo.canAutonomouslySwim()) {
+                int waterDepth = this.hippo.getWaterDepth();
+                if (waterDepth > 0 && waterDepth < 3)
+                    this.hippo.setVelocity(this.hippo.getVelocity().add(0.0D, -0.02D, 0.0D));
+                else if (waterDepth > 8)
+                    this.hippo.setVelocity(this.hippo.getVelocity().add(0.0D, 0.006D, 0.0D));
+            }
             else if (this.hippo.isOnGround())
                 this.hippo.setMovementSpeed(Math.max(this.hippo.getMovementSpeed() / 4.0F, 0.06F));
         }
@@ -709,6 +762,143 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
                 }
             } else
                 this.hippo.setMovementSpeed(0.0F);
+        }
+    }
+
+    private class HippocampusDepthGoal extends Goal {
+        @Nullable
+        private Vec3d target;
+        private int cooldown;
+
+        HippocampusDepthGoal() {
+            this.setControls(EnumSet.of(Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            if (!EntityHippocampus.this.canAutonomouslySwim() || !EntityHippocampus.this.getNavigation().isIdle())
+                return false;
+            if (this.cooldown > 0) {
+                this.cooldown--;
+                return false;
+            }
+            int depth = EntityHippocampus.this.getWaterDepth();
+            if (depth == 0 || depth >= 3 && depth <= 7)
+                return false;
+            this.target = EntityHippocampus.this.findWaterTarget(4, 8);
+            return this.target != null;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return EntityHippocampus.this.canAutonomouslySwim() && this.target != null && EntityHippocampus.this.squaredDistanceTo(this.target) > 2.0D;
+        }
+
+        @Override
+        public void start() {
+            EntityHippocampus.this.getNavigation().startMovingTo(this.target.x, this.target.y, this.target.z, 0.8D);
+        }
+
+        @Override
+        public void tick() {
+            EntityHippocampus.this.getNavigation().startMovingTo(this.target.x, this.target.y, this.target.z, 0.8D);
+        }
+
+        @Override
+        public void stop() {
+            this.target = null;
+            this.cooldown = 200;
+        }
+    }
+
+    private class HippocampusSurfaceGoal extends Goal {
+        @Nullable
+        private Vec3d target;
+        private int nextSurfaceTime = 1200 + EntityHippocampus.this.random.nextInt(1201);
+        private int breathingTicks;
+
+        HippocampusSurfaceGoal() {
+            this.setControls(EnumSet.of(Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            if (!EntityHippocampus.this.canAutonomouslySwim())
+                return false;
+            if (this.nextSurfaceTime > 0) {
+                this.nextSurfaceTime--;
+                return false;
+            }
+            int surfaceY = EntityHippocampus.this.findWaterSurface(EntityHippocampus.this.getBlockX(), EntityHippocampus.this.getBlockZ());
+            if (surfaceY == Integer.MIN_VALUE || EntityHippocampus.this.getWaterDepth() < 3)
+                return false;
+            this.target = new Vec3d(EntityHippocampus.this.getX(), surfaceY - 1.8D, EntityHippocampus.this.getZ());
+            this.breathingTicks = 60;
+            return true;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return EntityHippocampus.this.canAutonomouslySwim() && this.target != null && (EntityHippocampus.this.squaredDistanceTo(this.target) > 4.0D || this.breathingTicks > 0);
+        }
+
+        @Override
+        public void tick() {
+            if (EntityHippocampus.this.squaredDistanceTo(this.target) > 4.0D)
+                EntityHippocampus.this.getNavigation().startMovingTo(this.target.x, this.target.y, this.target.z, 0.8D);
+            else {
+                EntityHippocampus.this.getNavigation().stop();
+                this.breathingTicks--;
+            }
+        }
+
+        @Override
+        public void stop() {
+            this.target = null;
+            this.nextSurfaceTime = 1200 + EntityHippocampus.this.random.nextInt(1201);
+        }
+    }
+
+    private class HippocampusExplorationGoal extends Goal {
+        @Nullable
+        private Vec3d target;
+        private int explorationTicks;
+
+        HippocampusExplorationGoal() {
+            this.setControls(EnumSet.of(Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            if (!EntityHippocampus.this.canAutonomouslySwim() || !EntityHippocampus.this.getNavigation().isIdle() || EntityHippocampus.this.random.nextInt(120) != 0)
+                return false;
+            this.target = EntityHippocampus.this.findWaterTarget(4 + EntityHippocampus.this.random.nextInt(3), 16);
+            return this.target != null;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return EntityHippocampus.this.canAutonomouslySwim() && this.explorationTicks > 0;
+        }
+
+        @Override
+        public void start() {
+            this.explorationTicks = 200 + EntityHippocampus.this.random.nextInt(400);
+        }
+
+        @Override
+        public void tick() {
+            this.explorationTicks--;
+            if (EntityHippocampus.this.squaredDistanceTo(this.target) < 8.0D || EntityHippocampus.this.getNavigation().isIdle())
+                this.target = EntityHippocampus.this.findWaterTarget(4 + EntityHippocampus.this.random.nextInt(3), 16);
+            if (this.target != null)
+                EntityHippocampus.this.getNavigation().startMovingTo(this.target.x, this.target.y, this.target.z, 0.8D);
+        }
+
+        @Override
+        public void stop() {
+            this.target = null;
+            this.explorationTicks = 0;
         }
     }
 }
