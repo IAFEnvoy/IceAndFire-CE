@@ -317,7 +317,7 @@ public class DragonUtils {
                 block == IafBlocks.DREAD_STONE_BRICKS_CRACKED.get() || block == IafBlocks.DREAD_STONE_BRICKS_MOSSY.get() || block == IafBlocks.DREAD_STONE_TILE.get() ||
                 block == IafBlocks.DREAD_STONE_FACE.get() || block == IafBlocks.DREAD_TORCH.get() || block == IafBlocks.DREAD_STONE_BRICKS_STAIRS.get() ||
                 block == IafBlocks.DREAD_STONE_BRICKS_SLAB.get() || block == IafBlocks.DREADWOOD_LOG.get() ||
-                block == IafBlocks.DREADWOOD_PLANKS.get() || block == IafBlocks.DREADWOOD_PLANKS_LOCK.get() || block == IafBlocks.DREAD_PORTAL.get() ||
+                block == IafBlocks.DREADWOOD_PLANKS.get() || block == IafBlocks.DREADWOOD_PLANKS_LOCK.get() ||
                 block == IafBlocks.DREAD_SPAWNER.get();
     }
 }

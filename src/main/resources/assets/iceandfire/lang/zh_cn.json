@@ -105,8 +105,6 @@
   "bestiary.troll": "食人妖",
   "bestiary.villagers": "雪地村民",
   "bestiary_gui": "异兽手记",
-  "biome.iceandfire.dread_forest": "悚林",
-  "biome.iceandfire.dread_plain": "惊悚平原",
   "block.iceandfire.ash": "灰烬",
   "block.iceandfire.burnt_torch": "烬灭火把",
   "block.iceandfire.burnt_torch_wall": "烬灭火把",
@@ -155,7 +153,6 @@
   "block.iceandfire.dragonsteel_fire_block": "龙炎钢块",
   "block.iceandfire.dragonsteel_ice_block": "龙霜钢块",
   "block.iceandfire.dragonsteel_lightning_block": "龙霆钢块",
-  "block.iceandfire.dread_portal": "悚域传送门",
   "block.iceandfire.dread_spawner": "悚域刷怪笼",
   "block.iceandfire.dread_stone": "悚石",
   "block.iceandfire.dread_stone_bricks": "悚砖",
@@ -1740,6 +1737,5 @@
   "sound.iceandfire.subtitle.troll_roar": "食人妖：怒吼",
   "tc.aspect.draco": "龙",
   "tc.aspect.mythus": "神秘生灵",
-  "text.iceandfire.not_enable": "请先在配置文件中启用此功能！",
-  "warning.iceandfire.dreadland.not_complete": "悚域暂未完成，请不要汇报内容缺失问题！"
+  "text.iceandfire.not_enable": "请先在配置文件中启用此功能！"
 }

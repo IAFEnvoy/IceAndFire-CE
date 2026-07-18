@@ -131,7 +131,6 @@ public final class IafBlocks {
     public static final DeferredBlock<Block> DREADWOOD_LEAVES = register("dreadwood_leaves", () -> Blocks.leaves(SoundType.GRASS));
     public static final DeferredBlock<Block> DREADWOOD_SAPLING = register("dreadwood_sapling", DreadwoodSaplingBlock::new);
     public static final DeferredBlock<Block> DREADWOOD_PLANKS_LOCK = register("dreadwood_planks_lock", DreadWoodLockBlock::new);
-    public static final DeferredBlock<Block> DREAD_PORTAL = register("dread_portal", DreadPortalBlock::new);
     public static final DeferredBlock<Block> DREAD_SPAWNER = register("dread_spawner", DreadSpawnerBlock::new);
     public static final DeferredBlock<BurntTorchWallBlock> BURNT_TORCH_WALL = registerWallTorch("burnt_torch_wall", BurntTorchWallBlock::new);
     public static final DeferredBlock<TorchBlock> BURNT_TORCH = registerWallBlock("burnt_torch", BurntTorchBlock::new);

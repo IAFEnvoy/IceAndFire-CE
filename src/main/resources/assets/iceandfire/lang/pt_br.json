@@ -105,8 +105,6 @@
   "bestiary.troll": "Trolls",
   "bestiary.villagers": "Aldeões da Neve",
   "bestiary_gui": "Bestiário",
-  "biome.iceandfire.dread_forest": "Floresta do Pavor",
-  "biome.iceandfire.dread_plain": "Planície do Pavor",
   "block.iceandfire.ash": "Cinzas",
   "block.iceandfire.burnt_torch": "Tocha Apagada",
   "block.iceandfire.burnt_torch_wall": "Tocha Apagada",
@@ -155,7 +153,6 @@
   "block.iceandfire.dragonsteel_fire_block": "Bloco de Aço Dracônico de Fogo",
   "block.iceandfire.dragonsteel_ice_block": "Bloco de Aço Dracônico de Gelo",
   "block.iceandfire.dragonsteel_lightning_block": "Bloco de Aço Dracônico de Raio",
-  "block.iceandfire.dread_portal": "Portal das Terras do Pavor",
   "block.iceandfire.dread_spawner": "Gerador de Mobs de Pedra do Pavor",
   "block.iceandfire.dread_stone": "Pedra do Pavor",
   "block.iceandfire.dread_stone_bricks": "Tijolos de Pedra do Pavor",
@@ -1740,6 +1737,5 @@
   "sound.iceandfire.subtitle.troll_roar": "Troll ruge",
   "tc.aspect.draco": "Dragão",
   "tc.aspect.mythus": "Criatura Mitológica, Ser Lendário, Criptídeo, Criatura Assustadora",
-  "text.iceandfire.not_enable": "Ative este recurso na configuração primeiro!",
-  "warning.iceandfire.dreadland.not_complete": "As Terras do Pavor ainda não estão completas. Por favor, não reporte bugs de perda de conteúdo!"
+  "text.iceandfire.not_enable": "Ative este recurso na configuração primeiro!"
 }

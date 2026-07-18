@@ -11,7 +11,6 @@
     "WorldGenRegionMixin"
   ],
   "client": [
-    "GuiMixin",
     "LevelRendererMixin",
     "PanoramaRendererMixin",
     "TitleScreenMixin"

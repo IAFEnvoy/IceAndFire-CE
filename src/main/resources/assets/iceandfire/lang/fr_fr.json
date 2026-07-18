@@ -112,7 +112,6 @@
   "block.iceandfire.dreadwood_log": "Bûche de boiveffroie",
   "block.iceandfire.dreadwood_planks": "Planche de boiveffroie",
   "block.iceandfire.dreadwood_planks_lock": "Sérure en boiveffroie",
-  "block.iceandfire.dread_portal": "Portail des Terre d'Effroies",
   "block.iceandfire.dread_spawner": "Générateur de monstreffroie",
   "block.iceandfire.ghost_chest": "Coffre Maudit",
   "block.iceandfire.graveyard_soil": "Graveyard Soil",
@@ -284,8 +283,7 @@
   "item.iceandfire.chain_sticky.desc_2": "Utilisé pour connecter deux mobs en les enchaînants",
   "item.iceandfire.chain_sticky.desc_3": "Perd son pouvoir collant après l'utilisation",
   "item.iceandfire.creative_dragon_meal": "Repas de Dragon Créatif",
-  "item.iceandfire.creative_dragon_meal.desc_0": "Apprivoiser n'import com.iafenvoy.iceandfire.IceAndFire;
-importe quelle Dragon",
+  "item.iceandfire.creative_dragon_meal.desc_0": "Apprivoiser n'importe quelle Dragon",
   "item.iceandfire.creative_dragon_meal.desc_1": "Seulement en Mode Créatif",
   "item.iceandfire.dragonsteel_fire_ingot": "Lingot d'Acier de Dragon de Feu",
   "item.iceandfire.dragonsteel_fire_sword": "Épée en Acier de Dragon de Feu",
@@ -1416,9 +1414,5 @@ importe quelle Dragon",
   "config.iceandfire.misc.allowAttributeOverriding.comment": "Inutilisé",
 
   "block.iceandfire.dreadwood_leaves": "Feuilles de boiveffroie",
-  "block.iceandfire.dreadwood_sapling": "Pousse de boiveffroie",
-  "biome.iceandfire.dread_forest": "Forêt d'effroie",
-  "biome.iceandfire.dread_plain": "Plaine d'effroie",
-
-  "warning.iceandfire.dreadland.not_complete": "Dreadland n'est pas encore terminé. Merci de ne pas signaler de bugs ou de perte de contenu !"
+  "block.iceandfire.dreadwood_sapling": "Pousse de boiveffroie"
 }

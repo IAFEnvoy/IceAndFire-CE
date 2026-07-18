@@ -17,7 +17,6 @@ public final class IafParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BLOOD = register("blood", () -> new SimpleParticleType(true));
     public static final DeferredHolder<ParticleType<?>, DragonFlameParticleType> DRAGON_FLAME = register("dragon_flame", DragonFlameParticleType::new);
     public static final DeferredHolder<ParticleType<?>, DragonFrostParticleType> DRAGON_FROST = register("dragon_frost", DragonFrostParticleType::new);
-    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> DREAD_PORTAL = register("dread_portal", () -> new SimpleParticleType(true));
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> DREAD_TORCH = register("dread_torch", () -> new SimpleParticleType(true));
     //TODO::What is this?
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> GHOST_APPEARANCE = register("ghost_appearance", () -> new SimpleParticleType(true));

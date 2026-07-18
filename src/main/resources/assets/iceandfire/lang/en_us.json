@@ -105,8 +105,6 @@
   "bestiary.troll": "Trolls",
   "bestiary.villagers": "Snow Villagers",
   "bestiary_gui": "Bestiary",
-  "biome.iceandfire.dread_forest": "Dread Forest",
-  "biome.iceandfire.dread_plain": "Dread Plain",
   "block.iceandfire.ash": "Ash",
   "block.iceandfire.burnt_torch": "Burnt Out Torch",
   "block.iceandfire.burnt_torch_wall": "Burnt Out Torch",
@@ -155,7 +153,6 @@
   "block.iceandfire.dragonsteel_fire_block": "Block of Fire Dragonsteel",
   "block.iceandfire.dragonsteel_ice_block": "Block of Ice Dragonsteel",
   "block.iceandfire.dragonsteel_lightning_block": "Block of Lightning Dragonsteel",
-  "block.iceandfire.dread_portal": "Dread Lands Portal",
   "block.iceandfire.dread_spawner": "Dreadstone Mob Spawner",
   "block.iceandfire.dread_stone": "Dreadstone",
   "block.iceandfire.dread_stone_bricks": "Dreadstone Bricks",
@@ -1741,6 +1738,5 @@
   "tc.aspect.draco": "Dragon",
   "tc.aspect.mythus": "Mythological Creature, Legendary Being, Cryptid, Fearsome Critter",
   "text.iceandfire.not_enable": "Enable this feature in config first!",
-  "warning.iceandfire.dreadland.not_complete": "Dreadland not complete yet. Please do not report contents loss bugs!",
   "attribute.name.generic.dragon_forge_speed": "Dragon Forge Speed"
 }

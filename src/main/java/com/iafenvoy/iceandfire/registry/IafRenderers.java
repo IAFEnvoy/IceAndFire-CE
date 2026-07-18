@@ -104,7 +104,6 @@ public final class IafRenderers {
         event.registerBlockEntityRenderer(IafBlockEntities.EGG_IN_ICE.get(), EggInIceBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(IafBlockEntities.PIXIE_JAR.get(), JarBlockEntityRenderer::new);
-        event.registerBlockEntityRenderer(IafBlockEntities.DREAD_PORTAL.get(), DreadPortalBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(IafBlockEntities.DREAD_SPAWNER.get(), DreadSpawnerBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(IafBlockEntities.GHOST_CHEST.get(), ChestRenderer::new);
     }
@@ -114,7 +113,6 @@ public final class IafRenderers {
         event.registerSpriteSet(IafParticles.BLOOD.get(), BloodParticle::factory);
         event.registerSpriteSet(IafParticles.DRAGON_FLAME.get(), DragonFlameParticle::factory);
         event.registerSpriteSet(IafParticles.DRAGON_FROST.get(), DragonFrostParticle::factory);
-        event.registerSpriteSet(IafParticles.DREAD_PORTAL.get(), DreadPortalParticle::factory);
         event.registerSpriteSet(IafParticles.DREAD_TORCH.get(), DreadTorchParticle::factory);
         event.registerSpecial(IafParticles.GHOST_APPEARANCE.get(), GhostAppearanceParticle.factory());
         event.registerSpriteSet(IafParticles.HYDRA_BREATH.get(), HydraBreathParticle::factory);
@@ -152,7 +150,6 @@ public final class IafRenderers {
         DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_SPRUCE.get().asItem(), new MiscItemRenderer());
         DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get().asItem(), new MiscItemRenderer());
         DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.DREAD_PORTAL.get().asItem(), new MiscItemRenderer());
         DynamicItemRenderer.RENDERERS.put(IafBlocks.GHOST_CHEST.get().asItem(), new MiscItemRenderer());
         for (TrollType.BuiltinWeapon weapon : TrollType.BuiltinWeapon.values())
             DynamicItemRenderer.RENDERERS.put(weapon.getItem(), new TrollWeaponRenderer());
