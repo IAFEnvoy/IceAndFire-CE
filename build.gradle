@@ -44,6 +44,13 @@ repositories {
     maven { url = "https://modmaven.dev" }
     maven { url = "https://maven.createmod.net" }
     maven { url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroup("software.bernie.geckolib")
+        }
+    }
 }
 
 base {
@@ -138,6 +145,7 @@ dependencies {
 
     implementation "maven.modrinth:uranus:BBb3HOQ5"
     implementation "maven.modrinth:jupiter:m2itNS7Z"
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
@@ -154,7 +162,6 @@ dependencies {
 
     // Ars Nouveau
     compileOnly "com.hollingsworth.ars_nouveau:ars_nouveau-$minecraft_version:$ars_version"
-    compileOnly "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
     compileOnly "top.theillusivec4.curios:curios-neoforge:$curios_version"
 }
 

@@ -98,12 +98,20 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public abstract class DragonBaseEntity extends TamableAnimal implements MenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener {
+public abstract class DragonBaseEntity extends TamableAnimal implements MenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener, GeoEntity {
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
     private static final ResourceLocation ARMOR_MODIFIER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "armor_modifier");
     private static final EntityDataAccessor<Integer> HUNGER = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.INT);
@@ -132,6 +140,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     public static Animation ANIMATION_ROAR;
     public static Animation ANIMATION_EPIC_ROAR;
     public static Animation ANIMATION_TAILWHACK;
+    private final AnimatableInstanceCache geckoLibCache = GeckoLibUtil.createInstanceCache(this);
     public final DragonType dragonType;
     public final double minimumDamage;
     public final double maximumDamage;
@@ -2842,5 +2851,101 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Override
     public boolean isBlockExplicitlyNotPassable(BlockState state, BlockPos pos, BlockPos entityPos) {
         return false;
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "main", 0, this::selectGeckoAnimation));
+    }
+
+    private PlayState selectGeckoAnimation(AnimationState<DragonBaseEntity> state) {
+        DragonAnimationPool pool = this.getDragonAnimationPool();
+        Animation currentAnimation = this.getAnimation();
+        return switch (pool) {
+            case DEAD -> this.playLoopingAnimation(state, "dead", 1.0F);
+            case SWIMMING -> this.playLoopingAnimation(state, "swim", 1.0F);
+            case AIRBORNE -> {
+                if (currentAnimation == ANIMATION_FIRECHARGE)
+                    yield this.playActionAnimation(state, "attack_blast_charge");
+                if (this.isBreathingFire())
+                    yield this.playLoopingAnimation(state, "attack_blast_breath", 1.0F);
+                yield this.playLoopingAnimation(state, "flight", 0.4F);
+            }
+            case GROUND -> this.selectGroundAnimation(state, currentAnimation);
+        };
+    }
+
+    private PlayState selectGroundAnimation(AnimationState<DragonBaseEntity> state, Animation currentAnimation) {
+        // DragonGeoModel blends this static pose with the default pose using sleepProgress.
+        if (this.isSleeping() || this.sleepProgress > 0.0F)
+            return this.playLoopingAnimation(state, "sleeping", 1.0F, 0);
+
+        String action = this.getGeckoAction(currentAnimation);
+        if (action != null) return this.playActionAnimation(state, action);
+        if (this.isOrderedToSit()) return this.playLoopingAnimation(state, "sitting", 1.0F);
+
+        return this.playLoopingAnimation(state, state.isMoving() ? "walk" : "ground", state.isMoving() ? 0.4F : 1.0F);
+    }
+
+    private PlayState playActionAnimation(AnimationState<DragonBaseEntity> state, String animation) {
+        state.getController().transitionLength(0);
+        state.setControllerSpeed(1.0F);
+        return state.setAndContinue(RawAnimation.begin().thenPlay(this.geckoAnimationId(animation)));
+    }
+
+    private PlayState playLoopingAnimation(AnimationState<DragonBaseEntity> state, String animation, float speed) {
+        return this.playLoopingAnimation(state, animation, speed, 2);
+    }
+
+    private PlayState playLoopingAnimation(AnimationState<DragonBaseEntity> state, String animation, float speed, int transitionLength) {
+        state.getController().transitionLength(transitionLength);
+        state.setControllerSpeed(speed);
+        return state.setAndContinue(RawAnimation.begin().thenLoop(this.geckoAnimationId(animation)));
+    }
+
+    private DragonAnimationPool getDragonAnimationPool() {
+        if (this.isModelDead()) return DragonAnimationPool.DEAD;
+        if (this.isSwimming || this.isInWater() && this.swimProgress > 0.0F) return DragonAnimationPool.SWIMMING;
+        if (this.isFlying() || this.isHovering() || this.flyProgress > 0.0F || this.hoverProgress > 0.0F)
+            return DragonAnimationPool.AIRBORNE;
+        return DragonAnimationPool.GROUND;
+    }
+
+    private String getGeckoAction(Animation animation) {
+        if (animation == ANIMATION_FIRECHARGE) return "attack_blast_charge";
+        if (animation == ANIMATION_BITE || animation == ANIMATION_EAT || animation == ANIMATION_SPEAK) return "bite";
+        if (animation == ANIMATION_SHAKEPREY) return "grab_shake";
+        if (animation == ANIMATION_WINGBLAST) return "wing_blast";
+        if (animation == ANIMATION_ROAR) return "roar";
+        if (animation == ANIMATION_EPIC_ROAR) return "epic_roar";
+        if (animation == ANIMATION_TAILWHACK) return "tail";
+        return null;
+    }
+
+    private String geckoAnimationId(String animation) {
+        String prefix = this instanceof FireDragonEntity ? "animation.firedragon.firedragon_" : this instanceof IceDragonEntity ? "animation.icedragon." : "animation.lightningdragon.";
+        return prefix + animation;
+    }
+
+    private enum DragonAnimationPool {
+        DEAD,
+        SWIMMING,
+        AIRBORNE,
+        GROUND
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geckoLibCache;
+    }
+
+    @Override
+    public double getBoneResetTime() {
+        return 20;
+    }
+
+    @Override
+    public boolean shouldPlayAnimsWhileGamePaused() {
+        return true;
     }
 }

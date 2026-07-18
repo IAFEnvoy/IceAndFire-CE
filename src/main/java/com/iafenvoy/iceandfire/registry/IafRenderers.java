@@ -12,14 +12,9 @@ import com.iafenvoy.iceandfire.render.entity.*;
 import com.iafenvoy.iceandfire.render.item.*;
 import com.iafenvoy.iceandfire.render.item.armor.BasicArmorRenderer;
 import com.iafenvoy.iceandfire.render.item.armor.ScaleArmorRenderer;
-import com.iafenvoy.iceandfire.render.model.animator.FireDragonTabulaModelAnimator;
-import com.iafenvoy.iceandfire.render.model.animator.IceDragonTabulaModelAnimator;
-import com.iafenvoy.iceandfire.render.model.animator.LightningTabulaDragonAnimator;
 import com.iafenvoy.iceandfire.render.model.armor.*;
-import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
 import com.iafenvoy.uranus.client.render.armor.IArmorRendererBase;
-import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -34,16 +29,11 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
 public final class IafRenderers {
-    public static final ResourceLocation FIRE_DRAGON = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "firedragon/firedragon_ground");
-    public static final ResourceLocation ICE_DRAGON = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "icedragon/icedragon_ground");
-    public static final ResourceLocation LIGHTNING_DRAGON = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "lightningdragon/lightningdragon_ground");
-    public static final ResourceLocation SEA_SERPENT = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "seaserpent/seaserpent_base");
-
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(IafEntities.FIRE_DRAGON.get(), x -> new DragonBaseEntityRenderer<>(x, TabulaModelHandlerHelper.getModel(FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new))));
-        event.registerEntityRenderer(IafEntities.ICE_DRAGON.get(), manager -> new DragonBaseEntityRenderer<>(manager, TabulaModelHandlerHelper.getModel(ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new))));
-        event.registerEntityRenderer(IafEntities.LIGHTNING_DRAGON.get(), manager -> new LightningDragonEntityRenderer(manager, TabulaModelHandlerHelper.getModel(LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new))));
+        event.registerEntityRenderer(IafEntities.FIRE_DRAGON.get(), DragonBaseEntityRenderer::new);
+        event.registerEntityRenderer(IafEntities.ICE_DRAGON.get(), DragonBaseEntityRenderer::new);
+        event.registerEntityRenderer(IafEntities.LIGHTNING_DRAGON.get(), LightningDragonEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DRAGON_EGG.get(), DragonEggEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DRAGON_ARROW.get(), DragonArrowEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DRAGON_SKULL.get(), DragonSkullEntityRenderer::new);

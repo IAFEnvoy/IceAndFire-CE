@@ -56,12 +56,21 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.animation.AnimationController;
+import software.bernie.geckolib.animation.AnimationState;
+import software.bernie.geckolib.animation.PlayState;
+import software.bernie.geckolib.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
 
-public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultipartEntity, IVillagerFear, IAnimalFear, IHasCustomizableAttributes {
+public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultipartEntity, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, GeoEntity {
     public static final Animation ANIMATION_BITE = Animation.create(15);
     public static final Animation ANIMATION_SPEAK = Animation.create(15);
+    private final AnimatableInstanceCache geckoLibCache = GeckoLibUtil.createInstanceCache(this);
     public static final Animation ANIMATION_ROAR = Animation.create(40);
     public static final int TIME_BETWEEN_ROARS = 300;
     private static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(SeaSerpentEntity.class, EntityDataSerializers.STRING);
@@ -802,6 +811,61 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
         return source == damageSources.fall() || source == damageSources.drown() || source == damageSources.inWall()
                 || (source.getEntity() != null && source == damageSources.fallingBlock(source.getEntity()))
                 || source == damageSources.lava() || source.is(DamageTypes.IN_FIRE) || super.isInvulnerableTo(source);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "main", 0, this::selectGeckoAnimation));
+    }
+
+    private PlayState selectGeckoAnimation(AnimationState<SeaSerpentEntity> state) {
+        if (this.getAnimation() == ANIMATION_BITE || this.getAnimation() == ANIMATION_SPEAK)
+            return this.playActionAnimation(state, "bite", 0.8F);
+        if (this.getAnimation() == ANIMATION_ROAR)
+            return this.playActionAnimation(state, "roar", 0.2F);
+
+        return switch (this.getSeaSerpentAnimationPool()) {
+            case JUMPING -> this.playHeldAnimation(state, "jumping", 0.2F);
+            case WATER -> this.playLoopingAnimation(state, "swim", 0.6F);
+            // The converted resources do not contain a separate land cycle. A slower swim
+            // cycle preserves the original serpent-like crawl instead of snapping to T-pose.
+            case LAND -> this.playLoopingAnimation(state, "swim", 0.25F);
+        };
+    }
+
+    private SeaSerpentAnimationPool getSeaSerpentAnimationPool() {
+        if (this.isJumpingOutOfWater() || this.jumpProgress > 0.0F || this.jumpRot > 0.0F)
+            return SeaSerpentAnimationPool.JUMPING;
+        return this.isInWater() ? SeaSerpentAnimationPool.WATER : SeaSerpentAnimationPool.LAND;
+    }
+
+    private PlayState playActionAnimation(AnimationState<SeaSerpentEntity> state, String animation, float speed) {
+        state.getController().transitionLength(0);
+        state.setControllerSpeed(speed);
+        return state.setAndContinue(RawAnimation.begin().thenPlay("animation.seaserpent." + animation));
+    }
+
+    private PlayState playHeldAnimation(AnimationState<SeaSerpentEntity> state, String animation, float speed) {
+        state.getController().transitionLength(2);
+        state.setControllerSpeed(speed);
+        return state.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.seaserpent." + animation));
+    }
+
+    private PlayState playLoopingAnimation(AnimationState<SeaSerpentEntity> state, String animation, float speed) {
+        state.getController().transitionLength(2);
+        state.setControllerSpeed(speed);
+        return state.setAndContinue(RawAnimation.begin().thenLoop("animation.seaserpent." + animation));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geckoLibCache;
+    }
+
+    private enum SeaSerpentAnimationPool {
+        WATER,
+        JUMPING,
+        LAND
     }
 
     public static class SwimmingMoveHelper extends MoveControl {

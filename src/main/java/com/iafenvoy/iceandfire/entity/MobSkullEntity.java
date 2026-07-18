@@ -23,10 +23,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class MobSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob {
+public class MobSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob, GeoEntity {
     private static final EntityDataAccessor<Float> SKULL_DIRECTION = SynchedEntityData.defineId(MobSkullEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> SKULL_ENUM = SynchedEntityData.defineId(MobSkullEntity.class, EntityDataSerializers.INT);
+    private final AnimatableInstanceCache geckoLibCache = GeckoLibUtil.createInstanceCache(this);
 
     public MobSkullEntity(EntityType<? extends MobSkullEntity> t, Level worldIn) {
         super(t, worldIn);
@@ -53,6 +58,15 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
 
     public boolean isOnWall() {
         return this.level().isEmptyBlock(this.blockPosition().below());
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geckoLibCache;
     }
 
     public void onUpdate() {

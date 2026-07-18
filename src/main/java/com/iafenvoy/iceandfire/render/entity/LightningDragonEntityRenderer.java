@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.render.entity;
 import com.iafenvoy.iceandfire.entity.LightningDragonEntity;
 import com.iafenvoy.iceandfire.render.misc.LightningBoltData;
 import com.iafenvoy.iceandfire.render.misc.LightningRenderer;
-import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,8 +15,8 @@ import org.jetbrains.annotations.NotNull;
 public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<LightningDragonEntity> {
     private final LightningRenderer lightningRenderer = new LightningRenderer();
 
-    public LightningDragonEntityRenderer(EntityRendererProvider.Context context, TabulaModel<LightningDragonEntity> modelSupplier) {
-        super(context, modelSupplier);
+    public LightningDragonEntityRenderer(EntityRendererProvider.Context context) {
+        super(context);
     }
 
     private static float getBoundedScale(float scale) {

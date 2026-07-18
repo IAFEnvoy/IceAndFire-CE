@@ -28,12 +28,17 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class DragonSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob {
+public class DragonSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob, GeoEntity {
     private static final EntityDataAccessor<String> DRAGON_TYPE = SynchedEntityData.defineId(DragonSkullEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> DRAGON_AGE = SynchedEntityData.defineId(DragonSkullEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DRAGON_STAGE = SynchedEntityData.defineId(DragonSkullEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DRAGON_DIRECTION = SynchedEntityData.defineId(DragonSkullEntity.class, EntityDataSerializers.FLOAT);
+    private final AnimatableInstanceCache geckoLibCache = GeckoLibUtil.createInstanceCache(this);
 
     public final float minSize = 0.3F;
     public final float maxSize = 8.58F;
@@ -69,6 +74,15 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
 
     public boolean isOnWall() {
         return this.level().isEmptyBlock(this.blockPosition().below());
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.geckoLibCache;
     }
 
     public void onUpdate() {

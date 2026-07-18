@@ -7,7 +7,7 @@ import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
 import com.iafenvoy.iceandfire.registry.IafKeyMappings;
 import com.iafenvoy.iceandfire.registry.IafMobEffects;
-import com.iafenvoy.iceandfire.render.entity.feature.DragonRiderFeatureRenderer;
+import com.iafenvoy.iceandfire.render.entity.feature.DragonRiderRenderState;
 import com.iafenvoy.iceandfire.render.misc.ChainRenderer;
 import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
 import com.iafenvoy.iceandfire.render.misc.FrozenStateRenderer;
@@ -111,9 +111,9 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void disablePlayerRenderWhenNeed(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
-        if (player.getVehicle() instanceof DragonBaseEntity && player instanceof LocalPlayer && (Minecraft.getInstance().options.getCameraType().isFirstPerson() || !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player)))
+        if (player.getVehicle() instanceof DragonBaseEntity && player instanceof LocalPlayer && (Minecraft.getInstance().options.getCameraType().isFirstPerson() || !DragonRiderRenderState.RENDERING_RIDERS.contains(player)))
             event.setCanceled(true);
-        if (player instanceof RemotePlayer && player.getVehicle() instanceof DragonBaseEntity && !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player))
+        if (player instanceof RemotePlayer && player.getVehicle() instanceof DragonBaseEntity && !DragonRiderRenderState.RENDERING_RIDERS.contains(player))
             event.setCanceled(true);
     }
 }

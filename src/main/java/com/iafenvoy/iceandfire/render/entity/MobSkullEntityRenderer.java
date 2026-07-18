@@ -4,13 +4,8 @@ import com.google.common.collect.Maps;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.IafSkullType;
 import com.iafenvoy.iceandfire.entity.MobSkullEntity;
-import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
-import com.iafenvoy.iceandfire.registry.IafRenderers;
 import com.iafenvoy.iceandfire.render.model.*;
-import com.iafenvoy.iceandfire.render.model.animator.SeaSerpentTabulaModelAnimator;
-import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
-import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -34,7 +29,7 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
     private final TrollModel trollModel;
     private final AmphithereModel amphithereModel;
     private final HydraHeadModel hydraModel;
-    private final TabulaModel<SeaSerpentEntity> seaSerpentModel;
+    private final SeaSerpentSkullEntityRenderer seaSerpentRenderer;
 
     public MobSkullEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -44,7 +39,7 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
         this.stymphalianBirdModel = new StymphalianBirdModel();
         this.trollModel = new TrollModel();
         this.amphithereModel = new AmphithereModel();
-        this.seaSerpentModel = TabulaModelHandlerHelper.getModel(IafRenderers.SEA_SERPENT, SeaSerpentTabulaModelAnimator::new);
+        this.seaSerpentRenderer = new SeaSerpentSkullEntityRenderer(context);
         this.hydraModel = new HydraHeadModel(0);
     }
 
@@ -57,6 +52,10 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
     @Override
     public void render(@NotNull MobSkullEntity entity, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         super.render(entity, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+        if (entity.getSkullType() == IafSkullType.SEASERPENT) {
+            this.seaSerpentRenderer.render(entity, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+            return;
+        }
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(-180.0F));
         matrixStackIn.mulPose(Axis.YN.rotationDegrees(180.0F - entity.getYRot()));
@@ -111,13 +110,6 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
                 setRotationAngles(this.amphithereModel.Head, onWall ? (float) Math.toRadians(50F) : 0F);
                 this.amphithereModel.Head.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
-            case SEASERPENT -> {
-                matrixStackIn.translate(0, -0.35F, 0.8F);
-                matrixStackIn.scale(2.5F, 2.5F, 2.5F);
-                this.seaSerpentModel.resetToDefaultPose();
-                setRotationAngles(this.seaSerpentModel.getCube("Head"), onWall ? (float) Math.toRadians(50F) : 0F);
-                this.seaSerpentModel.getCube("Head").render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
-            }
             case HYDRA -> {
                 matrixStackIn.translate(0, -0.2F, -0.1F);
                 matrixStackIn.scale(2.0F, 2.0F, 2.0F);
@@ -135,6 +127,11 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
 
     public ResourceLocation getSkullTexture(IafSkullType skull) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/skulls/skull_" + skull.name().toLowerCase(Locale.ROOT) + ".png");
+        return SKULL_TEXTURE_CACHE.computeIfAbsent(id.toString(), k -> id);
+    }
+
+    public static ResourceLocation getSkullTexture(MobSkullEntity skull) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/skulls/skull_seaserpent.png");
         return SKULL_TEXTURE_CACHE.computeIfAbsent(id.toString(), k -> id);
     }
 
