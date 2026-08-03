@@ -131,7 +131,7 @@
 						]
 					}
 				},
-				"armL1": {
+				"__breath_pose_armL1": {
 					"rotation": {
 						"0.0": [
 							31.0,
@@ -140,7 +140,7 @@
 						]
 					}
 				},
-				"armL2": {
+				"__breath_pose_armL2": {
 					"rotation": {
 						"0.0": [
 							-40.65,
@@ -149,7 +149,7 @@
 						]
 					}
 				},
-				"fingerL1.1": {
+				"__breath_pose_fingerL1_1": {
 					"rotation": {
 						"0.0": [
 							87.0,
@@ -158,7 +158,7 @@
 						]
 					}
 				},
-				"fingerL2.1": {
+				"__breath_pose_fingerL2_1": {
 					"rotation": {
 						"0.0": [
 							64.78,
@@ -167,7 +167,7 @@
 						]
 					}
 				},
-				"fingerL3.1": {
+				"__breath_pose_fingerL3_1": {
 					"rotation": {
 						"0.0": [
 							45.87,
@@ -176,7 +176,7 @@
 						]
 					}
 				},
-				"membraneL3": {
+				"__breath_pose_membraneL3": {
 					"rotation": {
 						"0.0": [
 							-15.22,
@@ -185,7 +185,7 @@
 						]
 					}
 				},
-				"fingerL4.1": {
+				"__breath_pose_fingerL4_1": {
 					"rotation": {
 						"0.0": [
 							26.96,
@@ -194,7 +194,7 @@
 						]
 					}
 				},
-				"membraneL4": {
+				"__breath_pose_membraneL4": {
 					"rotation": {
 						"0.0": [
 							-23.0,
@@ -203,7 +203,7 @@
 						]
 					}
 				},
-				"ClawL": {
+				"__breath_pose_ClawL": {
 					"rotation": {
 						"0.0": [
 							0.0,
@@ -212,7 +212,7 @@
 						]
 					}
 				},
-				"membraneL6": {
+				"__breath_pose_membraneL6": {
 					"rotation": {
 						"0.0": [
 							-6.52,
@@ -221,7 +221,7 @@
 						]
 					}
 				},
-				"armR1": {
+				"__breath_pose_armR1": {
 					"rotation": {
 						"0.0": [
 							31.0,
@@ -230,7 +230,7 @@
 						]
 					}
 				},
-				"armR2": {
+				"__breath_pose_armR2": {
 					"rotation": {
 						"0.0": [
 							-40.65,
@@ -239,7 +239,7 @@
 						]
 					}
 				},
-				"fingerR1.1": {
+				"__breath_pose_fingerR1_1": {
 					"rotation": {
 						"0.0": [
 							87.0,
@@ -248,7 +248,7 @@
 						]
 					}
 				},
-				"fingerR2.1": {
+				"__breath_pose_fingerR2_1": {
 					"rotation": {
 						"0.0": [
 							64.78,
@@ -257,7 +257,7 @@
 						]
 					}
 				},
-				"fingerR3.1": {
+				"__breath_pose_fingerR3_1": {
 					"rotation": {
 						"0.0": [
 							45.87,
@@ -266,7 +266,7 @@
 						]
 					}
 				},
-				"membraneR3": {
+				"__breath_pose_membraneR3": {
 					"rotation": {
 						"0.0": [
 							-15.22,
@@ -275,7 +275,7 @@
 						]
 					}
 				},
-				"fingerR4.1": {
+				"__breath_pose_fingerR4_1": {
 					"rotation": {
 						"0.0": [
 							26.96,
@@ -284,7 +284,7 @@
 						]
 					}
 				},
-				"membraneR4": {
+				"__breath_pose_membraneR4": {
 					"rotation": {
 						"0.0": [
 							-23.0,
@@ -293,7 +293,7 @@
 						]
 					}
 				},
-				"ClawR": {
+				"__breath_pose_ClawR": {
 					"rotation": {
 						"0.0": [
 							0.0,
@@ -302,7 +302,7 @@
 						]
 					}
 				},
-				"membraneR6": {
+				"__breath_pose_membraneR6": {
 					"rotation": {
 						"0.0": [
 							-6.52,

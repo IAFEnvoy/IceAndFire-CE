@@ -55,7 +55,7 @@ public class DragonSkullItem extends Item {
             skull.moveTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
             float yaw = context.getPlayer().getYRot();
             if (context.getClickedFace() != Direction.UP)
-                yaw = context.getPlayer().getDirection().toYRot();
+                yaw = context.getClickedFace().toYRot();
             skull.setYRot(yaw);
             if (stack.has(DataComponents.CUSTOM_NAME))
                 skull.setCustomName(stack.getHoverName());

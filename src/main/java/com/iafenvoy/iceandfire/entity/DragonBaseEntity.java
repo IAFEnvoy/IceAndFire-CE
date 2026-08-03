@@ -2855,7 +2855,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "main", 0, this::selectGeckoAnimation));
+        controllers.add(
+                new AnimationController<>(this, "main", 0, this::selectGeckoAnimation),
+                new AnimationController<>(this, "breath", 0, this::selectBreathAnimation)
+        );
     }
 
     private PlayState selectGeckoAnimation(AnimationState<DragonBaseEntity> state) {
@@ -2867,12 +2870,18 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             case AIRBORNE -> {
                 if (currentAnimation == ANIMATION_FIRECHARGE)
                     yield this.playActionAnimation(state, "attack_blast_charge");
-                if (this.isBreathingFire())
-                    yield this.playLoopingAnimation(state, "attack_blast_breath", 1.0F);
                 yield this.playLoopingAnimation(state, "flight", 0.4F);
             }
             case GROUND -> this.selectGroundAnimation(state, currentAnimation);
         };
+    }
+
+    private PlayState selectBreathAnimation(AnimationState<DragonBaseEntity> state) {
+        if (this.getDragonAnimationPool() == DragonAnimationPool.AIRBORNE && this.isBreathingFire())
+            return this.playLoopingAnimation(state, "attack_blast_breath", 1.0F);
+
+        state.getController().stop();
+        return PlayState.STOP;
     }
 
     private PlayState selectGroundAnimation(AnimationState<DragonBaseEntity> state, Animation currentAnimation) {
