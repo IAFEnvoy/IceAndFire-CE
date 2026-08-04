@@ -624,6 +624,7 @@
   "config.iceandfire.dragon.generate.skeletons": "Generate Skeletons",
   "config.iceandfire.dragon.goldSearchLength": "Gold Search Distance",
   "config.iceandfire.dragon.griefing": "Griefing",
+  "config.iceandfire.dragon.softBlockGriefing": "Soft Block Griefing",
   "config.iceandfire.dragon.hungerTickRate": "Hunger Tick Rate",
   "config.iceandfire.dragon.loot.blood": "Loot Blood",
   "config.iceandfire.dragon.loot.heart": "Loot Heart",

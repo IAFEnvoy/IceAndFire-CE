@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:leaves",
+    "#minecraft:dirt",
+    "#minecraft:sand",
+    "#minecraft:flowers",
+    "#minecraft:saplings",
+    "#iceandfire:grasses",
+    "minecraft:attached_melon_stem",
+    "minecraft:attached_pumpkin_stem",
+    "minecraft:beetroots",
+    "minecraft:carrots",
+    "minecraft:clay",
+    "minecraft:cocoa",
+    "minecraft:dead_bush",
+    "minecraft:fern",
+    "minecraft:gravel",
+    "minecraft:large_fern",
+    "minecraft:melon_stem",
+    "minecraft:mud",
+    "minecraft:nether_wart",
+    "minecraft:potatoes",
+    "minecraft:pumpkin_stem",
+    "minecraft:short_grass",
+    "minecraft:snow",
+    "minecraft:snow_block",
+    "minecraft:sweet_berry_bush",
+    "minecraft:tall_grass",
+    "minecraft:vine",
+    "minecraft:wheat"
+  ]
+}

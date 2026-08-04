@@ -1368,6 +1368,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             return;
 
         final BlockState state = this.level().getBlockState(position);
+        if (!DragonUtils.canGrief(this, state)) return;
         final float hardness = IafCommonConfig.INSTANCE.dragon.griefing.getValue() || this.getDragonStage() <= 3 ? 2.0F : 5.0F;
         if (this.isBreakable(position, state, hardness, this)) {
             this.setDeltaMovement(this.getDeltaMovement().multiply(0.6F, 1, 0.6F));
@@ -1388,7 +1389,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
         if (doBreak) {
             if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
-                if (DragonUtils.canGrief(this)) {
+                if (DragonUtils.canGrief(this) || DragonUtils.canSoftGrief(this)) {
                     // TODO :: make `force` ignore the dragon stage?
                     if (!this.isModelDead() && this.getDragonStage() >= 3 && (this.canMove() || this.getControllingPassenger() != null)) {
                         final int bounds = 1;

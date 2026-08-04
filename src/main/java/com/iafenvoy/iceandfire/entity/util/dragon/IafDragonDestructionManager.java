@@ -59,7 +59,7 @@ public class IafDragonDestructionManager {
                     forge.onHitWithFlame(dragon);
                     return;
                 }
-                if (canBreakBlocks && DragonUtils.canGrief(dragon) && dragon.getRandom().nextBoolean())
+                if (canBreakBlocks && DragonUtils.canGrief(dragon, level.getBlockState(position)) && dragon.getRandom().nextBoolean())
                     attackBlock(level, dragon, position);
             });
         } else {
@@ -78,7 +78,7 @@ public class IafDragonDestructionManager {
                     return;
                 }
                 if (canBreakBlocks && center.distSqr(position) <= ff)
-                    if (DragonUtils.canGrief(dragon) && level.random.nextFloat() > (float) center.distSqr(position) / ff)
+                    if (DragonUtils.canGrief(dragon, level.getBlockState(position)) && level.random.nextFloat() > (float) center.distSqr(position) / ff)
                         attackBlock(level, dragon, position);
             });
         }
@@ -113,7 +113,7 @@ public class IafDragonDestructionManager {
         int y = 2;
         int z = 2;
 
-        boolean canBreakBlocks = DragonUtils.canGrief(dragon) && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        boolean canBreakBlocks = (DragonUtils.canGrief(dragon) || DragonUtils.canSoftGrief(dragon)) && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
 
         if (canBreakBlocks) {
             if (dragon.getDragonStage() <= 3) {
@@ -175,7 +175,7 @@ public class IafDragonDestructionManager {
             }
         });
 
-        if (IafCommonConfig.INSTANCE.dragon.explosiveBreath.getValue())
+        if (IafCommonConfig.INSTANCE.dragon.explosiveBreath.getValue() && DragonUtils.canGrief(dragon))
             causeExplosion(level, center, dragon, damageSource, dragon.getDragonStage());
     }
 

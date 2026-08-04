@@ -50,6 +50,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry generateOreRatio = DoubleEntry.builder("config.iceandfire.dragon.generate.oreRatio", 1.0 / 45).range(0, 1).key("generate.oreRatio").build();
         public final SeparatorEntry s2 = SeparatorEntry.builder().build();
         public final BooleanEntry griefing = BooleanEntry.builder("config.iceandfire.dragon.griefing", true).key("griefing").build();
+        public final BooleanEntry softBlockGriefing = BooleanEntry.builder("config.iceandfire.dragon.softBlockGriefing", false).key("softBlockGriefing").build();
         public final BooleanEntry tamedGriefing = BooleanEntry.builder("config.iceandfire.dragon.tamedGriefing", true).key("tamedGriefing").build();
         public final IntegerEntry flapNoiseDistance = IntegerEntry.builder("config.iceandfire.dragon.flapNoiseDistance", 4).range(0, 32).key("flapNoiseDistance").build();
         public final IntegerEntry fluteDistance = IntegerEntry.builder("config.iceandfire.dragon.fluteDistance", 8).range(0, 512).key("fluteDistance").build();
