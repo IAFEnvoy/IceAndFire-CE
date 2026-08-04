@@ -1137,9 +1137,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         return InteractionResult.SUCCESS;
                     }
                     final Item stackItem = stack.getItem();
-                    if (stackItem == IafItems.DRAGON_MEAL.get() && this.getAgeInDays() < (this.isTame() ? IafCommonConfig.INSTANCE.dragon.maxTamedDragonAge.getValue() : 128)) {
-                        this.setAgingDisabled(false);
-                        this.growDragon(1);
+                    if (stackItem == IafItems.DRAGON_MEAL.get()) {
+                        if (this.getAgeInDays() < (this.isTame() ? IafCommonConfig.INSTANCE.dragon.maxTamedDragonAge.getValue() : 128)) {
+                            this.setAgingDisabled(false);
+                            this.growDragon(1);
+                        }
                         this.setHunger(this.getHunger() + 20);
                         this.heal(Math.min(this.getHealth(), (int) (this.getMaxHealth() / 2)));
                         this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
