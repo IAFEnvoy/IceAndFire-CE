@@ -119,7 +119,8 @@ public class BlockEntityPodium extends LockableContainerBlockEntity implements S
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        return true;
+        return player.getWorld().getBlockEntity(this.pos) == this
+                && player.squaredDistanceTo(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
