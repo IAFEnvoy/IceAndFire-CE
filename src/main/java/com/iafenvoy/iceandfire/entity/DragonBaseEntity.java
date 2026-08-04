@@ -2856,24 +2856,40 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(
-                new AnimationController<>(this, "main", 0, this::selectGeckoAnimation),
+                new AnimationController<>(this, "main", 0, this::selectBaseGeckoAnimation),
+                new AnimationController<>(this, "action", 0, this::selectActionGeckoAnimation),
                 new AnimationController<>(this, "breath", 0, this::selectBreathAnimation)
         );
     }
 
-    private PlayState selectGeckoAnimation(AnimationState<DragonBaseEntity> state) {
+    private PlayState selectBaseGeckoAnimation(AnimationState<DragonBaseEntity> state) {
         DragonAnimationPool pool = this.getDragonAnimationPool();
-        Animation currentAnimation = this.getAnimation();
         return switch (pool) {
             case DEAD -> this.playLoopingAnimation(state, "dead", 1.0F);
             case SWIMMING -> this.playLoopingAnimation(state, "swim", 1.0F);
-            case AIRBORNE -> {
-                if (currentAnimation == ANIMATION_FIRECHARGE)
-                    yield this.playActionAnimation(state, "attack_blast_charge");
-                yield this.playLoopingAnimation(state, "flight", 0.4F);
-            }
-            case GROUND -> this.selectGroundAnimation(state, currentAnimation);
+            case AIRBORNE -> this.playLoopingAnimation(state, "flight", 0.4F);
+            case GROUND -> this.selectGroundBaseAnimation(state);
         };
+    }
+
+    private PlayState selectActionGeckoAnimation(AnimationState<DragonBaseEntity> state) {
+        DragonAnimationPool pool = this.getDragonAnimationPool();
+        Animation currentAnimation = this.getAnimation();
+        String action = switch (pool) {
+            case AIRBORNE -> currentAnimation == ANIMATION_FIRECHARGE ? "attack_blast_charge" : null;
+            case GROUND -> this.isSleeping() || this.sleepProgress > 0.0F ? null : this.getGeckoAction(currentAnimation);
+            case DEAD, SWIMMING -> null;
+        };
+
+        if (action != null && this.isOrderedToSit())
+            action = this.getSittingGeckoAction(action);
+
+        if (action == null) {
+            state.getController().stop();
+            return PlayState.STOP;
+        }
+
+        return this.playActionAnimation(state, action);
     }
 
     private PlayState selectBreathAnimation(AnimationState<DragonBaseEntity> state) {
@@ -2884,13 +2900,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         return PlayState.STOP;
     }
 
-    private PlayState selectGroundAnimation(AnimationState<DragonBaseEntity> state, Animation currentAnimation) {
+    private PlayState selectGroundBaseAnimation(AnimationState<DragonBaseEntity> state) {
         // DragonGeoModel blends this static pose with the default pose using sleepProgress.
         if (this.isSleeping() || this.sleepProgress > 0.0F)
             return this.playLoopingAnimation(state, "sleeping", 1.0F, 0);
 
-        String action = this.getGeckoAction(currentAnimation);
-        if (action != null) return this.playActionAnimation(state, action);
         if (this.isOrderedToSit()) return this.playLoopingAnimation(state, "sitting", 1.0F);
 
         return this.playLoopingAnimation(state, state.isMoving() ? "walk" : "ground", state.isMoving() ? 0.4F : 1.0F);
@@ -2929,6 +2943,15 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         if (animation == ANIMATION_EPIC_ROAR) return "epic_roar";
         if (animation == ANIMATION_TAILWHACK) return "tail";
         return null;
+    }
+
+    private String getSittingGeckoAction(String action) {
+        return switch (action) {
+            case "bite" -> "sitting_bite";
+            case "roar" -> "sitting_roar";
+            case "epic_roar" -> "sitting_epic_roar";
+            default -> null;
+        };
     }
 
     private String geckoAnimationId(String animation) {

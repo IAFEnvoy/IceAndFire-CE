@@ -14,6 +14,8 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 /** Draws only the dragon head while retaining its GeckoLib bone transforms. */
 public class DragonSkullEntityRenderer extends GeoEntityRenderer<DragonSkullEntity> {
+    private static final float VERTICAL_OFFSET = 0.15F;
+
     public DragonSkullEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new DragonSkullGeoModel());
     }
@@ -30,8 +32,9 @@ public class DragonSkullEntityRenderer extends GeoEntityRenderer<DragonSkullEnti
         model.getBone("Head").ifPresent(head -> {
             head.updateRotation(skull.isOnWall() ? (float) Math.toRadians(-50.0D) : 0.0F, 0.0F, 0.0F);
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - skull.getYRot()));
+            poseStack.mulPose(Axis.YP.rotationDegrees(-skull.getYRot()));
             poseStack.translate(-head.getPivotX() / 16.0F, -head.getPivotY() / 16.0F, -head.getPivotZ() / 16.0F);
+            poseStack.translate(0.0F, VERTICAL_OFFSET, 0.0F);
             this.renderRecursively(poseStack, skull, head, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, renderColor);
             poseStack.popPose();
         });
