@@ -37,7 +37,6 @@ repositories {
     maven { url = "https://maven.terraformersmc.com/" }
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url = "https://cursemaven.com" }
-    maven { url = "https://api.modrinth.com/maven" }
     maven { url = 'https://jitpack.io' }
     maven { url = 'https://maven.nucleoid.xyz/' }
     maven { url = "https://maven.blamejared.com/" }
@@ -141,17 +140,18 @@ configurations {
 }
 
 dependencies {
-    implementation(jarJar("com.github.IAFEnvoy.Integration:integration-neoforge:$integration_version"))
+    implementation jarJar("com.github.IAFEnvoy.Integration:integration-neoforge:$integration_version")
+    implementation jarJar("curse.maven:datapackloaderrorfix-1448825:7612874")
 
-    implementation "maven.modrinth:uranus:BBb3HOQ5"
-    implementation "maven.modrinth:jupiter:m2itNS7Z"
+    implementation "curse.maven:uranus-1010827:8008516"
+    implementation "curse.maven:jupiter-1072905:7738312"
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
 
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
     localRuntime "dev.emi:emi-neoforge:$emi_version"
 
-    implementation "maven.modrinth:jade:JkFFfEao"
+    implementation "curse.maven:jade-324717:7545219"
 
     api "top.theillusivec4.curios:curios-neoforge:${curios_version}"
 
