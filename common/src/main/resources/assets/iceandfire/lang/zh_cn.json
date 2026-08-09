@@ -1390,6 +1390,8 @@
   "modmenu.descriptionTranslation.iceandfire": "冰火传说非官方移植\nMinecraft中的龙和其他神话生物",
   "modmenu.nameTranslation.iceandfire": "冰火传说",
   "modmenu.summaryTranslation.iceandfire": "冰火传说非官方移植",
+  "resourcePack.iceandfire.legacy.description": "冰火传说社区版2.0前的旧版材质",
+  "resourcePack.iceandfire.legacy.name": "冰火传说旧版材质",
   "screen.iceandfire.client.title": "冰火传说客户端设置",
   "screen.iceandfire.common.title": "冰火传说通用设置",
   "sea_serpent.blue": "蔚蓝",

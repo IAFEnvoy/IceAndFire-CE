@@ -1390,6 +1390,8 @@
   "modmenu.descriptionTranslation.iceandfire": "The unofficial Fabric version of Ice And Fire.\nDragons and other mythological creatures in minecraft.",
   "modmenu.nameTranslation.iceandfire": "Ice And Fire",
   "modmenu.summaryTranslation.iceandfire": "The unofficial Fabric version of Ice And Fire.",
+  "resourcePack.iceandfire.legacy.description": "Textures before IAF-CE 2.0",
+  "resourcePack.iceandfire.legacy.name": "Ice And Fire Legacy Textures",
   "screen.iceandfire.client.title": "Ice And Fire Client Settings",
   "screen.iceandfire.common.title": "Ice And Fire Common Settings",
   "sea_serpent.blue": "Blue",
