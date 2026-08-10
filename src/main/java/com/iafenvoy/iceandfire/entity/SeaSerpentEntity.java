@@ -55,6 +55,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
@@ -93,7 +94,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     public int jumpCooldown = 0;
     private int animationTick;
     private Animation currentAnimation;
-    private SlowPartEntity[] segments = new SlowPartEntity[9];
+    private SlowPartEntity<SeaSerpentEntity>[] segments = new SlowPartEntity[9];
     private float lastScale;
     private boolean isLandNavigator;
     private boolean changedSwimBehavior = false;
@@ -106,6 +107,8 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
         this.noCulling = true;
         this.lastScale = 0;
         this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.updateScale(this.getSeaSerpentScale());
+        this.setId(this.getId());
     }
 
     public static boolean isWaterBlock(Level world, BlockPos pos) {
@@ -206,22 +209,21 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
                     this.segments[i] = new SlowPartEntity(this, 0.5F * (i - 3), 180, 0, 0.5F, 0.5F, 1);
                 else
                     this.segments[i] = new SlowPartEntity(this, -0.4F * (i + 1), 180, 0, 0.45F, 0.4F, 1);
-                this.level().addFreshEntity(this.segments[i]);
             }
             this.segments[i].updateScale(scale);
         }
+        this.updatePartIds();
     }
 
     public void onUpdateParts() {
         if (this.isRemoved()) return;
-        for (MultipartPartEntity entity : this.segments) {
-            entity.copyPosition(this);
-            IafEntityUtil.updatePart(entity, this);
+        for (SlowPartEntity<SeaSerpentEntity> entity : this.segments) {
+            entity.updatePosition();
         }
     }
 
     private void removeParts() {
-        for (MultipartPartEntity entity : this.segments)
+        for (SlowPartEntity<SeaSerpentEntity> entity : this.segments)
             if (entity != null)
                 entity.remove(RemovalReason.DISCARDED);
     }
@@ -230,6 +232,28 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     public void remove(@NotNull RemovalReason reason) {
         this.removeParts();
         super.remove(reason);
+    }
+
+    private void updatePartIds() {
+        for (int i = 0; i < this.segments.length; i++)
+            if (this.segments[i] != null)
+                this.segments[i].setId(this.getId() + i + 1);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        this.updatePartIds();
+    }
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        return this.segments;
     }
 
     @Override
@@ -346,8 +370,6 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
         compound.putBoolean("AttackDecision", this.attackDecision);
         compound.putBoolean("Breathing", this.isBreathing());
         compound.putBoolean("Ancient", this.isAncient());
-        this.removeParts();
-        this.lastScale = 0;
     }
 
     @Override

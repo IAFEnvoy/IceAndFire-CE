@@ -4,8 +4,6 @@ import com.iafenvoy.iceandfire.entity.*;
 import com.iafenvoy.iceandfire.entity.util.ISyncMount;
 import com.iafenvoy.iceandfire.event.handler.ServerEvents;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
-import com.iafenvoy.iceandfire.network.payload.MultipartInteractC2SPayload;
-import com.iafenvoy.iceandfire.network.payload.PlayerHitMultipartC2SPayload;
 import com.iafenvoy.iceandfire.network.payload.StartRidingMobPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -61,37 +59,6 @@ public final class ServerNetworkHandlers {
         });
     }
 
-    public static void handleMultipartInteract(MultipartInteractC2SPayload payload, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            Player player = ctx.player();
-            if (player.level() instanceof ServerLevel serverLevel) {
-                Entity entity = serverLevel.getEntity(payload.creatureID());
-                if (entity instanceof LivingEntity livingEntity) {
-                    double dist = player.distanceTo(livingEntity);
-                    if (dist < 100) {
-                        float dmg = payload.dmg();
-                        if (dmg > 0F) livingEntity.hurt(serverLevel.damageSources().mobAttack(player), dmg);
-                        else livingEntity.interact(player, InteractionHand.MAIN_HAND);
-                    }
-                }
-            }
-        });
-    }
-
-    public static void handlePlayerHitMultipart(PlayerHitMultipartC2SPayload payload, IPayloadContext ctx) {
-        ctx.enqueueWork(() -> {
-            Player player = ctx.player();
-            Entity entity = player.level().getEntity(payload.entityId());
-            if (entity instanceof LivingEntity livingEntity) {
-                double dist = player.distanceTo(livingEntity);
-                if (dist < 100) {
-                    player.attack(livingEntity);
-                    if (livingEntity instanceof HydraEntity hydra)
-                        hydra.triggerHeadFlags(payload.index());
-                }
-            }
-        });
-    }
 
     public static void handleStartRidingMob(StartRidingMobPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {

@@ -20,8 +20,6 @@ public final class NetworkManager {
         registrar.playToClient(UpdatePodiumS2CPayload.ID, UpdatePodiumS2CPayload.CODEC, ClientNetworkHandlers::handleUpdatePodium);
 
         registrar.playToServer(DragonControlC2SPayload.ID, DragonControlC2SPayload.CODEC, ServerNetworkHandlers::handleDragonControl);
-        registrar.playToServer(MultipartInteractC2SPayload.ID, MultipartInteractC2SPayload.CODEC, ServerNetworkHandlers::handleMultipartInteract);
-        registrar.playToServer(PlayerHitMultipartC2SPayload.ID, PlayerHitMultipartC2SPayload.CODEC, ServerNetworkHandlers::handlePlayerHitMultipart);
 
         registrar.playBidirectional(StartRidingMobPayload.ID, StartRidingMobPayload.CODEC, new DirectionalPayloadHandler<>(ClientNetworkHandlers::handleStartRidingMob, ServerNetworkHandlers::handleStartRidingMob));
     }

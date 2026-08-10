@@ -15,7 +15,6 @@ import com.iafenvoy.iceandfire.item.armor.DragonScaleArmorItem;
 import com.iafenvoy.iceandfire.item.armor.DragonSteelArmorItem;
 import com.iafenvoy.iceandfire.item.armor.TrollArmorItem;
 import com.iafenvoy.iceandfire.item.component.StoneStatusComponent;
-import com.iafenvoy.iceandfire.network.payload.PlayerHitMultipartC2SPayload;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.iafenvoy.uranus.object.RegistryHelper;
@@ -56,7 +55,6 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.UUID;
@@ -196,23 +194,6 @@ public final class ServerEvents {
             }
             event.setCanceled(true);
             return;
-        }
-        if (entity instanceof MultipartPartEntity mutlipartPart) {
-            Entity parent = mutlipartPart.getParent();
-            try {
-                //If the attacked entity is the parent itself parent will be null and also doesn't have to be attacked
-                if (parent != null)
-                    player.attack(parent);
-            } catch (Exception e) {
-                IceAndFire.LOGGER.warn("Exception thrown while interacting with entity.", e);
-            }
-            int extraData = 0;
-            if (mutlipartPart instanceof HydraHeadEntity hydraHead && parent instanceof HydraEntity hydra) {
-                extraData = hydraHead.headIndex;
-                hydra.triggerHeadFlags(extraData);
-            }
-            if (mutlipartPart.level().isClientSide && parent != null)
-                PacketDistributor.sendToServer(new PlayerHitMultipartC2SPayload(parent.getId(), extraData));
         }
         if (entity instanceof LivingEntity livingEntity) {
             if (entity.getType().is(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);

@@ -31,6 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartEntity, IVillagerFear, IAnimalFear, IHasCustomizableAttributes {
@@ -63,7 +64,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     private final float headDamageThreshold;
     private int animationTick;
     private Animation currentAnimation;
-    private HydraHeadEntity[] headBoxes = new HydraHeadEntity[HEADS * 9];
+    private HydraHeadEntity[] headBoxes = new HydraHeadEntity[HEADS * 2];
     private int strikeCooldown = 0;
     private int breathCooldown = 0;
     private int lastHitHead = 0;
@@ -76,6 +77,8 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         super(type, worldIn);
         this.multipartLoaded = false;
         this.headDamageThreshold = Math.max(5, IafCommonConfig.INSTANCE.hydra.maxHealth.getValue().floatValue() * 0.08F);
+        this.resetParts();
+        this.setId(this.getId());
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -215,18 +218,20 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     public void resetParts() {
-        this.clearParts();
-        this.headBoxes = new HydraHeadEntity[HEADS * 2];
-        for (int i = 0; i < this.getHeadCount(); i++) {
-            this.headBoxes[i] = new HydraHeadEntity(this, 3.2F, ROTATE[this.getHeadCount() - 1][i] * 1.1F, 1.0F, 0.75F, 1.75F, 1, i, false);
-            this.headBoxes[HEADS + i] = new HydraHeadEntity(this, 2.1F, ROTATE[this.getHeadCount() - 1][i] * 1.1F, 1.0F, 0.75F, 0.75F, 1, i, true);
-            this.headBoxes[i].copyPosition(this);
-            this.headBoxes[HEADS + i].copyPosition(this);
-            this.headBoxes[i].setParent(this);
-            this.headBoxes[HEADS + i].setParent(this);
-            this.level().addFreshEntity(this.headBoxes[i]);
-            this.level().addFreshEntity(this.headBoxes[HEADS + i]);
+        if (this.headBoxes[0] == null) {
+            for (int i = 0; i < HEADS; i++) {
+                this.headBoxes[i] = new HydraHeadEntity(this, 3.2F, 0, 1.0F, 0.75F, 1.75F, 1, i, false);
+                this.headBoxes[HEADS + i] = new HydraHeadEntity(this, 2.1F, 0, 1.0F, 0.75F, 0.75F, 1, i, true);
+                this.headBoxes[i].copyPosition(this);
+                this.headBoxes[HEADS + i].copyPosition(this);
+            }
         }
+        for (int i = 0; i < HEADS; i++) {
+            float angle = ROTATE[this.getHeadCount() - 1][i] * 1.1F;
+            this.headBoxes[i].setPartAngle(angle);
+            this.headBoxes[HEADS + i].setPartAngle(angle);
+        }
+        this.updatePartIds();
         this.multipartLoaded = true;
     }
 
@@ -237,14 +242,10 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         if (!this.multipartLoaded || this.prevHeadCount != this.getHeadCount())
             this.resetParts();
 
-        float partY = 1.0F - this.walkAnimation.speed() * 0.5F;
+        for (int i = 0; i < HEADS; i++) {
+            this.headBoxes[i].updatePosition();
 
-        for (int i = 0; i < this.getHeadCount(); i++) {
-            this.headBoxes[i].setPos(this.headBoxes[i].getX(), this.getY() + partY, this.headBoxes[i].getZ());
-            IafEntityUtil.updatePart(this.headBoxes[i], this);
-
-            this.headBoxes[HEADS + i].setPos(this.headBoxes[HEADS + i].getX(), this.getY() + partY, this.headBoxes[HEADS + i].getZ());
-            IafEntityUtil.updatePart(this.headBoxes[HEADS + 1], this);
+            this.headBoxes[HEADS + i].updatePosition();
         }
 
         if (this.getHeadCount() > 1 && !this.isOnFire())
@@ -265,6 +266,29 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
             if (entity != null)
                 entity.remove(RemovalReason.DISCARDED);
         this.multipartLoaded = false;
+    }
+
+    private void updatePartIds() {
+        PartEntity<?>[] parts = this.getParts();
+        for (int i = 0; i < parts.length; i++)
+            parts[i].setId(this.getId() + i + 1);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        this.updatePartIds();
+    }
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        if (this.headBoxes[0] == null) return new PartEntity<?>[0];
+        return this.headBoxes;
     }
 
     @Override
@@ -298,7 +322,6 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         compound.putInt("SeveredHead", this.getSeveredHead());
         for (int i = 0; i < HEADS; i++)
             compound.putFloat("HeadDamage" + i, this.headDamageTracker[i]);
-        this.clearParts();
     }
 
     @Override

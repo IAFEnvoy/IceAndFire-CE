@@ -95,6 +95,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -268,6 +269,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.switchNavigator(0);
         this.randomizeAttacks();
         this.lastScale = 0;//Ensure scale will be updated so that multipart can generate correctly
+        this.updateScale(this.getRenderSize() / 3);
+        this.setId(this.getId());
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -342,63 +345,54 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     public void updateScale(float scale) {
         if (this.headPart == null || this.headPart.isRemoved()) {
             this.headPart = new DragonPartEntity(this, 1.55F, 0, 0.6F, 0.5F, 0.35F, 1.5F);
-            this.level().addFreshEntity(this.headPart);
         }
         this.headPart.updateScale(scale);
 
         if (this.neckPart == null || this.neckPart.isRemoved()) {
             this.neckPart = new DragonPartEntity(this, 0.85F, 0, 0.7F, 0.5F, 0.2F, 1);
-            this.level().addFreshEntity(this.neckPart);
         }
         this.neckPart.updateScale(scale);
 
         if (this.rightWingUpperPart == null || this.rightWingUpperPart.isRemoved()) {
             this.rightWingUpperPart = new DragonPartEntity(this, 1, 90, 0.5F, 0.85F, 0.3F, 0.5F);
-            this.level().addFreshEntity(this.rightWingUpperPart);
         }
         this.rightWingUpperPart.updateScale(scale);
 
         if (this.rightWingLowerPart == null || this.rightWingLowerPart.isRemoved()) {
             this.rightWingLowerPart = new DragonPartEntity(this, 1.4F, 100, 0.3F, 0.85F, 0.2F, 0.5F);
-            this.level().addFreshEntity(this.rightWingLowerPart);
         }
         this.rightWingLowerPart.updateScale(scale);
 
         if (this.leftWingUpperPart == null || this.leftWingUpperPart.isRemoved()) {
             this.leftWingUpperPart = new DragonPartEntity(this, 1, -90, 0.5F, 0.85F, 0.3F, 0.5F);
-            this.level().addFreshEntity(this.leftWingUpperPart);
         }
         this.leftWingUpperPart.updateScale(scale);
 
         if (this.leftWingLowerPart == null || this.leftWingLowerPart.isRemoved()) {
             this.leftWingLowerPart = new DragonPartEntity(this, 1.4F, -100, 0.3F, 0.85F, 0.2F, 0.5F);
-            this.level().addFreshEntity(this.leftWingLowerPart);
         }
         this.leftWingLowerPart.updateScale(scale);
 
         if (this.tail1Part == null || this.tail1Part.isRemoved()) {
             this.tail1Part = new DragonPartEntity(this, -0.75F, 0, 0.6F, 0.35F, 0.35F, 1);
-            this.level().addFreshEntity(this.tail1Part);
         }
         this.tail1Part.updateScale(scale);
 
         if (this.tail2Part == null || this.tail2Part.isRemoved()) {
             this.tail2Part = new DragonPartEntity(this, -1.15F, 0, 0.45F, 0.35F, 0.35F, 1);
-            this.level().addFreshEntity(this.tail2Part);
         }
         this.tail2Part.updateScale(scale);
 
         if (this.tail3Part == null || this.tail3Part.isRemoved()) {
             this.tail3Part = new DragonPartEntity(this, -1.5F, 0, 0.35F, 0.35F, 0.35F, 1);
-            this.level().addFreshEntity(this.tail3Part);
         }
         this.tail3Part.updateScale(scale);
 
         if (this.tail4Part == null || this.tail4Part.isRemoved()) {
             this.tail4Part = new DragonPartEntity(this, -1.95F, 0, 0.25F, 0.45F, 0.3F, 1.5F);
-            this.level().addFreshEntity(this.tail4Part);
         }
         this.tail4Part.updateScale(scale);
+        this.updatePartIds();
     }
 
     public void removeParts() {
@@ -446,27 +440,39 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     public void updateParts() {
         if (this.isRemoved()) return;
-        this.headPart.copyPosition(this);
-        this.neckPart.copyPosition(this);
-        this.rightWingUpperPart.copyPosition(this);
-        this.rightWingLowerPart.copyPosition(this);
-        this.leftWingUpperPart.copyPosition(this);
-        this.leftWingLowerPart.copyPosition(this);
-        this.tail1Part.copyPosition(this);
-        this.tail2Part.copyPosition(this);
-        this.tail3Part.copyPosition(this);
-        this.tail4Part.copyPosition(this);
+        this.headPart.updatePosition();
+        this.neckPart.updatePosition();
+        this.rightWingUpperPart.updatePosition();
+        this.rightWingLowerPart.updatePosition();
+        this.leftWingUpperPart.updatePosition();
+        this.leftWingLowerPart.updatePosition();
+        this.tail1Part.updatePosition();
+        this.tail2Part.updatePosition();
+        this.tail3Part.updatePosition();
+        this.tail4Part.updatePosition();
+    }
 
-        IafEntityUtil.updatePart(this.headPart, this);
-        IafEntityUtil.updatePart(this.neckPart, this);
-        IafEntityUtil.updatePart(this.rightWingUpperPart, this);
-        IafEntityUtil.updatePart(this.rightWingLowerPart, this);
-        IafEntityUtil.updatePart(this.leftWingUpperPart, this);
-        IafEntityUtil.updatePart(this.leftWingLowerPart, this);
-        IafEntityUtil.updatePart(this.tail1Part, this);
-        IafEntityUtil.updatePart(this.tail2Part, this);
-        IafEntityUtil.updatePart(this.tail3Part, this);
-        IafEntityUtil.updatePart(this.tail4Part, this);
+    private void updatePartIds() {
+        PartEntity<?>[] parts = this.getParts();
+        for (int i = 0; i < parts.length; i++)
+            parts[i].setId(this.getId() + i + 1);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        this.updatePartIds();
+    }
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        if (this.headPart == null) return new PartEntity<?>[0];
+        return new PartEntity<?>[]{this.headPart, this.neckPart, this.rightWingUpperPart, this.rightWingLowerPart, this.leftWingUpperPart, this.leftWingLowerPart, this.tail1Part, this.tail2Part, this.tail3Part, this.tail4Part};
     }
 
     public void updateBurnTarget() {
@@ -761,8 +767,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         if (this.dragonInventory != null)
             compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), this.dragonInventory.getItems()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new ListTag()));
         compound.putBoolean("CrystalBound", this.isBoundToCrystal());
-        this.removeParts();
-        this.lastScale = 0;
         compound.putInt("BrushedTime", this.brushedTime);
     }
 

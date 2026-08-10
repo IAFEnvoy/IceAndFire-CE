@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.MultipartPartEntity;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -28,8 +27,7 @@ public enum MultipartComponentProvider implements IEntityComponentProvider {
     @Override
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         if (entityAccessor.getEntity() instanceof MultipartPartEntity multipart) {
-            assert Minecraft.getInstance().level != null;
-            Entity parent = Minecraft.getInstance().level.entityStorage.getEntityGetter().get(multipart.getParentId());
+            Entity parent = multipart.getParent();
             if (parent instanceof Mob mob) {
                 iTooltip.clear();
                 iTooltip.addAll(mob.getDisplayName().toFlatList(Style.EMPTY.withColor(ChatFormatting.WHITE)));
