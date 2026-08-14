@@ -100,6 +100,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
 
     public static class PixieConfig extends AutoInitConfigCategoryBase {
         public final IntegerEntry size = IntegerEntry.builder("config.iceandfire.pixie.size", 5).range(0, 100).key("size").build();
+        public final IntegerEntry maxPixiesPerVillage = IntegerEntry.builder("config.iceandfire.pixie.maxPixiesPerVillage", 8).range(0, 100).key("maxPixiesPerVillage").build();
         public final BooleanEntry stealItems = BooleanEntry.builder("config.iceandfire.pixie.stealItems", false).key("stealItems").build();
 
         public PixieConfig() {
@@ -306,7 +307,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry generateGraveYardChance = DoubleEntry.builder("config.iceandfire.worldgen.generateGraveYardChance", 0.5).range(0, 1).key("generateGraveYardChance").build();
         public final DoubleEntry generateHydraCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateHydraCaveChance", 0.5).range(0, 1).key("generateHydraCaveChance").build();
         public final DoubleEntry generateMausoleumChance = DoubleEntry.builder("config.iceandfire.worldgen.generateMausoleumChance", 0.5).range(0, 1).key("generateMausoleumChance").build();
-        public final DoubleEntry generatePixieVillageChance = DoubleEntry.builder("config.iceandfire.worldgen.generatePixieVillageChance", 0.5).range(0, 1).key("generatePixieVillageChance").build();
+        public final DoubleEntry generatePixieVillageChance = DoubleEntry.builder("config.iceandfire.worldgen.generatePixieVillageChance", 0.2).range(0, 1).key("generatePixieVillageChance").build();
         public final DoubleEntry generateSirenIslandChance = DoubleEntry.builder("config.iceandfire.worldgen.generateSirenIslandChance", 0.5).range(0, 1).key("generateSirenIslandChance").build();
 
         public WorldGenConfig() {

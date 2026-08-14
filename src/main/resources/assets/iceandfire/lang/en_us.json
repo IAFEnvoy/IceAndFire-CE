@@ -669,6 +669,7 @@
   "config.iceandfire.misc.dreadQueenMaxHealth": "Dread Queen Max Health",
   "config.iceandfire.misc.enableDragonSeeker": "Enable Dragon Seeker",
   "config.iceandfire.pixie.size": "Size",
+  "config.iceandfire.pixie.maxPixiesPerVillage": "Maximum Pixies Per Village",
   "config.iceandfire.pixie.spawnChance": "Spawn Chance",
   "config.iceandfire.pixie.stealItems": "Steal Items",
   "config.iceandfire.seaSerpent.attackDamage": "Attack Strength",

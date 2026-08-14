@@ -668,6 +668,7 @@
   "config.iceandfire.misc.dreadQueenMaxHealth": "悚域女皇最大生命值",
   "config.iceandfire.misc.enableDragonSeeker": "启用寻龙杖",
   "config.iceandfire.pixie.size": "每次生成数量",
+  "config.iceandfire.pixie.maxPixiesPerVillage": "单个村庄最大小精灵数量",
   "config.iceandfire.pixie.spawnChance": "生成概率",
   "config.iceandfire.pixie.stealItems": "偷取玩家物品",
   "config.iceandfire.seaSerpent.attackDamage": "攻击伤害",

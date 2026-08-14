@@ -76,6 +76,8 @@ public class PixieVillageStructure extends Structure {
                 return;
 
             int maxRoads = IafCommonConfig.INSTANCE.pixie.size.getValue() + random.nextInt(5);
+            int maxPixies = IafCommonConfig.INSTANCE.pixie.maxPixiesPerVillage.getValue();
+            int spawnedPixies = 0;
             BlockPos buildPosition = pivot;
             int placedRoads = 0;
             List<BlockPos> posesInBB = new ArrayList<>();
@@ -110,12 +112,15 @@ public class PixieVillageStructure extends Structure {
                                     IafBlocks.PIXIE_HOUSE_DARK_OAK.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());
                             default -> IafBlocks.PIXIE_HOUSE_OAK.get().defaultBlockState();
                         };
-                        PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel());
-                        assert pixie != null;
-                        pixie.finalizeSpawn(world, world.getCurrentDifficultyAt(buildPosition2.above()), MobSpawnType.SPAWNER, null);
-                        pixie.setPos(buildPosition2.getX(), buildPosition2.getY() + 2, buildPosition2.getZ());
-                        pixie.setPersistenceRequired();
-                        world.addFreshEntity(pixie);
+                        if (spawnedPixies < maxPixies) {
+                            PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel());
+                            assert pixie != null;
+                            pixie.finalizeSpawn(world, world.getCurrentDifficultyAt(buildPosition2.above()), MobSpawnType.SPAWNER, null);
+                            pixie.setPos(buildPosition2.getX(), buildPosition2.getY() + 2, buildPosition2.getZ());
+                            pixie.setPersistenceRequired();
+                            world.addFreshEntity(pixie);
+                            spawnedPixies++;
+                        }
 
                         world.setBlock(buildPosition2.relative(houseDir).above(), houseState, 2);
                         if (!world.getBlockState(buildPosition2.relative(houseDir)).canOcclude()) {
