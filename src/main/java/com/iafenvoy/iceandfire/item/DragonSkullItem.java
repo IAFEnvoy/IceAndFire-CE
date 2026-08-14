@@ -23,7 +23,7 @@ public class DragonSkullItem extends Item {
     private final DragonType dragonType;
 
     public DragonSkullItem(DragonType dragonType) {
-        super(new Properties().stacksTo(1).component(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(4, 75)));
+        super(new Properties().stacksTo(16).component(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(4, 75)));
         this.dragonType = dragonType;
     }
 

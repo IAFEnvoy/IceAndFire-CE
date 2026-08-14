@@ -93,6 +93,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
@@ -1401,18 +1402,38 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         final int bounds = 1;
                         final int flightModifier = this.isFlying() && this.getTarget() != null ? -1 : 1;
                         final int yMinus = this.calculateDownY();
+                        AABB collisionBounds = this.getMultipartBoundingBox();
                         BlockPos.betweenClosedStream(
-                                (int) Math.floor(this.getBoundingBox().minX) - bounds,
-                                (int) Math.floor(this.getBoundingBox().minY) + yMinus,
-                                (int) Math.floor(this.getBoundingBox().minZ) - bounds,
-                                (int) Math.floor(this.getBoundingBox().maxX) + bounds,
-                                (int) Math.floor(this.getBoundingBox().maxY) + bounds + flightModifier,
-                                (int) Math.floor(this.getBoundingBox().maxZ) + bounds
+                                (int) Math.floor(collisionBounds.minX) - bounds,
+                                (int) Math.floor(collisionBounds.minY) + yMinus,
+                                (int) Math.floor(collisionBounds.minZ) - bounds,
+                                (int) Math.floor(collisionBounds.maxX) + bounds,
+                                (int) Math.floor(collisionBounds.maxY) + bounds + flightModifier,
+                                (int) Math.floor(collisionBounds.maxZ) + bounds
                         ).forEach(this::breakBlock);
                     }
                 }
             }
         }
+    }
+
+    /** Returns the collision area occupied by the dragon body and all of its multipart hitboxes. */
+    private AABB getMultipartBoundingBox() {
+        AABB bounds = this.getBoundingBox();
+        for (PartEntity<?> part : this.getParts()) {
+            if (part != null && !part.isRemoved()) {
+                AABB partBounds = part.getBoundingBox();
+                bounds = new AABB(
+                        Math.min(bounds.minX, partBounds.minX),
+                        Math.min(bounds.minY, partBounds.minY),
+                        Math.min(bounds.minZ, partBounds.minZ),
+                        Math.max(bounds.maxX, partBounds.maxX),
+                        Math.max(bounds.maxY, partBounds.maxY),
+                        Math.max(bounds.maxZ, partBounds.maxZ)
+                );
+            }
+        }
+        return bounds;
     }
 
     @SuppressWarnings("deprecation")
