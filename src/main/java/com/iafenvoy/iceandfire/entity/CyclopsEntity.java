@@ -49,6 +49,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class CyclopsEntity extends Monster implements IAnimatedEntity, BlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
@@ -70,6 +71,8 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         ANIMATION_EATPLAYER = Animation.create(40);
         ANIMATION_KICK = Animation.create(20);
         ANIMATION_ROAR = Animation.create(30);
+        this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.6F, 1);
+        this.setId(this.getId());
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -248,11 +251,6 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     @Override
     public void aiStep() {
         super.aiStep();
-        if (this.eyeEntity == null) {
-            this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.6F, 1);
-            this.eyeEntity.copyPosition(this);
-            this.level().addFreshEntity(this.eyeEntity);
-        }
         if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.getTarget() instanceof Player) {
             this.setTarget(null);
         }
@@ -304,12 +302,32 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
 
         if (this.eyeEntity == null || this.eyeEntity.isRemoved()) {
             this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.5F, 1);
-            this.eyeEntity.copyPosition(this);
-            this.level().addFreshEntity(this.eyeEntity);
+            this.updatePartIds();
         }
         if (!this.isRemoved())
-            IafEntityUtil.updatePart(this.eyeEntity, this);
+            this.eyeEntity.updatePosition();
         this.breakBlock();
+    }
+
+    private void updatePartIds() {
+        if (this.eyeEntity != null)
+            this.eyeEntity.setId(this.getId() + 1);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        this.updatePartIds();
+    }
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        return this.eyeEntity == null ? new PartEntity<?>[0] : new PartEntity<?>[]{this.eyeEntity};
     }
 
     @Override

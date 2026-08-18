@@ -62,6 +62,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.entity.PartEntity;
 
 @SuppressWarnings("ALL")
 public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICustomCollisions, BlacklistedFromStatues, IAnimatedEntity, IVillagerFear, IAnimalFear, IGroundMount, IHasCustomizableAttributes, ICustomMoveController {
@@ -87,7 +88,7 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     private boolean willExplode = false;
     private int ticksTillExplosion = 60;
     private Animation currentAnimation;
-    private final SlowPartEntity[] segments = new SlowPartEntity[7];
+    private final SlowPartEntity<DeathWormEntity>[] segments = new SlowPartEntity[7];
     private boolean isSandNavigator;
     private int growthCounter = 0;
     private Player thrower;
@@ -103,6 +104,8 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             this.tail_buffer = new ChainBuffer();
         }
         this.switchNavigator(false);
+        this.onUpdateParts();
+        this.setId(this.getId());
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -186,18 +189,39 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
             if (this.segments[i] != null && !this.segments[i].isRemoved()) continue;
             this.segments[i] = new SlowPartEntity(this, (-0.8F - (i * 0.8F)), 0, 0, 0.7F, 0.7F, 1);
             this.segments[i].copyPosition(this);
-            this.segments[i].setParent(this);
             this.segments[i].updateScale(this.getAgeScale());
-            this.level().addFreshEntity(this.segments[i]);
         }
-        for (MultipartPartEntity entity : this.segments)
-            IafEntityUtil.updatePart(entity, this);
+        for (SlowPartEntity<DeathWormEntity> entity : this.segments)
+            entity.updatePosition();
+        this.updatePartIds();
     }
 
     public void updateScale(float scale) {
-        for (SlowPartEntity entity : this.segments)
+        for (SlowPartEntity<DeathWormEntity> entity : this.segments)
             if (entity != null && !entity.isRemoved())
                 entity.updateScale(scale);
+    }
+
+    private void updatePartIds() {
+        for (int i = 0; i < this.segments.length; i++)
+            if (this.segments[i] != null)
+                this.segments[i].setId(this.getId() + i + 1);
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        this.updatePartIds();
+    }
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        return this.segments;
     }
 
     @Override

@@ -87,10 +87,6 @@ public final class IafRenderers {
         event.registerEntityRenderer(IafEntities.HYDRA.get(), HydraEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.HYDRA_BREATH.get(), NothingEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.HYDRA_ARROW.get(), HydraArrowEntityRenderer::new);
-        event.registerEntityRenderer(IafEntities.SLOW_MULTIPART.get(), NothingEntityRenderer::new);
-        event.registerEntityRenderer(IafEntities.DRAGON_MULTIPART.get(), NothingEntityRenderer::new);
-        event.registerEntityRenderer(IafEntities.CYCLOPS_MULTIPART.get(), NothingEntityRenderer::new);
-        event.registerEntityRenderer(IafEntities.HYDRA_MULTIPART.get(), NothingEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.GHOST.get(), GhostEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.GHOST_SWORD.get(), GhostSwordEntityRenderer::new);
     }

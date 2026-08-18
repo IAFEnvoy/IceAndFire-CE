@@ -22,10 +22,6 @@ import java.util.function.Supplier;
 public final class IafEntities {
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(Registries.ENTITY_TYPE, IceAndFire.MOD_ID);
 
-    public static final DeferredHolder<EntityType<?>, EntityType<DragonPartEntity>> DRAGON_MULTIPART = build("dragon_multipart", DragonPartEntity::new, MobCategory.MISC, true, 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<SlowPartEntity>> SLOW_MULTIPART = build("multipart", SlowPartEntity::new, MobCategory.MISC, true, 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<HydraHeadEntity>> HYDRA_MULTIPART = build("hydra_multipart", HydraHeadEntity::new, MobCategory.MISC, true, 0.5F, 0.5F);
-    public static final DeferredHolder<EntityType<?>, EntityType<CyclopsEyeEntity>> CYCLOPS_MULTIPART = build("cylcops_multipart", CyclopsEyeEntity::new, MobCategory.MISC, true, 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<DragonEggEntity>> DRAGON_EGG = build("dragon_egg", DragonEggEntity::new, MobCategory.MISC, true, 0.45F, 0.55F);
     public static final DeferredHolder<EntityType<?>, EntityType<DragonArrowEntity>> DRAGON_ARROW = build("dragon_arrow", DragonArrowEntity::new, MobCategory.MISC, false, 0.5F, 0.5F);
     public static final DeferredHolder<EntityType<?>, EntityType<DragonSkullEntity>> DRAGON_SKULL = build("dragon_skull", DragonSkullEntity::new, MobCategory.MISC, false, 0.9F, 0.65F);
