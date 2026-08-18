@@ -103,7 +103,7 @@ public abstract class DragonChargeEntity extends Fireball implements IDragonProj
                 }
             }
             if (movingObject.getType() != HitResult.Type.MISS) {
-                if (shootingEntity instanceof DragonBaseEntity dragon && DragonUtils.canGrief(dragon))
+                if (shootingEntity instanceof DragonBaseEntity dragon && (DragonUtils.canGrief(dragon) || DragonUtils.canSoftGrief(dragon)))
                     this.destroyArea(this.level(), BlockPos.containing(this.getX(), this.getY(), this.getZ()), dragon);
                 this.remove(RemovalReason.DISCARDED);
             }

@@ -23,7 +23,7 @@ public class DragonSkullItem extends Item {
     private final DragonType dragonType;
 
     public DragonSkullItem(DragonType dragonType) {
-        super(new Properties().stacksTo(1).component(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(4, 75)));
+        super(new Properties().stacksTo(16).component(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(4, 75)));
         this.dragonType = dragonType;
     }
 
@@ -54,8 +54,8 @@ public class DragonSkullItem extends Item {
             BlockPos offset = context.getClickedPos().relative(context.getClickedFace(), 1);
             skull.moveTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
             float yaw = context.getPlayer().getYRot();
-            if (context.getClickedFace() != Direction.UP)
-                yaw = context.getPlayer().getDirection().toYRot();
+            if (context.getClickedFace().getAxis().isHorizontal())
+                yaw = context.getClickedFace().toYRot() + 180.0F;
             skull.setYRot(yaw);
             if (stack.has(DataComponents.CUSTOM_NAME))
                 skull.setCustomName(stack.getHoverName());

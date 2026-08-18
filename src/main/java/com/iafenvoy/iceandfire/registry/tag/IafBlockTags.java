@@ -19,6 +19,7 @@ public final class IafBlockTags {
 
     public static final TagKey<Block> DRAGON_BLOCK_BREAK_BLACKLIST = create("dragon_block_break_blacklist");
     public static final TagKey<Block> DRAGON_BLOCK_BREAK_NO_DROPS = create("dragon_block_break_no_drops");
+    public static final TagKey<Block> DRAGON_BLOCK_BREAK_SOFT = create("dragon_block_break_soft");
     public static final TagKey<Block> GRASSES = create("grasses");
 
     private static TagKey<Block> create(final String name) {

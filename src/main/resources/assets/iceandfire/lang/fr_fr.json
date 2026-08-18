@@ -1278,6 +1278,7 @@
   "config.iceandfire.category.pixie": "Fée",
   "config.iceandfire.pixie.spawnChance": "Chance d'apparition",
   "config.iceandfire.pixie.size": "Taille",
+  "config.iceandfire.pixie.maxPixiesPerVillage": "Nombre maximal de fées par village",
   "config.iceandfire.pixie.stealItems": "Vol les items",
   "config.iceandfire.category.cyclops": "Cyclopes",
   "config.iceandfire.cyclops.spawnWanderingChance": "Chance d'apparition en errance",

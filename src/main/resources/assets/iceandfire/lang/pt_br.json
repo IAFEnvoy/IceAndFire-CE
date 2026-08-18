@@ -668,6 +668,7 @@
   "config.iceandfire.misc.dreadQueenMaxHealth": "Vida Máxima da Rainha do Pavor",
   "config.iceandfire.misc.enableDragonSeeker": "Ativar Buscador de Dragões",
   "config.iceandfire.pixie.size": "Tamanho",
+  "config.iceandfire.pixie.maxPixiesPerVillage": "Máximo de Fadas por Vila",
   "config.iceandfire.pixie.spawnChance": "Chance de Geração",
   "config.iceandfire.pixie.stealItems": "Roubar Itens",
   "config.iceandfire.seaSerpent.attackDamage": "Força de Ataque",

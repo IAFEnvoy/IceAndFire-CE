@@ -253,6 +253,7 @@ public class DragonUtils {
 
     public static boolean canDragonBreak(final BlockState state, final Entity entity) {
         if (!entity.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) return false;
+        if (entity instanceof DragonBaseEntity dragon && !canGrief(dragon, state)) return false;
         Block block = state.getBlock();
         return block.getExplosionResistance() < 1200 && !state.is(IafBlockTags.DRAGON_BLOCK_BREAK_BLACKLIST);
     }
@@ -276,6 +277,16 @@ public class DragonUtils {
             if (!IafCommonConfig.INSTANCE.dragon.tamedGriefing.getValue()) return false;
         }
         return IafCommonConfig.INSTANCE.dragon.griefing.getValue();
+
+    }
+
+    public static boolean canGrief(DragonBaseEntity dragon, BlockState state) {
+        return canGrief(dragon) || canSoftGrief(dragon) && state.is(IafBlockTags.DRAGON_BLOCK_BREAK_SOFT);
+    }
+
+    public static boolean canSoftGrief(DragonBaseEntity dragon) {
+        if (dragon.isTame() && !IafCommonConfig.INSTANCE.dragon.tamedGriefing.getValue()) return false;
+        return IafCommonConfig.INSTANCE.dragon.softBlockGriefing.getValue();
 
     }
 
