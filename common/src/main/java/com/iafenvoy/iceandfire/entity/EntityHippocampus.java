@@ -878,7 +878,7 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
 
         @Override
         public boolean shouldContinue() {
-            return EntityHippocampus.this.canAutonomouslySwim() && this.explorationTicks > 0;
+            return EntityHippocampus.this.canAutonomouslySwim() && this.target != null && this.explorationTicks > 0;
         }
 
         @Override
@@ -889,7 +889,7 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
         @Override
         public void tick() {
             this.explorationTicks--;
-            if (EntityHippocampus.this.squaredDistanceTo(this.target) < 8.0D || EntityHippocampus.this.getNavigation().isIdle())
+            if (this.target == null || EntityHippocampus.this.squaredDistanceTo(this.target) < 8.0D || EntityHippocampus.this.getNavigation().isIdle())
                 this.target = EntityHippocampus.this.findWaterTarget(4 + EntityHippocampus.this.random.nextInt(3), 16);
             if (this.target != null)
                 EntityHippocampus.this.getNavigation().startMovingTo(this.target.x, this.target.y, this.target.z, 0.8D);
