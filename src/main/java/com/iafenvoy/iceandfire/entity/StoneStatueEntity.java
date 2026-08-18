@@ -5,6 +5,8 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.mixin.LivingEntityAccessor;
 import com.iafenvoy.iceandfire.registry.IafEntities;
+import com.iafenvoy.iceandfire.registry.IafMobEffects;
+import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -50,6 +52,7 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
         try {
             if (!(parent instanceof Player)) {
                 parent.saveWithoutId(entityTag);
+                trimRestorationData(entityTag);
             }
         } catch (Exception e) {
             IceAndFire.LOGGER.debug("Encountered issue creating stone statue from {}", parent);
@@ -61,6 +64,20 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
         statue.setTrappedHeight(parent.getBbHeight());
         statue.setTrappedScale(parent.getAgeScale());
         return statue;
+    }
+
+    private static void trimRestorationData(CompoundTag entityTag) {
+        entityTag.remove("UUID");
+        entityTag.remove("Pos");
+        entityTag.remove("Motion");
+        entityTag.remove("Rotation");
+        entityTag.remove("FallDistance");
+        entityTag.remove("Fire");
+        entityTag.remove("Air");
+        entityTag.remove("OnGround");
+        entityTag.remove("PortalCooldown");
+        entityTag.remove("Leash");
+        entityTag.remove("Passengers");
     }
 
     @Override
@@ -169,6 +186,9 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
     @Override
     public void tick() {
         super.tick();
+        if (this.level() instanceof ServerLevel serverLevel && this.hasEffect(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafMobEffects.DEPETRIFICATION.get()))) {
+            this.tryDepetrify(serverLevel);
+        }
         this.setYRot(this.yBodyRot);
         this.yHeadRot = this.getYRot();
         if (Math.abs(this.getBbWidth() - this.getTrappedWidth()) > 0.01 || Math.abs(this.getBbHeight() - this.getTrappedHeight()) > 0.01) {
@@ -177,6 +197,29 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
             this.stoneStatueSize = EntityDimensions.scalable(this.getTrappedWidth(), this.getTrappedHeight());
             this.refreshDimensions();
             this.setPos(prevX, this.getY(), prevZ);
+        }
+    }
+
+    private void tryDepetrify(ServerLevel level) {
+        EntityType<?> entityType = this.getTrappedEntityType();
+        if (entityType == EntityType.PLAYER || entityType.is(IafEntityTags.NO_DEPETRIFY)) return;
+
+        CompoundTag entityTag = this.getTrappedTag();
+        if (entityTag.isEmpty()) return;
+
+        Entity entity = entityType.create(level);
+        if (!(entity instanceof LivingEntity livingEntity)) return;
+
+        try {
+            CompoundTag restorationData = entityTag.copy();
+            trimRestorationData(restorationData);
+            livingEntity.load(restorationData);
+            livingEntity.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+            if (level.addFreshEntity(livingEntity)) {
+                this.remove(RemovalReason.DISCARDED);
+            }
+        } catch (Exception e) {
+            IceAndFire.LOGGER.warn("Could not depetrify {}", this.getTrappedEntityTypeString(), e);
         }
     }
 

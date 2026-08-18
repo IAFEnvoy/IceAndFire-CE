@@ -11,6 +11,7 @@ public final class IafEntityTags {
     public static final TagKey<EntityType<?>> ICE_DRAGON = create("ice_dragon");
     public static final TagKey<EntityType<?>> LIGHTNING_DRAGON = create("lightning_dragon");
     public static final TagKey<EntityType<?>> IMMUNE_TO_GORGON_STONE = create("immune_to_gorgon_stone");
+    public static final TagKey<EntityType<?>> NO_DEPETRIFY = create("no_depetrify");
     public static final TagKey<EntityType<?>> CHICKENS = create("chickens");
     public static final TagKey<EntityType<?>> FEAR_DRAGONS = create("fear_dragons");
     public static final TagKey<EntityType<?>> SCARES_COCKATRICES = create("scares_cockatrices");

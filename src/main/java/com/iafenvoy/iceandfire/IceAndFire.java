@@ -76,6 +76,7 @@ public final class IceAndFire {
         IafFeatures.REGISTRY.register(bus);
         IafMenus.REGISTRY.register(bus);
         IafMobEffects.REGISTRY.register(bus);
+        IafPotions.REGISTRY.register(bus);
         IafStructurePieces.REGISTRY.register(bus);
         IafStructureTypes.REGISTRY.register(bus);
         //Trade
@@ -96,5 +97,6 @@ public final class IceAndFire {
     @SubscribeEvent
     public static void registerBrewing(RegisterBrewingRecipesEvent event) {
         event.getBuilder().addMix(Potions.WATER, IafItems.SHINY_SCALES.get(), Potions.WATER_BREATHING);
+        event.getBuilder().addMix(Potions.AWKWARD, IafItems.GORGON_HEAD.get(), IafPotions.DEPETRIFICATION);
     }
 }
