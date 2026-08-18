@@ -43,7 +43,19 @@ public class DragonMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player playerIn) {
-        return !this.dragon.hasInventoryChanged(this.dragonInventory) && this.dragonInventory.stillValid(playerIn) && this.dragon.isAlive() && this.dragon.distanceTo(playerIn) < 8.0F;
+        return !this.dragon.hasInventoryChanged(this.dragonInventory)
+                && this.dragonInventory.stillValid(playerIn)
+                && this.dragon.isAlive()
+                && this.isWithinDragonRange(playerIn);
+    }
+
+    private boolean isWithinDragonRange(Player player) {
+        if (this.dragon.distanceToSqr(player) < 64.0D)
+            return true;
+        for (var part : this.dragon.getParts())
+            if (part != null && !part.isRemoved() && part.distanceToSqr(player) < 64.0D)
+                return true;
+        return false;
     }
 
     @Override
