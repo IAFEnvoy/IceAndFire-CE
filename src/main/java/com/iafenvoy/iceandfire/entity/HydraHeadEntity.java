@@ -2,7 +2,6 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 public class HydraHeadEntity extends MultipartPartEntity<HydraEntity> {

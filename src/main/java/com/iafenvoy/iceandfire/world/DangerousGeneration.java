@@ -1,9 +1,9 @@
 package com.iafenvoy.iceandfire.world;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
-import com.iafenvoy.uranus.ServerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.Optional;
 
@@ -13,7 +13,7 @@ public interface DangerousGeneration {
     }
 
     default boolean isFarEnoughFromSpawn(BlockPos pos) {
-        return Optional.ofNullable(ServerHelper.server).map(server -> this.isFarEnoughFromSpawn(server.overworld(), pos)).orElse(true);
+        return Optional.ofNullable(ServerLifecycleHooks.getCurrentServer()).map(server -> this.isFarEnoughFromSpawn(server.overworld(), pos)).orElse(true);
     }
 
     default float getDangerousRadius() {

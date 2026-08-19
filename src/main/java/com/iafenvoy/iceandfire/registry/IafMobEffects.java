@@ -1,8 +1,8 @@
 package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.effect.FrozenStatusEffect;
 import com.iafenvoy.iceandfire.effect.DepetrificationStatusEffect;
+import com.iafenvoy.iceandfire.effect.FrozenStatusEffect;
 import com.iafenvoy.iceandfire.effect.SirenCharmStatusEffect;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
