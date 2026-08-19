@@ -5,6 +5,7 @@ import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
 import net.minecraft.client.model.HumanoidModel;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadThrallModel extends DreadBaseModel<DreadThrallEntity> {
     public DreadThrallModel(float modelScale, boolean bodyArmorModel) {
@@ -71,7 +72,7 @@ public class DreadThrallModel extends DreadBaseModel<DreadThrallEntity> {
     }
 
     @Override
-    public void prepareMobModel(DreadThrallEntity entity, float limbAngle, float limbDistance, float tickDelta) {
+    public void prepareMobModel(@NotNull DreadThrallEntity entity, float limbAngle, float limbDistance, float tickDelta) {
         this.rightArmPose = HumanoidModel.ArmPose.EMPTY;
         this.leftArmPose = HumanoidModel.ArmPose.EMPTY;
         super.prepareMobModel(entity, limbAngle, limbDistance, tickDelta);

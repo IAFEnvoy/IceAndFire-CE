@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.entity.DreadGhoulEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadGhoulModel extends BipedBaseModel<DreadGhoulEntity> {
     public final AdvancedModelBox head2;
@@ -65,7 +66,7 @@ public class DreadGhoulModel extends BipedBaseModel<DreadGhoulEntity> {
     }
 
     @Override
-    public void setupAnim(DreadGhoulEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull DreadGhoulEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.faceTarget(headYaw, headPitch, 1.0F, this.head);
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0f);

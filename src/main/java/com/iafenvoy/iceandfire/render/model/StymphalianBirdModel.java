@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class StymphalianBirdModel extends DragonBaseModel<StymphalianBirdEntity> {
     public final AdvancedModelBox Body;
@@ -376,7 +377,7 @@ public class StymphalianBirdModel extends DragonBaseModel<StymphalianBirdEntity>
     }
 
     @Override
-    public void setupAnim(StymphalianBirdEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull StymphalianBirdEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         float speed_walk = 0.3F;
         float speed_idle = 0.05F;

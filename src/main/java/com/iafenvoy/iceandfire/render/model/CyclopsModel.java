@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class CyclopsModel extends DragonBaseModel<CyclopsEntity> {
     public final AdvancedModelBox body;
@@ -377,7 +378,7 @@ public class CyclopsModel extends DragonBaseModel<CyclopsEntity> {
     }
 
     @Override
-    public void setupAnim(CyclopsEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull CyclopsEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         float speed_walk = 0.2F;
         float speed_idle = 0.05F;

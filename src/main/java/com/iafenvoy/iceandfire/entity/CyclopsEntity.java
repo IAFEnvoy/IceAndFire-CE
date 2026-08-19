@@ -329,7 +329,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     @Override
-    public PartEntity<?>[] getParts() {
+    public PartEntity<?> @NotNull [] getParts() {
         return this.eyeEntity == null ? new PartEntity<?>[0] : new PartEntity<?>[]{this.eyeEntity};
     }
 

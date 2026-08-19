@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.entity.GhostEntity;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
+import org.jetbrains.annotations.NotNull;
 
 public class GhostModel extends BipedBaseModel<GhostEntity> {
     public final AdvancedModelBox robe;
@@ -87,7 +88,7 @@ public class GhostModel extends BipedBaseModel<GhostEntity> {
     }
 
     @Override
-    public void setupAnim(GhostEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull GhostEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         this.faceTarget(headYaw, headPitch, 1, this.head);

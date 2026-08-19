@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
     public final AdvancedModelBox BodyUpper;
@@ -432,7 +433,7 @@ public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
     }
 
     @Override
-    public void setupAnim(AmphithereEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull AmphithereEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
         if (this.young) {

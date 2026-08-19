@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class CockatriceModel extends DragonBaseModel<CockatriceEntity> {
     public final AdvancedModelBox lowerBody;
@@ -387,7 +388,7 @@ public class CockatriceModel extends DragonBaseModel<CockatriceEntity> {
     }
 
     @Override
-    public void setupAnim(CockatriceEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull CockatriceEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         float speed_walk = 0.6F;
         float speed_idle = 0.05F;

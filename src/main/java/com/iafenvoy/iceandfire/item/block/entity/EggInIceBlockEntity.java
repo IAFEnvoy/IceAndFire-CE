@@ -90,7 +90,7 @@ public class EggInIceBlockEntity extends BlockEntity {
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         CompoundTag nbtTagCompound = new CompoundTag();
-        this.saveAdditional(nbtTagCompound, null);
+        this.saveAdditional(nbtTagCompound, this.level.registryAccess());
         return ClientboundBlockEntityDataPacket.create(this);
     }
 

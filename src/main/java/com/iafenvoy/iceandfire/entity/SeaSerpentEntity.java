@@ -246,7 +246,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     @Override
-    public PartEntity<?>[] getParts() {
+    public PartEntity<?> @NotNull [] getParts() {
         return this.segments;
     }
 

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class DragonMenu extends AbstractContainerMenu {
@@ -52,7 +53,7 @@ public class DragonMenu extends AbstractContainerMenu {
     private boolean isWithinDragonRange(Player player) {
         if (this.dragon.distanceToSqr(player) < 64.0D)
             return true;
-        for (var part : this.dragon.getParts())
+        for (PartEntity<?> part : this.dragon.getParts())
             if (part != null && !part.isRemoved() && part.distanceToSqr(player) < 64.0D)
                 return true;
         return false;

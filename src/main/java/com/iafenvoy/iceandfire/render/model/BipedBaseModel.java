@@ -149,7 +149,7 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     }
 
     @Override
-    public void setupAnim(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
         this.faceTarget(headYaw, headPitch, 1.0F, this.head);

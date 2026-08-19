@@ -5,6 +5,7 @@ import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class GorgonHeadActiveModel extends AdvancedEntityModel<Entity> {
     public final AdvancedModelBox Head;
@@ -486,7 +487,7 @@ public class GorgonHeadActiveModel extends AdvancedEntityModel<Entity> {
     }
 
     @Override
-    public void setupAnim(Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull Entity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
     }
 
     @Override

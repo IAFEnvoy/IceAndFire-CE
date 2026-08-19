@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
     public final AdvancedModelBox Body;
@@ -242,7 +243,7 @@ public class HippocampusModel extends DragonBaseModel<HippocampusEntity> {
     }
 
     @Override
-    public void setupAnim(HippocampusEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull HippocampusEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         if (this.young) {
             this.Body.setShouldScaleChildren(true);

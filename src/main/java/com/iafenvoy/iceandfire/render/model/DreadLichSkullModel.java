@@ -6,6 +6,7 @@ import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
+import org.jetbrains.annotations.NotNull;
 
 public class DreadLichSkullModel extends AdvancedEntityModel<DreadLichSkullEntity> {
     public final HideableModelRenderer bipedHead;
@@ -28,7 +29,7 @@ public class DreadLichSkullModel extends AdvancedEntityModel<DreadLichSkullEntit
     }
 
     @Override
-    public void setupAnim(DreadLichSkullEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull DreadLichSkullEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
     }
 

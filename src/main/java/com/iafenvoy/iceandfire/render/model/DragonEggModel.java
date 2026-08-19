@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.item.block.entity.EggInIceBlockEntity;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
+import org.jetbrains.annotations.NotNull;
 
 public class DragonEggModel extends AdvancedEntityModel<DragonEggEntity> {
     public final AdvancedModelBox Egg1;
@@ -45,7 +46,7 @@ public class DragonEggModel extends AdvancedEntityModel<DragonEggEntity> {
     }
 
     @Override
-    public void setupAnim(DragonEggEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull DragonEggEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.Egg1.setPos(0.0F, 19.6F, 0.0F);
         this.Egg4.setPos(0.0F, -0.9F, 0.0F);

@@ -6,6 +6,7 @@ import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class PixieHouseModel extends AdvancedEntityModel<LivingEntity> {
     public final AdvancedModelBox stalk;
@@ -59,7 +60,7 @@ public class PixieHouseModel extends AdvancedEntityModel<LivingEntity> {
     }
 
     @Override
-    public void setupAnim(LivingEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull LivingEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 
     }
 

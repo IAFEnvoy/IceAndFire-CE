@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class TrollModel extends DragonBaseModel<TrollEntity> {
     public final AdvancedModelBox body;
@@ -346,7 +347,7 @@ public class TrollModel extends DragonBaseModel<TrollEntity> {
     }
 
     @Override
-    public void setupAnim(TrollEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull TrollEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.log1.showModel = true;
 

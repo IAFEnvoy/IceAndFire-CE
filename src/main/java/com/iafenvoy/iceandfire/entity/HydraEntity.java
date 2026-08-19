@@ -286,7 +286,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public PartEntity<?>[] getParts() {
+    public PartEntity<?> @NotNull [] getParts() {
         if (this.headBoxes[0] == null) return new PartEntity<?>[0];
         return this.headBoxes;
     }

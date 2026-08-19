@@ -462,7 +462,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public PartEntity<?>[] getParts() {
+    public PartEntity<?> @NotNull [] getParts() {
         if (this.headPart == null) return new PartEntity<?>[0];
         return new PartEntity<?>[]{this.headPart, this.neckPart, this.rightWingUpperPart, this.rightWingLowerPart, this.leftWingUpperPart, this.leftWingLowerPart, this.tail1Part, this.tail2Part, this.tail3Part, this.tail4Part};
     }

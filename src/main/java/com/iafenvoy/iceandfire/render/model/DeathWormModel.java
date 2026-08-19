@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
     public final AdvancedModelBox Body;
@@ -259,7 +260,7 @@ public class DeathWormModel extends DragonBaseModel<DeathWormEntity> {
     }
 
     @Override
-    public void setupAnim(DeathWormEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NotNull DeathWormEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         float speed_idle = 0.1F;
         float degree_idle = 0.5F;
         float speed_walk = 0.2F;
