@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class SummonGhostSwordAbility implements SwingHandAbility {
     @Override
@@ -27,7 +27,7 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
     public void active(LivingEntity attacker) {
         if (attacker instanceof Player playerEntity) {
             ItemStack stack = playerEntity.getItemInHand(InteractionHand.MAIN_HAND);
-            if (playerEntity.getCooldowns().isOnCooldown(stack.getItem())) {
+            if (playerEntity.getCooldowns().isOnCooldown(stack)) {
                 return;
             }
             final ItemAttributeModifiers dmg = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
@@ -40,12 +40,12 @@ public class SummonGhostSwordAbility implements SwingHandAbility {
             shot.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, 1, 0.5f);
             playerEntity.level().addFreshEntity(shot);
             stack.hurtAndBreak(1, playerEntity, EquipmentSlot.MAINHAND);
-            playerEntity.getCooldowns().addCooldown(stack.getItem(), 10);
+            playerEntity.getCooldowns().addCooldown(stack, 10);
         }
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
-        tooltip.add(Component.translatable("item.iceandfire.ghost_sword.desc_0").withStyle(ChatFormatting.GRAY));
+    public void addDescription(Consumer<Component> tooltip) {
+        tooltip.accept(Component.translatable("item.iceandfire.ghost_sword.desc_0").withStyle(ChatFormatting.GRAY));
     }
 }

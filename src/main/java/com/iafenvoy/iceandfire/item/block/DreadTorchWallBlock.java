@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DreadTorchWallBlock extends WallTorchBlock implements DreadBlock {
     public DreadTorchWallBlock() {
-        super(ParticleTypes.DUST_PLUME, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().lightLevel((state) -> 5).sound(SoundType.STONE).noOcclusion().dynamicShape().noCollission());
+        super(ParticleTypes.DUST_PLUME, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().lightLevel((state) -> 5).sound(SoundType.STONE).noOcclusion().dynamicShape().noCollision());
     }
 
     @Override

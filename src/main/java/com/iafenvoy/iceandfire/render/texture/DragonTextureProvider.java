@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.render.texture;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class DragonTextureProvider {
     }
 
     @NotNull
-    public ResourceLocation getTextureByEntity(DragonBaseEntity dragon) {
+    public Identifier getTextureByEntity(DragonBaseEntity dragon) {
         int stage = dragon.getDragonStage();
         if (dragon.isModelDead()) {
             if (dragon.getDeathStage() >= dragon.getAgeInDays() / 10)
@@ -29,32 +29,32 @@ public class DragonTextureProvider {
     }
 
     @NotNull
-    public ResourceLocation getBodyTexture(int stage) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_%d.png", this.dragonType.name(), this.name, stage));
+    public Identifier getBodyTexture(int stage) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_%d.png", this.dragonType.name(), this.name, stage));
     }
 
     @NotNull
-    public ResourceLocation getSleepTexture(int stage) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_%d_sleeping.png", this.dragonType.name(), this.name, stage));
+    public Identifier getSleepTexture(int stage) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_%d_sleeping.png", this.dragonType.name(), this.name, stage));
     }
 
     @NotNull
-    public ResourceLocation getSkeletonTexture(int stage) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_skeleton_%d.png", this.dragonType.name(), this.dragonType.name(), stage));
+    public Identifier getSkeletonTexture(int stage) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_skeleton_%d.png", this.dragonType.name(), this.dragonType.name(), stage));
     }
 
     @Nullable
-    public ResourceLocation getEyesTexture(int stage) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_%d_eyes.png", this.dragonType.name(), this.name, stage));
+    public Identifier getEyesTexture(int stage) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_%d_eyes.png", this.dragonType.name(), this.name, stage));
     }
 
     @Nullable
-    public ResourceLocation getMaleOverlay() {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/male_%s.png", this.dragonType.name(), this.name));
+    public Identifier getMaleOverlay() {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/male_%s.png", this.dragonType.name(), this.name));
     }
 
     @NotNull
-    public ResourceLocation getEggTexture() {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/egg_%s.png", this.dragonType.name(), this.name));
+    public Identifier getEggTexture() {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/egg_%s.png", this.dragonType.name(), this.name));
     }
 }

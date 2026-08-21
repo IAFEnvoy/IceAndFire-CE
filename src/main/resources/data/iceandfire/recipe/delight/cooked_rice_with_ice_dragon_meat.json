@@ -1,19 +1,14 @@
 {
+  "neoforge:conditions": [
+    {"type": "neoforge:mod_loaded", "modid": "farmersdelight"}
+  ],
   "type": "farmersdelight:cooking",
   "recipe_book_tab": "meals",
   "ingredients": [
-    {
-      "item": "farmersdelight:rice"
-    },
-    {
-      "item": "iceandfire:ice_dragon_flesh"
-    },
-    {
-      "item": "minecraft:potato"
-    },
-    {
-      "item": "minecraft:carrot"
-    }
+    "farmersdelight:rice",
+    "iceandfire:ice_dragon_flesh",
+    "minecraft:potato",
+    "minecraft:carrot"
   ],
   "result": {
     "id": "iceandfire:cooked_rice_with_ice_dragon_meat"

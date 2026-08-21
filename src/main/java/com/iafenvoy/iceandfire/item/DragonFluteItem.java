@@ -6,7 +6,6 @@ import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -25,9 +24,9 @@ public class DragonFluteItem extends Item {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level worldIn, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(Level worldIn, Player player, @NotNull InteractionHand hand) {
         ItemStack itemStackIn = player.getItemInHand(hand);
-        player.getCooldowns().addCooldown(this, 60);
+        player.getCooldowns().addCooldown(itemStackIn, 60);
 
         float range = 16 * IafCommonConfig.INSTANCE.dragon.fluteDistance.getValue();
         List<Entity> list = worldIn.getEntities(player, (new AABB(player.getX(), player.getY(), player.getZ(), player.getX() + 1.0D, player.getY() + 1.0D, player.getZ() + 1.0D)).inflate(range, 256, range));
@@ -39,7 +38,7 @@ public class DragonFluteItem extends Item {
         for (IDragonFlute dragon : dragons)
             dragon.onHearFlute(player);
         worldIn.playSound(player, player.blockPosition(), IafSounds.DRAGONFLUTE.get(), SoundSource.NEUTRAL, 1, 1.75F);
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
+        return InteractionResult.SUCCESS;
     }
 
     public static class Sorter implements Comparator<Entity> {

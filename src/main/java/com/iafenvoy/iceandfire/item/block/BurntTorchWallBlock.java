@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class BurntTorchWallBlock extends WallTorchBlock implements DreadBlock {
     public BurntTorchWallBlock() {
-        super(ParticleTypes.SMOKE, Properties.of().mapColor(MapColor.WOOD).ignitedByLava().lightLevel((state) -> 0).sound(SoundType.WOOD).noOcclusion().dynamicShape().noCollission());
+        super(ParticleTypes.SMOKE, Properties.of().mapColor(MapColor.WOOD).ignitedByLava().lightLevel((state) -> 0).sound(SoundType.WOOD).noOcclusion().dynamicShape().noCollision());
     }
 
     @Override

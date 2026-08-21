@@ -12,17 +12,21 @@ import com.iafenvoy.iceandfire.item.armor.EarPlugsArmorItem;
 import com.iafenvoy.iceandfire.item.tool.*;
 import com.iafenvoy.iceandfire.registry.tag.IafBannerPatternTags;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.level.block.entity.BannerPattern;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-import static net.minecraft.world.item.DiggerItem.createAttributes;
 
 //FIXME::Specific vararg and remove .get()
 @SuppressWarnings("unused")
@@ -132,9 +136,9 @@ public final class IafItems {
     public static final DeferredItem<Item> HIPPOGRYPH_TALON = registerItem("hippogryph_talon", () -> new GenericItem(1));
     public static final DeferredItem<Item> STONE_STATUE = registerItem("stone_statue", StoneStatueItem::new);
     public static final DeferredItem<Item> BLINDFOLD = registerItem("blindfold", BlindfoldItem::new);
-    public static final DeferredItem<Item> PIXIE_DUST = registerItem("pixie_dust", () -> new Item(new Item.Properties().food(new FoodProperties.Builder().nutrition(1).saturationModifier(0.3F).alwaysEdible().effect(() -> new MobEffectInstance(MobEffects.LEVITATION, 100, 1), 1).effect(() -> new MobEffectInstance(MobEffects.GLOWING, 100, 1), 1).build())));
+    public static final DeferredItem<Item> PIXIE_DUST = registerItem("pixie_dust", () -> new Item(new Item.Properties().food(food(1, 0.3F, true), foodEffects(new MobEffectInstance(MobEffects.LEVITATION, 100, 1), new MobEffectInstance(MobEffects.GLOWING, 100, 1)))));
     public static final DeferredItem<Item> PIXIE_WINGS = registerItem("pixie_wings", () -> new GenericItem(1));
-    public static final DeferredItem<Item> AMBROSIA = registerItem("ambrosia", () -> new Item(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(5).saturationModifier(0.6F).alwaysEdible().usingConvertsTo(Items.BOWL).effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, 3600, 2), 1).effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 3600, 2), 1).effect(() -> new MobEffectInstance(MobEffects.JUMP, 3600, 2), 1).effect(() -> new MobEffectInstance(MobEffects.LUCK, 3600, 2), 1).build())));
+    public static final DeferredItem<Item> AMBROSIA = registerItem("ambrosia", () -> new Item(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(food(5, 0.6F, true), foodEffects(new MobEffectInstance(MobEffects.STRENGTH, 3600, 2), new MobEffectInstance(MobEffects.ABSORPTION, 3600, 2), new MobEffectInstance(MobEffects.JUMP_BOOST, 3600, 2), new MobEffectInstance(MobEffects.LUCK, 3600, 2)))));
     public static final DeferredItem<Item> SHINY_SCALES = registerItem("shiny_scales", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SIREN_TEAR = registerItem("siren_tear", () -> new GenericItem(1));
     public static final DeferredItem<Item> HIPPOCAMPUS_FIN = registerItem("hippocampus_fin", () -> new GenericItem(1));
@@ -170,57 +174,57 @@ public final class IafItems {
     public static final DeferredItem<Item> EPIC_DRAGON_SEEKER = registerItem("epic_dragon_seeker", () -> new DragonSeekerItem(DragonSeekerItem.SeekerType.EPIC));
     public static final DeferredItem<Item> LEGENDARY_DRAGON_SEEKER = registerItem("legendary_dragon_seeker", () -> new DragonSeekerItem(DragonSeekerItem.SeekerType.LEGENDARY));
     public static final DeferredItem<Item> GODLY_DRAGON_SEEKER = registerItem("godly_dragon_seeker", () -> new DragonSeekerItem(DragonSeekerItem.SeekerType.GODLY));
-    public static final DeferredItem<BannerPatternItem> PATTERN_FIRE = registerItem("banner_pattern_fire", () -> new BannerPatternItem(IafBannerPatternTags.FIRE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_ICE = registerItem("banner_pattern_ice", () -> new BannerPatternItem(IafBannerPatternTags.ICE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_LIGHTNING = registerItem("banner_pattern_lightning", () -> new BannerPatternItem(IafBannerPatternTags.LIGHTNING_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_FIRE_HEAD = registerItem("banner_pattern_fire_head", () -> new BannerPatternItem(IafBannerPatternTags.FIRE_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_ICE_HEAD = registerItem("banner_pattern_ice_head", () -> new BannerPatternItem(IafBannerPatternTags.ICE_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_LIGHTNING_HEAD = registerItem("banner_pattern_lightning_head", () -> new BannerPatternItem(IafBannerPatternTags.LIGHTNING_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_AMPHITHERE = registerItem("banner_pattern_amphithere", () -> new BannerPatternItem(IafBannerPatternTags.AMPHITHERE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_BIRD = registerItem("banner_pattern_bird", () -> new BannerPatternItem(IafBannerPatternTags.BIRD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_EYE = registerItem("banner_pattern_eye", () -> new BannerPatternItem(IafBannerPatternTags.EYE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_FAE = registerItem("banner_pattern_fae", () -> new BannerPatternItem(IafBannerPatternTags.FAE_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_FEATHER = registerItem("banner_pattern_feather", () -> new BannerPatternItem(IafBannerPatternTags.FEATHER_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_GORGON = registerItem("banner_pattern_gorgon", () -> new BannerPatternItem(IafBannerPatternTags.GORGON_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_HIPPOCAMPUS = registerItem("banner_pattern_hippocampus", () -> new BannerPatternItem(IafBannerPatternTags.HIPPOCAMPUS_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_HIPPOGRYPH_HEAD = registerItem("banner_pattern_hippogryph_head", () -> new BannerPatternItem(IafBannerPatternTags.HIPPOGRYPH_HEAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_MERMAID = registerItem("banner_pattern_mermaid", () -> new BannerPatternItem(IafBannerPatternTags.MERMAID_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_SEA_SERPENT = registerItem("banner_pattern_sea_serpent", () -> new BannerPatternItem(IafBannerPatternTags.SEA_SERPENT_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_TROLL = registerItem("banner_pattern_troll", () -> new BannerPatternItem(IafBannerPatternTags.TROLL_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_WEEZER = registerItem("banner_pattern_weezer", () -> new BannerPatternItem(IafBannerPatternTags.WEEZER_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<BannerPatternItem> PATTERN_DREAD = registerItem("banner_pattern_dread", () -> new BannerPatternItem(IafBannerPatternTags.DREAD_BANNER_PATTERN, new Item.Properties().stacksTo(1)));
-    public static final DeferredItem<DelightFoodItem> COOKED_RICE_WITH_FIRE_DRAGON_MEAT = registerItem("cooked_rice_with_fire_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.BOWL).effect(() -> new MobEffectInstance(MobEffects.SATURATION, 20 * 5), 1).effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 60 * 2), 1).build())));
-    public static final DeferredItem<DelightFoodItem> COOKED_RICE_WITH_ICE_DRAGON_MEAT = registerItem("cooked_rice_with_ice_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.BOWL).effect(() -> new MobEffectInstance(MobEffects.SATURATION, 20 * 5), 1).effect(() -> new MobEffectInstance(MobEffects.JUMP, 20 * 60 * 2, 2), 1).build())));
-    public static final DeferredItem<DelightFoodItem> COOKED_RICE_WITH_LIGHTNING_DRAGON_MEAT = registerItem("cooked_rice_with_lightning_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.BOWL).effect(() -> new MobEffectInstance(MobEffects.SATURATION, 20 * 5), 1).effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 60 * 2, 2), 1).build())));
-    public static final DeferredItem<DelightFoodItem> GHOST_CREAM = registerItem("ghost_cream", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().fast().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.GLASS_BOTTLE).effect(() -> new MobEffectInstance(MobEffects.LEVITATION, 20 * 20), 1).build())));
-    public static final DeferredItem<DelightFoodItem> PIXIE_DUST_MILKY_TEA = registerItem("pixie_dust_milky_tea", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).food(new FoodProperties.Builder().fast().nutrition(4).saturationModifier(0.6f).usingConvertsTo(Items.GLASS_BOTTLE).effect(() -> new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 2), 1).build())));
+    public static final DeferredItem<Item> PATTERN_FIRE = registerItem("banner_pattern_fire", () -> new Item(bannerPattern(IafBannerPatternTags.FIRE_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_ICE = registerItem("banner_pattern_ice", () -> new Item(bannerPattern(IafBannerPatternTags.ICE_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_LIGHTNING = registerItem("banner_pattern_lightning", () -> new Item(bannerPattern(IafBannerPatternTags.LIGHTNING_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_FIRE_HEAD = registerItem("banner_pattern_fire_head", () -> new Item(bannerPattern(IafBannerPatternTags.FIRE_HEAD_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_ICE_HEAD = registerItem("banner_pattern_ice_head", () -> new Item(bannerPattern(IafBannerPatternTags.ICE_HEAD_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_LIGHTNING_HEAD = registerItem("banner_pattern_lightning_head", () -> new Item(bannerPattern(IafBannerPatternTags.LIGHTNING_HEAD_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_AMPHITHERE = registerItem("banner_pattern_amphithere", () -> new Item(bannerPattern(IafBannerPatternTags.AMPHITHERE_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_BIRD = registerItem("banner_pattern_bird", () -> new Item(bannerPattern(IafBannerPatternTags.BIRD_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_EYE = registerItem("banner_pattern_eye", () -> new Item(bannerPattern(IafBannerPatternTags.EYE_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_FAE = registerItem("banner_pattern_fae", () -> new Item(bannerPattern(IafBannerPatternTags.FAE_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_FEATHER = registerItem("banner_pattern_feather", () -> new Item(bannerPattern(IafBannerPatternTags.FEATHER_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_GORGON = registerItem("banner_pattern_gorgon", () -> new Item(bannerPattern(IafBannerPatternTags.GORGON_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_HIPPOCAMPUS = registerItem("banner_pattern_hippocampus", () -> new Item(bannerPattern(IafBannerPatternTags.HIPPOCAMPUS_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_HIPPOGRYPH_HEAD = registerItem("banner_pattern_hippogryph_head", () -> new Item(bannerPattern(IafBannerPatternTags.HIPPOGRYPH_HEAD_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_MERMAID = registerItem("banner_pattern_mermaid", () -> new Item(bannerPattern(IafBannerPatternTags.MERMAID_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_SEA_SERPENT = registerItem("banner_pattern_sea_serpent", () -> new Item(bannerPattern(IafBannerPatternTags.SEA_SERPENT_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_TROLL = registerItem("banner_pattern_troll", () -> new Item(bannerPattern(IafBannerPatternTags.TROLL_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_WEEZER = registerItem("banner_pattern_weezer", () -> new Item(bannerPattern(IafBannerPatternTags.WEEZER_BANNER_PATTERN)));
+    public static final DeferredItem<Item> PATTERN_DREAD = registerItem("banner_pattern_dread", () -> new Item(bannerPattern(IafBannerPatternTags.DREAD_BANNER_PATTERN)));
+    public static final DeferredItem<DelightFoodItem> COOKED_RICE_WITH_FIRE_DRAGON_MEAT = registerItem("cooked_rice_with_fire_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(food(4, 0.6F, false), foodEffects(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 60 * 2)))));
+    public static final DeferredItem<DelightFoodItem> COOKED_RICE_WITH_ICE_DRAGON_MEAT = registerItem("cooked_rice_with_ice_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(food(4, 0.6F, false), foodEffects(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), new MobEffectInstance(MobEffects.JUMP_BOOST, 20 * 60 * 2, 2)))));
+    public static final DeferredItem<DelightFoodItem> COOKED_RICE_WITH_LIGHTNING_DRAGON_MEAT = registerItem("cooked_rice_with_lightning_dragon_meat", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.BOWL).food(food(4, 0.6F, false), foodEffects(new MobEffectInstance(MobEffects.SATURATION, 20 * 5), new MobEffectInstance(MobEffects.SPEED, 20 * 60 * 2, 2)))));
+    public static final DeferredItem<DelightFoodItem> GHOST_CREAM = registerItem("ghost_cream", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.GLASS_BOTTLE).food(food(4, 0.6F, false), fastFoodEffects(new MobEffectInstance(MobEffects.LEVITATION, 20 * 20)))));
+    public static final DeferredItem<DelightFoodItem> PIXIE_DUST_MILKY_TEA = registerItem("pixie_dust_milky_tea", () -> new DelightFoodItem(new Item.Properties().stacksTo(1).usingConvertsTo(Items.GLASS_BOTTLE).food(food(4, 0.6F, false), fastFoodEffects(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60 * 2)))));
 
     //spawn Eggs
     static {
-        registerItem("spawn_egg_fire_dragon", () -> new DeferredSpawnEggItem(IafEntities.FIRE_DRAGON, 0X340000, 0XA52929, new Item.Properties()));
-        registerItem("spawn_egg_ice_dragon", () -> new DeferredSpawnEggItem(IafEntities.ICE_DRAGON, 0XB5DDFB, 0X7EBAF0, new Item.Properties()));
-        registerItem("spawn_egg_lightning_dragon", () -> new DeferredSpawnEggItem(IafEntities.LIGHTNING_DRAGON, 0X422367, 0X725691, new Item.Properties()));
-        registerItem("spawn_egg_hippogryph", () -> new DeferredSpawnEggItem(IafEntities.HIPPOGRYPH, 0XD8D8D8, 0XD1B55D, new Item.Properties()));
-        registerItem("spawn_egg_gorgon", () -> new DeferredSpawnEggItem(IafEntities.GORGON, 0XD0D99F, 0X684530, new Item.Properties()));
-        registerItem("spawn_egg_pixie", () -> new DeferredSpawnEggItem(IafEntities.PIXIE, 0XFF7F89, 0XE2CCE2, new Item.Properties()));
-        registerItem("spawn_egg_cyclops", () -> new DeferredSpawnEggItem(IafEntities.CYCLOPS, 0XB0826E, 0X3A1F0F, new Item.Properties()));
-        registerItem("spawn_egg_siren", () -> new DeferredSpawnEggItem(IafEntities.SIREN, 0X8EE6CA, 0XF2DFC8, new Item.Properties()));
-        registerItem("spawn_egg_hippocampus", () -> new DeferredSpawnEggItem(IafEntities.HIPPOCAMPUS, 0X4491C7, 0X4FC56B, new Item.Properties()));
-        registerItem("spawn_egg_death_worm", () -> new DeferredSpawnEggItem(IafEntities.DEATH_WORM, 0XD1CDA3, 0X423A3A, new Item.Properties()));
-        registerItem("spawn_egg_cockatrice", () -> new DeferredSpawnEggItem(IafEntities.COCKATRICE, 0X8F5005, 0X4F5A23, new Item.Properties()));
-        registerItem("spawn_egg_stymphalian_bird", () -> new DeferredSpawnEggItem(IafEntities.STYMPHALIAN_BIRD, 0X744F37, 0X9E6C4B, new Item.Properties()));
-        registerItem("spawn_egg_troll", () -> new DeferredSpawnEggItem(IafEntities.TROLL, 0X3D413D, 0X58433A, new Item.Properties()));
-        registerItem("spawn_egg_amphithere", () -> new DeferredSpawnEggItem(IafEntities.AMPHITHERE, 0X597535, 0X00AA98, new Item.Properties()));
-        registerItem("spawn_egg_sea_serpent", () -> new DeferredSpawnEggItem(IafEntities.SEA_SERPENT, 0X008299, 0XC5E6E7, new Item.Properties()));
-        registerItem("spawn_egg_dread_thrall", () -> new DeferredSpawnEggItem(IafEntities.DREAD_THRALL, 0XE0E6E6, 0X00FFFF, new Item.Properties()));
-        registerItem("spawn_egg_dread_ghoul", () -> new DeferredSpawnEggItem(IafEntities.DREAD_GHOUL, 0XE0E6E6, 0X7B838A, new Item.Properties()));
-        registerItem("spawn_egg_dread_beast", () -> new DeferredSpawnEggItem(IafEntities.DREAD_BEAST, 0XE0E6E6, 0X38373C, new Item.Properties()));
-        registerItem("spawn_egg_dread_scuttler", () -> new DeferredSpawnEggItem(IafEntities.DREAD_SCUTTLER, 0XE0E6E6, 0X4D5667, new Item.Properties()));
-        registerItem("spawn_egg_lich", () -> new DeferredSpawnEggItem(IafEntities.DREAD_LICH, 0XE0E6E6, 0X274860, new Item.Properties()));
-        registerItem("spawn_egg_dread_knight", () -> new DeferredSpawnEggItem(IafEntities.DREAD_KNIGHT, 0XE0E6E6, 0X4A6C6E, new Item.Properties()));
-        registerItem("spawn_egg_dread_horse", () -> new DeferredSpawnEggItem(IafEntities.DREAD_HORSE, 0XE0E6E6, 0XACACAC, new Item.Properties()));
-        registerItem("spawn_egg_hydra", () -> new DeferredSpawnEggItem(IafEntities.HYDRA, 0X8B8B78, 0X2E372B, new Item.Properties()));
-        registerItem("spawn_egg_ghost", () -> new DeferredSpawnEggItem(IafEntities.GHOST, 0XB9EDB8, 0X73B276, new Item.Properties()));
+        registerItem("spawn_egg_fire_dragon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.FIRE_DRAGON.get())));
+        registerItem("spawn_egg_ice_dragon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.ICE_DRAGON.get())));
+        registerItem("spawn_egg_lightning_dragon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.LIGHTNING_DRAGON.get())));
+        registerItem("spawn_egg_hippogryph", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.HIPPOGRYPH.get())));
+        registerItem("spawn_egg_gorgon", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.GORGON.get())));
+        registerItem("spawn_egg_pixie", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.PIXIE.get())));
+        registerItem("spawn_egg_cyclops", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.CYCLOPS.get())));
+        registerItem("spawn_egg_siren", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.SIREN.get())));
+        registerItem("spawn_egg_hippocampus", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.HIPPOCAMPUS.get())));
+        registerItem("spawn_egg_death_worm", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DEATH_WORM.get())));
+        registerItem("spawn_egg_cockatrice", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.COCKATRICE.get())));
+        registerItem("spawn_egg_stymphalian_bird", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.STYMPHALIAN_BIRD.get())));
+        registerItem("spawn_egg_troll", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.TROLL.get())));
+        registerItem("spawn_egg_amphithere", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.AMPHITHERE.get())));
+        registerItem("spawn_egg_sea_serpent", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.SEA_SERPENT.get())));
+        registerItem("spawn_egg_dread_thrall", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_THRALL.get())));
+        registerItem("spawn_egg_dread_ghoul", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_GHOUL.get())));
+        registerItem("spawn_egg_dread_beast", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_BEAST.get())));
+        registerItem("spawn_egg_dread_scuttler", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_SCUTTLER.get())));
+        registerItem("spawn_egg_lich", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_LICH.get())));
+        registerItem("spawn_egg_dread_knight", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_KNIGHT.get())));
+        registerItem("spawn_egg_dread_horse", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.DREAD_HORSE.get())));
+        registerItem("spawn_egg_hydra", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.HYDRA.get())));
+        registerItem("spawn_egg_ghost", () -> new SpawnEggItem(new Item.Properties().spawnEgg(IafEntities.GHOST.get())));
     }
 
     //Hidden
@@ -229,87 +233,87 @@ public final class IafItems {
     public static final DeferredItem<Item> DRAGON_DEBUG_STICK = register("dragon_debug_stick", () -> new GenericItem(1));
 
     //Armors
-    public static final DeferredItem<Item> SILVER_HELMET = registerArmor("armor_silver_metal_helmet", () -> new ArmorItem(IafArmorMaterials.SILVER, ArmorItem.Type.HELMET, new Item.Properties().durability(165)));
-    public static final DeferredItem<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", () -> new ArmorItem(IafArmorMaterials.SILVER, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(240)));
-    public static final DeferredItem<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", () -> new ArmorItem(IafArmorMaterials.SILVER, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(225)));
-    public static final DeferredItem<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", () -> new ArmorItem(IafArmorMaterials.SILVER, ArmorItem.Type.BOOTS, new Item.Properties().durability(195)));
-    public static final DeferredItem<Item> COPPER_HELMET = registerArmor("armor_copper_metal_helmet", () -> new ArmorItem(IafArmorMaterials.COPPER, ArmorItem.Type.HELMET, new Item.Properties().durability(111)));
-    public static final DeferredItem<Item> COPPER_CHESTPLATE = registerArmor("armor_copper_metal_chestplate", () -> new ArmorItem(IafArmorMaterials.COPPER, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(161)));
-    public static final DeferredItem<Item> COPPER_LEGGINGS = registerArmor("armor_copper_metal_leggings", () -> new ArmorItem(IafArmorMaterials.COPPER, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(151)));
-    public static final DeferredItem<Item> COPPER_BOOTS = registerArmor("armor_copper_metal_boots", () -> new ArmorItem(IafArmorMaterials.COPPER, ArmorItem.Type.BOOTS, new Item.Properties().durability(131)));
-    public static final DeferredItem<Item> SHEEP_HELMET = registerArmor("sheep_helmet", () -> new ArmorItem(IafArmorMaterials.SHEEP, ArmorItem.Type.HELMET, new Item.Properties().durability(55)));
-    public static final DeferredItem<Item> SHEEP_CHESTPLATE = registerArmor("sheep_chestplate", () -> new ArmorItem(IafArmorMaterials.SHEEP, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(80)));
-    public static final DeferredItem<Item> SHEEP_LEGGINGS = registerArmor("sheep_leggings", () -> new ArmorItem(IafArmorMaterials.SHEEP, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(75)));
-    public static final DeferredItem<Item> SHEEP_BOOTS = registerArmor("sheep_boots", () -> new ArmorItem(IafArmorMaterials.SHEEP, ArmorItem.Type.BOOTS, new Item.Properties().durability(65)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_HELMET = registerArmor("deathworm_yellow_helmet", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_YELLOW, ArmorItem.Type.HELMET, new Item.Properties().durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_CHESTPLATE = registerArmor("deathworm_yellow_chestplate", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_YELLOW, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(240)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_LEGGINGS = registerArmor("deathworm_yellow_leggings", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_YELLOW, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(225)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_BOOTS = registerArmor("deathworm_yellow_boots", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_YELLOW, ArmorItem.Type.BOOTS, new Item.Properties().durability(195)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_HELMET = registerArmor("deathworm_white_helmet", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_WHITE, ArmorItem.Type.HELMET, new Item.Properties().durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_CHESTPLATE = registerArmor("deathworm_white_chestplate", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_WHITE, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(240)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_LEGGINGS = registerArmor("deathworm_white_leggings", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_WHITE, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(225)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_BOOTS = registerArmor("deathworm_white_boots", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_WHITE, ArmorItem.Type.BOOTS, new Item.Properties().durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_RED_HELMET = registerArmor("deathworm_red_helmet", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_RED, ArmorItem.Type.HELMET, new Item.Properties().durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_RED_CHESTPLATE = registerArmor("deathworm_red_chestplate", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_RED, ArmorItem.Type.CHESTPLATE, new Item.Properties().durability(240)));
-    public static final DeferredItem<Item> DEATHWORM_RED_LEGGINGS = registerArmor("deathworm_red_leggings", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_RED, ArmorItem.Type.LEGGINGS, new Item.Properties().durability(225)));
-    public static final DeferredItem<Item> DEATHWORM_RED_BOOTS = registerArmor("deathworm_red_boots", () -> new ArmorItem(IafArmorMaterials.DEATHWORM_RED, ArmorItem.Type.BOOTS, new Item.Properties().durability(165)));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_HELMET = registerArmor("dragonsteel_fire_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorItem.Type.HELMET));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_CHESTPLATE = registerArmor("dragonsteel_fire_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorItem.Type.CHESTPLATE));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_LEGGINGS = registerArmor("dragonsteel_fire_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorItem.Type.LEGGINGS));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_BOOTS = registerArmor("dragonsteel_fire_boots", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorItem.Type.BOOTS));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_HELMET = registerArmor("dragonsteel_ice_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorItem.Type.HELMET));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_CHESTPLATE = registerArmor("dragonsteel_ice_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorItem.Type.CHESTPLATE));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_LEGGINGS = registerArmor("dragonsteel_ice_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorItem.Type.LEGGINGS));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_BOOTS = registerArmor("dragonsteel_ice_boots", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorItem.Type.BOOTS));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_HELMET = registerArmor("dragonsteel_lightning_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorItem.Type.HELMET));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_CHESTPLATE = registerArmor("dragonsteel_lightning_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorItem.Type.CHESTPLATE));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_LEGGINGS = registerArmor("dragonsteel_lightning_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorItem.Type.LEGGINGS));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_BOOTS = registerArmor("dragonsteel_lightning_boots", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorItem.Type.BOOTS));
+    public static final DeferredItem<Item> SILVER_HELMET = registerArmor("armor_silver_metal_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.HELMET).durability(165)));
+    public static final DeferredItem<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.CHESTPLATE).durability(240)));
+    public static final DeferredItem<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.LEGGINGS).durability(225)));
+    public static final DeferredItem<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.BOOTS).durability(195)));
+    public static final DeferredItem<Item> COPPER_HELMET = registerArmor("armor_copper_metal_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.HELMET).durability(111)));
+    public static final DeferredItem<Item> COPPER_CHESTPLATE = registerArmor("armor_copper_metal_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.CHESTPLATE).durability(161)));
+    public static final DeferredItem<Item> COPPER_LEGGINGS = registerArmor("armor_copper_metal_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.LEGGINGS).durability(151)));
+    public static final DeferredItem<Item> COPPER_BOOTS = registerArmor("armor_copper_metal_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.BOOTS).durability(131)));
+    public static final DeferredItem<Item> SHEEP_HELMET = registerArmor("sheep_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.HELMET).durability(55)));
+    public static final DeferredItem<Item> SHEEP_CHESTPLATE = registerArmor("sheep_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.CHESTPLATE).durability(80)));
+    public static final DeferredItem<Item> SHEEP_LEGGINGS = registerArmor("sheep_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.LEGGINGS).durability(75)));
+    public static final DeferredItem<Item> SHEEP_BOOTS = registerArmor("sheep_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.BOOTS).durability(65)));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_HELMET = registerArmor("deathworm_yellow_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.HELMET).durability(165)));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_CHESTPLATE = registerArmor("deathworm_yellow_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.CHESTPLATE).durability(240)));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_LEGGINGS = registerArmor("deathworm_yellow_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.LEGGINGS).durability(225)));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_BOOTS = registerArmor("deathworm_yellow_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.BOOTS).durability(195)));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_HELMET = registerArmor("deathworm_white_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.HELMET).durability(165)));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_CHESTPLATE = registerArmor("deathworm_white_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.CHESTPLATE).durability(240)));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_LEGGINGS = registerArmor("deathworm_white_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.LEGGINGS).durability(225)));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_BOOTS = registerArmor("deathworm_white_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.BOOTS).durability(165)));
+    public static final DeferredItem<Item> DEATHWORM_RED_HELMET = registerArmor("deathworm_red_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.HELMET).durability(165)));
+    public static final DeferredItem<Item> DEATHWORM_RED_CHESTPLATE = registerArmor("deathworm_red_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.CHESTPLATE).durability(240)));
+    public static final DeferredItem<Item> DEATHWORM_RED_LEGGINGS = registerArmor("deathworm_red_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.LEGGINGS).durability(225)));
+    public static final DeferredItem<Item> DEATHWORM_RED_BOOTS = registerArmor("deathworm_red_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.BOOTS).durability(165)));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_HELMET = registerArmor("dragonsteel_fire_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.HELMET));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_CHESTPLATE = registerArmor("dragonsteel_fire_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.CHESTPLATE));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_LEGGINGS = registerArmor("dragonsteel_fire_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.LEGGINGS));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_BOOTS = registerArmor("dragonsteel_fire_boots", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.BOOTS));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_HELMET = registerArmor("dragonsteel_ice_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorType.HELMET));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_CHESTPLATE = registerArmor("dragonsteel_ice_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorType.CHESTPLATE));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_LEGGINGS = registerArmor("dragonsteel_ice_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorType.LEGGINGS));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_BOOTS = registerArmor("dragonsteel_ice_boots", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_ICE, ArmorType.BOOTS));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_HELMET = registerArmor("dragonsteel_lightning_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorType.HELMET));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_CHESTPLATE = registerArmor("dragonsteel_lightning_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorType.CHESTPLATE));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_LEGGINGS = registerArmor("dragonsteel_lightning_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorType.LEGGINGS));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_BOOTS = registerArmor("dragonsteel_lightning_boots", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_LIGHTNING, ArmorType.BOOTS));
 
     //Tools&Weapons
-    public static final DeferredItem<Item> SILVER_SWORD = registerToolOrWeapon("silver_sword", () -> new ActivePostHitSwordItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.SILVER_TOOL_MATERIAL, 3.0F, -2.4F)), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
-    public static final DeferredItem<Item> SILVER_SHOVEL = registerToolOrWeapon("silver_shovel", () -> new ActivePostHitShovelItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.SILVER_TOOL_MATERIAL, 1.5F, -3.0F)), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
-    public static final DeferredItem<Item> SILVER_PICKAXE = registerToolOrWeapon("silver_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.SILVER_TOOL_MATERIAL, 1.0F, -2.8F)), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
-    public static final DeferredItem<Item> SILVER_AXE = registerToolOrWeapon("silver_axe", () -> new ActivePostHitAxeItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.SILVER_TOOL_MATERIAL, 6.0F, -3.0F)), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
-    public static final DeferredItem<Item> SILVER_HOE = registerToolOrWeapon("silver_hoe", () -> new ActivePostHitHoeItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.SILVER_TOOL_MATERIAL, 0.0F, -3.0F)), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
-    public static final DeferredItem<Item> COPPER_SWORD = registerToolOrWeapon("copper_sword", () -> new SwordItem(IafTiers.COPPER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.COPPER_TOOL_MATERIAL, 3.0F, -2.4F))));
-    public static final DeferredItem<Item> COPPER_SHOVEL = registerToolOrWeapon("copper_shovel", () -> new ShovelItem(IafTiers.COPPER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.COPPER_TOOL_MATERIAL, 1.5F, -2.4F))));
-    public static final DeferredItem<Item> COPPER_PICKAXE = registerToolOrWeapon("copper_pickaxe", () -> new PickaxeItem(IafTiers.COPPER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.COPPER_TOOL_MATERIAL, 1.0F, -2.8F))));
-    public static final DeferredItem<Item> COPPER_AXE = registerToolOrWeapon("copper_axe", () -> new AxeItem(IafTiers.COPPER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.COPPER_TOOL_MATERIAL, 6.0F, -3.0F))));
-    public static final DeferredItem<Item> COPPER_HOE = registerToolOrWeapon("copper_hoe", () -> new HoeItem(IafTiers.COPPER_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.COPPER_TOOL_MATERIAL, 0.0F, -1.0F))));
+    public static final DeferredItem<Item> SILVER_SWORD = registerToolOrWeapon("silver_sword", () -> new ActivePostHitSwordItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
+    public static final DeferredItem<Item> SILVER_SHOVEL = registerToolOrWeapon("silver_shovel", () -> new ActivePostHitShovelItem(IafTiers.SILVER_TOOL_MATERIAL, 1.5F, -3.0F, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
+    public static final DeferredItem<Item> SILVER_PICKAXE = registerToolOrWeapon("silver_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
+    public static final DeferredItem<Item> SILVER_AXE = registerToolOrWeapon("silver_axe", () -> new ActivePostHitAxeItem(IafTiers.SILVER_TOOL_MATERIAL, 6.0F, -3.0F, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
+    public static final DeferredItem<Item> SILVER_HOE = registerToolOrWeapon("silver_hoe", () -> new ActivePostHitHoeItem(IafTiers.SILVER_TOOL_MATERIAL, 0.0F, -3.0F, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
+    public static final DeferredItem<Item> COPPER_SWORD = registerToolOrWeapon("copper_sword", () -> new Item(new Item.Properties().sword(IafTiers.COPPER_TOOL_MATERIAL, 3.0F, -2.4F)));
+    public static final DeferredItem<Item> COPPER_SHOVEL = registerToolOrWeapon("copper_shovel", () -> new ShovelItem(IafTiers.COPPER_TOOL_MATERIAL, 1.5F, -2.4F, new Item.Properties()));
+    public static final DeferredItem<Item> COPPER_PICKAXE = registerToolOrWeapon("copper_pickaxe", () -> new Item(new Item.Properties().pickaxe(IafTiers.COPPER_TOOL_MATERIAL, 1.0F, -2.8F)));
+    public static final DeferredItem<Item> COPPER_AXE = registerToolOrWeapon("copper_axe", () -> new AxeItem(IafTiers.COPPER_TOOL_MATERIAL, 6.0F, -3.0F, new Item.Properties()));
+    public static final DeferredItem<Item> COPPER_HOE = registerToolOrWeapon("copper_hoe", () -> new HoeItem(IafTiers.COPPER_TOOL_MATERIAL, 0.0F, -1.0F, new Item.Properties()));
     public static final DeferredItem<Item> FISHING_SPEAR = registerToolOrWeapon("fishing_spear", () -> new Item(new Item.Properties().durability(64)));
-    public static final DeferredItem<Item> DRAGONBONE_SWORD = registerToolOrWeapon("dragonbone_sword", () -> new SwordItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONBONE_TOOL_MATERIAL, 3.0F, -2.4F))));
-    public static final DeferredItem<Item> DRAGONBONE_SHOVEL = registerToolOrWeapon("dragonbone_shovel", () -> new ShovelItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONBONE_TOOL_MATERIAL, 1.5F, -2.8F))));
-    public static final DeferredItem<Item> DRAGONBONE_PICKAXE = registerToolOrWeapon("dragonbone_pickaxe", () -> new PickaxeItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONBONE_TOOL_MATERIAL, 1.0F, -2.8F))));
-    public static final DeferredItem<Item> DRAGONBONE_AXE = registerToolOrWeapon("dragonbone_axe", () -> new AxeItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONBONE_TOOL_MATERIAL, 5.0F, -3.0F))));
-    public static final DeferredItem<Item> DRAGONBONE_HOE = registerToolOrWeapon("dragonbone_hoe", () -> new HoeItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONBONE_TOOL_MATERIAL, -4.0F, 0.0F))));
+    public static final DeferredItem<Item> DRAGONBONE_SWORD = registerToolOrWeapon("dragonbone_sword", () -> new Item(new Item.Properties().sword(IafTiers.DRAGONBONE_TOOL_MATERIAL, 3.0F, -2.4F)));
+    public static final DeferredItem<Item> DRAGONBONE_SHOVEL = registerToolOrWeapon("dragonbone_shovel", () -> new ShovelItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, 1.5F, -2.8F, new Item.Properties()));
+    public static final DeferredItem<Item> DRAGONBONE_PICKAXE = registerToolOrWeapon("dragonbone_pickaxe", () -> new Item(new Item.Properties().pickaxe(IafTiers.DRAGONBONE_TOOL_MATERIAL, 1.0F, -2.8F)));
+    public static final DeferredItem<Item> DRAGONBONE_AXE = registerToolOrWeapon("dragonbone_axe", () -> new AxeItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, 5.0F, -3.0F, new Item.Properties()));
+    public static final DeferredItem<Item> DRAGONBONE_HOE = registerToolOrWeapon("dragonbone_hoe", () -> new HoeItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, -4.0F, 0.0F, new Item.Properties()));
     public static final DeferredItem<Item> DRAGONBONE_ARROW = registerToolOrWeapon("dragonbone_arrow", DragonArrowItem::new);
     public static final DeferredItem<Item> DRAGON_BOW = registerToolOrWeapon("dragonbone_bow", DragonBowItem::new);
     public static final DeferredItem<Item> STYMPHALIAN_ARROW = registerToolOrWeapon("stymphalian_arrow", StymphalianArrowItem::new);
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_SWORD = registerToolOrWeapon("dragonsteel_fire_sword", () -> new ActivePostHitSwordItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_FIRE, 3.0F, -2.4F)), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_PICKAXE = registerToolOrWeapon("dragonsteel_fire_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_FIRE, 1.0F, -2.8F)), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_AXE = registerToolOrWeapon("dragonsteel_fire_axe", () -> new ActivePostHitAxeItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_FIRE, 5.0F, -3.0F)), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_SHOVEL = registerToolOrWeapon("dragonsteel_fire_shovel", () -> new ActivePostHitShovelItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_FIRE, 1.5F, -3.0F)), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_HOE = registerToolOrWeapon("dragonsteel_fire_hoe", () -> new ActivePostHitHoeItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_FIRE, -4.0F, 0.0F)), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_SWORD = registerToolOrWeapon("dragonsteel_ice_sword", () -> new ActivePostHitSwordItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_ICE, 3.0F, -2.4F)), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_PICKAXE = registerToolOrWeapon("dragonsteel_ice_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_ICE, 1.0F, -2.8F)), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_AXE = registerToolOrWeapon("dragonsteel_ice_axe", () -> new ActivePostHitAxeItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_ICE, 5.0F, -3.0F)), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_SHOVEL = registerToolOrWeapon("dragonsteel_ice_shovel", () -> new ActivePostHitShovelItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_ICE, 1.5F, -3.0F)), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_ICE_HOE = registerToolOrWeapon("dragonsteel_ice_hoe", () -> new ActivePostHitHoeItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_ICE, -4.0F, 0.0F)), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_SWORD = registerToolOrWeapon("dragonsteel_lightning_sword", () -> new ActivePostHitSwordItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_LIGHTNING, 3.0F, -2.4F)), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_PICKAXE = registerToolOrWeapon("dragonsteel_lightning_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_LIGHTNING, 1.0F, -2.8F)), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_AXE = registerToolOrWeapon("dragonsteel_lightning_axe", () -> new ActivePostHitAxeItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_LIGHTNING, 5.0F, -3.0F)), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_SHOVEL = registerToolOrWeapon("dragonsteel_lightning_shovel", () -> new ActivePostHitShovelItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_LIGHTNING, 1.5F, -3.0F)), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
-    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_HOE = registerToolOrWeapon("dragonsteel_lightning_hoe", () -> new ActivePostHitHoeItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DRAGONSTEEL_LIGHTNING, -4.0F, 0.0F)), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
-    public static final DeferredItem<Item> DREAD_SWORD = registerToolOrWeapon("dread_sword", () -> new SwordItem(IafTiers.DREAD_SWORD_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DREAD_SWORD_TOOL_MATERIAL, 3.0F, -2.4F))));
-    public static final DeferredItem<Item> DREAD_KNIGHT_SWORD = registerToolOrWeapon("dread_knight_sword", () -> new SwordItem(IafTiers.DREAD_KNIGHT_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DREAD_KNIGHT_TOOL_MATERIAL, 3.0F, -2.4F))));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_SWORD = registerToolOrWeapon("dragonsteel_fire_sword", () -> new ActivePostHitSwordItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_PICKAXE = registerToolOrWeapon("dragonsteel_fire_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.DRAGONSTEEL_FIRE, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_AXE = registerToolOrWeapon("dragonsteel_fire_axe", () -> new ActivePostHitAxeItem(IafTiers.DRAGONSTEEL_FIRE, 5.0F, -3.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_SHOVEL = registerToolOrWeapon("dragonsteel_fire_shovel", () -> new ActivePostHitShovelItem(IafTiers.DRAGONSTEEL_FIRE, 1.5F, -3.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_FIRE_HOE = registerToolOrWeapon("dragonsteel_fire_hoe", () -> new ActivePostHitHoeItem(IafTiers.DRAGONSTEEL_FIRE, -4.0F, 0.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_FIRE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_SWORD = registerToolOrWeapon("dragonsteel_ice_sword", () -> new ActivePostHitSwordItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_PICKAXE = registerToolOrWeapon("dragonsteel_ice_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.DRAGONSTEEL_ICE, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_AXE = registerToolOrWeapon("dragonsteel_ice_axe", () -> new ActivePostHitAxeItem(IafTiers.DRAGONSTEEL_ICE, 5.0F, -3.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_SHOVEL = registerToolOrWeapon("dragonsteel_ice_shovel", () -> new ActivePostHitShovelItem(IafTiers.DRAGONSTEEL_ICE, 1.5F, -3.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_ICE_HOE = registerToolOrWeapon("dragonsteel_ice_hoe", () -> new ActivePostHitHoeItem(IafTiers.DRAGONSTEEL_ICE, -4.0F, 0.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_ICE_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_SWORD = registerToolOrWeapon("dragonsteel_lightning_sword", () -> new ActivePostHitSwordItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_PICKAXE = registerToolOrWeapon("dragonsteel_lightning_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.DRAGONSTEEL_LIGHTNING, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_AXE = registerToolOrWeapon("dragonsteel_lightning_axe", () -> new ActivePostHitAxeItem(IafTiers.DRAGONSTEEL_LIGHTNING, 5.0F, -3.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_SHOVEL = registerToolOrWeapon("dragonsteel_lightning_shovel", () -> new ActivePostHitShovelItem(IafTiers.DRAGONSTEEL_LIGHTNING, 1.5F, -3.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
+    public static final DeferredItem<Item> DRAGONSTEEL_LIGHTNING_HOE = registerToolOrWeapon("dragonsteel_lightning_hoe", () -> new ActivePostHitHoeItem(IafTiers.DRAGONSTEEL_LIGHTNING, -4.0F, 0.0F, new Item.Properties(), BuiltinAbilities.DRAGONSTEEL_LIGHTNING_TOOL));
+    public static final DeferredItem<Item> DREAD_SWORD = registerToolOrWeapon("dread_sword", () -> new Item(new Item.Properties().sword(IafTiers.DREAD_SWORD_TOOL_MATERIAL, 3.0F, -2.4F)));
+    public static final DeferredItem<Item> DREAD_KNIGHT_SWORD = registerToolOrWeapon("dread_knight_sword", () -> new Item(new Item.Properties().sword(IafTiers.DREAD_KNIGHT_TOOL_MATERIAL, 3.0F, -2.4F)));
     public static final DeferredItem<Item> LICH_STAFF = registerToolOrWeapon("lich_staff", LichStaffItem::new);
-    public static final DeferredItem<Item> DREAD_QUEEN_SWORD = registerToolOrWeapon("dread_queen_sword", () -> new SwordItem(IafTiers.DREAD_QUEEN, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.DREAD_QUEEN, 3.0F, -2.4F))));
+    public static final DeferredItem<Item> DREAD_QUEEN_SWORD = registerToolOrWeapon("dread_queen_sword", () -> new Item(new Item.Properties().sword(IafTiers.DREAD_QUEEN, 3.0F, -2.4F)));
     public static final DeferredItem<Item> DREAD_QUEEN_STAFF = registerToolOrWeapon("dread_queen_staff", DreadQueenStaffItem::new);
     //--Legendary
-    public static final DeferredItem<Item> DRAGONBONE_SWORD_FIRE = registerToolOrWeapon("dragonbone_sword_fire", () -> new ActivePostHitSwordItem(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, 3.0F, -2.4F)), BuiltinAbilities.FIRE_DRAGON_BLOOD_TOOL));
-    public static final DeferredItem<Item> DRAGONBONE_SWORD_ICE = registerToolOrWeapon("dragonbone_sword_ice", () -> new ActivePostHitSwordItem(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, 3.0F, -2.4F)), BuiltinAbilities.ICE_DRAGON_BLOOD_TOOL));
-    public static final DeferredItem<Item> DRAGONBONE_SWORD_LIGHTNING = registerToolOrWeapon("dragonbone_sword_lightning", () -> new ActivePostHitSwordItem(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, new Item.Properties().component(DataComponents.ATTRIBUTE_MODIFIERS, createAttributes(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, 3.0F, -2.4F)), BuiltinAbilities.LIGHTNING_DRAGON_BLOOD_TOOL));
+    public static final DeferredItem<Item> DRAGONBONE_SWORD_FIRE = registerToolOrWeapon("dragonbone_sword_fire", () -> new ActivePostHitSwordItem(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, new Item.Properties(), BuiltinAbilities.FIRE_DRAGON_BLOOD_TOOL));
+    public static final DeferredItem<Item> DRAGONBONE_SWORD_ICE = registerToolOrWeapon("dragonbone_sword_ice", () -> new ActivePostHitSwordItem(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, new Item.Properties(), BuiltinAbilities.ICE_DRAGON_BLOOD_TOOL));
+    public static final DeferredItem<Item> DRAGONBONE_SWORD_LIGHTNING = registerToolOrWeapon("dragonbone_sword_lightning", () -> new ActivePostHitSwordItem(IafTiers.BLOODED_DRAGONBONE_TOOL_MATERIAL, new Item.Properties(), BuiltinAbilities.LIGHTNING_DRAGON_BLOOD_TOOL));
     public static final DeferredItem<Item> HIPPOGRYPH_SWORD = registerToolOrWeapon("hippogryph_sword", HippogryphSwordItem::new);
     public static final DeferredItem<Item> GORGON_HEAD = registerToolOrWeapon("gorgon_head", GorgonHeadItem::new);
     public static final DeferredItem<Item> PIXIE_WAND = registerToolOrWeapon("pixie_wand", PixieWandItem::new);
@@ -328,6 +332,31 @@ public final class IafItems {
 
     public static DeferredItem<DragonArmorItem> buildDragonArmor(DragonArmorPart type, DragonArmorMaterial material) {
         return registerItem(String.format("dragonarmor_%s_%s", material.name(), type.getId()), () -> new DragonArmorItem(material, type));
+    }
+
+    private static FoodProperties food(int nutrition, float saturationModifier, boolean alwaysEdible) {
+        FoodProperties.Builder builder = new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturationModifier);
+        if (alwaysEdible) builder.alwaysEdible();
+        return builder.build();
+    }
+
+    private static Consumable foodEffects(MobEffectInstance... effects) {
+        return foodEffects(1.6F, effects);
+    }
+
+    private static Consumable fastFoodEffects(MobEffectInstance... effects) {
+        return foodEffects(0.8F, effects);
+    }
+
+    private static Consumable foodEffects(float consumeSeconds, MobEffectInstance... effects) {
+        Consumable.Builder builder = Consumables.defaultFood().consumeSeconds(consumeSeconds);
+        for (MobEffectInstance effect : effects)
+            builder.onConsume(new ApplyStatusEffectsConsumeEffect(effect));
+        return builder.build();
+    }
+
+    private static Item.Properties bannerPattern(TagKey<BannerPattern> patterns) {
+        return new Item.Properties().stacksTo(1).delayedComponent(DataComponents.PROVIDES_BANNER_PATTERNS, context -> context.getOrThrow(patterns));
     }
 
     public static <T extends Item> DeferredItem<T> registerBlock(String name, Supplier<T> item) {
@@ -355,6 +384,6 @@ public final class IafItems {
     }
 
     static <T extends Item> DeferredItem<T> register(String name, Supplier<T> item) {
-        return REGISTRY.register(name, item);
+        return REGISTRY.register(name, id -> IafRegistrationContext.createItem(id, item));
     }
 }

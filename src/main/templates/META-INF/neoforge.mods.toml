@@ -92,14 +92,14 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "uranus"
 type = "required"
-versionRange = "[2.3.2,)"
+versionRange = "[3.0-alpha.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
 modId = "jupiter"
 type = "required"
-versionRange = "[2.3,)"
+versionRange = "[2.4.3,)"
 ordering = "NONE"
 side = "BOTH"
 

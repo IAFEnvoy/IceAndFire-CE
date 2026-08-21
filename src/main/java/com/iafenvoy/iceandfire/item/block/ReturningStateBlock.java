@@ -43,7 +43,7 @@ public class ReturningStateBlock extends Block {
     @SuppressWarnings("deprecation")
     @Override
     public void tick(@NotNull BlockState state, ServerLevel worldIn, @NotNull BlockPos pos, @NotNull RandomSource rand) {
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             if (!worldIn.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3)))
                 return;
             if (state.getValue(REVERTS) && rand.nextInt(3) == 0)

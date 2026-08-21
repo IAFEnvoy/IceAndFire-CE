@@ -128,7 +128,7 @@ public class HydraHeadModel extends DragonBaseModel<HydraEntity> {
         if (GorgonEntity.isStoneMob(entity)) {
             return;
         }
-        float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        float partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
         AdvancedModelBox[] ENTIRE_HEAD = new AdvancedModelBox[]{this.Neck1, this.Neck2, this.Neck3, this.Neck4};
         this.chainFlap(ENTIRE_HEAD, speed_idle, degree_idle * 0.15F, -3 + this.headIndex % 4, animationProgress, 1);
         this.chainSwing(ENTIRE_HEAD, speed_idle, degree_idle * 0.05F, -3 + this.headIndex % 3, animationProgress, 1);

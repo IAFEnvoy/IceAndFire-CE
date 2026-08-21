@@ -1,24 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern":
-  [
+  "pattern": [
     "a",
     "x",
     "x"
   ],
-  "key":
-  {
-    "x":
-    {
-      "tag": "iceandfire:dragon_steels"
-    },
-    "a":
-    {
-      "tag": "iceandfire:dragon_skulls"
-    }
+  "key": {
+    "x": "#iceandfire:dragon_steels",
+    "a": "#iceandfire:dragon_skulls"
   },
-  "result":
-  {
+  "result": {
     "id": "iceandfire:legendary_dragon_seeker",
     "count": 1
   }

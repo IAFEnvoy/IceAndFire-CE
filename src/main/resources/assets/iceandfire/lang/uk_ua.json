@@ -1192,5 +1192,10 @@
   "sound.iceandfire.subtitle.icedragon_hurt": "Крижаного дракона поранено",
   "sound.iceandfire.subtitle.icedragon_death": "Крижаний дракон гине",
   "sound.iceandfire.subtitle.dragonegg_hatch": "Яйце дракона вилуплюється",
-  "sound.iceandfire.subtitle.dragonflute": "Грає драконяча флейта"
+  "sound.iceandfire.subtitle.dragonflute": "Грає драконяча флейта",
+  "effect.iceandfire.depetrification": "Зняття скам'яніння",
+  "item.minecraft.lingering_potion.effect.depetrification": "Тривале зілля зняття скам'яніння",
+  "item.minecraft.potion.effect.depetrification": "Зілля зняття скам'яніння",
+  "item.minecraft.splash_potion.effect.depetrification": "Вибухове зілля зняття скам'яніння",
+  "item.minecraft.tipped_arrow.effect.depetrification": "Стріла зняття скам'яніння"
 }

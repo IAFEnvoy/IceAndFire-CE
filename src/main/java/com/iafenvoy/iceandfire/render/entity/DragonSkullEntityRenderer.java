@@ -18,23 +18,25 @@ import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity> {
-    private final Map<DragonType, Pair<ResourceLocation, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
+public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity, LegacyEntityRenderState<DragonSkullEntity>> {
+    private final Map<DragonType, Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>>> models = new HashMap<>();
 
     public DragonSkullEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -51,12 +53,23 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
     }
 
     @Override
-    public void render(DragonSkullEntity entity, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        Pair<ResourceLocation, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())));
+    public LegacyEntityRenderState<DragonSkullEntity> createRenderState() {
+        return new LegacyEntityRenderState<>();
+    }
+
+    @Override
+    public void extractRenderState(DragonSkullEntity entity, LegacyEntityRenderState<DragonSkullEntity> state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.entity = entity;
+    }
+
+    @Override
+    public void submit(LegacyEntityRenderState<DragonSkullEntity> state, @NonNull PoseStack matrixStackIn, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState camera) {
+        DragonSkullEntity entity = state.entity;
+        Pair<Identifier, MemorizeSupplier<ITabulaModelAnimator<? extends DragonBaseEntity>>> p = this.models.get(IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())).map(Holder.Reference::value).orElse(IafDragonTypes.FIRE));
         if (p == null) return;
         TabulaModel<? extends DragonBaseEntity> model = TabulaModelHandlerHelper.getModel(p.getFirst());
         if (model == null) return;
-        VertexConsumer consumer = bufferIn.getBuffer(RenderType.entityTranslucent(this.getTextureLocation(entity)));
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(-180.0F));
         matrixStackIn.mulPose(Axis.YN.rotationDegrees(-180.0F - entity.getYRot()));
@@ -66,13 +79,17 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity>
         matrixStackIn.translate(0, entity.isOnWall() ? -0.24F : -0.12F, entity.isOnWall() ? 0.4F : 0.5F);
         model.resetToDefaultPose();
         setRotationAngles(model.getCube("Head"), entity.isOnWall() ? (float) Math.toRadians(50F) : 0F);
-        model.getCube("Head").render(matrixStackIn, consumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+        collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityTranslucent(this.getTextureLocation(entity)), (pose, buffer) -> {
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
+            model.getCube("Head").render(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
         matrixStackIn.popPose();
+        super.submit(state, matrixStackIn, collector, camera);
     }
 
-    @Override
-    public @NotNull ResourceLocation getTextureLocation(DragonSkullEntity entity) {
-        return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())).getSkeletonTexture(entity.getDragonStage());
+    public @NotNull Identifier getTextureLocation(DragonSkullEntity entity) {
+        return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(entity.getDragonType())).map(Holder.Reference::value).orElse(IafDragonTypes.FIRE).getSkeletonTexture(entity.getDragonStage());
     }
 
     public float getRenderSize(DragonSkullEntity skull) {

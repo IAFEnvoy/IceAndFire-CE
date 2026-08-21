@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class IafSeaSerpentTypes {
     public static final SeaSerpentType BLUE = register("blue", ChatFormatting.BLUE);
@@ -16,7 +16,7 @@ public final class IafSeaSerpentTypes {
     public static final SeaSerpentType TEAL = register("teal", ChatFormatting.AQUA);
 
     private static SeaSerpentType register(String name, ChatFormatting color) {
-        return Registry.register(IafRegistries.SEA_SERPENT_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new SeaSerpentType(name, color));
+        return Registry.register(IafRegistries.SEA_SERPENT_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new SeaSerpentType(name, color));
     }
 
     public static void init() {

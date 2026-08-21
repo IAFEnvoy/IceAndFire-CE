@@ -69,8 +69,8 @@ public final class ServerNetworkHandlers {
             if (entity instanceof ISyncMount && entity instanceof TamableAnimal tamable)
                 if (tamable.isOwnedBy(player) && tamable.distanceTo(player) < 14)
                     if (payload.ride()) {
-                        if (payload.baby()) tamable.startRiding(player, true);
-                        else player.startRiding(tamable, true);
+                        if (payload.baby()) tamable.startRiding(player, true, true);
+                        else player.startRiding(tamable, true, true);
                     } else {
                         if (payload.baby()) tamable.stopRiding();
                         else player.stopRiding();

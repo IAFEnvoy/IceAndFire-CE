@@ -5,10 +5,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.WitherSkeleton;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,9 +28,9 @@ public abstract class MobMixin extends Entity {
     }
 
     @Inject(method = "dropFromLootTable", at = @At("HEAD"))//FIXME::Loot table modifiers
-    public void dropHandler(DamageSource damageSource, boolean attackedRecently, CallbackInfo ci) {
+    public void dropHandler(ServerLevel level, DamageSource damageSource, boolean attackedRecently, CallbackInfo ci) {
         if (attackedRecently && damageSource.getDirectEntity() instanceof Player)
             if (iceandfire$isSkeleton(this))
-                this.spawnAtLocation(new ItemStack(IafItems.WITHERBONE.get(), this.random.nextInt(2)));
+                this.spawnAtLocation(level, new ItemStack(IafItems.WITHERBONE.get(), this.random.nextInt(2)));
     }
 }

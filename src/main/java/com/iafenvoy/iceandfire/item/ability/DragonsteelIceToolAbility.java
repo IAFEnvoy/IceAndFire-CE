@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class DragonsteelIceToolAbility implements PostHitAbility {
     private final PostHitAbility frozen = new FrozenTargetAbility(IafCommonConfig.INSTANCE.tools.dragonsteelFrozenDuration.getValue());
@@ -24,9 +24,9 @@ public class DragonsteelIceToolAbility implements PostHitAbility {
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
+    public void addDescription(Consumer<Component> tooltip) {
         if (this.isEnable()) {
-            tooltip.add(Component.translatable("dragon_sword_ice.hurt2").withStyle(ChatFormatting.AQUA));
+            tooltip.accept(Component.translatable("dragon_sword_ice.hurt2").withStyle(ChatFormatting.AQUA));
         }
     }
 }

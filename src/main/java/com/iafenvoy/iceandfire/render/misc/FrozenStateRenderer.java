@@ -4,18 +4,18 @@ import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
 
 public class FrozenStateRenderer {
-    private static final ResourceLocation TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, "textures/block/frosted_ice_0.png");
-    private static final ResourceLocation TEXTURE_1 = ResourceLocation.fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, "textures/block/frosted_ice_1.png");
-    private static final ResourceLocation TEXTURE_2 = ResourceLocation.fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, "textures/block/frosted_ice_2.png");
-    private static final ResourceLocation TEXTURE_3 = ResourceLocation.fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, "textures/block/frosted_ice_3.png");
+    private static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/frosted_ice_0.png");
+    private static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/frosted_ice_1.png");
+    private static final Identifier TEXTURE_2 = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/frosted_ice_2.png");
+    private static final Identifier TEXTURE_3 = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/frosted_ice_3.png");
 
     public static void render(LivingEntity entity, PoseStack matrixStack, MultiBufferSource bufferIn, int light, int frozenTicks) {
         float sideExpand = -0.125F;
@@ -26,7 +26,7 @@ public class FrozenStateRenderer {
         matrixStack.popPose();
     }
 
-    private static ResourceLocation getIceTexture(int ticksFrozen) {
+    private static Identifier getIceTexture(int ticksFrozen) {
         if (ticksFrozen < 100) {
             if (ticksFrozen < 50) {
                 if (ticksFrozen < 20)

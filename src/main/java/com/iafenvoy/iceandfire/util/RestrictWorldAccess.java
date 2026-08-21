@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
@@ -11,6 +10,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.attribute.EnvironmentAttributeReader;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -98,7 +98,7 @@ public class RestrictWorldAccess implements ServerLevelAccessor {
     }
 
     @Override
-    public void playSound(@Nullable Player except, @NotNull BlockPos pos, @NotNull SoundEvent sound, @NotNull SoundSource category, float volume, float pitch) {
+    public void playSound(@Nullable Entity except, @NotNull BlockPos pos, @NotNull SoundEvent sound, @NotNull SoundSource category, float volume, float pitch) {
         this.origin.playSound(except, pos, sound, category, volume, pitch);
     }
 
@@ -108,18 +108,13 @@ public class RestrictWorldAccess implements ServerLevelAccessor {
     }
 
     @Override
-    public void levelEvent(@Nullable Player player, int eventId, @NotNull BlockPos pos, int data) {
-        this.origin.levelEvent(player, eventId, pos, data);
+    public void levelEvent(@Nullable Entity source, int eventId, @NotNull BlockPos pos, int data) {
+        this.origin.levelEvent(source, eventId, pos, data);
     }
 
     @Override
     public void gameEvent(@NotNull Holder<GameEvent> event, @NotNull Vec3 emitterPos, GameEvent.@NotNull Context emitter) {
         this.origin.gameEvent(event, emitterPos, emitter);
-    }
-
-    @Override
-    public float getShade(@NotNull Direction direction, boolean shaded) {
-        return this.origin.getShade(direction, shaded);
     }
 
     @Override
@@ -241,6 +236,11 @@ public class RestrictWorldAccess implements ServerLevelAccessor {
     @Override
     public @NotNull FeatureFlagSet enabledFeatures() {
         return this.origin.enabledFeatures();
+    }
+
+    @Override
+    public @NotNull EnvironmentAttributeReader environmentAttributes() {
+        return this.origin.environmentAttributes();
     }
 
     @Override

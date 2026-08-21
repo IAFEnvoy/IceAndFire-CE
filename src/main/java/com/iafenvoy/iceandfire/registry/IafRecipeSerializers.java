@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 public final class IafRecipeSerializers {
     public static final DeferredRegister<RecipeSerializer<?>> REGISTRY = DeferredRegister.create(Registries.RECIPE_SERIALIZER, IceAndFire.MOD_ID);
 
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> DRAGONFORGE_SERIALIZER = register("dragonforge", DragonForgeRecipe.Serializer::new);
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DragonForgeRecipe>> DRAGONFORGE_SERIALIZER = REGISTRY.register("dragonforge", DragonForgeRecipe::serializer);
 
     private static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> register(String name, Supplier<RecipeSerializer<?>> serializer) {
         return REGISTRY.register(name, serializer);

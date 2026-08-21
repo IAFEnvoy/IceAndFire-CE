@@ -8,13 +8,15 @@ import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.StructureManager;
@@ -48,7 +50,7 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
             return Optional.empty();
         Rotation blockRotation = Rotation.getRandom(context.random());
         BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
-        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinBuildHeight() + 2)
+        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinY() + 2)
             return Optional.empty();
         return Optional.of(new GenerationStub(blockPos, collector -> collector.addPiece(this.createPiece(new BoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ()), context.random().nextBoolean()))));
     }
@@ -69,8 +71,8 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
 
         public DragonRoostPiece(StructurePieceType type, CompoundTag nbt) {
             super(type, nbt);
-            this.treasureBlock = BuiltInRegistries.BLOCK.get(ResourceLocation.tryParse(nbt.getString("treasureBlock")));
-            this.isMale = nbt.getBoolean("isMale");
+            this.treasureBlock = BuiltInRegistries.BLOCK.get(Identifier.tryParse(nbt.getString("treasureBlock").orElse("minecraft:air"))).map(Holder.Reference::value).orElse(Blocks.AIR);
+            this.isMale = nbt.getBoolean("isMale").orElse(false);
         }
 
         @Override
@@ -296,14 +298,14 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
         }
 
         private void spawnDragon(WorldGenLevel world, BlockPos origin, RandomSource random, int ageOffset, boolean isMale) {
-            DragonBaseEntity dragon = this.getDragonType().create(world.getLevel());
+            DragonBaseEntity dragon = this.getDragonType().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
             assert dragon != null;
             dragon.setGender(isMale);
             dragon.growDragon(40 + ageOffset);
             dragon.setAgingDisabled(true);
             dragon.setHealth(dragon.getMaxHealth());
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.absMoveTo(origin.getX() + 0.5, world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
+            dragon.snapTo(origin.getX() + 0.5, world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, origin).getY() + 1.5, origin.getZ() + 0.5, random.nextFloat() * 360, 0);
             dragon.homePos = new HomePosition(origin, world.getLevel());
             dragon.hasHomePosition = true;
             dragon.setHunger(50);

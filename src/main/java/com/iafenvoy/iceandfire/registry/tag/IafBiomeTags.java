@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.registry.tag;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
@@ -44,6 +44,6 @@ public final class IafBiomeTags {
     public static final TagKey<Biome> SNOWY_TROLL = create("entity_gen/troll_snowy");
 
     private static TagKey<Biome> create(final String name) {
-        return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
+        return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
     }
 }

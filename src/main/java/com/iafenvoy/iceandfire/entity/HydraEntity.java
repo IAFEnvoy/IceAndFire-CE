@@ -7,7 +7,6 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -30,9 +29,13 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartEntity, IVillagerFear, IAnimalFear, IHasCustomizableAttributes {
     public static final int HEADS = 9;
@@ -78,7 +81,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         this.multipartLoaded = false;
         this.headDamageThreshold = Math.max(5, IafCommonConfig.INSTANCE.hydra.maxHealth.getValue().floatValue() * 0.08F);
         this.resetParts();
-        this.setId(this.getId());
+        this.setId(MultipartPartEntity.reserveParentId(this.getParts().length));
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -106,11 +109,11 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, entity -> DragonUtils.isAlive(entity) && !(entity instanceof Enemy) || entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone()));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> DragonUtils.isAlive(entity) && !(entity instanceof Enemy) || entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone()));
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NonNull ServerLevel level, @NotNull Entity entityIn) {
         return false;
     }
 
@@ -161,10 +164,10 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
                     double d4 = attackTarget.getZ() - headPosZ + this.random.nextGaussian() * 0.4D;
                     HydraBreathEntity entitylargefireball = new HydraBreathEntity(IafEntities.HYDRA_BREATH.get(), this.level(), this, d2, d3, d4);
                     entitylargefireball.setPos(headPosX, headPosY, headPosZ);
-                    if (!this.level().isClientSide)
+                    if (!this.level().isClientSide())
                         this.level().addFreshEntity(entitylargefireball);
                 }
-                if (this.isBreathing[i] && (attackTarget == null || !attackTarget.isAlive() || this.breathTicks[i] > 60) && !this.level().isClientSide) {
+                if (this.isBreathing[i] && (attackTarget == null || !attackTarget.isAlive() || this.breathTicks[i] > 60) && !this.level().isClientSide()) {
                     this.isBreathing[i] = false;
                     this.breathTicks[i] = 0;
                     this.breathCooldown = 15;
@@ -315,23 +318,23 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Variant", this.getVariant());
-        compound.putInt("HeadCount", this.getHeadCount());
-        compound.putInt("SeveredHead", this.getSeveredHead());
+    protected void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Variant", this.getVariant());
+        output.putInt("HeadCount", this.getHeadCount());
+        output.putInt("SeveredHead", this.getSeveredHead());
         for (int i = 0; i < HEADS; i++)
-            compound.putFloat("HeadDamage" + i, this.headDamageTracker[i]);
+            output.putFloat("HeadDamage" + i, this.headDamageTracker[i]);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setHeadCount(compound.getInt("HeadCount"));
-        this.setSeveredHead(compound.getInt("SeveredHead"));
+    protected void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setVariant(input.getIntOr("Variant", 0));
+        this.setHeadCount(input.getIntOr("HeadCount", 3));
+        this.setSeveredHead(input.getIntOr("SeveredHead", -1));
         for (int i = 0; i < HEADS; i++)
-            this.headDamageTracker[i] = compound.getFloat("HeadDamage" + i);
+            this.headDamageTracker[i] = input.getFloatOr("HeadDamage" + i, 0);
         this.setConfigurableAttributes();
     }
 
@@ -344,7 +347,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float amount) {
+    public boolean hurtServer(@NonNull ServerLevel level, @NotNull DamageSource source, float amount) {
         if (this.lastHitHead > this.getHeadCount())
             this.lastHitHead = this.getHeadCount() - 1;
         int headIndex = this.lastHitHead;
@@ -358,11 +361,11 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         }
         if (this.getHealth() <= amount + 5 && this.getHeadCount() > 1 && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
             amount = 0;
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setVariant(this.random.nextInt(3));
         return data;

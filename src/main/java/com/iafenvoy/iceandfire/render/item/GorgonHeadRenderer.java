@@ -8,28 +8,28 @@ import com.iafenvoy.iceandfire.render.model.GorgonHeadModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class GorgonHeadRenderer implements DynamicItemRenderer {
-    private static final RenderType ACTIVE_TEXTURE = RenderType.entityCutoutNoCull(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/gorgon/head_active.png"), false);
-    private static final RenderType INACTIVE_TEXTURE = RenderType.entityCutoutNoCull(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/gorgon/head_inactive.png"), false);
+    private static final Identifier ACTIVE_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/gorgon/head_active.png");
+    private static final Identifier INACTIVE_TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/gorgon/head_inactive.png");
     private static final AdvancedEntityModel<Entity> ACTIVE_MODEL = new GorgonHeadActiveModel();
     private static final AdvancedEntityModel<Entity> INACTIVE_MODEL = new GorgonHeadModel();
 
     @Override
-    public void render(ItemStack stack, ItemDisplayContext type, PoseStack stackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void submit(ItemStack stack, PoseStack stackIn, SubmitNodeCollector collector, int combinedLightIn, int combinedOverlayIn, boolean foil, int color) {
         boolean active = stack.getItem() == IafItems.GORGON_HEAD.get() && stack.has(IafDataComponents.ACTIVE.get());
         AdvancedEntityModel<Entity> model = active ? ACTIVE_MODEL : INACTIVE_MODEL;
         stackIn.pushPose();
         stackIn.translate(0.5F, active ? 1.5F : 1.25F, 0.5F);
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(active ? ACTIVE_TEXTURE : INACTIVE_TEXTURE);
-        model.renderToBuffer(stackIn, ivertexbuilder, combinedLightIn, combinedOverlayIn, -1);
+        collector.submitCustomGeometry(stackIn, RenderTypes.entityCutout(active ? ACTIVE_TEXTURE : INACTIVE_TEXTURE, false), (pose, buffer) -> {
+            PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+            model.renderToBuffer(modelStack, buffer, combinedLightIn, combinedOverlayIn, -1);
+        });
         stackIn.popPose();
     }
 }

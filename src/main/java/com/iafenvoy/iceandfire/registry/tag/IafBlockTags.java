@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.registry.tag;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
@@ -23,7 +23,7 @@ public final class IafBlockTags {
     public static final TagKey<Block> GRASSES = create("grasses");
 
     private static TagKey<Block> create(final String name) {
-        return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
+        return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name));
     }
 }
 

@@ -5,7 +5,6 @@ import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -16,7 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +24,7 @@ import java.util.Locale;
 
 public class PixieHouseBlock extends BaseEntityBlock {
     private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new PixieHouseBlock());
-    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+    public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
 
     public PixieHouseBlock() {
         super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F, 5.0F).randomTicks());
@@ -47,13 +46,6 @@ public class PixieHouseBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(@NotNull BlockState state, @NotNull Level worldIn, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        this.dropPixie(worldIn, pos);
-        popResource(worldIn, pos, new ItemStack(this, 0));
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    @Override
     protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
@@ -70,7 +62,7 @@ public class PixieHouseBlock extends BaseEntityBlock {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> entityType) {
-        return level.isClientSide ? createTickerHelper(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickClient) : createTickerHelper(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickServer);
+        return level.isClientSide() ? createTickerHelper(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickClient) : createTickerHelper(entityType, IafBlockEntities.PIXIE_HOUSE.get(), PixieHouseBlockEntity::tickServer);
     }
 
     @Override

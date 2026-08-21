@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:dragonscale_gray"
-    }
+    "iceandfire:dragonscale_gray"
   ],
   "result": {
     "count": 9,

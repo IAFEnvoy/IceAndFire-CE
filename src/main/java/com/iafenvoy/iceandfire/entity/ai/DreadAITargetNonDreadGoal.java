@@ -5,20 +5,11 @@ import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.function.Predicate;
 
 public class DreadAITargetNonDreadGoal extends NearestAttackableTargetGoal<LivingEntity> {
     public DreadAITargetNonDreadGoal(Mob entityIn, Class<LivingEntity> classTarget, boolean checkSight, Predicate<LivingEntity> targetSelector) {
-        super(entityIn, classTarget, 0, checkSight, false, targetSelector);
-    }
-
-    @Override
-    protected boolean canAttack(LivingEntity target, @NotNull TargetingConditions targetPredicate) {
-        if (super.canAttack(target, targetPredicate))
-            return !(target instanceof IDreadMob) && DragonUtils.isAlive(target);
-        return false;
+        super(entityIn, classTarget, 10, checkSight, false, (target, level) ->
+                !(target instanceof IDreadMob) && DragonUtils.isAlive(target) && targetSelector.test(target));
     }
 }

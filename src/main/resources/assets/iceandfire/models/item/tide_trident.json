@@ -1,5 +1,7 @@
 {
-  "parent": "builtin/entity",
+  "textures": {
+    "particle": "minecraft:item/barrier"
+  },
   "gui_light": "front",
   "ambientocclusion": true,
   "display": {

@@ -18,10 +18,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 public class ElementalFlowerBlock extends BushBlock {
-    private static final MapCodec<? extends BushBlock> CODEC = simpleCodec(s -> new ElementalFlowerBlock());
+    private static final MapCodec<BushBlock> CODEC = ElementalFlowerBlock.simpleCodec(s -> new ElementalFlowerBlock());
 
     public ElementalFlowerBlock() {
-        super(Properties.of().mapColor(MapColor.PLANT).noCollission().instabreak().sound(SoundType.GRASS).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY));
+        super(Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY));
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ElementalFlowerBlock extends BushBlock {
     }
 
     @Override
-    protected @NotNull MapCodec<? extends BushBlock> codec() {
+    public @NotNull MapCodec<BushBlock> codec() {
         return CODEC;
     }
 
@@ -43,6 +43,6 @@ public class ElementalFlowerBlock extends BushBlock {
         else if (this == IafBlocks.LIGHTNING_LILY.get())
             return state.is(BlockTags.DIRT) || state.is(IafBlockTags.GRASSES);
         else
-            return state.is(BlockTags.ICE) || state.is(BlockTags.SNOW) || state.is(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON);
+            return state.is(BlockTags.ICE) || state.is(BlockTags.SNOW);
     }
 }

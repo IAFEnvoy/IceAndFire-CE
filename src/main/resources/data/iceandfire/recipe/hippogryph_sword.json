@@ -6,18 +6,10 @@
     " S "
   ],
   "key": {
-    "T": {
-      "item": "iceandfire:hippogryph_talon"
-    },
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "F": {
-      "item": "minecraft:feather"
-    }
+    "T": "iceandfire:hippogryph_talon",
+    "S": "minecraft:stick",
+    "I": "#c:ingots/iron",
+    "F": "minecraft:feather"
   },
   "result": {
     "id": "iceandfire:hippogryph_sword"

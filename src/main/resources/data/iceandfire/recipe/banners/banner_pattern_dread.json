@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:dread_shard"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:dread_shard",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_dread",

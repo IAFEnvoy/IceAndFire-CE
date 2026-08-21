@@ -4,9 +4,10 @@ import com.iafenvoy.iceandfire.item.block.entity.GhostChestBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class GhostChestBlock extends ChestBlock {
     public GhostChestBlock() {
-        super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2.5F).sound(SoundType.WOOD), IafBlockEntities.GHOST_CHEST::get);
+        super(IafBlockEntities.GHOST_CHEST::get, SoundEvents.CHEST_OPEN, SoundEvents.CHEST_CLOSE, Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(2.5F).sound(SoundType.WOOD));
     }
 
     @Override
@@ -33,7 +34,7 @@ public class GhostChestBlock extends ChestBlock {
     }
 
     @Override
-    protected @NotNull Stat<ResourceLocation> getOpenChestStat() {
+    protected @NotNull Stat<Identifier> getOpenChestStat() {
         return Stats.CUSTOM.get(Stats.TRIGGER_TRAPPED_CHEST);
     }
 

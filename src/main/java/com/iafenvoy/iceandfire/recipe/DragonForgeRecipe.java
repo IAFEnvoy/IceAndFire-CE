@@ -1,32 +1,35 @@
 package com.iafenvoy.iceandfire.recipe;
 
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeBlockEntity;
-import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafRecipeSerializers;
 import com.iafenvoy.iceandfire.registry.IafRecipes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.PlacementInfo;
+import net.minecraft.world.item.crafting.RecipeBookCategories;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonForgeRecipeInput> {
     private final Ingredient input;
     private final Ingredient blood;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final String dragonType;
     private final int cookTime;
 
-    public DragonForgeRecipe(Ingredient input, Ingredient blood, ItemStack result, String dragonType, int cookTime) {
+    public DragonForgeRecipe(Ingredient input, Ingredient blood, ItemStackTemplate result, String dragonType, int cookTime) {
         this.input = input;
         this.blood = blood;
         this.result = result;
@@ -61,8 +64,8 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
     }
 
     @Override
-    public @NotNull ItemStack assemble(DragonForgeBlockEntity.@NotNull DragonForgeRecipeInput input, HolderLookup.@NotNull Provider lookup) {
-        return this.result;
+    public @NotNull ItemStack assemble(DragonForgeBlockEntity.@NotNull DragonForgeRecipeInput input) {
+        return this.result.create();
     }
 
     public boolean isValidInput(ItemStack stack) {
@@ -74,56 +77,55 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
     }
 
     public ItemStack getResultItem() {
-        return this.result;
+        return this.result.create();
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return false;
-    }
-
-    @Override
-    public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registriesLookup) {
-        return this.result;
-    }
-
-    @Override
-    public @NotNull ItemStack getToastSymbol() {
-        return new ItemStack(IafBlocks.DRAGONFORGE_FIRE_CORE.get());
-    }
-
-    @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<DragonForgeRecipe> getSerializer() {
         return IafRecipeSerializers.DRAGONFORGE_SERIALIZER.get();
     }
 
     @Override
-    public @NotNull RecipeType<?> getType() {
+    public @NotNull RecipeType<DragonForgeRecipe> getType() {
         return IafRecipes.DRAGON_FORGE_TYPE.get();
     }
 
-    public static class Serializer implements RecipeSerializer<DragonForgeRecipe> {
-        @Override
-        public @NotNull MapCodec<DragonForgeRecipe> codec() {
-            return RecordCodecBuilder.mapCodec(i -> i.group(
-                    Ingredient.CODEC.fieldOf("input").forGetter(DragonForgeRecipe::getInput),
-                    Ingredient.CODEC.fieldOf("blood").forGetter(DragonForgeRecipe::getBlood),
-                    ItemStack.OPTIONAL_CODEC.fieldOf("result").forGetter(DragonForgeRecipe::getResultItem),
-                    Codec.STRING.fieldOf("dragonType").forGetter(DragonForgeRecipe::getDragonType),
-                    Codec.INT.fieldOf("cookTime").forGetter(DragonForgeRecipe::getCookTime)
-            ).apply(i, DragonForgeRecipe::new));
-        }
+    @Override
+    public boolean showNotification() {
+        return false;
+    }
 
-        @Override
-        public @NotNull StreamCodec<RegistryFriendlyByteBuf, DragonForgeRecipe> streamCodec() {
-            return StreamCodec.composite(
-                    Ingredient.CONTENTS_STREAM_CODEC, DragonForgeRecipe::getInput,
-                    Ingredient.CONTENTS_STREAM_CODEC, DragonForgeRecipe::getBlood,
-                    ItemStack.STREAM_CODEC, DragonForgeRecipe::getResultItem,
-                    ByteBufCodecs.STRING_UTF8, DragonForgeRecipe::getDragonType,
-                    ByteBufCodecs.INT, DragonForgeRecipe::getCookTime,
-                    DragonForgeRecipe::new
-            );
-        }
+    @Override
+    public @NonNull String group() {
+        return "";
+    }
+
+    @Override
+    public @NonNull PlacementInfo placementInfo() {
+        return PlacementInfo.NOT_PLACEABLE;
+    }
+
+    @Override
+    public @NonNull RecipeBookCategory recipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    public static RecipeSerializer<DragonForgeRecipe> serializer() {
+        MapCodec<DragonForgeRecipe> codec = RecordCodecBuilder.mapCodec(i -> i.group(
+                Ingredient.CODEC.fieldOf("input").forGetter(DragonForgeRecipe::getInput),
+                Ingredient.CODEC.fieldOf("blood").forGetter(DragonForgeRecipe::getBlood),
+                ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+                Codec.STRING.fieldOf("dragonType").forGetter(DragonForgeRecipe::getDragonType),
+                Codec.INT.fieldOf("cookTime").forGetter(DragonForgeRecipe::getCookTime)
+        ).apply(i, DragonForgeRecipe::new));
+        StreamCodec<RegistryFriendlyByteBuf, DragonForgeRecipe> streamCodec = StreamCodec.composite(
+                Ingredient.CONTENTS_STREAM_CODEC, DragonForgeRecipe::getInput,
+                Ingredient.CONTENTS_STREAM_CODEC, DragonForgeRecipe::getBlood,
+                ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
+                ByteBufCodecs.STRING_UTF8, DragonForgeRecipe::getDragonType,
+                ByteBufCodecs.INT, DragonForgeRecipe::getCookTime,
+                DragonForgeRecipe::new
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
 }

@@ -4,13 +4,10 @@ import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -26,6 +23,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class PileBlock extends Block {
     public static final IntegerProperty LAYERS = IntegerProperty.create("layers", 1, 8);
@@ -68,8 +66,8 @@ public class PileBlock extends Block {
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState stateIn, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor worldIn, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
-        return !stateIn.canSurvive(worldIn, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+    protected @NotNull BlockState updateShape(BlockState stateIn, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos facingPos, @NotNull BlockState facingState, @NotNull net.minecraft.util.RandomSource random) {
+        return !stateIn.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, level, scheduledTickAccess, currentPos, facing, facingPos, facingState, random);
     }
 
 
@@ -88,18 +86,13 @@ public class PileBlock extends Block {
     }
 
     @Override
-    protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull BlockHitResult hit) {
-        ItemStack item = player.getInventory().getSelected();
-
+    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack item, @NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NonNull Player player, @NotNull net.minecraft.world.InteractionHand hand, @NotNull BlockHitResult hit) {
         if (!item.isEmpty() && item.getItem() == this.asItem() && state.getValue(LAYERS) < 8) {
-            world.setBlock(pos, state.setValue(LAYERS, state.getValue(LAYERS) + 1), 3);
-            if (!player.isCreative()) {
+            if (!world.isClientSide()) {
+                world.setBlock(pos, state.setValue(LAYERS, state.getValue(LAYERS) + 1), 3);
+            }
+            if (!player.isCreative() && !world.isClientSide()) {
                 item.shrink(1);
-                Inventory inventory = player.getInventory();
-                if (item.isEmpty())
-                    inventory.setItem(inventory.selected, ItemStack.EMPTY);
-                else
-                    inventory.setItem(inventory.selected, item);
             }
             return InteractionResult.SUCCESS;
         }

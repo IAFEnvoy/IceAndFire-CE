@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
@@ -38,6 +39,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.StreamSupport;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,13 +55,13 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             return Optional.empty();
         Rotation blockRotation = Rotation.getRandom(context.random());
         BlockPos blockPos = this.getLowestYIn5by5BoxOffset7Blocks(context, blockRotation);
-        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinBuildHeight() + 2)
+        if (!this.isFarEnoughFromSpawn(blockPos) || blockPos.getY() <= context.heightAccessor().getMinY() + 2)
             return Optional.empty();
         return Optional.of(new GenerationStub(blockPos, collector -> this.addPieces(collector, blockPos, context, context.random().nextBoolean())));
     }
 
     private void addPieces(StructurePiecesBuilder collector, BlockPos pos, GenerationContext context, boolean male) {
-        int y = context.heightAccessor().getMinBuildHeight() + 40 + context.random().nextInt(30);
+        int y = context.heightAccessor().getMinY() + 40 + context.random().nextInt(30);
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
@@ -86,10 +88,10 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
 
         public DragonCavePiece(StructurePieceType type, CompoundTag nbt) {
             super(type, nbt);
-            this.male = nbt.getBoolean("male");
-            this.offset = BlockPos.of(nbt.getLong("offset"));
-            this.y = nbt.getInt("down");
-            this.seed = nbt.getLong("seed");
+            this.male = nbt.getBoolean("male").orElse(false);
+            this.offset = BlockPos.of(nbt.getLong("offset").orElse(0L));
+            this.y = nbt.getInt("down").orElse(0);
+            this.seed = nbt.getLong("seed").orElse(0L);
         }
 
         @Override
@@ -111,7 +113,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
 
             random = new LegacyRandomSource(this.seed);
             // Center the position at the "middle" of the chunk
-            BlockPos position = new BlockPos((chunkPos.x << 4) + 8, this.y, (chunkPos.z << 4) + 8).subtract(this.offset);
+            BlockPos position = new BlockPos((chunkPos.x() << 4) + 8, this.y, (chunkPos.z() << 4) + 8).subtract(this.offset);
             int dragonAge = 75 + random.nextInt(50);
             int radius = (int) (dragonAge * 0.2F) + random.nextInt(4);
             this.generateCave(world, radius, 3, position, random);
@@ -146,7 +148,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
             shellBlocksSet.removeAll(hollowBlocksSet);
 
             //Remove blocks that is not belong to this piece
-            ChunkPos chunkPos = new ChunkPos(center.offset(this.offset));
+            ChunkPos chunkPos = ChunkPos.containing(center.offset(this.offset));
             shellBlocksSet.removeIf(x -> this.isOutOfRange(chunkPos, x));
             hollowBlocksSet.removeIf(x -> this.isOutOfRange(chunkPos, x));
 
@@ -191,7 +193,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
         }
 
         private List<Block> getBlockList(final TagKey<Block> tagKey) {
-            return BuiltInRegistries.BLOCK.getTag(tagKey).map(holders -> holders.stream().map(Holder::value).toList()).orElse(Collections.emptyList());
+            return StreamSupport.stream(BuiltInRegistries.BLOCK.getTagOrEmpty(tagKey).spliterator(), false).map(Holder::value).toList();
         }
 
         public void hollowOut(LevelAccessor worldIn, Set<BlockPos> positions) {
@@ -236,14 +238,14 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
         }
 
         private DragonBaseEntity createDragon(final WorldGenLevel worldGen, final RandomSource random, final BlockPos position, int dragonAge) {
-            DragonBaseEntity dragon = this.getDragonType().create(worldGen.getLevel());
+            DragonBaseEntity dragon = this.getDragonType().create(worldGen.getLevel(), EntitySpawnReason.STRUCTURE);
             assert dragon != null;
             dragon.setGender(this.male);
             dragon.growDragon(dragonAge);
             dragon.setAgingDisabled(true);
             dragon.setHealth(dragon.getMaxHealth());
             dragon.setVariant(RandomHelper.randomOne(dragon.dragonType.colors()).getName());
-            dragon.absMoveTo(position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, random.nextFloat() * 360, 0);
+            dragon.snapTo(position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, random.nextFloat() * 360, 0);
             dragon.setInSittingPose(true);
             dragon.homePos = new HomePosition(position, worldGen.getLevel());
             dragon.setHunger(50);

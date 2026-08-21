@@ -6,15 +6,9 @@
     "Y"
   ],
   "key": {
-    "#": {
-      "item": "minecraft:stick"
-    },
-    "X": {
-      "item": "iceandfire:hydra_fang"
-    },
-    "Y": {
-      "item": "minecraft:lily_pad"
-    }
+    "#": "minecraft:stick",
+    "X": "iceandfire:hydra_fang",
+    "Y": "minecraft:lily_pad"
   },
   "result": {
     "id": "iceandfire:hydra_arrow",

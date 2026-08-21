@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "B": {
-      "item": "minecraft:stone_bricks"
-    },
-    "S": {
-      "tag": "iceandfire:storage_blocks/scales/dragon/ice"
-    }
+    "B": "minecraft:stone_bricks",
+    "S": "#iceandfire:storage_blocks/scales/dragon/ice"
   },
   "pattern": [
     "SBS",

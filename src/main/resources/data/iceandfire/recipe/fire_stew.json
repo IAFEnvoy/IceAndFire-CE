@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:bowl"
-    },
-    {
-      "item": "minecraft:blaze_rod"
-    },
-    {
-      "item": "iceandfire:fire_lily"
-    }
+    "minecraft:bowl",
+    "minecraft:blaze_rod",
+    "iceandfire:fire_lily"
   ],
   "result": {
     "id": "iceandfire:fire_stew"

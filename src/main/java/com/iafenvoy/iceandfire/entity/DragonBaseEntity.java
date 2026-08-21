@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
 
-import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.DragonColor;
@@ -16,6 +15,7 @@ import com.iafenvoy.iceandfire.item.SummoningCrystalItem;
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeInputBlockEntity;
 import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.item.component.DragonSkullComponent;
+import com.iafenvoy.iceandfire.mixin.ServerLevelMultipartAccessor;
 import com.iafenvoy.iceandfire.network.payload.DragonSetBurnBlockS2CPayload;
 import com.iafenvoy.iceandfire.network.payload.StartRidingMobPayload;
 import com.iafenvoy.iceandfire.registry.*;
@@ -25,7 +25,6 @@ import com.iafenvoy.iceandfire.render.model.IFChainBuffer;
 import com.iafenvoy.iceandfire.render.model.util.LegSolverQuadruped;
 import com.iafenvoy.iceandfire.screen.menu.DragonMenu;
 import com.iafenvoy.iceandfire.world.DragonPosWorldData;
-import com.iafenvoy.integration.IntegrationExecutor;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
@@ -36,7 +35,7 @@ import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.PathingStuckHandler
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.pathjobs.ICustomSizeNavigator;
 import com.iafenvoy.uranus.object.item.FoodUtils;
 import com.iafenvoy.uranus.util.RandomHelper;
-import net.createmod.catnip.levelWrappers.SchematicLevel;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -44,18 +43,13 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -85,29 +79,33 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
-public abstract class DragonBaseEntity extends TamableAnimal implements MenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener {
+public abstract class DragonBaseEntity extends TamableAnimal implements MenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController {
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
-    private static final ResourceLocation ARMOR_MODIFIER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "armor_modifier");
+    private static final Identifier ARMOR_MODIFIER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "armor_modifier");
     private static final EntityDataAccessor<Integer> HUNGER = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> AGE_TICKS = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.BOOLEAN);
@@ -247,7 +245,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.maximumArmor = 20D;
         ANIMATION_EAT = Animation.create(20);
         this.createInventory();
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             this.roll_buffer = new IFChainBuffer();
             this.pitch_buffer = new IFChainBuffer();
             this.pitch_buffer_body = new IFChainBuffer();
@@ -257,16 +255,17 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.legSolver = new LegSolverQuadruped(0.3F, 0.35F, 0.2F, 1.45F, 1.0F);
         this.flightManager = new IafDragonFlightManager(this);
         this.logic = this.createDragonLogic();
-        this.noCulling = true;
         this.switchNavigator(0);
         this.randomizeAttacks();
         this.lastScale = 0;//Ensure scale will be updated so that multipart can generate correctly
         this.updateScale(this.getRenderSize() / 3);
-        this.setId(this.getId());
+        this.setId(MultipartPartEntity.reserveParentId(this.getParts().length));
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
         return Mob.createMobAttributes()
+                // TemptGoal queries this attribute in Minecraft 26.1.2.
+                .add(Attributes.TEMPT_RANGE, 10.0D)
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, 20.0D)
                 //SPEED
@@ -284,12 +283,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(Math.min(2048, IafCommonConfig.INSTANCE.dragon.targetSearchLength.getValue()));
     }
 
-    @Override
     public @NotNull BlockPos getRestrictCenter() {
-        return this.homePos == null ? super.getRestrictCenter() : this.homePos.getPosition();
+        return this.homePos == null ? this.blockPosition() : this.homePos.getPosition();
     }
 
-    @Override
     public float getRestrictRadius() {
         return IafCommonConfig.INSTANCE.dragon.wanderFromHomeDistance.getValue();
     }
@@ -298,11 +295,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         return this.homePos == null ? "" : this.homePos.getDimension();
     }
 
-    @Override
     public boolean hasRestriction() {
         return this.hasHomePosition &&
-                this.getHomeDimensionName().equals(DragonUtils.getDimensionName(this.level()))
-                || super.hasRestriction();
+                this.getHomeDimensionName().equals(DragonUtils.getDimensionName(this.level()));
     }
 
     @Override
@@ -313,7 +308,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.goalSelector.addGoal(3, new DragonAIReturnToRoostGoal(this, 1.0D));
         this.goalSelector.addGoal(4, new DragonAIEscortGoal(this, 1.0D));
         this.goalSelector.addGoal(5, new DragonAIAttackMeleeGoal(this, 1.5D, false));
-        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(IafItemTags.TEMPT_DRAGON), false));
+        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(this.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(IafItemTags.TEMPT_DRAGON)), false));
         this.goalSelector.addGoal(7, new DragonAIWanderGoal(this, 1.0D));
         this.goalSelector.addGoal(8, new DragonAIWatchClosestGoal(this, LivingEntity.class, 6.0F));
         this.goalSelector.addGoal(8, new DragonAILookIdleGoal(this));
@@ -321,14 +316,14 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.targetSelector.addGoal(2, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
         this.targetSelector.addGoal(4, new DragonAITargetItemsGoal(this, 60, false, false, true));
-        this.targetSelector.addGoal(5, new DragonAITargetNonTamedGoal<>(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> {
+        this.targetSelector.addGoal(5, new DragonAITargetNonTamedGoal<>(this, LivingEntity.class, false, (entity, level) -> {
             if (entity instanceof Player player)
                 return !player.isCreative() && !IafCommonConfig.INSTANCE.dragon.neutralToPlayer.getValue();
             if (this.getRandom().nextInt(100) > this.getHunger())
                 return entity.getType() != this.getType() && DragonUtils.canHostilesTarget(entity) && DragonUtils.isAlive(entity) && this.shouldTarget(entity);
             return false;
         }));
-        this.targetSelector.addGoal(6, new DragonAITargetGoal<>(this, LivingEntity.class, true, (Predicate<LivingEntity>) entity -> entity instanceof Player ? !IafCommonConfig.INSTANCE.dragon.neutralToPlayer.getValue() : DragonUtils.canHostilesTarget(entity) && entity.getType() != this.getType() && this.shouldTarget(entity) && DragonUtils.isAlive(entity)));
+        this.targetSelector.addGoal(6, new DragonAITargetGoal<>(this, LivingEntity.class, true, (entity, level) -> entity instanceof Player ? !IafCommonConfig.INSTANCE.dragon.neutralToPlayer.getValue() : DragonUtils.canHostilesTarget(entity) && entity.getType() != this.getType() && this.shouldTarget(entity) && DragonUtils.isAlive(entity)));
         this.targetSelector.addGoal(7, new DragonAITargetItemsGoal(this, false));
     }
 
@@ -388,6 +383,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public void removeParts() {
+        this.unregisterParts();
         if (this.headPart != null) {
             this.headPart.remove(RemovalReason.DISCARDED);
             this.headPart = null;
@@ -432,6 +428,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     public void updateParts() {
         if (this.isRemoved()) return;
+        // Parts are client-side collision proxies and can be discarded during reload/unload.
+        // Recreate them before positioning so existing dragons retain their multipart hitboxes.
+        if (this.headPart == null || this.headPart.isRemoved())
+            this.updateScale(this.getRenderSize() / 3);
         this.headPart.updatePosition();
         this.neckPart.updatePosition();
         this.rightWingUpperPart.updatePosition();
@@ -450,10 +450,35 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             parts[i].setId(this.getId() + i + 1);
     }
 
+    /** Keeps server-side ray tracing and interaction packets aware of all dragon parts. */
+    private void registerParts() {
+        if (!(this.level() instanceof ServerLevel serverLevel)) return;
+        Int2ObjectMap<PartEntity<?>> parts = ((ServerLevelMultipartAccessor) serverLevel).iceandfire$getDragonParts();
+        for (PartEntity<?> part : this.getParts())
+            if (part != null && !part.isRemoved())
+                parts.put(part.getId(), part);
+    }
+
+    private void unregisterParts() {
+        if (!(this.level() instanceof ServerLevel serverLevel)) return;
+        Int2ObjectMap<PartEntity<?>> parts = ((ServerLevelMultipartAccessor) serverLevel).iceandfire$getDragonParts();
+        for (PartEntity<?> part : this.getParts())
+            if (part != null)
+                parts.remove(part.getId());
+    }
+
     @Override
     public void setId(int id) {
         super.setId(id);
         this.updatePartIds();
+    }
+
+    @Override
+    public void recreateFromPacket(@NotNull ClientboundAddEntityPacket packet) {
+        super.recreateFromPacket(packet);
+        // ClientLevel records multipart hitboxes when it starts tracking this entity.
+        // Build them before ClientLevel.addEntity invokes that tracking callback.
+        this.updateScale(this.getRenderSize() / 3);
     }
 
     @Override
@@ -475,7 +500,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 this.breathFireAtPos(this.burningTarget);
                 this.setBreathingFire(true);
             } else {
-                if (!this.level().isClientSide)
+                if (!this.level().isClientSide())
                     PacketDistributor.sendToAllPlayers(new DragonSetBurnBlockS2CPayload(this.getId(), true, this.burningTarget));
                 this.burningTarget = null;
             }
@@ -533,8 +558,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    protected void customServerAiStep() {
-        super.customServerAiStep();
+    protected void customServerAiStep(@NonNull ServerLevel level) {
+        super.customServerAiStep(level);
         this.breakBlocks(false);
     }
 
@@ -584,7 +609,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 double d2 = this.random.nextGaussian() * 0.02D;
                 double d0 = this.random.nextGaussian() * 0.02D;
                 double d1 = this.random.nextGaussian() * 0.02D;
-                if (this.level().isClientSide) {
+                if (this.level().isClientSide()) {
                     this.level().addParticle(ParticleTypes.CLOUD, this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
                 }
             }
@@ -605,7 +630,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    protected int getBaseExperienceReward(@NonNull ServerLevel level) {
         return switch (this.getDragonStage()) {
             case 2 -> 20;
             case 3 -> 150;
@@ -735,66 +760,78 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Hunger", this.getHunger());
-        compound.putInt("AgeTicks", this.getAgeInTicks());
-        compound.putBoolean("Gender", this.isMale());
-        compound.putString("Variant", this.getVariant());
-        compound.putBoolean("Sleeping", this.isSleeping());
-        compound.putBoolean("TamedDragon", this.isTame());
-        compound.putBoolean("FireBreathing", this.isBreathingFire());
-        compound.putBoolean("AttackDecision", this.usingGroundAttack);
-        compound.putBoolean("Hovering", this.isHovering());
-        compound.putBoolean("Flying", this.isFlying());
-        compound.putInt("DeathStage", this.getDeathStage());
-        compound.putBoolean("ModelDead", this.isModelDead());
-        compound.putFloat("DeadProg", this.modelDeadProgress);
-        compound.putBoolean("Tackle", this.isTackling());
-        compound.putBoolean("HasHomePosition", this.hasHomePosition);
-        compound.putString("CustomPose", this.getCustomPose());
-        if (this.homePos != null && this.hasHomePosition) this.homePos.write(compound);
-        compound.putBoolean("AgingDisabled", this.isAgingDisabled());
-        compound.putInt("Command", this.getCommand());
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Hunger", this.getHunger());
+        output.putInt("AgeTicks", this.getAgeInTicks());
+        output.putBoolean("Gender", this.isMale());
+        output.putString("Variant", this.getVariant());
+        output.putBoolean("Sleeping", this.isSleeping());
+        output.putBoolean("TamedDragon", this.isTame());
+        output.putBoolean("FireBreathing", this.isBreathingFire());
+        output.putBoolean("AttackDecision", this.usingGroundAttack);
+        output.putBoolean("Hovering", this.isHovering());
+        output.putBoolean("Flying", this.isFlying());
+        output.putInt("DeathStage", this.getDeathStage());
+        output.putBoolean("ModelDead", this.isModelDead());
+        output.putFloat("DeadProg", this.modelDeadProgress);
+        output.putBoolean("Tackle", this.isTackling());
+        output.putBoolean("HasHomePosition", this.hasHomePosition);
+        output.putString("CustomPose", this.getCustomPose());
+        if (this.homePos != null && this.hasHomePosition) this.homePos.write(output);
+        output.putBoolean("AgingDisabled", this.isAgingDisabled());
+        output.putInt("Command", this.getCommand());
         if (this.dragonInventory != null)
-            compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), this.dragonInventory.getItems()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new ListTag()));
-        compound.putBoolean("CrystalBound", this.isBoundToCrystal());
-        compound.putInt("BrushedTime", this.brushedTime);
+            output.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.dragonInventory.getItems());
+        output.putBoolean("CrystalBound", this.isBoundToCrystal());
+        output.putInt("BrushedTime", this.brushedTime);
+        CompoundTag extensionData = new CompoundTag();
+        this.addAdditionalSaveData(extensionData);
+        output.store(extensionData);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setHunger(compound.getInt("Hunger"));
-        this.setAgeInTicks(compound.getInt("AgeTicks"));
-        this.setGender(compound.getBoolean("Gender"));
-        this.setVariant(compound.getString("Variant"));
-        this.setInSittingPose(compound.getBoolean("Sleeping"));
-        this.setTame(compound.getBoolean("TamedDragon"), true);
-        this.setBreathingFire(compound.getBoolean("FireBreathing"));
-        this.usingGroundAttack = compound.getBoolean("AttackDecision");
-        this.setHovering(compound.getBoolean("Hovering"));
-        this.setFlying(compound.getBoolean("Flying"));
-        this.setDeathStage(compound.getInt("DeathStage"));
-        this.setModelDead(compound.getBoolean("ModelDead"));
-        this.modelDeadProgress = compound.getFloat("DeadProg");
-        this.setCustomPose(compound.getString("CustomPose"));
-        this.hasHomePosition = compound.getBoolean("HasHomePosition");
-        if (this.hasHomePosition && compound.getInt("HomeAreaX") != 0 && compound.getInt("HomeAreaY") != 0 && compound.getInt("HomeAreaZ") != 0)
-            this.homePos = new HomePosition(compound, this.level());
-        this.setTackling(compound.getBoolean("Tackle"));
-        this.setAgingDisabled(compound.getBoolean("AgingDisabled"));
-        this.setCommand(compound.getInt("Command"));
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setHunger(input.getIntOr("Hunger", 0));
+        this.setAgeInTicks(input.getIntOr("AgeTicks", 0));
+        this.setGender(input.getBooleanOr("Gender", false));
+        this.setVariant(input.getStringOr("Variant", ""));
+        this.setInSittingPose(input.getBooleanOr("Sleeping", false));
+        this.setTame(input.getBooleanOr("TamedDragon", false), true);
+        this.setBreathingFire(input.getBooleanOr("FireBreathing", false));
+        this.usingGroundAttack = input.getBooleanOr("AttackDecision", false);
+        this.setHovering(input.getBooleanOr("Hovering", false));
+        this.setFlying(input.getBooleanOr("Flying", false));
+        this.setDeathStage(input.getIntOr("DeathStage", 0));
+        this.setModelDead(input.getBooleanOr("ModelDead", false));
+        this.modelDeadProgress = input.getFloatOr("DeadProg", 0.0F);
+        this.setCustomPose(input.getStringOr("CustomPose", ""));
+        this.hasHomePosition = input.getBooleanOr("HasHomePosition", false);
+        if (this.hasHomePosition && input.getIntOr("HomeAreaX", 0) != 0 && input.getIntOr("HomeAreaY", 0) != 0 && input.getIntOr("HomeAreaZ", 0) != 0)
+            this.homePos = new HomePosition(input, this.level());
+        this.setTackling(input.getBooleanOr("Tackle", false));
+        this.setAgingDisabled(input.getBooleanOr("AgingDisabled", false));
+        this.setCommand(input.getIntOr("Command", 0));
 
         this.createInventory();
-        List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> stacks = input.read("Items", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         for (int i = 0; i < stacks.size() && i < this.dragonInventory.getContainerSize(); i++)
             this.dragonInventory.setItem(i, stacks.get(i));
 
-        this.setCrystalBound(compound.getBoolean("CrystalBound"));
+        this.setCrystalBound(input.getBooleanOr("CrystalBound", false));
         this.setConfigurableAttributes();
         this.refreshDirtyAttributes();
-        this.brushedTime = compound.getInt("BrushedTime");
+        this.brushedTime = input.getIntOr("BrushedTime", 0);
+        this.readAdditionalSaveData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElse(new CompoundTag()));
+    }
+
+    /** Compatibility hook for dragon subclasses that still serialize their own extra NBT fields. */
+    protected void addAdditionalSaveData(CompoundTag compound) {
+    }
+
+    /** Compatibility hook paired with {@link #addAdditionalSaveData(CompoundTag)}. */
+    protected void readAdditionalSaveData(CompoundTag compound) {
     }
 
     public int getContainerSize() {
@@ -803,9 +840,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     protected void createInventory() {
         SimpleContainer tempInventory = this.dragonInventory;
-        this.dragonInventory = new SimpleContainer(this.getContainerSize());
+        this.dragonInventory = new SimpleContainer(this.getContainerSize()) {
+            @Override
+            public void setChanged() {
+                DragonBaseEntity.this.updateContainerEquipment();
+            }
+        };
         if (tempInventory != null) {
-            tempInventory.removeListener(this);
             int i = Math.min(tempInventory.getContainerSize(), this.dragonInventory.getContainerSize());
 
             for (int j = 0; j < i; ++j) {
@@ -815,12 +856,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             }
         }
 
-        this.dragonInventory.addListener(this);
         this.updateContainerEquipment();
     }
 
     protected void updateContainerEquipment() {
-        if (!this.level().isClientSide)
+        if (!this.level().isClientSide())
             this.refreshDirtyAttributes();
     }
 
@@ -832,7 +872,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     public LivingEntity getControllingPassenger() {
         for (Entity passenger : this.getPassengers())
             if (passenger instanceof LivingEntity living && this.getTarget() != living)
-                if (this.isTame() && this.getOwnerUUID() != null && this.getOwnerUUID().equals(living.getUUID()))
+                if (this.getOwnerReference() != null && this.getOwnerReference().matches(living))
                     return living;
         return null;
     }
@@ -856,7 +896,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.minimumSpeed + (speedStep * age));
         final double baseValue = this.minimumArmor + (armorStep * this.getAgeInDays());
         this.getAttribute(Attributes.ARMOR).setBaseValue(baseValue);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.getAttribute(Attributes.ARMOR).removeModifier(ARMOR_MODIFIER);
             this.getAttribute(Attributes.ARMOR).addPermanentModifier(new AttributeModifier(ARMOR_MODIFIER, this.calculateArmorModifier(), AttributeModifier.Operation.ADD_VALUE));
         }
@@ -908,7 +948,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public boolean isModelDead() {
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             return this.isModelDead = this.entityData.get(MODEL_DEAD);
         }
         return this.isModelDead;
@@ -916,7 +956,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     public void setModelDead(boolean modeldead) {
         this.entityData.set(MODEL_DEAD, modeldead);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.isModelDead = modeldead;
         }
     }
@@ -1032,16 +1072,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public @NotNull InteractionResult interactAt(Player player, @NotNull Vec3 vec, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (stack.getItem() == IafItems.DRAGON_DEBUG_STICK.get()) {
-            this.logic.debug();
-            return InteractionResult.SUCCESS;
-        }
-        return super.interactAt(player, vec, hand);
-    }
-
-    @Override
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         // Interaction usually means right-click but the relevant item is often in the main hand
         ItemStack stack = player.getMainHandItem();
@@ -1061,7 +1091,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 this.tame(player);
                 this.setHunger(this.getHunger() + 20);
                 this.heal(Math.min(this.getHealth(), (int) (this.getMaxHealth() / 2)));
-                this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
+                this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
                 this.spawnItemCrackParticles(stack.getItem());
                 this.spawnItemCrackParticles(Items.BONE);
                 this.spawnItemCrackParticles(Items.BONE_MEAL);
@@ -1088,7 +1118,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 if (stack.getItem() == this.dragonType.getCrystalItem() && !SummoningCrystalItem.hasDragon(stack)) {
                     this.setCrystalBound(true);
                     CompoundTag compound = new CompoundTag(), dragonTag = new CompoundTag();
-                    dragonTag.putUUID("DragonUUID", this.getUUID());
+                    dragonTag.put("DragonUUID", net.minecraft.core.UUIDUtil.AUTHLIB_CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, this.getUUID()).getOrThrow());
                     if (this.getCustomName() != null)
                         dragonTag.putString("CustomName", this.getCustomName().getString());
                     compound.put("Dragon", dragonTag);
@@ -1101,16 +1131,16 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 if (stack.getItem() == IafItems.DRAGON_HORN.get())
                     return super.mobInteract(player, hand);
                 if (stack.isEmpty() && !player.isShiftKeyDown()) {
-                    if (!this.level().isClientSide && player instanceof ServerPlayer serverPlayer) {
+                    if (!this.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
                         final int dragonStage = this.getDragonStage();
                         if (dragonStage < 2) {
                             if (player.getPassengers().size() >= 3)
                                 return InteractionResult.FAIL;
-                            this.startRiding(player, true);
+                            this.startRiding(player, true, true);
                             PacketDistributor.sendToPlayer(serverPlayer, new StartRidingMobPayload(this.getId(), true, true));
                         } else if (dragonStage > 2 && !player.isPassenger()) {
                             player.setShiftKeyDown(false);
-                            player.startRiding(this, true);
+                            player.startRiding(this, true, true);
                             PacketDistributor.sendToPlayer(serverPlayer, new StartRidingMobPayload(this.getId(), true, false));
                             this.setInSittingPose(false);
                         }
@@ -1120,13 +1150,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 } else if (stack.isEmpty() && player.isShiftKeyDown()) {
                     if (player instanceof ServerPlayer serverPlayer)
                         serverPlayer.openMenu(this);
-                    return InteractionResult.sidedSuccess(this.level().isClientSide);
+                    return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
                 } else {
                     int itemFoodAmount = FoodUtils.getFoodPoints(stack, true, this.dragonType.piscivore());
                     if (itemFoodAmount > 0 && (this.getHunger() < 100 || this.getHealth() < this.getMaxHealth())) {
                         this.setHunger(this.getHunger() + itemFoodAmount);
                         this.setHealth(Math.min(this.getMaxHealth(), (int) (this.getHealth() + ((float) itemFoodAmount / 10))));
-                        this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
+                        this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
                         this.spawnItemCrackParticles(stack.getItem());
                         if (!player.isCreative())
                             stack.shrink(1);
@@ -1140,7 +1170,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         }
                         this.setHunger(this.getHunger() + 20);
                         this.heal(Math.min(this.getHealth(), (int) (this.getMaxHealth() / 2)));
-                        this.playSound(SoundEvents.GENERIC_EAT, this.getSoundVolume(), this.getVoicePitch());
+                        this.playSound(SoundEvents.GENERIC_EAT.value(), this.getSoundVolume(), this.getVoicePitch());
                         this.spawnItemCrackParticles(stackItem);
                         this.spawnItemCrackParticles(Items.BONE);
                         this.spawnItemCrackParticles(Items.BONE_MEAL);
@@ -1164,16 +1194,16 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         if (player.isShiftKeyDown()) {
                             if (this.hasHomePosition) {
                                 this.hasHomePosition = false;
-                                player.displayClientMessage(Component.translatable("dragon.command.remove_home"), true);
+                                if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("dragon.command.remove_home"));
                             } else {
                                 BlockPos pos = this.blockPosition();
                                 this.homePos = new HomePosition(pos, this.level());
                                 this.hasHomePosition = true;
-                                player.displayClientMessage(Component.translatable("dragon.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()), true);
+                                if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("dragon.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()));
                             }
                         } else {
                             this.playSound(SoundEvents.ZOMBIE_INFECT, this.getSoundVolume(), this.getVoicePitch());
-                            if (!this.level().isClientSide) {
+                            if (!this.level().isClientSide()) {
                                 this.setCommand(this.getCommand() + 1);
                                 if (this.getCommand() > 2) {
                                     this.setCommand(0);
@@ -1185,13 +1215,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                             } else if (this.getCommand() == 2) {
                                 commandText = "escort";
                             }
-                            player.displayClientMessage(Component.translatable("dragon.command." + commandText), true);
+                            if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("dragon.command." + commandText));
                         }
                         return InteractionResult.SUCCESS;
                     }
                 }
             }
-        } else if (!this.level().isClientSide && this.getDeathStage() < lastDeathStage && player.mayBuild()) {
+        } else if (this.level() instanceof ServerLevel serverWorld && this.getDeathStage() < lastDeathStage && player.mayBuild()) {
             if (!stack.isEmpty() && stack.getItem() == Items.GLASS_BOTTLE && this.getDeathStage() < lastDeathStage / 2 && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue()) {
                 if (!player.isCreative()) stack.shrink(1);
                 this.setDeathStage(this.getDeathStage() + 1);
@@ -1201,17 +1231,17 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 if (this.getDeathStage() >= lastDeathStage - 1 && IafCommonConfig.INSTANCE.dragon.lootSkull.getValue()) {
                     ItemStack skull = new ItemStack(this.getSkull());
                     skull.set(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(this.getDragonStage(), this.getAgeInDays()));
-                    this.spawnAtLocation(skull, 1);
+                    this.spawnAtLocation(serverWorld, skull, 1);
                     this.remove(RemovalReason.DISCARDED);
                 } else if (this.getDeathStage() == (lastDeathStage / 2) - 1 && IafCommonConfig.INSTANCE.dragon.lootHeart.getValue()) {
                     ItemStack heart = new ItemStack(this.getHeartItem(), 1);
                     ItemStack egg = new ItemStack(RandomHelper.randomOne(this.dragonType.colors()).getEggItem(), 1);
-                    this.spawnAtLocation(heart, 1);
+                    this.spawnAtLocation(serverWorld, heart, 1);
                     if (!this.isMale() && this.getDragonStage() > 3)
-                        this.spawnAtLocation(egg, 1);
+                        this.spawnAtLocation(serverWorld, egg, 1);
                 } else {
                     ItemStack drop = this.getRandomDrop();
-                    if (!drop.isEmpty()) this.spawnAtLocation(drop, 1);
+                    if (!drop.isEmpty()) this.spawnAtLocation(serverWorld, drop, 1);
                 }
                 this.setDeathStage(this.getDeathStage() + 1);
             } else return InteractionResult.PASS;
@@ -1248,12 +1278,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         return dist <= 1.0D || result.getType() == HitResult.Type.MISS;
     }
 
-    public abstract ResourceLocation getDeadLootTable();
+    public abstract Identifier getDeadLootTable();
 
     public ItemStack getItemFromLootTable() {
-        assert this.getServer() != null;
-        LootTable lootTable = this.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, this.getDeadLootTable()));
-        LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, this.level().damageSources().generic());
+        if (!(this.level() instanceof ServerLevel serverLevel)) return ItemStack.EMPTY;
+        LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, this.getDeadLootTable()));
+        LootParams.Builder lootparams$builder = (new LootParams.Builder(serverLevel)).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, this.level().damageSources().generic());
         for (ItemStack itemstack : lootTable.getRandomItems(lootparams$builder.create(LootContextParamSets.ENTITY)))
             return itemstack;
         return ItemStack.EMPTY;
@@ -1275,7 +1305,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.setAgeInDays(this.getAgeInDays() + ageInDays);
         //TODO: Probably brakes bounding boxes
         this.setBoundingBox(this.getBoundingBox());
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             if (this.getAgeInDays() % 25 == 0) {
                 for (int i = 0; i < this.getRenderSize() * 4; i++) {
                     final float f = (float) (this.getRandom().nextFloat() * (this.getBoundingBox().maxX - this.getBoundingBox().minX) + this.getBoundingBox().minX);
@@ -1300,16 +1330,16 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             final double motionY = this.getRandom().nextGaussian() * 0.07D;
             final double motionZ = this.getRandom().nextGaussian() * 0.07D;
             final Vec3 headVec = this.getHeadPosition();
-            if (!this.level().isClientSide) {
-                ((ServerLevel) this.level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(item)), headVec.x, headVec.y, headVec.z, 1, motionX, motionY, motionZ, 0.1);
+            if (!this.level().isClientSide()) {
+                ((ServerLevel) this.level()).sendParticles(new ItemParticleOption(ParticleTypes.ITEM, item), headVec.x, headVec.y, headVec.z, 1, motionX, motionY, motionZ, 0.1);
             } else {
-                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(item)), headVec.x, headVec.y, headVec.z, motionX, motionY, motionZ);
+                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, item), headVec.x, headVec.y, headVec.z, motionX, motionY, motionZ);
             }
         }
     }
 
     public boolean isTimeToWake() {
-        return this.level().isDay() || this.getCommand() == 2;
+        return this.level().getSkyDarken() < 4 || this.getCommand() == 2;
     }
 
     private boolean isStuck() {
@@ -1344,7 +1374,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public boolean isBeyondHeight() {
-        if (this.getY() > this.level().getMaxBuildHeight()) {
+        if (this.getY() > this.level().getHeight()) {
             return true;
         }
         return this.getY() > IafCommonConfig.INSTANCE.dragon.maxFlight.getValue();
@@ -1386,7 +1416,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         }
 
         if (doBreak) {
-            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+            if (this.level() instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.MOB_GRIEFING)) {
                 if (DragonUtils.canGrief(this) || DragonUtils.canSoftGrief(this)) {
                     // TODO :: make `force` ignore the dragon stage?
                     if (!this.isModelDead() && this.getDragonStage() >= 3 && (this.canMove() || this.getControllingPassenger() != null)) {
@@ -1437,7 +1467,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public void spawnGroundEffects() {
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             for (int i = 0; i < this.getRenderSize(); i++) {
                 for (int i1 = 0; i1 < 20; i1++) {
                     final float radius = 0.75F * (0.7F * this.getRenderSize() / 3) * -3;
@@ -1452,7 +1482,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         final double motionY = this.getRandom().nextGaussian() * 0.07D;
                         final double motionZ = this.getRandom().nextGaussian() * 0.07D;
 
-                        this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, BlockState), true, this.getX() + extraX, ground.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
+                        this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, BlockState), true, false, this.getX() + extraX, ground.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
                     }
                 }
             }
@@ -1511,7 +1541,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         if (this.getAnimation() == ANIMATION_SHAKEPREY && this.getAnimationTick() > 55 && prey != null) {
             float baseDamage = (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
             float damage = baseDamage * 2;
-            boolean didDamage = prey.hurt(this.level().damageSources().mobAttack(this), damage);
+            boolean didDamage = prey.hurtServer((ServerLevel) this.level(), this.level().damageSources().mobAttack(this), damage);
 
             if (didDamage) {
                 if (IafCommonConfig.INSTANCE.dragon.canHealFromBiting.getValue()) {
@@ -1557,7 +1587,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public boolean shouldDropLoot() {
+    protected boolean shouldDropLoot(@NonNull ServerLevel level) {
         return this.isMature();
     }
 
@@ -1567,7 +1597,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setGender(this.getRandom().nextBoolean());
         final int age = this.getRandom().nextInt(80) + 1;
@@ -1582,7 +1612,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource dmg, float i) {
+    public boolean hurtServer(@NonNull ServerLevel level, @NotNull DamageSource dmg, float i) {
         if (this.isModelDead() && dmg != this.level().damageSources().fellOutOfWorld()) {
             return false;
         }
@@ -1597,7 +1627,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         if (dmg.is(DamageTypes.IN_WALL) || dmg.is(DamageTypes.FALLING_BLOCK) || dmg.is(DamageTypes.CRAMMING)) {
             return false;
         }
-        if (!this.level().isClientSide && dmg.getEntity() != null && this.getRandom().nextInt(4) == 0) {
+        if (!this.level().isClientSide() && dmg.getEntity() != null && this.getRandom().nextInt(4) == 0) {
             this.roar();
         }
         if (i > 0) {
@@ -1610,7 +1640,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 }
             }
         }
-        return super.hurt(dmg, i);
+        return super.hurtServer(level, dmg, i);
 
     }
 
@@ -1618,7 +1648,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     public void refreshDimensions() {
         super.refreshDimensions();
         final float scale = Math.min(this.getRenderSize() * 0.35F, 7F);
-        if (scale != this.lastScale)
+        if (this.headPart == null || this.headPart.isRemoved() || scale != this.lastScale)
             this.updateScale(this.getRenderSize() / 3);
         this.lastScale = scale;
     }
@@ -1642,18 +1672,16 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.prevAnimationProgresses[4] = this.fireBreathProgress;
         this.prevAnimationProgresses[5] = this.ridingProgress;
         this.prevAnimationProgresses[6] = this.tackleProgress;
-        //TODO: Better detect logic
-        if (!IntegrationExecutor.getWhenLoad("ponder", () -> () -> this.level() instanceof SchematicLevel, () -> false)) {
-            this.refreshDimensions();
-            this.updateParts();
-        }
+        this.refreshDimensions();
+        this.updateParts();
+        this.registerParts();
         this.prevDragonPitch = this.getDragonPitch();
-        this.level().getProfiler().push("dragonLogic");
+        net.minecraft.util.profiling.Profiler.get().push("dragonLogic");
         this.getAttribute(Attributes.STEP_HEIGHT).setBaseValue(this.maxUpStep());
         this.isOverAir = this.isOverAirLogic();
         this.logic.updateDragonCommon();
         if (this.isModelDead()) {
-            if (!this.level().isClientSide && this.level().isEmptyBlock(BlockPos.containing(this.getBlockX(), this.getBoundingBox().minY, this.getBlockZ())) && this.getY() > -1) {
+            if (!this.level().isClientSide() && this.level().isEmptyBlock(BlockPos.containing(this.getBlockX(), this.getBoundingBox().minY, this.getBlockZ())) && this.getY() > -1) {
                 this.move(MoverType.SELF, new Vec3(0, -0.2F, 0));
             }
             this.setBreathingFire(false);
@@ -1667,20 +1695,20 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 this.setDragonPitch(Math.max(0, dragonPitch + 5));
             }
         } else {
-            if (this.level().isClientSide) {
+            if (this.level().isClientSide()) {
                 this.logic.updateDragonClient();
             } else {
                 this.logic.updateDragonServer();
                 this.logic.updateDragonAttack();
             }
         }
-        this.level().getProfiler().pop();
-        this.level().getProfiler().push("dragonFlight");
-        if (this.useFlyingPathFinder() && !this.level().isClientSide /*&& isControlledByLocalInstance()*/) {
+        net.minecraft.util.profiling.Profiler.get().pop();
+        net.minecraft.util.profiling.Profiler.get().push("dragonFlight");
+        if (this.useFlyingPathFinder() && !this.level().isClientSide() /*&& isControlledByLocalInstance()*/) {
             this.flightManager.update();
         }
-        this.level().getProfiler().pop();
-        this.level().getProfiler().pop();
+        net.minecraft.util.profiling.Profiler.get().pop();
+        net.minecraft.util.profiling.Profiler.get().pop();
 
         if (!this.level().isClientSide()) {
             if (IafCommonConfig.INSTANCE.dragon.digWhenStuck.getValue() && this.isStuck()) {
@@ -1710,7 +1738,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             this.setFlying(false);
         }
         AnimationHandler.INSTANCE.updateAnimations(this);
-        if (this.animationTick > this.getAnimation().getDuration() && !this.level().isClientSide)
+        if (this.animationTick > this.getAnimation().getDuration() && !this.level().isClientSide())
             this.animationTick = 0;
     }
 
@@ -1740,10 +1768,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NonNull ServerLevel level, @NotNull Entity entityIn) {
         this.getLookControl().setLookAt(entityIn, 30.0F, 30.0F);
         if (this.isTackling() || this.isModelDead()) return false;
-        return entityIn.hurt(this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
+        return entityIn.hurtServer(level, this.level().damageSources().mobAttack(this), ((int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue()));
     }
 
     @Override
@@ -1773,8 +1801,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             this.setPos(riding.getX() + extraX, riding.getY() + extraY, riding.getZ() + extraZ);
             if ((this.getControlState() == 1 << 4 || player.isFallFlying()) && !riding.isPassenger()) {
                 this.stopRiding();
-                if (this.level().isClientSide)
-                    PacketDistributor.sendToServer(new StartRidingMobPayload(this.getId(), false, true));
+                if (this.level().isClientSide())
+                    ClientPacketDistributor.sendToServer(new StartRidingMobPayload(this.getId(), false, true));
             }
         }
     }
@@ -1803,7 +1831,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public void playAmbientSound() {
-        if (!this.isSleeping() && !this.isModelDead() && !this.level().isClientSide) {
+        if (!this.isSleeping() && !this.isModelDead() && !this.level().isClientSide()) {
             if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
                 this.setAnimation(ANIMATION_SPEAK);
             super.playAmbientSound();
@@ -1813,7 +1841,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
         if (!this.isModelDead()) {
-            if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION && !this.level().isClientSide)
+            if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION && !this.level().isClientSide())
                 this.setAnimation(ANIMATION_SPEAK);
             super.playHurtSound(source);
         }
@@ -1959,7 +1987,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         vertical = -1f;
                         // Damp the vertical motion so the dragon's head is more responsive to the control
                     else
-                        this.isControlledByLocalInstance();
+                        this.isLocalInstanceAuthoritative();
                     // this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.8f, 1.0f));
                 } else {
                     // Mouse controlled yaw and pitch
@@ -1985,14 +2013,14 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     else if (this.getXRot() > 0)
                         vertical *= -1;
                     else
-                        this.isControlledByLocalInstance();
+                        this.isLocalInstanceAuthoritative();
                     // this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.8f, 1.0f));
 
                 }
                 // Speed bonus damping
                 this.glidingSpeedBonus -= (float) (this.glidingSpeedBonus * 0.01d);
 
-                if (this.isControlledByLocalInstance()) {
+                if (this.isLocalInstanceAuthoritative()) {
                     // Vanilla friction on Y axis is smaller, which will influence terminal speed for climbing and diving
                     // use same friction coefficient on all axis simplifies how travel vector is computed
                     flyingSpeed = speed * 0.1F;
@@ -2009,7 +2037,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     this.calculateEntityAnimation(false);
                 } else
                     this.setDeltaMovement(Vec3.ZERO);
-                this.tryCheckInsideBlocks();
                 this.updatePitch(this.yOld - this.getY());
             }
             // In water move control, for those that can't swim
@@ -2052,14 +2079,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 // Slower going back
                 forward *= rider.zza > 0 ? 1.0f : 0.2f;
 
-                if (this.isControlledByLocalInstance()) {
+                if (this.isLocalInstanceAuthoritative()) {
                     this.setSpeed(speed);
                     // Vanilla walking behavior includes going up steps
                     super.travel(new Vec3(strafing, vertical, forward));
                 } else {
                     this.setDeltaMovement(Vec3.ZERO);
                 }
-                this.tryCheckInsideBlocks();
                 this.updatePitch(this.yOld - this.getY());
             }
         }
@@ -2287,7 +2313,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         if (this.isVehicle()) {
             // When riding, the server side movement check is performed in ServerGamePacketListenerImpl#handleMoveVehicle
             // verticalCollide tag might get inconsistent due to dragon's large bounding box and causes move wrongly msg
-            if (this.isControlledByLocalInstance()) {
+            if (this.isLocalInstanceAuthoritative()) {
                 // This is how DragonBaseEntity#breakBlock handles movement when breaking blocks
                 // it's done by server, however client does not fire server side events, so breakBlock() here won't work
                 if (this.horizontalCollision) {
@@ -2366,7 +2392,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     final boolean isStrongerDragon = entity instanceof DragonBaseEntity && ((DragonBaseEntity) entity).getDragonStage() >= this.getDragonStage();
                     if (entity instanceof LivingEntity living && !isStrongerDragon) {
                         if (this.isOwnedBy(living) || this.isOwnersPet(living))
-                            living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 50 * size));
+                            living.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 50 * size));
                         else if (living.getItemBySlot(EquipmentSlot.HEAD).getItem() != IafItems.EARPLUGS.get())
                             living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 50 * size));
                     }
@@ -2384,7 +2410,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     final boolean isStrongerDragon = entity instanceof DragonBaseEntity && ((DragonBaseEntity) entity).getDragonStage() >= this.getDragonStage();
                     if (entity instanceof LivingEntity living && !isStrongerDragon)
                         if (this.isOwnedBy(living) || this.isOwnersPet(living))
-                            living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 30 * size));
+                            living.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 30 * size));
                         else
                             living.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 30 * size));
                 }
@@ -2416,7 +2442,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    protected void dropFromLootTable(@NotNull DamageSource damageSourceIn, boolean attackedRecently) {
+    protected void dropFromLootTable(@NonNull ServerLevel level, @NotNull DamageSource damageSourceIn, boolean attackedRecently) {
     }
 
     public HitResult rayTraceRider(Entity rider, double blockReachDistance, float partialTicks) {
@@ -2518,14 +2544,14 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public void kill() {
+    public void kill(@NonNull ServerLevel level) {
         this.remove(RemovalReason.KILLED);
         this.setDeathStage(this.getAgeInDays() / 5);
         this.setModelDead(false);
     }
 
     @Override
-    public boolean isAlliedTo(@NotNull Entity entityIn) {
+    protected boolean considersEntityAsAlly(@NonNull Entity entityIn) {
         // Workaround to make sure dragons won't be attacked when dead
         if (this.isModelDead())
             return true;
@@ -2539,7 +2565,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 return livingentity.isAlliedTo(entityIn);
         }
 
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     public Vec3 getHeadPosition() {
@@ -2614,7 +2640,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     if (this.level() instanceof ServerLevel serverWorld)
                         serverWorld.sendParticles(this.createBreathParticle(), headPos.x, headPos.y, headPos.z, 0, velocity.x, velocity.y, velocity.z, 1);
                 }
-            } else if (!this.level().isClientSide) {
+            } else if (!this.level().isClientSide()) {
                 HitResult result = this.level().clip(new ClipContext(new Vec3(this.getX(), this.getY() + this.getEyeHeight(), this.getZ()), new Vec3(progressX, progressY, progressZ), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
                 Vec3 vec3 = result.getLocation();
                 BlockPos pos = BlockPos.containing(vec3);
@@ -2625,7 +2651,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             double spawnX = burnX + (this.random.nextFloat() * 3.0) - 1.5;
             double spawnY = burnY + (this.random.nextFloat() * 3.0) - 1.5;
             double spawnZ = burnZ + (this.random.nextFloat() * 3.0) - 1.5;
-            if (!this.level().isClientSide)
+            if (!this.level().isClientSide())
                 IafDragonDestructionManager.destroyAreaBreath(this.level(), BlockPos.containing(spawnX, spawnY, spawnZ), this);
         }
     }
@@ -2646,7 +2672,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
             Entity charge = this.createCharge(d2, d3, d4);
             charge.setPos(headVec.x, headVec.y, headVec.z);
-            if (!this.level().isClientSide) this.level().addFreshEntity(charge);
+            if (!this.level().isClientSide()) this.level().addFreshEntity(charge);
             this.randomizeAttacks();
         }
     }
@@ -2693,8 +2719,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Override
     public boolean wantsToAttack(@NotNull LivingEntity target, @NotNull LivingEntity owner) {
         if (this.isTame() && target instanceof TamableAnimal tamableTarget) {
-            UUID targetOwner = tamableTarget.getOwnerUUID();
-            if (targetOwner != null && targetOwner.equals(this.getOwnerUUID())) {
+            EntityReference<LivingEntity> targetOwner = tamableTarget.getOwnerReference();
+            if (targetOwner != null && targetOwner.equals(this.getOwnerReference())) {
                 return false;
             }
         }
@@ -2736,13 +2762,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public boolean save(@NotNull CompoundTag compound) {
-        return this.saveAsPassenger(compound);
-    }
-
-    @Override
     public void playSound(@NotNull SoundEvent soundIn, float volume, float pitch) {
-        if (soundIn == SoundEvents.GENERIC_EAT || soundIn == this.getAmbientSound() || soundIn == this.getHurtSound(this.level().damageSources().generic()) || soundIn == this.getDeathSound() || soundIn == this.getRoarSound()) {
+        if (soundIn == SoundEvents.GENERIC_EAT.value() || soundIn == this.getAmbientSound() || soundIn == this.getHurtSound(this.level().damageSources().generic()) || soundIn == this.getDeathSound() || soundIn == this.getRoarSound()) {
             if (!this.isSilent() && this.headPart != null) {
                 this.level().playSound(null, this.headPart.getX(), this.headPart.getY(), this.headPart.getZ(), soundIn, this.getSoundSource(), volume, pitch);
             }
@@ -2844,22 +2865,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
-    public void containerChanged(@NotNull Container invBasic) {
-        if (!this.level().isClientSide) {
-            this.refreshDirtyAttributes();
-        }
-    }
-
-    @Override
     public boolean canSprint() {
         return true;
-    }
-
-    @Override // TODO :: Block collision performance impact (due to the multi-part entity)?
-    public @NotNull Vec3 handleRelativeFrictionAndCalculateMovement(@NotNull Vec3 pDeltaMovement, float pFriction) {
-        if (this.moveControl instanceof IafDragonFlightManager.PlayerFlightMoveHelper)
-            return pDeltaMovement;
-        return super.handleRelativeFrictionAndCalculateMovement(pDeltaMovement, pFriction);
     }
 
     @Override

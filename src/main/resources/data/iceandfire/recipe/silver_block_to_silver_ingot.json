@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:silver_block"
-    }
+    "iceandfire:silver_block"
   ],
   "result": {
     "count": 9,

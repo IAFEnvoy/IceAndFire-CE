@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.AdvancedPathNavigate;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
@@ -95,7 +96,8 @@ public class DragonAIAttackMeleeGoal extends Goal {
             if (d0 <= d1 && this.attackTick == 0) {
                 this.attackTick = 20;
                 this.dragon.swing(InteractionHand.MAIN_HAND);
-                this.dragon.doHurtTarget(entity);
+                if (this.dragon.level() instanceof ServerLevel level)
+                    this.dragon.doHurtTarget(level, entity);
             }
         }
     }

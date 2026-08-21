@@ -1415,5 +1415,10 @@
   "config.iceandfire.misc.allowAttributeOverriding.comment": "Inutilisé",
 
   "block.iceandfire.dreadwood_leaves": "Feuilles de boiveffroie",
-  "block.iceandfire.dreadwood_sapling": "Pousse de boiveffroie"
+  "block.iceandfire.dreadwood_sapling": "Pousse de boiveffroie",
+  "effect.iceandfire.depetrification": "Dépétrification",
+  "item.minecraft.lingering_potion.effect.depetrification": "Potion persistante de dépétrification",
+  "item.minecraft.potion.effect.depetrification": "Potion de dépétrification",
+  "item.minecraft.splash_potion.effect.depetrification": "Potion jetable de dépétrification",
+  "item.minecraft.tipped_arrow.effect.depetrification": "Flèche de dépétrification"
 }

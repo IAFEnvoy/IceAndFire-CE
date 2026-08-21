@@ -6,12 +6,8 @@
     "SPS"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:dark_oak_slab"
-    },
-    "P": {
-      "item": "minecraft:dark_oak_planks"
-    }
+    "S": "minecraft:dark_oak_slab",
+    "P": "minecraft:dark_oak_planks"
   },
   "result": {
     "id": "iceandfire:podium_dark_oak"

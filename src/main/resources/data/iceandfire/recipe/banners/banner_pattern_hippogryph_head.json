@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:hippogryph_skull"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:hippogryph_skull",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_hippogryph_head",

@@ -6,12 +6,8 @@
     "HSH"
   ],
   "key": {
-    "S": {
-      "item": "iceandfire:sea_serpent_scales_green"
-    },
-    "H": {
-      "item": "iceandfire:shiny_scales"
-    }
+    "S": "iceandfire:sea_serpent_scales_green",
+    "H": "iceandfire:shiny_scales"
   },
   "result": {
     "id": "iceandfire:tide_green_chestplate"

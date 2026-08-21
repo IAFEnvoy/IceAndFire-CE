@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "iceandfire:frozen_dirt_path"
-  },
+  "ingredient": "iceandfire:frozen_dirt_path",
   "result": {
     "id": "minecraft:dirt_path"
   },

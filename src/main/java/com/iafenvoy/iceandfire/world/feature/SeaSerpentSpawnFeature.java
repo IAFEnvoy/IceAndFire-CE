@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -28,10 +29,10 @@ public class SeaSerpentSpawnFeature extends Feature<NoneFeatureConfiguration> im
         if (this.isFarEnoughFromSpawn(world, pos) && random.nextDouble() < IafCommonConfig.INSTANCE.seaSerpent.spawnChance.getValue()) {
             BlockPos spawnPos = oceanPos.offset(random.nextInt(10) - 5, random.nextInt(30), random.nextInt(10) - 5);
             if (world.getFluidState(spawnPos).getType() == Fluids.WATER) {
-                SeaSerpentEntity serpent = IafEntities.SEA_SERPENT.get().create(world.getLevel());
+                SeaSerpentEntity serpent = IafEntities.SEA_SERPENT.get().create(world.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
                 assert serpent != null;
                 serpent.onWorldSpawn(random);
-                serpent.moveTo(spawnPos.getX() + 0.5F, spawnPos.getY() + 0.5F, spawnPos.getZ() + 0.5F, 0, 0);
+                serpent.snapTo(spawnPos.getX() + 0.5F, spawnPos.getY() + 0.5F, spawnPos.getZ() + 0.5F, 0, 0);
                 world.addFreshEntity(serpent);
             }
         }

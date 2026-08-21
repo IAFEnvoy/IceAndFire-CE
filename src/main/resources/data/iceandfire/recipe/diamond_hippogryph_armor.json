@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "D": {
-      "item": "minecraft:diamond_horse_armor"
-    },
-    "F": {
-      "item": "minecraft:feather"
-    }
+    "D": "minecraft:diamond_horse_armor",
+    "F": "minecraft:feather"
   },
   "pattern": [
     "FDF"

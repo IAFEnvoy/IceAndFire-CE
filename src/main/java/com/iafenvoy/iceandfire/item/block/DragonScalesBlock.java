@@ -12,8 +12,6 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class DragonScalesBlock extends Block implements DragonProof {
     final DragonColor type;
 
@@ -22,9 +20,7 @@ public class DragonScalesBlock extends Block implements DragonProof {
         this.type = type;
     }
 
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
-        tooltip.add(Component.translatable("dragon." + this.type.getName()).withStyle(this.type.getColorFormatting()));
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.Consumer<Component> tooltip, @NotNull TooltipFlag options) {
+        tooltip.accept(Component.translatable("dragon." + this.type.getName()).withStyle(this.type.getColorFormatting()));
     }
 }

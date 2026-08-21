@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 public record FrozenTargetAbility(int duration) implements PostHitAbility {
     @Override
     public void active(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, this.duration, 2));
-        target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, this.duration, 2));
+        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, this.duration, 2));
+        target.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, this.duration, 2));
         target.addEffect(new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(IafMobEffects.FROZEN.get()), this.duration));
     }
 }

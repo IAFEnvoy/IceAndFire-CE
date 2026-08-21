@@ -9,9 +9,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -19,8 +16,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import org.jspecify.annotations.NonNull;
 
 public class PixieWandItem extends Item {
     public PixieWandItem() {
@@ -28,7 +24,7 @@ public class PixieWandItem extends Item {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level world, Player user, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level world, Player user, @NotNull InteractionHand hand) {
         ItemStack itemStackIn = user.getItemInHand(hand);
         boolean flag = user.isCreative() || EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(user.registryAccess(), Enchantments.INFINITY), itemStackIn) > 0;
         ItemStack itemstack = this.findAmmo(user);
@@ -41,7 +37,7 @@ public class PixieWandItem extends Item {
                 if (itemstack.isEmpty())
                     user.getInventory().removeItem(itemstack);
             }
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 double d2 = user.getLookAngle().x;
                 double d3 = user.getLookAngle().y;
                 double d4 = user.getLookAngle().z;
@@ -54,10 +50,10 @@ public class PixieWandItem extends Item {
                 world.addFreshEntity(charge);
             }
             user.playSound(IafSounds.PIXIE_WAND.get(), 1F, 0.75F + 0.5F * user.getRandom().nextFloat());
-            itemstack.hurtAndBreak(1, user, LivingEntity.getSlotForHand(user.getUsedItemHand()));
-            user.getCooldowns().addCooldown(this, 5);
+            itemstack.hurtAndBreak(1, user, user.getUsedItemHand());
+            user.getCooldowns().addCooldown(itemstack, 5);
         }
-        return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
+        return InteractionResult.SUCCESS;
     }
 
     public boolean isInfinite(ItemStack stack, ItemStack bow, Player player) {
@@ -85,10 +81,10 @@ public class PixieWandItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
-        tooltip.add(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.iceandfire.pixie_wand.desc_0").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.iceandfire.pixie_wand.desc_1").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.pixie_wand.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.pixie_wand.desc_1").withStyle(ChatFormatting.GRAY));
     }
 }

@@ -8,11 +8,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public record UpdatePixieJarS2CPayload(BlockPos blockPos, boolean isProducing) implements CustomPacketPayload {
-    private static final ResourceLocation IDENTIFIER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "update_pixie_jar");
+    private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "update_pixie_jar");
     public static final Type<UpdatePixieJarS2CPayload> ID = new Type<>(IDENTIFIER);
     public static final StreamCodec<ByteBuf, UpdatePixieJarS2CPayload> CODEC = ByteBufCodecs.fromCodec(RecordCodecBuilder.create(i -> i.group(
             BlockPos.CODEC.fieldOf("blockPos").forGetter(UpdatePixieJarS2CPayload::blockPos),

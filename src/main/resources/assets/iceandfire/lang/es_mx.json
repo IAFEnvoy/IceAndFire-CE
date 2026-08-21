@@ -1224,5 +1224,10 @@
   "sound.iceandfire.subtitle.icedragon_death": "Dragón de hielo muere",
   "sound.iceandfire.subtitle.dragonegg_hatch": "Huevo de dragón eclosiona",
   "sound.iceandfire.subtitle.dragonflute": "Flauta de hueso de dragón suena",
-  "bestiary_gui": "Bestiario"
+  "bestiary_gui": "Bestiario",
+  "effect.iceandfire.depetrification": "Des-petrificación",
+  "item.minecraft.lingering_potion.effect.depetrification": "Poción persistente de des-petrificación",
+  "item.minecraft.potion.effect.depetrification": "Poción de des-petrificación",
+  "item.minecraft.splash_potion.effect.depetrification": "Poción arrojadiza de des-petrificación",
+  "item.minecraft.tipped_arrow.effect.depetrification": "Flecha de des-petrificación"
 }

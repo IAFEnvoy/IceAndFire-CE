@@ -5,18 +5,17 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
-
 public class DeathWormAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final DeathWormEntity deathworm;
 
-    public DeathWormAITargetGoal(DeathWormEntity entityIn, Class<T> classTarget, boolean checkSight, Predicate<LivingEntity> targetPredicate) {
+    public DeathWormAITargetGoal(DeathWormEntity entityIn, Class<T> classTarget, boolean checkSight, TargetingConditions.Selector targetPredicate) {
         super(entityIn, classTarget, 20, checkSight, false, targetPredicate);
         this.deathworm = entityIn;
         this.setFlags(EnumSet.of(Flag.TARGET));

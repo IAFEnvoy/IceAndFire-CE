@@ -10,8 +10,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,17 +30,17 @@ public class DragonArmorItem extends Item {
     }
 
     @Override
-    public @NotNull String getDescriptionId() {
+    public @NotNull Component getName(@NotNull ItemStack stack) {
         String fullName = BuiltInRegistries.ITEM.getKey(this).getPath();
         Matcher matcher = this.baseName.matcher(fullName);
         this.name = matcher.find() ? matcher.group() : fullName;
-        return "item." + IceAndFire.MOD_ID + "." + this.name;
+        return Component.translatable("item." + IceAndFire.MOD_ID + "." + this.name);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         String words = "dragon.armor_" + this.dragonSlot.name().toLowerCase(Locale.ROOT);
-        tooltip.add(Component.translatable(words).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable(words).withStyle(ChatFormatting.GRAY));
     }
 }

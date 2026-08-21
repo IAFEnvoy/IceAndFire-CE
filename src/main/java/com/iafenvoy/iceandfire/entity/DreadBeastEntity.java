@@ -31,6 +31,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
@@ -71,7 +72,7 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, IDreadMob.class));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (target, level) -> DragonUtils.canHostilesTarget(target)));
         this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
     }
 
@@ -96,7 +97,7 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(net.minecraft.server.level.@NonNull ServerLevel level, @NotNull Entity entityIn) {
         if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_BITE);
         }
@@ -144,8 +145,8 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setSize(compound.getFloat("DreadScale"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setSize(compound.getFloat("DreadScale").orElse(1.0F));
     }
 
     public int getVariant() {
@@ -157,7 +158,7 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
         this.setVariant(this.random.nextInt(2));
@@ -201,24 +202,24 @@ public class DreadBeastEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public boolean isAlliedTo(@NotNull Entity entityIn) {
-        return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
+    protected boolean considersEntityAsAlly(@NonNull Entity entityIn) {
+        return entityIn instanceof IDreadMob || super.considersEntityAsAlly(entityIn);
     }
 
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.WOLF_GROWL;
+        return SoundEvents.ZOMBIE_AMBIENT;
     }
 
     @Override
     protected @NotNull SoundEvent getHurtSound(@NotNull DamageSource source) {
-        return SoundEvents.WOLF_HURT;
+        return SoundEvents.ZOMBIE_HURT;
     }
 
     @Override
     protected @NotNull SoundEvent getDeathSound() {
-        return SoundEvents.WOLF_DEATH;
+        return SoundEvents.ZOMBIE_DEATH;
     }
 
     @Override

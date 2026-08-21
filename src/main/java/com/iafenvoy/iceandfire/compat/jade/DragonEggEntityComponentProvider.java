@@ -4,7 +4,8 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.DragonEggEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -14,12 +15,12 @@ public enum DragonEggEntityComponentProvider implements IEntityComponentProvider
     INSTANCE;
 
     @Override
-    public ResourceLocation getUid() {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_egg_entity");
+    public @NonNull Identifier getUid() {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_egg_entity");
     }
 
     @Override
-    public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
+    public void appendTooltip(@NonNull ITooltip iTooltip, EntityAccessor entityAccessor, @NonNull IPluginConfig iPluginConfig) {
         if (entityAccessor.getEntity() instanceof DragonEggEntity egg)
             iTooltip.add(Component.translatable("dragon_egg.hatchTime", String.valueOf((IafCommonConfig.INSTANCE.dragon.eggBornTime.getValue() - egg.getDragonAge()) / 20)));
     }

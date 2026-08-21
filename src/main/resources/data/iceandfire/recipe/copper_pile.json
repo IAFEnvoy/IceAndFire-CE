@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "c:nuggets/copper"
-    },
-    {
-      "tag": "c:nuggets/copper"
-    }
+    "#c:nuggets/copper",
+    "#c:nuggets/copper"
   ],
   "result": {
     "id": "iceandfire:copper_pile"

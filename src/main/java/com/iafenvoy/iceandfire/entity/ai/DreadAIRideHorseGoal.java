@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.DreadKnightEntity;
 import com.iafenvoy.iceandfire.util.IafMath;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
 
 import java.util.EnumSet;
 import java.util.List;

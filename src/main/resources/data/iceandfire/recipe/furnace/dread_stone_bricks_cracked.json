@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "iceandfire:dread_stone_bricks"
-  },
+  "ingredient": "iceandfire:dread_stone_bricks",
   "result": {
     "id": "iceandfire:dread_stone_bricks_cracked"
   },

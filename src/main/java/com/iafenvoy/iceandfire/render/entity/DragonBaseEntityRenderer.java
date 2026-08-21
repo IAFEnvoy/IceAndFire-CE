@@ -7,13 +7,30 @@ import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobRenderer<T, TabulaModel<T>> {
+import java.util.function.Supplier;
+
+public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends LegacyMobRenderer<T, TabulaModel<T>> {
+    private boolean layersAdded;
     public DragonBaseEntityRenderer(EntityRendererProvider.Context context, TabulaModel<T> model) {
         super(context, model, 0.0025F);
+        if (model != null) this.addDragonLayers();
+    }
+
+    public DragonBaseEntityRenderer(EntityRendererProvider.Context context, Supplier<TabulaModel<T>> modelSupplier) {
+        super(context, modelSupplier, 0.0025F);
+    }
+
+    @Override
+    protected void onModelAvailable() {
+        this.addDragonLayers();
+    }
+
+    private void addDragonLayers() {
+        if (this.layersAdded) return;
+        this.layersAdded = true;
         this.addLayer(new DragonMaleOverlayFeatureRenderer<>(this));
         this.addLayer(new DragonEyesFeatureRenderer<>(this));
         this.addLayer(new DragonRiderFeatureRenderer<>(this, false));
@@ -30,7 +47,7 @@ public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends MobRen
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(DragonBaseEntity entity) {
+    public @NotNull Identifier getTextureLocation(DragonBaseEntity entity) {
         return DragonColor.getById(entity.getVariant()).getTextureProvider().getTextureByEntity(entity);
     }
 }

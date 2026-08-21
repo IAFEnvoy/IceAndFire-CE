@@ -2,12 +2,8 @@
   "type": "iceandfire:dragonforge",
   "dragonType": "ice",
   "cookTime": 1000,
-  "input": {
-    "item": "minecraft:iron_ingot"
-  },
-  "blood": {
-    "item": "iceandfire:ice_dragon_blood"
-  },
+  "input": "minecraft:iron_ingot",
+  "blood": "iceandfire:ice_dragon_blood",
   "result": {
     "id": "iceandfire:dragonsteel_ice_ingot"
   }

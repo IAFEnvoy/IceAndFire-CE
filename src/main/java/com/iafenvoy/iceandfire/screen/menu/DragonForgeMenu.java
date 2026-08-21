@@ -2,8 +2,10 @@ package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.registry.IafMenus;
+import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.registry.IafResourceKeys;
+import net.minecraft.core.Holder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -21,7 +23,7 @@ public class DragonForgeMenu extends AbstractContainerMenu {
     private final ContainerData propertyDelegate;
 
     public DragonForgeMenu(int syncId, Inventory playerInventory, FriendlyByteBuf buf) {
-        this(syncId, new SimpleContainer(3), playerInventory, IafRegistries.DRAGON_TYPE.get(buf.readResourceKey(IafResourceKeys.DRAGON_TYPE)), new SimpleContainerData(2));
+        this(syncId, new SimpleContainer(3), playerInventory, IafRegistries.DRAGON_TYPE.get(buf.readResourceKey(IafResourceKeys.DRAGON_TYPE)).map(Holder.Reference::value).orElse(IafDragonTypes.FIRE), new SimpleContainerData(2));
     }
 
     public DragonForgeMenu(int syncId, Container furnaceInventory, Inventory playerInventory, DragonType dragonType, ContainerData delegate) {

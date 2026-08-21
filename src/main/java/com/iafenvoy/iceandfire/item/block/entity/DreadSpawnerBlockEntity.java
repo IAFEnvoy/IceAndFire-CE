@@ -16,6 +16,8 @@ import net.minecraft.world.level.Spawner;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
@@ -40,15 +42,15 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
     }
 
     @Override
-    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        this.spawner.load(this.level, this.worldPosition, nbt);
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.spawner.load(this.level, this.worldPosition, input);
     }
 
-    public CompoundTag save(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        this.spawner.save(nbt);
-        return nbt;
+    @Override
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        this.spawner.save(output);
     }
 
     @Override
@@ -58,7 +60,7 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
 
     @Override
     public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryLookup) {
-        CompoundTag compoundtag = this.save(new CompoundTag(), registryLookup);
+        CompoundTag compoundtag = super.getUpdateTag(registryLookup);
         compoundtag.remove("SpawnPotentials");
         return compoundtag;
     }
@@ -68,7 +70,6 @@ public class DreadSpawnerBlockEntity extends BlockEntity implements Spawner {
         return this.spawner.onEventTriggered(this.level, p_59797_) || super.triggerEvent(p_59797_, p_59798_);
     }
 
-    @Override
     public boolean onlyOpCanSetNbt() {
         return true;
     }

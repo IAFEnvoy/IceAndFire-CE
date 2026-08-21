@@ -177,8 +177,8 @@ public class IafDragonLogic {
             this.dragon.setHovering(false);
         }
         if (!this.dragon.isFlying() && !this.dragon.isHovering())
-            if (this.dragon.isAllowedToTriggerFlight() || this.dragon.getY() < this.dragon.level().getMinBuildHeight())
-                if (this.dragon.getRandom().nextInt(this.dragon.getFlightChancePerTick()) == 0 || this.dragon.getY() < this.dragon.level().getMinBuildHeight() || this.dragon.getTarget() != null && Math.abs(this.dragon.getTarget().getY() - this.dragon.getY()) > 5 || this.dragon.isInWater()) {
+            if (this.dragon.isAllowedToTriggerFlight() || this.dragon.getY() < this.dragon.level().getMinY())
+                if (this.dragon.getRandom().nextInt(this.dragon.getFlightChancePerTick()) == 0 || this.dragon.getY() < this.dragon.level().getMinY() || this.dragon.getTarget() != null && Math.abs(this.dragon.getTarget().getY() - this.dragon.getY()) > 5 || this.dragon.isInWater()) {
                     this.dragon.setHovering(true);
                     this.dragon.setInSittingPose(false);
                     this.dragon.setOrderedToSit(false);
@@ -225,7 +225,8 @@ public class IafDragonLogic {
         }
         if (this.dragon.isFlying()) {
             if (this.dragon.getTarget() != null && this.dragon.getBoundingBox().expandTowards(3.0F, 3.0F, 3.0F).intersects(this.dragon.getTarget().getBoundingBox()))
-                this.dragon.doHurtTarget(this.dragon.getTarget());
+                if (this.dragon.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+                    this.dragon.doHurtTarget(serverLevel, this.dragon.getTarget());
             if (this.dragon.airAttack == IafDragonAttacks.Air.TACKLE && (this.dragon.horizontalCollision || this.dragon.onGround())) {
                 this.dragon.usingGroundAttack = true;
                 if (this.dragon.getControllingPassenger() == null) {
@@ -241,10 +242,12 @@ public class IafDragonLogic {
     }
 
     public boolean attackTarget(Entity target, Player ridingPlayer, float damage) {
-        if (ridingPlayer == null)
-            return target.hurt(target.level().damageSources().mobAttack(this.dragon), damage);
-        else
-            return target.hurt(target.level().damageSources().indirectMagic(this.dragon, ridingPlayer), damage);
+        if (ridingPlayer == null) {
+            target.hurt(target.level().damageSources().mobAttack(this.dragon), damage);
+        } else {
+            target.hurt(target.level().damageSources().indirectMagic(this.dragon, ridingPlayer), damage);
+        }
+        return true;
     }
 
     /*
@@ -383,7 +386,7 @@ public class IafDragonLogic {
             this.dragon.hasHadHornUse = false;
 
         if ((this.dragon.groundAttack == IafDragonAttacks.Ground.FIRE) && this.dragon.getDragonStage() < 2) {
-            if (this.dragon.level().isClientSide)
+            if (this.dragon.level().isClientSide())
                 this.dragon.spawnBabyParticles();
             this.dragon.randomizeAttacks();
         }
@@ -424,7 +427,7 @@ public class IafDragonLogic {
     }
 
     public void debug() {
-        String side = this.dragon.level().isClientSide ? "CLIENT" : "SERVER";
+        String side = this.dragon.level().isClientSide() ? "CLIENT" : "SERVER";
         String owner = this.dragon.getOwner() == null ? "null" : this.dragon.getOwner().getName().getString();
         String attackTarget = this.dragon.getTarget() == null ? "null" : this.dragon.getTarget().getName().getString();
         IceAndFire.LOGGER.warn("DRAGON DEBUG[{}]:\nStage: {}\nAge: {}\nVariant: {}\nOwner: {}\nAttack Target: {}\nFlying: {}\nHovering: {}\nHovering Time: {}\nWidth: {}\nMoveHelper: {}\nGround Attack: {}\nAir Attack: {}\nTackling: {}", side, this.dragon.getDragonStage(), this.dragon.getAgeInDays(), this.dragon.getVariant(), owner, attackTarget, this.dragon.isFlying(), this.dragon.isHovering(), this.dragon.hoverTicks, this.dragon.getBbWidth(), this.dragon.getMoveControl(), this.dragon.groundAttack, this.dragon.airAttack, this.dragon.isTackling());

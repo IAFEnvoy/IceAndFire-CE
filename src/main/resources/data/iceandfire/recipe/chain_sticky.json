@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:slime_ball"
-    },
-    {
-      "item": "iceandfire:chain"
-    }
+    "minecraft:slime_ball",
+    "iceandfire:chain"
   ],
   "result": {
     "id": "iceandfire:chain_sticky"

@@ -125,7 +125,7 @@ public class LecternMenu extends AbstractContainerMenu {
         else if (this.possiblePagesInt[id] > 0 && !bookStack.isEmpty() && bookStack.getItem() == IafItems.BESTIARY.get()) {
             BestiaryPage page = this.getPossiblePages()[Mth.clamp(id, 0, 2)];
             if (page != null) {
-                if (!playerIn.level().isClientSide) {
+                if (!playerIn.level().isClientSide()) {
                     manuscriptStack.shrink(i);
                     if (manuscriptStack.isEmpty())
                         this.tileFurnace.setItem(1, ItemStack.EMPTY);
@@ -136,7 +136,7 @@ public class LecternMenu extends AbstractContainerMenu {
                 this.tileFurnace.setItem(0, bookStack);
                 this.tileFurnace.setChanged();
                 this.slotsChanged(this.tileFurnace);
-                playerIn.level().playSound(null, playerIn.blockPosition(), IafSounds.BESTIARY_PAGE.get(), SoundSource.BLOCKS, 1.0F, playerIn.level().random.nextFloat() * 0.1F + 0.9F);
+                playerIn.level().playSound(null, playerIn.blockPosition(), IafSounds.BESTIARY_PAGE.get(), SoundSource.BLOCKS, 1.0F, playerIn.level().getRandom().nextFloat() * 0.1F + 0.9F);
             }
             this.onUpdate();
             return true;

@@ -9,7 +9,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -105,7 +105,7 @@ public class DragonAIMateGoal extends Goal {
             int nestY = (int) (this.dragon.isMale() ? this.targetMate.getY() : this.dragon.getY()) - 1;
             int nestZ = (int) (this.dragon.isMale() ? this.targetMate.getZ() : this.dragon.getZ());
 
-            egg.moveTo(nestX - 0.5F, nestY + 1F, nestZ - 0.5F, 0.0F, 0.0F);
+            egg.snapTo(nestX - 0.5F, nestY + 1F, nestZ - 0.5F, 0.0F, 0.0F);
             this.theWorld.addFreshEntity(egg);
             RandomSource random = this.dragon.getRandom();
 
@@ -130,7 +130,7 @@ public class DragonAIMateGoal extends Goal {
                 }
             if (this.theWorld.getBlockState(dirtPos).canBeReplaced() || this.theWorld.getBlockState(dirtPos) == NEST)
                 this.theWorld.setBlockAndUpdate(dirtPos, Blocks.DIRT_PATH.defaultBlockState());
-            if (this.theWorld.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
+            if (this.theWorld instanceof net.minecraft.server.level.ServerLevel level && level.getGameRules().get(GameRules.ENTITY_DROPS))
                 this.theWorld.addFreshEntity(new ExperienceOrb(this.theWorld, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), random.nextInt(15) + 10));
         }
     }

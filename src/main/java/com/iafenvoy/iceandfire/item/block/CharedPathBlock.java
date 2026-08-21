@@ -48,7 +48,7 @@ public class CharedPathBlock extends DirtPathBlock {
     @Override
     public void tick(@NotNull BlockState state, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource rand) {
         super.tick(state, world, pos, rand);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (!world.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3))) return;
             if (state.getValue(REVERTS) && rand.nextInt(3) == 0)
                 world.setBlockAndUpdate(pos, Blocks.DIRT_PATH.defaultBlockState());

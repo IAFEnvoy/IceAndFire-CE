@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
@@ -49,7 +49,7 @@ public class PixieChargeEntity extends Fireball {
     @Override
     public void tick() {
         this.setNoGravity(true);
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             for (int i = 0; i < 5; ++i)
                 this.level().addParticle(IafParticles.PIXIE_DUST.get(), this.getX() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 0.15F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
         this.clearFire();
@@ -71,7 +71,7 @@ public class PixieChargeEntity extends Fireball {
     protected void onHit(@NotNull HitResult movingObject) {
         boolean flag = false;
         Entity shootingEntity = this.getOwner();
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (movingObject.getType() == HitResult.Type.ENTITY && !((EntityHitResult) movingObject).getEntity().is(shootingEntity)) {
                 Entity entity = ((EntityHitResult) movingObject).getEntity();
                 if (shootingEntity.equals(entity)) flag = true;
@@ -81,12 +81,13 @@ public class PixieChargeEntity extends Fireball {
                         living.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
                         entity.hurt(this.level().damageSources().indirectMagic(shootingEntity, null), 5.0F);
                     }
-                    if (this.level().isClientSide)
+                    if (this.level().isClientSide())
                         for (int i = 0; i < 20; ++i)
                             this.level().addParticle(this.getTrailParticle(), this.getX() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
-                    if (!(shootingEntity instanceof Player) || !((Player) shootingEntity).isCreative())
-                        if (this.random.nextInt(3) == 0)
-                            this.spawnAtLocation(new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);
+                    if (this.level() instanceof net.minecraft.server.level.ServerLevel level
+                            && (!(shootingEntity instanceof Player) || !((Player) shootingEntity).isCreative())
+                            && this.random.nextInt(3) == 0)
+                        this.spawnAtLocation(level, new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);
                 }
                 if (!flag && this.tickCount > 4)
                     this.remove(RemovalReason.DISCARDED);

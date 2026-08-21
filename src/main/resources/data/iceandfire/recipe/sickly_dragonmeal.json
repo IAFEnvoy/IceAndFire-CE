@@ -6,15 +6,9 @@
     "SPS"
   ],
   "key": {
-    "D": {
-      "item": "iceandfire:dragon_meal"
-    },
-    "P": {
-      "item": "minecraft:poisonous_potato"
-    },
-    "S": {
-      "item": "minecraft:spider_eye"
-    }
+    "D": "iceandfire:dragon_meal",
+    "P": "minecraft:poisonous_potato",
+    "S": "minecraft:spider_eye"
   },
   "result": {
     "id": "iceandfire:sickly_dragon_meal"

@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire:item/troll_weapon_axe",
+    "model": {
+      "type": "uranus:dynamic"
+    }
+  }
+}

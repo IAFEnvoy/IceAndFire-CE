@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.entity.ai.EntitySheepAIFollowCyclopsGoal;
 import com.iafenvoy.iceandfire.entity.ai.VillagerAIFearUntamedGoal;
 import com.iafenvoy.iceandfire.entity.util.IAnimalFear;
 import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
+import com.iafenvoy.iceandfire.util.EntityDataHelper;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import com.iafenvoy.iceandfire.item.ChainItem;
 import com.iafenvoy.iceandfire.item.DragonHornItem;
@@ -20,7 +21,9 @@ import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
 import com.iafenvoy.uranus.object.RegistryHelper;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
@@ -40,7 +43,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.AbstractChestBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.WallBlock;
@@ -54,7 +56,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -148,7 +150,7 @@ public final class ServerEvents {
     public static void onLivingSetTarget(PlayerEvent.StartTracking event) {
         Player player = event.getEntity();
         if (event.getTarget() instanceof LivingEntity target) {
-            if (target.getType().is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
             else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
         }
     }
@@ -158,7 +160,7 @@ public final class ServerEvents {
         Player player = event.getEntity();
         Level world = event.getEntity().level();
         Entity entity = event.getTarget();
-        if (entity.getType().is(IafEntityTags.SHEEP)) {
+        if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.SHEEP)) {
             float dist = IafCommonConfig.INSTANCE.cyclops.sheepSearchLength.getValue();
             final List<Entity> list = entity.level().getEntities(entity, entity.getBoundingBox().inflate(dist, dist, dist));
             if (!list.isEmpty())
@@ -176,18 +178,17 @@ public final class ServerEvents {
                 statue.setCrackAmount(statue.getCrackAmount() + 1);
 
                 if (statue.getCrackAmount() > 9) {
-                    CompoundTag writtenTag = new CompoundTag();
-                    entity.saveWithoutId(writtenTag);
+                    CompoundTag writtenTag = EntityDataHelper.saveWithoutId(entity);
                     entity.playSound(SoundEvents.STONE_BREAK, 2F, (float) (RandomHelper.nextDouble(-1, 1) * 0.2 + 0.5));
                     entity.remove(Entity.RemovalReason.KILLED);
 
                     if (EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.SILK_TOUCH), stack) > 0) {
                         ItemStack statuette = new ItemStack(IafItems.STONE_STATUE.get());
                         statuette.set(IafDataComponents.STONE_STATUS.get(), new StoneStatusComponent(statue.getTrappedEntityTypeString().equalsIgnoreCase("minecraft:player"), statue.getTrappedEntityTypeString(), writtenTag));
-                        if (!statue.level().isClientSide)
-                            statue.spawnAtLocation(statuette, 1);
-                    } else if (!statue.level().isClientSide)
-                        statue.spawnAtLocation(Blocks.COBBLESTONE, 2 + player.getRandom().nextInt(4));
+                        if (statue.level() instanceof ServerLevel serverLevel)
+                            statue.spawnAtLocation(serverLevel, statuette, 1.0F);
+                    } else if (statue.level() instanceof ServerLevel serverLevel)
+                        statue.spawnAtLocation(serverLevel, new ItemStack(Blocks.COBBLESTONE, 2 + player.getRandom().nextInt(4)), 0.0F);
 
                     statue.remove(Entity.RemovalReason.KILLED);
                 }
@@ -196,7 +197,7 @@ public final class ServerEvents {
             return;
         }
         if (entity instanceof LivingEntity livingEntity) {
-            if (entity.getType().is(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);
             else if (DragonUtils.isVillager(entity)) signalAmphithereAlarm(livingEntity, player);
         }
     }
@@ -204,7 +205,7 @@ public final class ServerEvents {
     @SubscribeEvent
     public static void onEntityDie(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity.level().isClientSide) return;
+        if (entity.level().isClientSide()) return;
 
         ChainData chainData = ChainData.get(entity);
         if (!chainData.getChainedTo().isEmpty()) {
@@ -219,8 +220,8 @@ public final class ServerEvents {
             chainData.clearChains();
         }
 
-        if (entity.getUUID().equals(ServerEvents.ALEX_UUID))
-            entity.spawnAtLocation(new ItemStack(IafItems.WEEZER_BLUE_ALBUM.get()), 1);
+        if (entity.getUUID().equals(ServerEvents.ALEX_UUID) && entity.level() instanceof ServerLevel serverLevel)
+            entity.spawnAtLocation(serverLevel, new ItemStack(IafItems.WEEZER_BLUE_ALBUM.get()), 1.0F);
 
         if (entity instanceof Player) {
             if (IafCommonConfig.INSTANCE.ghost.fromPlayerDeaths.getValue()) {
@@ -232,15 +233,14 @@ public final class ServerEvents {
                     if (entity.hasEffect(MobEffects.POISON))
                         flag = true;
                     if (flag) {
-                        Level world = entity.level();
-                        GhostEntity ghost = IafEntities.GHOST.get().create(world);
-                        assert ghost != null;
-                        ghost.copyPosition(entity);
-                        if (world instanceof ServerLevelAccessor serverWorldAccess) {
-                            ghost.finalizeSpawn(serverWorldAccess, world.getCurrentDifficultyAt(entity.blockPosition()), MobSpawnType.SPAWNER, null);
-                            world.addFreshEntity(ghost);
+                        if (entity.level() instanceof ServerLevel serverLevel) {
+                            GhostEntity ghost = IafEntities.GHOST.get().create(serverLevel, EntitySpawnReason.SPAWNER);
+                            if (ghost != null) {
+                                ghost.copyPosition(entity);
+                                serverLevel.addFreshEntity(ghost);
+                                ghost.setDaytimeMode(true);
+                            }
                         }
-                        ghost.setDaytimeMode(true);
                     }
                 }
             }
@@ -257,8 +257,8 @@ public final class ServerEvents {
             ChainData chainData = ChainData.get(target);
             if (chainData.isChainedTo(player.getUUID())) {
                 chainData.removeChain(player.getUUID());
-                if (!player.level().isClientSide)
-                    entity.spawnAtLocation(IafItems.CHAIN.get(), 1);
+                if (player.level() instanceof ServerLevel serverLevel)
+                    entity.spawnAtLocation(serverLevel, new ItemStack(IafItems.CHAIN.get()), 1.0F);
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 return;
             }
@@ -294,7 +294,7 @@ public final class ServerEvents {
     }
 
     @SubscribeEvent
-    public static void onBreakBlock(BlockEvent.BreakEvent event) {
+    public static void onBreakBlock(BreakBlockEvent event) {
         LevelAccessor world = event.getLevel();
         BlockState state = event.getState();
         Player player = event.getPlayer();
@@ -326,12 +326,12 @@ public final class ServerEvents {
         Entity entity = event.getEntity();
         if (entity instanceof Mob mob)
             try {
-                if (mob.getType().is(IafEntityTags.SHEEP) && mob instanceof Animal animal)
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.SHEEP) && mob instanceof Animal animal)
                     animal.goalSelector.addGoal(8, new EntitySheepAIFollowCyclopsGoal(animal, 1.2D));
-                if (mob.getType().is(IafEntityTags.VILLAGERS))
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.VILLAGERS))
                     if (IafCommonConfig.INSTANCE.dragon.villagersFear.getValue())
                         mob.goalSelector.addGoal(1, new VillagerAIFearUntamedGoal((PathfinderMob) mob, LivingEntity.class, 8.0F, 0.8D, 0.8D, VILLAGER_FEAR));
-                if (mob.getType().is(IafEntityTags.FEAR_DRAGONS))
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.FEAR_DRAGONS))
                     if (IafCommonConfig.INSTANCE.dragon.animalsFear.getValue())
                         mob.goalSelector.addGoal(1, new VillagerAIFearUntamedGoal((PathfinderMob) mob, LivingEntity.class, 30, 1.0D, 0.5D, e -> e instanceof IAnimalFear fear && fear.shouldAnimalsFear(mob)));
             } catch (Exception e) {

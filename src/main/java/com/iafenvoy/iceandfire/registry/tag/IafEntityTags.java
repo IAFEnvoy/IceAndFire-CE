@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.registry.tag;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
@@ -27,6 +27,6 @@ public final class IafEntityTags {
     public static final TagKey<EntityType<?>> CHAIN_UNTIEABLE = create("chain_untieable");
 
     private static TagKey<EntityType<?>> create(String id) {
-        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, id));
+        return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, id));
     }
 }

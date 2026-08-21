@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.registry;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.*;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -73,13 +74,13 @@ public final class IafEntities {
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> build(String entityName, EntityType.EntityFactory<T> constructor, MobCategory category, boolean fireImmune, float sizeX, float sizeY) {
         EntityType.Builder<T> builder = EntityType.Builder.of(constructor, category).sized(sizeX, sizeY);
         if (fireImmune) builder.fireImmune();
-        return register(entityName, () -> builder.build(entityName));
+        return register(entityName, () -> builder.build(ResourceKey.create(Registries.ENTITY_TYPE, IceAndFire.id(entityName))));
     }
 
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> build(String entityName, EntityType.EntityFactory<T> constructor, MobCategory category, boolean fireImmune, float sizeX, float sizeY, int trackingRange) {
         EntityType.Builder<T> builder = EntityType.Builder.of(constructor, category).sized(sizeX, sizeY).clientTrackingRange(trackingRange);
         if (fireImmune) builder.fireImmune();
-        return register(entityName, () -> builder.build(entityName));
+        return register(entityName, () -> builder.build(ResourceKey.create(Registries.ENTITY_TYPE, IceAndFire.id(entityName))));
     }
 
     private static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String entityName, Supplier<EntityType<T>> builder) {

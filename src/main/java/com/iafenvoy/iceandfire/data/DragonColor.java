@@ -8,9 +8,10 @@ import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.render.texture.DragonTextureProvider;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -28,7 +29,7 @@ public final class DragonColor {
     //FIXME:: Remove this
     public DeferredHolder<Item, Item> helmet, chestplate, leggings, boots;
     //FIXME:: Remove this
-    private DeferredHolder<ArmorMaterial, ArmorMaterial> material;
+    private Holder<ArmorMaterial> material;
 
     public DragonColor(String name, ChatFormatting color, DragonType dragonType, Supplier<Item> eggItem, Supplier<Item> scaleItem) {
         this(name, color, dragonType, DragonTextureProvider::new, eggItem, scaleItem);
@@ -48,15 +49,15 @@ public final class DragonColor {
         for (DragonColor color : IafRegistries.DRAGON_COLOR.stream().toList()) {
             color.material = IafArmorMaterials.register("dragon_scales_" + color.name, new int[]{5, 7, 9, 5}, 15, SoundEvents.ARMOR_EQUIP_CHAIN, 2, new MemorizeSupplier<>(() -> Ingredient.of(color.scaleItem.get())));
             String sub = "armor_" + color.getName().toLowerCase(Locale.ROOT);
-            color.helmet = IafItems.registerArmor(sub + "_helmet", () -> new DragonScaleArmorItem(color, ArmorItem.Type.HELMET));
-            color.chestplate = IafItems.registerArmor(sub + "_chestplate", () -> new DragonScaleArmorItem(color, ArmorItem.Type.CHESTPLATE));
-            color.leggings = IafItems.registerArmor(sub + "_leggings", () -> new DragonScaleArmorItem(color, ArmorItem.Type.LEGGINGS));
-            color.boots = IafItems.registerArmor(sub + "_boots", () -> new DragonScaleArmorItem(color, ArmorItem.Type.BOOTS));
+            color.helmet = IafItems.registerArmor(sub + "_helmet", () -> new DragonScaleArmorItem(color, ArmorType.HELMET));
+            color.chestplate = IafItems.registerArmor(sub + "_chestplate", () -> new DragonScaleArmorItem(color, ArmorType.CHESTPLATE));
+            color.leggings = IafItems.registerArmor(sub + "_leggings", () -> new DragonScaleArmorItem(color, ArmorType.LEGGINGS));
+            color.boots = IafItems.registerArmor(sub + "_boots", () -> new DragonScaleArmorItem(color, ArmorType.BOOTS));
         }
     }
 
     public static DragonColor getById(String id) {
-        return IafRegistries.DRAGON_COLOR.get(IceAndFire.id(id));
+        return IafRegistries.DRAGON_COLOR.get(IceAndFire.id(id)).orElseThrow().value();
     }
 
     public DragonTextureProvider getTextureProvider() {
@@ -83,7 +84,7 @@ public final class DragonColor {
         return this.dragonType;
     }
 
-    public DeferredHolder<ArmorMaterial, ArmorMaterial> getMaterial() {
+    public Holder<ArmorMaterial> getMaterial() {
         return this.material;
     }
 }

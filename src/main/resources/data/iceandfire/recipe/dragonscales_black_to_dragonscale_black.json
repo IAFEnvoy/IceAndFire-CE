@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "iceandfire:dragonscales_black"
-    }
+    "#": "iceandfire:dragonscales_black"
   },
   "pattern": [
     "###",

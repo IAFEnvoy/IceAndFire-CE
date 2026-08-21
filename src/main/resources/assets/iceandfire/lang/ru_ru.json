@@ -1218,5 +1218,10 @@
   "sound.iceandfire.subtitle.icedragon_hurt": "Ледяному дракону больно",
   "sound.iceandfire.subtitle.icedragon_death": "Ледяной дракон умирает",
   "sound.iceandfire.subtitle.dragonegg_hatch": "Драконье яйцо вылупилось",
-  "sound.iceandfire.subtitle.dragonflute": "Играет драконья флейта"
+  "sound.iceandfire.subtitle.dragonflute": "Играет драконья флейта",
+  "effect.iceandfire.depetrification": "Снятие окаменения",
+  "item.minecraft.lingering_potion.effect.depetrification": "Туманное зелье снятия окаменения",
+  "item.minecraft.potion.effect.depetrification": "Зелье снятия окаменения",
+  "item.minecraft.splash_potion.effect.depetrification": "Взрывное зелье снятия окаменения",
+  "item.minecraft.tipped_arrow.effect.depetrification": "Стрела снятия окаменения"
 }

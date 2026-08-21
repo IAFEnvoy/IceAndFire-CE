@@ -5,9 +5,10 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
@@ -19,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class DreadLichSkullEntity extends AbstractArrow {
+    private double shieldDamage = 6.0D;
+
     public DreadLichSkullEntity(EntityType<? extends AbstractArrow> type, Level worldIn) {
         super(type, worldIn);
         this.setBaseDamage(6F);
@@ -28,6 +31,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
         super(type, worldIn);
         this.setOwner(shooter);
         this.setBaseDamage(dmg);
+        this.shieldDamage = dmg;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
     @Override
     public void tick() {
         float sqrt = Mth.sqrt((float) (this.getDeltaMovement().x * this.getDeltaMovement().x + this.getDeltaMovement().z * this.getDeltaMovement().z));
-        if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.inGround) && this.tickCount > 5)
+        if ((sqrt < 0.1F || this.horizontalCollision || this.verticalCollision || this.isInGround()) && this.tickCount > 5)
             this.remove(RemovalReason.DISCARDED);
         Entity shootingEntity = this.getOwner();
         if (shootingEntity instanceof Mob mob && mob.getTarget() != null) {
@@ -106,7 +110,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
     protected void onHitEntity(EntityHitResult raytraceResultIn) {
         Entity entity = raytraceResultIn.getEntity();
         Entity shootingEntity = this.getOwner();
-        if (shootingEntity != null && entity.isAlliedTo(shootingEntity)) return;
+        if (entity.isAlliedTo(shootingEntity)) return;
         super.onHitEntity(raytraceResultIn);
     }
 
@@ -116,7 +120,7 @@ public class DreadLichSkullEntity extends AbstractArrow {
         Entity shootingEntity = this.getOwner();
         if (shootingEntity == null || !living.is(shootingEntity))
             if (living instanceof Player player)
-                this.damageShield(player, (float) this.getBaseDamage());
+                this.damageShield(player, (float) this.shieldDamage);
     }
 
     @Override
@@ -127,11 +131,11 @@ public class DreadLichSkullEntity extends AbstractArrow {
     protected void damageShield(Player player, float damage) {
         if (damage >= 3.0F && player.getUseItem().getItem() instanceof ShieldItem) {
             int i = 1 + Mth.floor(damage);
-            player.getUseItem().hurtAndBreak(i, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+            player.getUseItem().hurtAndBreak(i, player, player.getUsedItemHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();
-                this.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.level().getRandom().nextFloat() * 0.4F);
             }
         }
     }

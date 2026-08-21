@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "iceandfire:dragonscales_bronze"
-    }
+    "#": "iceandfire:dragonscales_bronze"
   },
   "pattern": [
     "###",

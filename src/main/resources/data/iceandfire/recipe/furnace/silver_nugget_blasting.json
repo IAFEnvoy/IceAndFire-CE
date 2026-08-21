@@ -1,33 +1,15 @@
 {
   "type": "minecraft:blasting",
   "ingredient": [
-    {
-      "item": "iceandfire:silver_pickaxe"
-    },
-    {
-      "item": "iceandfire:silver_shovel"
-    },
-    {
-      "item": "iceandfire:silver_axe"
-    },
-    {
-      "item": "iceandfire:silver_hoe"
-    },
-    {
-      "item": "iceandfire:silver_sword"
-    },
-    {
-      "item": "iceandfire:armor_silver_metal_helmet"
-    },
-    {
-      "item": "iceandfire:armor_silver_metal_chestplate"
-    },
-    {
-      "item": "iceandfire:armor_silver_metal_leggings"
-    },
-    {
-      "item": "iceandfire:armor_silver_metal_boots"
-    }
+    "iceandfire:silver_pickaxe",
+    "iceandfire:silver_shovel",
+    "iceandfire:silver_axe",
+    "iceandfire:silver_hoe",
+    "iceandfire:silver_sword",
+    "iceandfire:armor_silver_metal_helmet",
+    "iceandfire:armor_silver_metal_chestplate",
+    "iceandfire:armor_silver_metal_leggings",
+    "iceandfire:armor_silver_metal_boots"
   ],
   "result": {
     "id": "iceandfire:silver_nugget"

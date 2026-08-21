@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class HydraHeadEntity extends MultipartPartEntity<HydraEntity> {
@@ -29,7 +30,7 @@ public class HydraHeadEntity extends MultipartPartEntity<HydraEntity> {
         }
         super.updatePosition();
         if (this.hydra != null && this.hydra.getSeveredHead() != -1 && this.neck && !GorgonEntity.isStoneMob(this.hydra))
-            if (this.hydra.getSeveredHead() == this.headIndex || this.level().isClientSide)
+            if (this.hydra.getSeveredHead() == this.headIndex || this.level().isClientSide())
                 for (int k = 0; k < 5; ++k) {
                     double d2 = 0.4;
                     double d0 = 0.1;
@@ -39,11 +40,11 @@ public class HydraHeadEntity extends MultipartPartEntity<HydraEntity> {
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float damage) {
+    public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float damage) {
         HydraEntity parent = this.getParent();
         if (this.headIndex >= parent.getHeadCount()) return false;
         parent.onHitHead(damage, this.headIndex);
-        return parent.hurt(source, damage);
+        return parent.hurtServer(level, source, damage);
     }
 
     @Override

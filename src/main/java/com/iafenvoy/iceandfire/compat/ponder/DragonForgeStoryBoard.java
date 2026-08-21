@@ -11,7 +11,7 @@ import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +28,8 @@ public class DragonForgeStoryBoard<T extends DragonBaseEntity> implements Ponder
         this.dragonClass = dragonClass;
     }
 
-    public static ResourceLocation id(DragonType type) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format(Locale.ROOT, "%s_dragon_forge", type.name()));
+    public static Identifier id(DragonType type) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format(Locale.ROOT, "%s_dragon_forge", type.name()));
     }
 
     @Override

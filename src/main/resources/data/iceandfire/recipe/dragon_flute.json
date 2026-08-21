@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "iceandfire:dragonbone"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    }
+    "B": "iceandfire:dragonbone",
+    "I": "#c:ingots/iron"
   },
   "pattern": [
     "B  ",

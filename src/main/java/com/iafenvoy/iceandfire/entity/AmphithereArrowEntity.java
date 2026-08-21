@@ -6,7 +6,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -26,9 +26,9 @@ public class AmphithereArrowEntity extends AbstractArrow {
     @Override
     public void tick() {
         super.tick();
-        if ((this.tickCount == 1 || this.tickCount % 70 == 0) && !this.inGround && !this.onGround())
+        if ((this.tickCount == 1 || this.tickCount % 70 == 0) && !this.isInGround() && !this.onGround())
             this.playSound(IafSounds.AMPHITHERE_GUST.get(), 1, 1);
-        if (this.level().isClientSide && !this.inGround) {
+        if (this.level().isClientSide() && !this.isInGround()) {
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
@@ -41,7 +41,6 @@ public class AmphithereArrowEntity extends AbstractArrow {
 
     @Override
     protected void doPostHurtEffects(LivingEntity living) {
-        living.hasImpulse = true;
         double xRatio = this.getDeltaMovement().x;
         double zRatio = this.getDeltaMovement().z;
         float strength = -1.4F;
@@ -56,7 +55,7 @@ public class AmphithereArrowEntity extends AbstractArrow {
     }
 
     public void spawnExplosionParticle() {
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             for (int height = 0; height < 1 + this.random.nextInt(2); height++)
                 for (int i = 0; i < 20; ++i) {
                     double d0 = this.random.nextGaussian() * 0.02D;

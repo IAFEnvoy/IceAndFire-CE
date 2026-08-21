@@ -8,8 +8,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -27,16 +27,16 @@ public class WanderingCyclopsSpawnFeature extends Feature<NoneFeatureConfigurati
         RandomSource random = context.random();
         BlockPos pos = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, context.origin().offset(8, 0, 8));
         if (this.isFarEnoughFromSpawn(world, pos) && random.nextDouble() < IafCommonConfig.INSTANCE.cyclops.spawnWanderingChance.getValue() && random.nextInt(12) == 0) {
-            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel());
+            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
             assert cyclops != null;
             cyclops.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-            cyclops.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.SPAWNER, null);
+            cyclops.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWNER, null);
             world.addFreshEntity(cyclops);
             for (int i = 0; i < 3 + random.nextInt(3); i++) {
-                Sheep sheep = EntityType.SHEEP.create(world.getLevel());
+                Sheep sheep = EntityType.SHEEP.create(world.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
                 assert sheep != null;
                 sheep.setPos(pos.getX() + 0.5F, pos.getY() + 1, pos.getZ() + 0.5F);
-                sheep.setColor(Sheep.getRandomSheepColor(random));
+                sheep.setColor(Sheep.getRandomSheepColor(world, pos));
                 world.addFreshEntity(sheep);
             }
         }

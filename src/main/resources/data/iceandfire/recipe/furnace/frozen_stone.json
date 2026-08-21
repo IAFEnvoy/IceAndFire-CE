@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "iceandfire:frozen_stone"
-  },
+  "ingredient": "iceandfire:frozen_stone",
   "result": {
     "id": "minecraft:stone"
   },

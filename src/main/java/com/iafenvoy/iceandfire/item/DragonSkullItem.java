@@ -15,8 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import org.jspecify.annotations.NonNull;
 
 public class DragonSkullItem extends Item {
     private final DragonType dragonType;
@@ -27,12 +26,12 @@ public class DragonSkullItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         String s = "dragon." + this.dragonType.name();
-        tooltip.add(Component.translatable(s).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable(s).withStyle(ChatFormatting.GRAY));
         if (stack.has(IafDataComponents.DRAGON_SKULL.get()))
-            tooltip.add(Component.translatable("dragon.stage").withStyle(ChatFormatting.GRAY).append(Component.literal(" " + stack.get(IafDataComponents.DRAGON_SKULL.get()).stage())));
+            tooltip.accept(Component.translatable("dragon.stage").withStyle(ChatFormatting.GRAY).append(Component.literal(" " + stack.get(IafDataComponents.DRAGON_SKULL.get()).stage())));
     }
 
     @Override
@@ -51,14 +50,14 @@ public class DragonSkullItem extends Item {
             skull.setStage(component.stage());
             skull.setDragonAge(component.dragonAge());
             BlockPos offset = context.getClickedPos().relative(context.getClickedFace(), 1);
-            skull.moveTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
+            skull.snapTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
             float yaw = context.getPlayer().getYRot();
             if (context.getClickedFace().getAxis().isHorizontal())
                 yaw = context.getClickedFace().toYRot() + 180.0F;
             skull.setYRot(yaw);
             if (stack.has(DataComponents.CUSTOM_NAME))
                 skull.setCustomName(stack.getHoverName());
-            if (!context.getLevel().isClientSide)
+            if (!context.getLevel().isClientSide())
                 context.getLevel().addFreshEntity(skull);
             if (!context.getPlayer().isCreative())
                 stack.shrink(1);

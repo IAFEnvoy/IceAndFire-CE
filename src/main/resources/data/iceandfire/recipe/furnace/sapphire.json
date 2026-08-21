@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "iceandfire:sapphire_ore"
-  },
+  "ingredient": "iceandfire:sapphire_ore",
   "result": {
     "id": "iceandfire:sapphire_gem"
   },

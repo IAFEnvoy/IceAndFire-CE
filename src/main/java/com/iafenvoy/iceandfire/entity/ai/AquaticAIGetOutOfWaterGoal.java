@@ -57,7 +57,7 @@ public class AquaticAIGetOutOfWaterGoal extends Goal {
 
         for (int i = 0; i < 10; ++i) {
             BlockPos blockpos1 = blockpos.offset(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-            if (this.world.getBlockState(blockpos1).isSolidRender(this.world, blockpos1))
+            if (this.world.getBlockState(blockpos1).isSolidRender())
                 return new Vec3(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
         }
         return null;

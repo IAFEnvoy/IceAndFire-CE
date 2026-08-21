@@ -14,7 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
@@ -50,8 +50,8 @@ public class FireDragonCaveStructure extends DragonCaveStructure {
     }
 
     public static class FireDragonCavePiece extends DragonCavePiece {
-        public static final ResourceLocation FIRE_DRAGON_CHEST = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/fire_dragon_female_cave");
-        public static final ResourceLocation FIRE_DRAGON_CHEST_MALE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/fire_dragon_male_cave");
+        public static final Identifier FIRE_DRAGON_CHEST = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/fire_dragon_female_cave");
+        public static final Identifier FIRE_DRAGON_CHEST_MALE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/fire_dragon_male_cave");
 
         protected FireDragonCavePiece(int length, BoundingBox boundingBox, boolean male, BlockPos offset, int y, long seed) {
             super(IafStructurePieces.FIRE_DRAGON_CAVE.get(), length, boundingBox, male, offset, y, seed);

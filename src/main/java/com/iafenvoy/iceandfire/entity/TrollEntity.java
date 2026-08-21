@@ -23,6 +23,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -41,18 +42,21 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+
 
 public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
     public static final Animation ANIMATION_STRIKE_HORIZONTAL = Animation.create(20);
@@ -70,7 +74,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
         super(t, worldIn);
     }
 
-    public static boolean canTrollSpawnOn(EntityType<? extends Mob> typeIn, ServerLevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource randomIn) {
+    public static boolean canTrollSpawnOn(EntityType<? extends Mob> typeIn, ServerLevelAccessor worldIn, EntitySpawnReason reason, BlockPos pos, RandomSource randomIn) {
         return worldIn.getDifficulty() != Difficulty.PEACEFUL && new DangerousGeneration() {
         }.isFarEnoughFromSpawn(worldIn, pos) && isDarkEnoughToSpawn(worldIn, pos, randomIn) && checkMobSpawnRules(IafEntities.TROLL.get(), worldIn, reason, pos, randomIn);
     }
@@ -112,7 +116,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean checkSpawnRules(LevelAccessor worldIn, @NotNull MobSpawnType spawnReasonIn) {
+    public boolean checkSpawnRules(LevelAccessor worldIn, @NotNull EntitySpawnReason spawnReasonIn) {
         BlockPos pos = this.blockPosition();
         BlockPos heightAt = worldIn.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, pos);
         boolean rngCheck = true;
@@ -134,7 +138,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NonNull ServerLevel level, @NotNull Entity entityIn) {
         if (this.getRandom().nextBoolean()) {
             this.setAnimation(ANIMATION_STRIKE_VERTICAL);
 
@@ -184,24 +188,24 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString("Variant", this.getVariant());
-        compound.putString("Weapon", this.getWeapon());
-        compound.putFloat("StoneProgress", this.stoneProgress);
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putString("Variant", this.getVariant());
+        output.putString("Weapon", this.getWeapon());
+        output.putFloat("StoneProgress", this.stoneProgress);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getString("Variant"));
-        this.setWeapon(compound.getString("Weapon"));
-        this.stoneProgress = compound.getFloat("StoneProgress");
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setVariant(input.getStringOr("Variant", IafTrollTypes.FOREST.getName()));
+        this.setWeapon(input.getStringOr("Weapon", TrollType.BuiltinWeapon.AXE.getName()));
+        this.stoneProgress = input.getFloatOr("StoneProgress", 0.0F);
         this.setConfigurableAttributes();
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setTrollType(TrollType.getBiomeType(this.level().getBiome(this.blockPosition())));
         this.setWeaponType(TrollType.getWeaponForType(this.getTrollType()));
@@ -209,27 +213,28 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(@NonNull ServerLevel level, DamageSource source, float damage) {
         if (source.getMsgId().contains("arrow")) {
             return false;
         }
-        return super.hurt(source, damage);
+        return super.hurtServer(level, source, damage);
     }
 
     @Override
-    protected @NotNull ResourceKey<LootTable> getDefaultLootTable() {
-        return ResourceKey.create(Registries.LOOT_TABLE, this.getTrollType().getLootTable());
+    protected void dropCustomDeathLoot(@NonNull ServerLevel level, @NonNull DamageSource source, boolean killedByPlayer) {
+        super.dropCustomDeathLoot(level, source, killedByPlayer);
+        this.dropFromLootTable(level, source, killedByPlayer, ResourceKey.create(Registries.LOOT_TABLE, this.getTrollType().getLootTable()));
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    protected int getBaseExperienceReward(@NonNull ServerLevel level) {
         return 15;
     }
 
     @Override
     protected void tickDeath() {
         super.tickDeath();
-        if (this.deathTime == 20 && !this.level().isClientSide) {
+        if (this.deathTime == 20 && !this.level().isClientSide()) {
             if (IafCommonConfig.INSTANCE.troll.dropWeapon.getValue()) {
                 if (this.getRandom().nextInt(3) == 0) {
                     ItemStack weaponStack = new ItemStack(this.getWeaponType().getItem(), 1);
@@ -299,8 +304,8 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
             this.playSound(IafSounds.TROLL_ROAR.get(), 1, 1);
         if (!stone && this.getHealth() < this.getMaxHealth() && this.tickCount % 30 == 0)
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 30, 1, false, false));
-        this.setAvoidSun(this.level().isDay());
-        if (this.level().isDay() && !this.level().isClientSide) {
+        this.setAvoidSun(this.level().isBrightOutside());
+        if (this.level().isBrightOutside() && !this.level().isClientSide()) {
             float f = this.level().getBrightness(LightLayer.SKY, this.blockPosition());
             BlockPos blockpos = this.getVehicle() instanceof Boat ? (new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ())).above() : new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ());
             if (f > 0.5F && this.level().canSeeSky(blockpos)) {
@@ -309,9 +314,11 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 this.playSound(IafSounds.TURN_STONE.get(), 1, 1);
                 this.stoneProgress = 20;
                 StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(this);
-                statue.getTrappedTag().putFloat("StoneProgress", 20);
-                statue.absMoveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
-                if (!this.level().isClientSide) this.level().addFreshEntity(statue);
+                CompoundTag trappedData = statue.getTrappedTag();
+                trappedData.putFloat("StoneProgress", 20);
+                statue.setTrappedTag(trappedData);
+                statue.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
+                if (!this.level().isClientSide()) this.level().addFreshEntity(statue);
                 statue.yRotO = this.getYRot();
                 statue.setYRot(this.getYRot());
                 statue.yHeadRot = this.getYRot();
@@ -329,7 +336,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 double motionX = this.getRandom().nextGaussian() * 0.07D;
                 double motionY = this.getRandom().nextGaussian() * 0.07D;
                 double motionZ = this.getRandom().nextGaussian() * 0.07D;
-                if (state.isSolid() && this.level().isClientSide)
+                if (state.isSolid() && this.level().isClientSide())
                     this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), weaponX + (this.getRandom().nextFloat() - 0.5F), weaponY + (this.getRandom().nextFloat() - 0.5F), weaponZ + (this.getRandom().nextFloat() - 0.5F), motionX, motionY, motionZ);
             }
         }
@@ -342,7 +349,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
             float f6 = Mth.cos(this.getYRot() * 0.017453292F);
             target.setDeltaMovement(f5, f6, 0.4F);
         }
-        if (this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+        if (this.getNavigation().isDone() && this.getTarget() != null && this.distanceToSqr(this.getTarget()) > 3 && this.distanceToSqr(this.getTarget()) < 30 && this.level().getServer() != null && this.level().getServer().getGameRules().get(GameRules.MOB_GRIEFING)) {
             this.lookAt(this.getTarget(), 30, 30);
             if (this.getAnimation() == NO_ANIMATION && this.random.nextInt(15) == 0)
                 this.setAnimation(ANIMATION_STRIKE_VERTICAL);
@@ -350,11 +357,8 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
                 float weaponX = (float) (this.getX() + 1.9F * Mth.cos((float) ((this.yBodyRot + 90) * Math.PI / 180)));
                 float weaponZ = (float) (this.getZ() + 1.9F * Mth.sin((float) ((this.yBodyRot + 90) * Math.PI / 180)));
                 float weaponY = (float) (this.getY() + (this.getEyeHeight() / 2));
-                //TODO: Recheck Explosion
-                Explosion explosion = new Explosion(this.level(), this, weaponX, weaponY, weaponZ, 1F + this.getRandom().nextFloat(), false, Explosion.BlockInteraction.KEEP);
                 if (!NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, weaponX, weaponY, weaponZ)).isCanceled()) {
-                    explosion.explode();
-                    explosion.finalizeExplosion(true);
+                    this.level().explode(this, weaponX, weaponY, weaponZ, 1F + this.getRandom().nextFloat(), false, Level.ExplosionInteraction.NONE);
                 }
                 this.playSound(SoundEvents.GENERIC_EXPLODE.value(), 1, 1);
             }

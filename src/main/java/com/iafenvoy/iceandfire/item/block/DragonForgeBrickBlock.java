@@ -95,7 +95,7 @@ public class DragonForgeBrickBlock extends BaseEntityBlock implements DragonProo
 
     @Override
     public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, @NotNull BlockState state, @NotNull BlockEntityType<T> type) {
-        return world.isClientSide ? null : createTickerHelper(type, IafBlockEntities.DRAGONFORGE_BRICK.get(), DragonForgeBrickBlockEntity::tick);
+        return world.isClientSide() ? null : createTickerHelper(type, IafBlockEntities.DRAGONFORGE_BRICK.get(), DragonForgeBrickBlockEntity::tick);
     }
 
     @Override

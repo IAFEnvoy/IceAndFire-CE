@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.registry.IafProcessors;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import org.jetbrains.annotations.NotNull;
 
 public class VillageHouseProcessor extends StructureProcessor {
-    public static final ResourceLocation LOOT = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/village_scribe");
+    public static final Identifier LOOT = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/village_scribe");
     public static final VillageHouseProcessor INSTANCE = new VillageHouseProcessor();
     public static final MapCodec<VillageHouseProcessor> CODEC = MapCodec.unit(() -> INSTANCE);
 

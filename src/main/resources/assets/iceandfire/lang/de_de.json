@@ -1217,5 +1217,10 @@
   "sound.iceandfire.subtitle.icedragon_hurt": "Eisdrache nimmst Schaden",
   "sound.iceandfire.subtitle.icedragon_death": "Eisdrache stirbt",
   "sound.iceandfire.subtitle.dragonegg_hatch": "Drachenei schlüpft",
-  "sound.iceandfire.subtitle.dragonflute": "Drachenflöte spielt"
+  "sound.iceandfire.subtitle.dragonflute": "Drachenflöte spielt",
+  "effect.iceandfire.depetrification": "Entpetrifizierung",
+  "item.minecraft.lingering_potion.effect.depetrification": "Verweiltrank der Entpetrifizierung",
+  "item.minecraft.potion.effect.depetrification": "Trank der Entpetrifizierung",
+  "item.minecraft.splash_potion.effect.depetrification": "Wurftrank der Entpetrifizierung",
+  "item.minecraft.tipped_arrow.effect.depetrification": "Pfeil der Entpetrifizierung"
 }

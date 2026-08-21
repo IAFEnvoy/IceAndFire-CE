@@ -6,16 +6,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 public class CockatriceBeamRenderer {
-    public static final RenderType TEXTURE_BEAM = RenderType.entityCutoutNoCull(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/beam.png"));
+    public static final RenderType TEXTURE_BEAM = RenderTypes.entityCutout(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/beam.png"), false);
 
     private static void vertex(VertexConsumer consumer, Matrix4f matrix4f, PoseStack.Pose entry, float x, float y, float z, int red, int green, int blue, float u, float v) {
         consumer.addVertex(matrix4f, x, y, z).setColor(red, green, blue, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(entry, 0.0F, 1.0F, 0.0F);

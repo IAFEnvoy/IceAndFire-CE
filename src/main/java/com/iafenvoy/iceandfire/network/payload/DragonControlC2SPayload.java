@@ -8,11 +8,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public record DragonControlC2SPayload(int dragonId, byte controlState, BlockPos pos) implements CustomPacketPayload {
-    private static final ResourceLocation IDENTIFIER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_control");
+    private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_control");
     public static final Type<DragonControlC2SPayload> ID = new Type<>(IDENTIFIER);
     public static final StreamCodec<ByteBuf, DragonControlC2SPayload> CODEC = ByteBufCodecs.fromCodec(RecordCodecBuilder.create(i -> i.group(
             Codec.INT.fieldOf("dragonId").forGetter(DragonControlC2SPayload::dragonId),

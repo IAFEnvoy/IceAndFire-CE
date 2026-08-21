@@ -1,7 +1,8 @@
 package com.iafenvoy.iceandfire.entity;
 
-import net.minecraft.nbt.CompoundTag;
+import com.iafenvoy.iceandfire.mixin.EntityIdAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -11,13 +12,15 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Shared collision-only implementation for the mod's multipart creatures.
@@ -43,6 +46,12 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
         this.refreshDimensions();
     }
 
+    /** Reserves a contiguous entity ID range for a multipart parent and all of its parts. */
+    public static int reserveParentId(int partCount) {
+        AtomicInteger counter = EntityIdAccessor.iceandfire$getEntityCounter();
+        return counter.getAndAdd(partCount + 1) + 1;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
     }
@@ -56,11 +65,11 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
     }
 
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
+    protected void readAdditionalSaveData(@NotNull ValueInput input) {
     }
 
     @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
+    protected void addAdditionalSaveData(@NotNull ValueOutput output) {
     }
 
     @Override
@@ -115,7 +124,7 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
         } else {
             this.setPos(parent.getX() + this.radius * Mth.cos((float) (renderYawOffset * (Math.PI / 180.0F) + this.angleYaw)), parent.getY() + this.offsetY, parent.getZ() + this.radius * Mth.sin((float) (renderYawOffset * (Math.PI / 180.0F) + this.angleYaw)));
         }
-        if (!this.level().isClientSide)
+        if (!this.level().isClientSide())
             this.collideWithNearbyEntities();
     }
 
@@ -157,13 +166,11 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource source, float damage) {
-        return this.getParent().hurt(source, damage * this.damageMultiplier);
-    }
-
-    @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        return source.is(DamageTypes.FALL) || source.is(DamageTypes.DROWN) || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.LAVA) || source.is(DamageTypeTags.IS_FIRE) || super.isInvulnerableTo(source);
+    public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float damage) {
+        if (source.is(DamageTypes.FALL) || source.is(DamageTypes.DROWN) || source.is(DamageTypes.IN_WALL)
+                || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.LAVA) || source.is(DamageTypeTags.IS_FIRE))
+            return false;
+        return this.getParent().hurtServer(level, source, damage * this.damageMultiplier);
     }
 
     @Override
@@ -173,17 +180,12 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
     }
 
     @Override
-    public @Nullable UUID getOwnerUUID() {
-        return this.getParent() instanceof OwnableEntity tameable ? tameable.getOwnerUUID() : null;
+    public @Nullable EntityReference<LivingEntity> getOwnerReference() {
+        return this.getParent() instanceof OwnableEntity tameable ? tameable.getOwnerReference() : null;
     }
 
     @Override
-    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
-        return this.getParent().interact(player, hand);
-    }
-
-    @Override
-    public @NotNull InteractionResult interactAt(@NotNull Player player, @NotNull Vec3 hitPos, @NotNull InteractionHand hand) {
-        return this.getParent().interactAt(player, hitPos, hand);
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand, @NotNull Vec3 hitPos) {
+        return this.getParent().interact(player, hand, hitPos);
     }
 }

@@ -1,32 +1,31 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
+import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
 import com.iafenvoy.iceandfire.render.model.BipedBaseModel;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.equipment.Equippable;
 
-//TODO: Consider support for default minecraft armors/ dynamically selecting custom armors
-//Base code from minecraft's ArmorBipedLayer
-public class BipedArmorFeatureRenderer<T extends LivingEntity & IAnimatedEntity, M extends BipedBaseModel<T>, A extends BipedBaseModel<T>> extends RenderLayer<T, M> {
+/** Legacy biped armor layer submitted through the 26.1 render-state collector. */
+public class BipedArmorFeatureRenderer<T extends Mob & IAnimatedEntity, M extends BipedBaseModel<T>, A extends BipedBaseModel<T>> implements LegacyEntityFeature<T> {
+    private final M parentModel;
     private final A modelLeggings;
     private final A modelArmor;
-    private final ResourceLocation defaultLegArmor;
-    private final ResourceLocation defaultArmor;
+    private final Identifier defaultLegArmor;
+    private final Identifier defaultArmor;
 
-    public BipedArmorFeatureRenderer(RenderLayerParent<T, M> mobRenderer, A modelLeggings, A modelArmor, ResourceLocation defaultArmor, ResourceLocation defaultLegArmor) {
-        super(mobRenderer);
+    public BipedArmorFeatureRenderer(LegacyMobRenderer<T, M> renderer, A modelLeggings, A modelArmor, Identifier defaultArmor, Identifier defaultLegArmor) {
+        this.parentModel = renderer.getLegacyModel();
         this.modelLeggings = modelLeggings;
         this.modelArmor = modelArmor;
         this.defaultLegArmor = defaultLegArmor;
@@ -34,63 +33,39 @@ public class BipedArmorFeatureRenderer<T extends LivingEntity & IAnimatedEntity,
     }
 
     @Override
-    public void render(@NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn, @NotNull T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.renderEquipment(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlot.CHEST, packedLightIn, this.getSlotModel(EquipmentSlot.CHEST));
-        this.renderEquipment(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlot.LEGS, packedLightIn, this.getSlotModel(EquipmentSlot.LEGS));
-        this.renderEquipment(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlot.FEET, packedLightIn, this.getSlotModel(EquipmentSlot.FEET));
-        this.renderEquipment(matrixStackIn, bufferIn, entitylivingbaseIn, EquipmentSlot.HEAD, packedLightIn, this.getSlotModel(EquipmentSlot.HEAD));
+    public void submit(T entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int lightCoords, int outlineColor) {
+        this.submitEquipment(entity, EquipmentSlot.CHEST, poseStack, collector, lightCoords);
+        this.submitEquipment(entity, EquipmentSlot.LEGS, poseStack, collector, lightCoords);
+        this.submitEquipment(entity, EquipmentSlot.FEET, poseStack, collector, lightCoords);
+        this.submitEquipment(entity, EquipmentSlot.HEAD, poseStack, collector, lightCoords);
     }
 
-    private void renderEquipment(PoseStack matrixStackIn, MultiBufferSource bufferIn, T entityIn, EquipmentSlot slotType, int packedLightIn, A modelIn) {
-        ItemStack itemstack = entityIn.getItemBySlot(slotType);
-        if (itemstack.getItem() instanceof ArmorItem armoritem)
-            if (armoritem.getEquipmentSlot() == slotType) {
-                this.getParentModel().setModelAttributes(modelIn);
-                this.setModelSlotVisible(modelIn, slotType);
-                boolean flag1 = itemstack.hasFoil();
-                this.renderArmorItem(matrixStackIn, bufferIn, packedLightIn, flag1, modelIn, this.getArmorResource(entityIn, itemstack, slotType, null));
-            }
+    private void submitEquipment(T entity, EquipmentSlot slot, PoseStack poseStack, SubmitNodeCollector collector, int lightCoords) {
+        ItemStack stack = entity.getItemBySlot(slot);
+        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        if (equippable == null || equippable.slot() != slot) return;
+        A model = this.getSlotModel(slot);
+        this.parentModel.setModelAttributes(model);
+        this.setModelSlotVisible(model, slot);
+        Identifier texture = this.getArmorResource(entity, stack, slot, null);
+        collector.submitCustomGeometry(poseStack, RenderTypes.armorCutoutNoCull(texture), (pose, buffer) -> {
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
+            model.renderToBuffer(modelStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 
-    protected void setModelSlotVisible(A modelIn, EquipmentSlot slotIn) {
-        modelIn.setVisible(false);
-        switch (slotIn) {
-            case HEAD -> {
-                modelIn.head.invisible = false;
-                modelIn.headware.invisible = false;
-            }
-            case CHEST -> {
-                modelIn.body.invisible = false;
-                modelIn.armRight.invisible = false;
-                modelIn.armLeft.invisible = false;
-            }
-            case LEGS -> {
-                modelIn.body.invisible = false;
-                modelIn.legRight.invisible = false;
-                modelIn.legLeft.invisible = false;
-            }
-            case FEET -> {
-                modelIn.legRight.invisible = false;
-                modelIn.legLeft.invisible = false;
-            }
+    protected void setModelSlotVisible(A model, EquipmentSlot slot) {
+        model.setVisible(false);
+        switch (slot) {
+            case HEAD -> { model.head.invisible = false; model.headware.invisible = false; }
+            case CHEST -> { model.body.invisible = false; model.armRight.invisible = false; model.armLeft.invisible = false; }
+            case LEGS -> { model.body.invisible = false; model.legRight.invisible = false; model.legLeft.invisible = false; }
+            case FEET -> { model.legRight.invisible = false; model.legLeft.invisible = false; }
         }
     }
 
-    private void renderArmorItem(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, boolean glint, A modelIn, ResourceLocation armorResource) {
-        VertexConsumer ivertexbuilder = ItemRenderer.getArmorFoilBuffer(bufferIn, RenderType.armorCutoutNoCull(armorResource), glint);
-        modelIn.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
-    }
-
-    private A getSlotModel(EquipmentSlot equipmentSlotType) {
-        return this.isLegSlot(equipmentSlotType) ? this.modelLeggings : this.modelArmor;
-    }
-
-    protected boolean isLegSlot(EquipmentSlot slotIn) {
-        return slotIn == EquipmentSlot.LEGS;
-    }
-
-    public ResourceLocation getArmorResource(T entity, ItemStack stack, EquipmentSlot slot, String type) {
-        if (this.isLegSlot(slot)) return this.defaultLegArmor;
-        return this.defaultArmor;
-    }
+    private A getSlotModel(EquipmentSlot slot) { return this.isLegSlot(slot) ? this.modelLeggings : this.modelArmor; }
+    protected boolean isLegSlot(EquipmentSlot slot) { return slot == EquipmentSlot.LEGS; }
+    public Identifier getArmorResource(T entity, ItemStack stack, EquipmentSlot slot, String type) { return this.isLegSlot(slot) ? this.defaultLegArmor : this.defaultArmor; }
 }

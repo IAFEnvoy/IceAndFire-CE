@@ -18,9 +18,9 @@ public abstract class DreadSpawnerBaseLogic extends BaseSpawner {
         if (!this.isNearPlayer(world, pos))
             this.oSpin = this.spin;
         else {
-            double d0 = (double) pos.getX() + world.random.nextDouble();
-            double d1 = (double) pos.getY() + world.random.nextDouble();
-            double d2 = (double) pos.getZ() + world.random.nextDouble();
+            double d0 = (double) pos.getX() + world.getRandom().nextDouble();
+            double d1 = (double) pos.getY() + world.getRandom().nextDouble();
+            double d2 = (double) pos.getZ() + world.getRandom().nextDouble();
             world.addParticle(ParticleTypes.SMOKE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
             world.addParticle(IafParticles.DREAD_TORCH.get(), d0, d1, d2, 0.0D, 0.0D, 0.0D);
             if (this.spawnDelay > 0) --this.spawnDelay;
@@ -40,7 +40,7 @@ public abstract class DreadSpawnerBaseLogic extends BaseSpawner {
     }
 
     @Override
-    public double getoSpin() {
+    public double getOSpin() {
         return this.oSpin;
     }
 }

@@ -11,9 +11,9 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 //By jdkdigital
@@ -28,15 +28,15 @@ abstract public class DragonForgeRecipeCategory extends AbstractRecipeCategory<D
                 icon,
                 170, 79
         );
-        this.background = guiHelper.drawableBuilder(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/dragonforge_" + forgeType + ".png"), 3, 4, 170, 79).setTextureSize(256, 256).build();
+        this.background = guiHelper.drawableBuilder(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/dragonforge_" + forgeType + ".png"), 3, 4, 170, 79).setTextureSize(256, 256).build();
         this.overlay = guiHelper.createAnimatedDrawable(
-                guiHelper.drawableBuilder(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/dragonforge_" + forgeType + ".png"), 0, 166, 126, 38).setTextureSize(256, 256).build(),
+                guiHelper.drawableBuilder(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/dragonforge_" + forgeType + ".png"), 0, 166, 126, 38).setTextureSize(256, 256).build(),
                 50, IDrawableAnimated.StartDirection.LEFT, false
         );
     }
 
     @Override
-    public void draw(@NotNull DragonForgeRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(@NotNull DragonForgeRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         this.background.draw(guiGraphics);
         this.overlay.draw(guiGraphics, 9, 19);
     }

@@ -29,13 +29,13 @@ public class MobSkullItem extends Item {
         assert player != null;
         ItemStack stack = player.getItemInHand(context.getHand());
         BlockPos offset = context.getClickedPos().relative(context.getClickedFace(), 1);
-        skull.moveTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
+        skull.snapTo(offset.getX() + 0.5, offset.getY(), offset.getZ() + 0.5, 0, 0);
         float yaw = player.getYRot();
         if (context.getClickedFace() != Direction.UP)
             yaw = player.getDirection().toYRot();
         skull.setYRot(yaw);
         skull.setSkullType(this.skull);
-        if (!context.getLevel().isClientSide)
+        if (!context.getLevel().isClientSide())
             context.getLevel().addFreshEntity(skull);
         if (stack.has(DataComponents.CUSTOM_NAME))
             skull.setCustomName(stack.getHoverName());

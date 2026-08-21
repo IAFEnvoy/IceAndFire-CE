@@ -72,7 +72,7 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TargetGoa
         else if (this.mob.distanceToSqr(this.targetEntity) < 1) {
             CockatriceEntity cockatrice = (CockatriceEntity) this.mob;
             this.targetEntity.getItem().shrink(1);
-            this.mob.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             cockatrice.heal(8);
             cockatrice.setAnimation(CockatriceEntity.ANIMATION_EAT);
             this.stop();

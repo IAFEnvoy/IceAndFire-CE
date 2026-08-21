@@ -4,7 +4,8 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.item.block.entity.EggInIceBlockEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.ITooltip;
@@ -14,12 +15,12 @@ public enum DragonEggBlockComponentProvider implements IBlockComponentProvider {
     INSTANCE;
 
     @Override
-    public ResourceLocation getUid() {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_egg_block");
+    public @NonNull Identifier getUid() {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_egg_block");
     }
 
     @Override
-    public void appendTooltip(ITooltip iTooltip, BlockAccessor entityAccessor, IPluginConfig iPluginConfig) {
+    public void appendTooltip(@NonNull ITooltip iTooltip, BlockAccessor entityAccessor, @NonNull IPluginConfig iPluginConfig) {
         if (entityAccessor.getBlockEntity() instanceof EggInIceBlockEntity egg)
             iTooltip.add(Component.translatable("dragon_egg.hatchTime", String.valueOf((IafCommonConfig.INSTANCE.dragon.eggBornTime.getValue() - egg.age) / 20)));
     }

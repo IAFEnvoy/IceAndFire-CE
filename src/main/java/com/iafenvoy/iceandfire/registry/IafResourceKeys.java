@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public final class IafResourceKeys {
     public static final ResourceKey<Registry<BestiaryPage>> BESTIARY_PAGE = createKey("bestiary_page");
@@ -15,6 +15,6 @@ public final class IafResourceKeys {
     public static final ResourceKey<Registry<TrollType>> TROLL_TYPE = createKey("troll_type");
 
     private static <T> ResourceKey<Registry<T>> createKey(String id) {
-        return ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, id));
+        return ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, id));
     }
 }

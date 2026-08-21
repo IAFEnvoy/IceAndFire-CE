@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "iceandfire:ash"
-    }
+    "B": "iceandfire:ash"
   },
   "pattern": [
     "BBB",

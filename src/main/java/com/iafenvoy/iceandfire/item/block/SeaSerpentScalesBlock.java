@@ -10,8 +10,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class SeaSerpentScalesBlock extends Block {
     final ChatFormatting color;
     final String name;
@@ -22,9 +20,7 @@ public class SeaSerpentScalesBlock extends Block {
         this.name = name;
     }
 
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag options) {
-        super.appendHoverText(stack, context, tooltip, options);
-        tooltip.add(Component.translatable("sea_serpent." + this.name).withStyle(this.color));
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.Consumer<Component> tooltip, @NotNull TooltipFlag options) {
+        tooltip.accept(Component.translatable("sea_serpent." + this.name).withStyle(this.color));
     }
 }

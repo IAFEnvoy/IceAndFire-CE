@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafRecipes;
+import com.iafenvoy.iceandfire.mixin.RecipeManagerAccessor;
 import com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -17,7 +18,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +29,14 @@ import java.util.List;
 //By jdkdigital
 @JeiPlugin
 public class IceAndFireJeiPlugin implements IModPlugin {
-    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, IceAndFire.MOD_ID);
+    private static final Identifier ID = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, IceAndFire.MOD_ID);
 
-    public static final RecipeType<DragonForgeRecipe> FIRE = RecipeType.create(ResourceLocation.DEFAULT_NAMESPACE, "firedragonforge", DragonForgeRecipe.class);
-    public static final RecipeType<DragonForgeRecipe> ICE = RecipeType.create(ResourceLocation.DEFAULT_NAMESPACE, "icedragonforge", DragonForgeRecipe.class);
-    public static final RecipeType<DragonForgeRecipe> LIGHTNING = RecipeType.create(ResourceLocation.DEFAULT_NAMESPACE, "lightningdragonforge", DragonForgeRecipe.class);
+    public static final RecipeType<DragonForgeRecipe> FIRE = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "firedragonforge", DragonForgeRecipe.class);
+    public static final RecipeType<DragonForgeRecipe> ICE = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "icedragonforge", DragonForgeRecipe.class);
+    public static final RecipeType<DragonForgeRecipe> LIGHTNING = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "lightningdragonforge", DragonForgeRecipe.class);
 
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public @NotNull Identifier getPluginUid() {
         return ID;
     }
 
@@ -58,9 +59,9 @@ public class IceAndFireJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
+        RecipeManager recipeManager = (RecipeManager) Minecraft.getInstance().level.recipeAccess();
 
-        List<RecipeHolder<DragonForgeRecipe>> recipeList = recipeManager.getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get());
+        List<RecipeHolder<DragonForgeRecipe>> recipeList = new ArrayList<>(((RecipeManagerAccessor) recipeManager).iceandfire$getRecipes().byType(IafRecipes.DRAGON_FORGE_TYPE.get()));
 
         List<DragonForgeRecipe> FIRE_RECIPES = new ArrayList<>();
         List<DragonForgeRecipe> ICE_RECIPES = new ArrayList<>();

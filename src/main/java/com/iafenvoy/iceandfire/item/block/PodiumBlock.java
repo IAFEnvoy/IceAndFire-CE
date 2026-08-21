@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.item.block.entity.PodiumBlockEntity;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -41,19 +40,9 @@ public class PodiumBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        BlockEntity tileentity = worldIn.getBlockEntity(pos);
-        if (tileentity instanceof PodiumBlockEntity) {
-            Containers.dropContents(worldIn, pos, (PodiumBlockEntity) tileentity);
-            worldIn.updateNeighbourForOutputSignal(pos, this);
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull BlockHitResult hit) {
         if (!player.isShiftKeyDown()) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 MenuProvider screenHandlerFactory = this.getMenuProvider(state, world, pos);
                 if (screenHandlerFactory != null)
                     player.openMenu(screenHandlerFactory);

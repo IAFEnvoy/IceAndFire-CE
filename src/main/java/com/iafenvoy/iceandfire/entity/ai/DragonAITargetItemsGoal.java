@@ -90,7 +90,7 @@ public class DragonAITargetItemsGoal extends TargetGoal {
         ItemStack stack = this.targetEntity.getItem();
         if (this.targetEntity == null || !this.targetEntity.isAlive() || stack.isEmpty()) this.stop();
         else if (this.mob.distanceToSqr(this.targetEntity) < this.mob.getBbWidth() * 2 + this.mob.getBbHeight() / 2 || (this.mob instanceof DragonBaseEntity dragon && dragon.getHeadPosition().distanceToSqr(this.targetEntity.position()) < this.mob.getBbHeight())) {
-            this.mob.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             final int hunger = FoodUtils.getFoodPoints(this.targetEntity.getItem(), true, this.isIce);
             final DragonBaseEntity dragon = ((DragonBaseEntity) this.mob);
             dragon.setHunger(Math.min(100, dragon.getHunger() + hunger));

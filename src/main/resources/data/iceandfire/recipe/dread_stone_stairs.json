@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "D": {
-      "item": "iceandfire:dread_stone_bricks"
-    }
+    "D": "iceandfire:dread_stone_bricks"
   },
   "pattern": [
     "D  ",

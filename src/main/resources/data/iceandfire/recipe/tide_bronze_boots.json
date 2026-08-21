@@ -6,12 +6,8 @@
     "S S"
   ],
   "key": {
-    "S": {
-      "item": "iceandfire:sea_serpent_scales_bronze"
-    },
-    "H": {
-      "item": "iceandfire:shiny_scales"
-    }
+    "S": "iceandfire:sea_serpent_scales_bronze",
+    "H": "iceandfire:shiny_scales"
   },
   "result": {
     "id": "iceandfire:tide_bronze_boots"

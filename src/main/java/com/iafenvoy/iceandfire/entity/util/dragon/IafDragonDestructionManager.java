@@ -21,12 +21,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SpreadingSnowyDirtBlock;
+import net.minecraft.world.level.block.SpreadingSnowyBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForge;
@@ -51,7 +50,7 @@ public class IafDragonDestructionManager {
         } else return;
 
         double damageRadius = 3.5;
-        boolean canBreakBlocks = level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        boolean canBreakBlocks = canMobGrief(level);
 
         if (dragon.getDragonStage() <= 3) {
             BlockPos.betweenClosedStream(center.offset(-1, -1, -1), center.offset(1, 1, 1)).forEach(position -> {
@@ -64,9 +63,9 @@ public class IafDragonDestructionManager {
             });
         } else {
             final int radius = dragon.getDragonStage() == 4 ? 2 : 3;
-            final int x = radius + level.random.nextInt(1);
-            final int y = radius + level.random.nextInt(1);
-            final int z = radius + level.random.nextInt(1);
+            final int x = radius + level.getRandom().nextInt(1);
+            final int y = radius + level.getRandom().nextInt(1);
+            final int z = radius + level.getRandom().nextInt(1);
             final float f = (float) (x + y + z) * 0.333F + 0.5F;
             final float ff = f * f;
 
@@ -78,7 +77,7 @@ public class IafDragonDestructionManager {
                     return;
                 }
                 if (canBreakBlocks && center.distSqr(position) <= ff)
-                    if (DragonUtils.canGrief(dragon, level.getBlockState(position)) && level.random.nextFloat() > (float) center.distSqr(position) / ff)
+                    if (DragonUtils.canGrief(dragon, level.getBlockState(position)) && level.getRandom().nextFloat() > (float) center.distSqr(position) / ff)
                         attackBlock(level, dragon, position);
             });
         }
@@ -113,7 +112,7 @@ public class IafDragonDestructionManager {
         int y = 2;
         int z = 2;
 
-        boolean canBreakBlocks = (DragonUtils.canGrief(dragon) || DragonUtils.canSoftGrief(dragon)) && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        boolean canBreakBlocks = (DragonUtils.canGrief(dragon) || DragonUtils.canSoftGrief(dragon)) && canMobGrief(level);
 
         if (canBreakBlocks) {
             if (dragon.getDragonStage() <= 3) {
@@ -126,9 +125,9 @@ public class IafDragonDestructionManager {
                 });
             } else {
                 final int radius = dragon.getDragonStage() == 4 ? 2 : 3;
-                x = radius + level.random.nextInt(2);
-                y = radius + level.random.nextInt(2);
-                z = radius + level.random.nextInt(2);
+                x = radius + level.getRandom().nextInt(2);
+                y = radius + level.getRandom().nextInt(2);
+                z = radius + level.getRandom().nextInt(2);
                 final float f = (float) (x + y + z) * 0.333F + 0.5F;
                 final float ff = f * f;
 
@@ -243,10 +242,16 @@ public class IafDragonDestructionManager {
     }
 
     private static void causeExplosion(Level world, BlockPos center, DragonBaseEntity destroyer, DamageSource source, int stage) {
-        Explosion.BlockInteraction mode = world.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP;
-        BlockLaunchExplosion explosion = new BlockLaunchExplosion(world, destroyer, source, center.getX(), center.getY(), center.getZ(), Math.min(2, stage - 2), mode);
-        explosion.explode();
-        explosion.finalizeExplosion(true);
+        BlockLaunchExplosion.explode(
+                world,
+                destroyer,
+                source,
+                center.getX(),
+                center.getY(),
+                center.getZ(),
+                Math.min(2, stage - 2),
+                canMobGrief(world)
+        );
     }
 
     private static void destroyBlocks(Level world, BlockPos center, int x, int y, int z, double radius2, Entity destroyer) {
@@ -254,14 +259,18 @@ public class IafDragonDestructionManager {
             if (center.distSqr(pos) <= radius2) {
                 BlockState state = world.getBlockState(pos);
                 if (state.getBlock() instanceof DragonProof) return;
-                if (world.random.nextFloat() * 3 > (float) center.distSqr(pos) / radius2 && DragonUtils.canDragonBreak(state, destroyer))
+                if (world.getRandom().nextFloat() * 3 > (float) center.distSqr(pos) / radius2 && DragonUtils.canDragonBreak(state, destroyer))
                     world.destroyBlock(pos, false);
             }
         });
     }
 
+    private static boolean canMobGrief(Level level) {
+        return level.getServer() != null && level.getServer().getGameRules().get(GameRules.MOB_GRIEFING);
+    }
+
     public static BlockState transformBlockFire(BlockState in) {
-        if (in.getBlock() instanceof SpreadingSnowyDirtBlock)
+        if (in.getBlock() instanceof SpreadingSnowyBlock)
             return IafBlocks.CHARRED_GRASS.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
         else if (in.is(Blocks.DIRT))
             return IafBlocks.CHARRED_DIRT.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
@@ -281,7 +290,7 @@ public class IafDragonDestructionManager {
     }
 
     public static BlockState transformBlockIce(BlockState in) {
-        if (in.getBlock() instanceof SpreadingSnowyDirtBlock)
+        if (in.getBlock() instanceof SpreadingSnowyBlock)
             return IafBlocks.FROZEN_GRASS.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.DIRT) && in.getBlock() == Blocks.DIRT || in.is(BlockTags.SNOW))
             return IafBlocks.FROZEN_DIRT.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
@@ -305,7 +314,7 @@ public class IafDragonDestructionManager {
     }
 
     public static BlockState transformBlockLightning(BlockState in) {
-        if (in.getBlock() instanceof SpreadingSnowyDirtBlock)
+        if (in.getBlock() instanceof SpreadingSnowyBlock)
             return IafBlocks.CRACKLED_GRASS.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);
         else if (in.is(BlockTags.DIRT) && in.getBlock() == Blocks.DIRT)
             return IafBlocks.CRACKLED_DIRT.get().defaultBlockState().setValue(ReturningStateBlock.REVERTS, true);

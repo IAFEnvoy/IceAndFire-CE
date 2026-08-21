@@ -6,12 +6,8 @@
     "x"
   ],
   "key": {
-    "x": {
-      "item": "minecraft:netherite_ingot"
-    },
-    "a": {
-      "tag": "iceandfire:dragon_skulls"
-    }
+    "x": "minecraft:netherite_ingot",
+    "a": "#iceandfire:dragon_skulls"
   },
   "result": {
     "id": "iceandfire:dragon_seeker",

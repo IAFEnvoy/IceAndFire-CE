@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "iceandfire:sea_serpent_scales_deepblue"
-    }
+    "#": "iceandfire:sea_serpent_scales_deepblue"
   },
   "pattern": [
     "###",

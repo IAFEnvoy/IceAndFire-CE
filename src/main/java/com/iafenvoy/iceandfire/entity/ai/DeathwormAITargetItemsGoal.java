@@ -88,7 +88,7 @@ public class DeathwormAITargetItemsGoal<T extends ItemEntity> extends TargetGoal
         else if (this.mob.distanceToSqr(this.targetEntity) < 1) {
             DeathWormEntity deathWorm = (DeathWormEntity) this.mob;
             this.targetEntity.getItem().shrink(1);
-            this.mob.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             deathWorm.setAnimation(DeathWormEntity.ANIMATION_BITE);
             Player thrower = null;
             if (this.targetEntity.getOwner() != null)

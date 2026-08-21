@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -50,19 +51,19 @@ public class ChainItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
-        tooltip.add(Component.translatable("item.iceandfire.chain.desc_0").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.iceandfire.chain.desc_1").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
+        tooltip.accept(Component.translatable("item.iceandfire.chain.desc_0").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("item.iceandfire.chain.desc_1").withStyle(ChatFormatting.GRAY));
         if (this.sticky) {
-            tooltip.add(Component.translatable("item.iceandfire.chain_sticky.desc_2").withStyle(ChatFormatting.GREEN));
-            tooltip.add(Component.translatable("item.iceandfire.chain_sticky.desc_3").withStyle(ChatFormatting.GREEN));
+            tooltip.accept(Component.translatable("item.iceandfire.chain_sticky.desc_2").withStyle(ChatFormatting.GREEN));
+            tooltip.accept(Component.translatable("item.iceandfire.chain_sticky.desc_3").withStyle(ChatFormatting.GREEN));
         }
     }
 
     @Override
     public @NotNull InteractionResult interactLivingEntity(@NotNull ItemStack stack, @NotNull Player playerIn, LivingEntity target, @NotNull InteractionHand hand) {
-        if (target.getType().is(IafEntityTags.CHAIN_UNTIEABLE)) return InteractionResult.PASS;
+        if (target.getType().builtInRegistryHolder().is(IafEntityTags.CHAIN_UNTIEABLE)) return InteractionResult.PASS;
 
         ChainData targetData = ChainData.get(target);
         if (targetData.isChainedTo(playerIn.getUUID()))
@@ -109,7 +110,7 @@ public class ChainItem extends Item {
         if (!(block instanceof WallBlock)) {
             return InteractionResult.PASS;
         } else {
-            if (!context.getLevel().isClientSide)
+            if (!context.getLevel().isClientSide())
                 attachToFence(context.getPlayer(), context.getLevel(), context.getClickedPos());
             return InteractionResult.SUCCESS;
         }

@@ -1,7 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
 
-import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.ai.AquaticAIFindWaterTargetGoal;
 import com.iafenvoy.iceandfire.entity.ai.AquaticAIGetInWaterGoal;
 import com.iafenvoy.iceandfire.entity.ai.HippocampusAIWanderGoal;
@@ -19,19 +17,11 @@ import com.iafenvoy.uranus.object.RegistryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
@@ -58,15 +48,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.EnumSet;
 import java.util.List;
 
-public class HippocampusEntity extends TamableAnimal implements MenuProvider, ISyncMount, IAnimatedEntity, ICustomMoveController, ContainerListener, Saddleable {
+public class HippocampusEntity extends TamableAnimal implements MenuProvider, ISyncMount, IAnimatedEntity, ICustomMoveController {
     public static final int INV_SLOT_SADDLE = 0;
     public static final int INV_SLOT_CHEST = 1;
     public static final int INV_SLOT_ARMOR = 2;
@@ -89,7 +82,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         ANIMATION_SPEAK = Animation.create(15);
         this.setPathfindingMalus(PathType.WATER, 0.0F);
         this.moveControl = new HippoMoveControl(this);
-        if (worldIn.isClientSide)
+        if (worldIn.isClientSide())
             this.tail_buffer = new ChainBuffer();
         this.createInventory();
     }
@@ -106,6 +99,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     public static AttributeSupplier.Builder bakeAttributes() {
         return Mob.createMobAttributes()
+                .add(Attributes.TEMPT_RANGE, 10.0D)
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, 40.0D)
                 //SPEED
@@ -134,11 +128,11 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     protected void addBehaviourGoals() {
-        this.goalSelector.addGoal(0, new TemptGoal(this, 1.0D, Ingredient.of(IafItemTags.TEMPT_HIPPOCAMPUS), false));
+        this.goalSelector.addGoal(0, new TemptGoal(this, 1.0D, Ingredient.of(this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ITEM).getOrThrow(IafItemTags.TEMPT_HIPPOCAMPUS)), false));
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(@NonNull ServerLevel level) {
         return 2;
     }
 
@@ -148,7 +142,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     @Override
-    public boolean isAlliedTo(@NotNull Entity entityIn) {
+    protected boolean considersEntityAsAlly(@NonNull Entity entityIn) {
         if (this.isTame()) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity)
@@ -159,7 +153,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
                 return livingentity.isAlliedTo(entityIn);
         }
 
-        return super.isAlliedTo(entityIn);
+        return super.considersEntityAsAlly(entityIn);
     }
 
     @Override
@@ -186,7 +180,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     @Override
-    public @NotNull ItemStack equipItemIfPossible(@NotNull ItemStack itemStackIn) {
+    public @NotNull ItemStack equipItemIfPossible(@NotNull ServerLevel level, @NotNull ItemStack itemStackIn) {
         EquipmentSlot equipmentSlot = this.getEquipmentSlotForItem(itemStackIn);
         int j = equipmentSlot.getIndex() - 500 + 2;
         if (j >= 0 && j < this.inventory.getContainerSize()) {
@@ -197,19 +191,17 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     @Override
-    protected void dropEquipment() {
-        super.dropEquipment();
-        if (this.inventory != null && !this.level().isClientSide) {
+    protected void dropEquipment(@NonNull ServerLevel level) {
+        super.dropEquipment(level);
+        if (this.inventory != null) {
             for (int i = 0; i < this.inventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.inventory.getItem(i);
                 if (!itemstack.isEmpty() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(this.level().registryAccess(), Enchantments.VANISHING_CURSE), itemstack) == 0)
-                    this.spawnAtLocation(itemstack);
+                    this.spawnAtLocation(level, itemstack);
             }
         }
         if (this.isChested()) {
-            if (!this.level().isClientSide) {
-                this.spawnAtLocation(Blocks.CHEST);
-            }
+            this.spawnAtLocation(level, Blocks.CHEST);
             this.setChested(false);
         }
     }
@@ -217,8 +209,8 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     protected void dropChestItems() {
         for (int i = 3; i < 18; i++)
             if (!this.inventory.getItem(i).isEmpty()) {
-                if (!this.level().isClientSide)
-                    this.spawnAtLocation(this.inventory.getItem(i), 1);
+                if (this.level() instanceof ServerLevel level)
+                    this.spawnAtLocation(level, this.inventory.getItem(i), 1);
                 this.inventory.removeItemNoUpdate(i);
             }
     }
@@ -260,14 +252,14 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     @Override
     public void aiStep() {
         super.aiStep();
-        if (!this.level().isClientSide)
+        if (!this.level().isClientSide())
             if (this.random.nextInt(900) == 0 && this.deathTime == 0)
                 this.heal(1.0F);
         AnimationHandler.INSTANCE.updateAnimations(this);
         if (this.getControllingPassenger() != null && this.tickCount % 20 == 0)
             (this.getControllingPassenger()).addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 30, 0, true, false));
 
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             this.tail_buffer.calculateChainSwingBuffer(40, 10, 1F, this);
         boolean inWater = this.isInWater();
         if (!inWater && this.onLandProgress < 20.0F)
@@ -287,7 +279,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         Vec2 vec2 = this.getRiddenRotation(player);
         this.setRot(vec2.y, vec2.x);
         this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
-        if (this.isControlledByLocalInstance()) {
+        if (this.isLocalInstanceAuthoritative()) {
             Vec3 vec3 = this.getDeltaMovement();
 
             if (this.isGoingUp()) {
@@ -336,25 +328,25 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Variant", this.getVariant());
-        compound.putBoolean("Chested", this.isChested());
-        compound.putBoolean("Saddled", this.isSaddled());
-        compound.putInt("Armor", this.getArmorValue());
-        compound.put("Items", ItemStack.OPTIONAL_CODEC.listOf().encodeStart(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), this.inventory.getItems()).resultOrPartial(IceAndFire.LOGGER::error).orElse(new ListTag()));
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Variant", this.getVariant());
+        output.putBoolean("Chested", this.isChested());
+        output.putBoolean("Saddled", this.isSaddled());
+        output.putInt("Armor", this.getArmorValue());
+        output.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.inventory.getItems());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setChested(compound.getBoolean("Chested"));
-        this.setSaddled(compound.getBoolean("Saddled"));
-        this.setArmor(compound.getInt("Armor"));
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setVariant(input.getIntOr("Variant", 0));
+        this.setChested(input.getBooleanOr("Chested", false));
+        this.setSaddled(input.getBooleanOr("Saddled", false));
+        this.setArmor(input.getIntOr("Armor", 0));
 
         this.createInventory();
-        List<ItemStack> stacks = ItemStack.OPTIONAL_CODEC.listOf().parse(RegistryOps.create(NbtOps.INSTANCE, this.level().registryAccess()), compound.get("Items")).resultOrPartial(IceAndFire.LOGGER::error).orElse(List.of());
+        List<ItemStack> stacks = input.read("Items", ItemStack.OPTIONAL_CODEC.listOf()).orElse(List.of());
         if (this.inventory != null)
             for (int i = 0; i < stacks.size() && i < this.inventory.getContainerSize(); i++)
                 this.inventory.setItem(i, stacks.get(i));
@@ -366,9 +358,13 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     protected void createInventory() {
         SimpleContainer simplecontainer = this.inventory;
-        this.inventory = new SimpleContainer(this.getInventorySize());
+        this.inventory = new SimpleContainer(this.getInventorySize()) {
+            @Override
+            public void setChanged() {
+                HippocampusEntity.this.updateContainerEquipment();
+            }
+        };
         if (simplecontainer != null) {
-            simplecontainer.removeListener(this);
             int i = Math.min(simplecontainer.getContainerSize(), this.inventory.getContainerSize());
 
             for (int j = 0; j < i; ++j) {
@@ -378,12 +374,11 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
             }
         }
 
-        this.inventory.addListener(this);
         this.updateContainerEquipment();
     }
 
     protected void updateContainerEquipment() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.setSaddled(!this.inventory.getItem(INV_SLOT_SADDLE).isEmpty());
             this.setChested(!this.inventory.getItem(INV_SLOT_CHEST).isEmpty());
             this.setArmor(getIntFromArmor(this.inventory.getItem(INV_SLOT_ARMOR)));
@@ -394,12 +389,10 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         return this.inventory != pInventory;
     }
 
-    @Override
     public boolean isSaddleable() {
         return this.isAlive() && !this.isBaby() && this.isTame();
     }
 
-    @Override
     public void equipSaddle(@NotNull ItemStack stack, @Nullable SoundSource soundCategory) {
         this.inventory.setItem(0, new ItemStack(Items.SADDLE));
     }
@@ -448,7 +441,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     @Override
-    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public @NotNull SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setVariant(this.getRandom().nextInt(6));
         return data;
@@ -491,7 +484,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     @Override
     public void travel(@NotNull Vec3 pTravelVector) {
-        if (this.isControlledByLocalInstance() && this.isInWater()) {
+        if (this.isLocalInstanceAuthoritative() && this.isInWater()) {
             this.moveRelative(0.1F, pTravelVector);
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
@@ -526,18 +519,18 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         if (itemstack.is(IafItemTags.BREED_HIPPOCAMPUS) && this.getAge() == 0 && !this.isInLove()) {
             this.setOrderedToSit(false);
             this.setInLove(player);
-            this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             if (!player.isCreative())
                 itemstack.shrink(1);
             return InteractionResult.SUCCESS;
         }
         // Food item
         if (itemstack.is(IafItemTags.HEAL_HIPPOCAMPUS)) {
-            if (!this.level().isClientSide) {
+            if (!this.level().isClientSide()) {
                 this.heal(5);
-                this.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+                this.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
                 for (int i = 0; i < 3; i++)
-                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack), this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
+                    this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, itemstack.getItem()), this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), 0, 0, 0);
                 if (!player.isCreative())
                     itemstack.shrink(1);
             }
@@ -554,11 +547,19 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
             this.setOrderedToSit(!this.isOrderedToSit());
             return InteractionResult.SUCCESS;
         }
+        if (this.isOwnedBy(player) && itemstack.is(Items.SADDLE) && this.isSaddleable() && !this.isSaddled()) {
+            if (!this.level().isClientSide()) {
+                this.equipSaddle(itemstack, SoundSource.NEUTRAL);
+                itemstack.consume(1, player);
+                this.playSound(SoundEvents.HORSE_SADDLE.value(), 0.5F, 1.0F);
+            }
+            return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+        }
         // Inventory
         if (this.isOwnedBy(player) && itemstack.isEmpty() && player.isShiftKeyDown()) {
             if (player instanceof ServerPlayer serverPlayer)
                 serverPlayer.openMenu(this);
-            return InteractionResult.sidedSuccess(this.level().isClientSide);
+            return this.level().isClientSide() ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
         }
         // Riding
         if (this.isOwnedBy(player) && this.isSaddled() && !this.isBaby() && !player.isPassenger()) {
@@ -570,7 +571,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     protected void doPlayerRide(Player pPlayer) {
         this.setOrderedToSit(false);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             pPlayer.setYRot(this.getYRot());
             pPlayer.setXRot(this.getXRot());
             pPlayer.startRiding(this);
@@ -648,7 +649,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         if (!this.level().getFluidState(pos).is(FluidTags.WATER))
             return 0;
         int y = pos.getY();
-        while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(pos.getX(), y, pos.getZ())).is(FluidTags.WATER))
+        while (y < this.level().getMaxY() && this.level().getFluidState(new BlockPos(pos.getX(), y, pos.getZ())).is(FluidTags.WATER))
             y++;
         return y - pos.getY();
     }
@@ -670,9 +671,9 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     private int findWaterSurface(int x, int z) {
-        for (int y = Math.min(this.level().getMaxBuildHeight() - 1, this.getBlockY() + 16); y >= this.level().getMinBuildHeight(); y--) {
+        for (int y = Math.min(this.level().getMaxY() - 1, this.getBlockY() + 16); y >= this.level().getMinY(); y--) {
             if (this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER)) {
-                while (y < this.level().getMaxBuildHeight() && this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER))
+                while (y < this.level().getMaxY() && this.level().getFluidState(new BlockPos(x, y, z)).is(FluidTags.WATER))
                     y++;
                 return y;
             }
@@ -682,14 +683,6 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     public int getInventoryColumns() {
         return 5; // TODO :: Introduce upgrade item?
-    }
-
-    @Override
-    public void containerChanged(@NotNull Container pInvBasic) {
-        boolean flag = this.isSaddled();
-        this.updateContainerEquipment();
-        if (this.tickCount > 20 && !flag && this.isSaddled())
-            this.playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
     }
 
     @Override

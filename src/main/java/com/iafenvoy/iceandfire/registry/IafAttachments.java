@@ -20,8 +20,8 @@ import java.util.function.Supplier;
 public final class IafAttachments {
     public static final DeferredRegister<AttachmentType<?>> REGISTRY = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, IceAndFire.MOD_ID);
 
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ChainData>> CHAIN_DATA = register("chain_data", () -> AttachmentType.builder(ChainData::new).serialize(ChainData.CODEC).sync(ChainData.PACKET_CODEC).copyOnDeath().build());
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<MiscData>> MISC_DATA = register("misc_data", () -> AttachmentType.builder(MiscData::new).serialize(MiscData.CODEC).sync(MiscData.PACKET_CODEC).copyOnDeath().build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ChainData>> CHAIN_DATA = register("chain_data", () -> AttachmentType.builder(ChainData::new).serialize(ChainData.CODEC.fieldOf("data")).sync(ChainData.PACKET_CODEC).copyOnDeath().build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<MiscData>> MISC_DATA = register("misc_data", () -> AttachmentType.builder(MiscData::new).serialize(MiscData.CODEC.fieldOf("data")).sync(MiscData.PACKET_CODEC).copyOnDeath().build());
 
     private static <T> DeferredHolder<AttachmentType<?>, AttachmentType<T>> register(String id, Supplier<AttachmentType<T>> type) {
         return REGISTRY.register(id, type);

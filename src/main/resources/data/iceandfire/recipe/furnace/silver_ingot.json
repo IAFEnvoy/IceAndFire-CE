@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "iceandfire:silver_ore"
-  },
+  "ingredient": "iceandfire:silver_ore",
   "result": {
     "id": "iceandfire:silver_ingot"
   },

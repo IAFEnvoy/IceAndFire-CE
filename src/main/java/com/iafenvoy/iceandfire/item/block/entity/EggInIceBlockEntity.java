@@ -7,14 +7,16 @@ import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.players.OldUsersConverter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -35,15 +37,15 @@ public class EggInIceBlockEntity extends BlockEntity {
     public static void tickEgg(Level level, BlockPos pos, BlockState state, EggInIceBlockEntity entityEggInIce) {
         entityEggInIce.age++;
         if (entityEggInIce.age >= IafCommonConfig.INSTANCE.dragon.eggBornTime.getValue() && entityEggInIce.type != null && !entityEggInIce.spawned)
-            if (!level.isClientSide) {
-                IceDragonEntity dragon = IafEntities.ICE_DRAGON.get().create(level);
+            if (!level.isClientSide()) {
+                IceDragonEntity dragon = IafEntities.ICE_DRAGON.get().create(level, EntitySpawnReason.TRIGGERED);
                 assert dragon != null;
                 dragon.setPos(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5);
                 dragon.setVariant(entityEggInIce.type.getName());
                 dragon.setGender(ThreadLocalRandom.current().nextBoolean());
                 dragon.setTame(true, false);
                 dragon.setHunger(50);
-                dragon.setOwnerUUID(entityEggInIce.ownerUUID);
+                if (entityEggInIce.ownerUUID != null) dragon.setOwnerReference(EntityReference.of(entityEggInIce.ownerUUID));
                 level.addFreshEntity(dragon);
                 entityEggInIce.spawned = true;
                 level.destroyBlock(pos, false);
@@ -53,44 +55,25 @@ public class EggInIceBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        if (this.type != null) nbt.putString("Color", this.type.getName());
-        else nbt.putByte("Color", (byte) 0);
-        nbt.putInt("Age", this.age);
-        if (this.ownerUUID == null) nbt.putString("OwnerUUID", "");
-        else nbt.putUUID("OwnerUUID", this.ownerUUID);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        if (this.type != null) output.putString("Color", this.type.getName());
+        else output.putByte("Color", (byte) 0);
+        output.putInt("Age", this.age);
+        if (this.ownerUUID == null) output.putString("OwnerUUID", "");
+        else output.store("OwnerUUID", UUIDUtil.CODEC, this.ownerUUID);
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
-        this.type = DragonColor.getById(nbt.getString("Color"));
-        this.age = nbt.getInt("Age");
-        UUID s = null;
-        if (nbt.hasUUID("OwnerUUID"))
-            s = nbt.getUUID("OwnerUUID");
-        else
-            try {
-                String s1 = nbt.getString("OwnerUUID");
-                assert this.level != null;
-                s = OldUsersConverter.convertMobOwnerIfNecessary(this.level.getServer(), s1);
-            } catch (Exception ignored) {
-            }
-        if (s != null) this.ownerUUID = s;
-    }
-
-    @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryLookup) {
-        CompoundTag nbtTagCompound = new CompoundTag();
-        this.saveAdditional(nbtTagCompound, registryLookup);
-        return nbtTagCompound;
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
+        this.type = DragonColor.getById(input.getStringOr("Color", ""));
+        this.age = input.getIntOr("Age", 0);
+        input.read("OwnerUUID", UUIDUtil.CODEC).ifPresent(uuid -> this.ownerUUID = uuid);
     }
 
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        CompoundTag nbtTagCompound = new CompoundTag();
-        this.saveAdditional(nbtTagCompound, this.level.registryAccess());
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
@@ -101,7 +84,7 @@ public class EggInIceBlockEntity extends BlockEntity {
             egg.setPos(this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 1, this.worldPosition.getZ() + 0.5);
             egg.setOwnerId(this.ownerUUID);
             assert this.level != null;
-            if (!this.level.isClientSide)
+            if (!this.level.isClientSide())
                 this.level.addFreshEntity(egg);
         }
     }

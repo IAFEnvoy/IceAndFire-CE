@@ -13,7 +13,7 @@ import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,11 +27,13 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHumanoid, IHasCustomizableAttributes {
     public static Animation ANIMATION_SCARE;
@@ -56,7 +58,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         if (attackTarget == null) return false;
         if (attackTarget.getItemBySlot(EquipmentSlot.HEAD).getItem() == IafItems.BLINDFOLD.get() || attackTarget.hasEffect(MobEffects.BLINDNESS))
             return true;
-        return attackTarget.getType().is(IafEntityTags.BLINDED);
+        return attackTarget.getType().builtInRegistryHolder().is(IafEntityTags.BLINDED);
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -107,13 +109,13 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         });
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, LivingEntity::isAlive));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, entity -> entity instanceof LivingEntity && DragonUtils.isAlive(entity) || (entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone())));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (player, level) -> player.isAlive()));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false, (entity, level) -> DragonUtils.isAlive(entity) || entity instanceof BlacklistedFromStatues blacklisted && blacklisted.canBeTurnedToStone()));
         this.goalSelector.removeGoal(this.aiMelee);
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NotNull ServerLevel level, @NotNull Entity entityIn) {
         boolean blindness = this.hasEffect(MobEffects.BLINDNESS) || this.getTarget() != null && this.getTarget().hasEffect(MobEffects.BLINDNESS) || this.getTarget() != null && this.getTarget() instanceof BlacklistedFromStatues blacklisted && !blacklisted.canBeTurnedToStone();
         if (blindness && this.deathTime == 0) {
             if (this.getAnimation() != ANIMATION_HIT)
@@ -121,13 +123,13 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
             if (entityIn instanceof LivingEntity living)
                 living.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 2, false, true));
         }
-        return super.doHurtTarget(entityIn);
+        return super.doHurtTarget(level, entityIn);
     }
 
     @Override
     public void setTarget(LivingEntity LivingEntityIn) {
         super.setTarget(LivingEntityIn);
-        if (LivingEntityIn != null && !this.level().isClientSide) {
+        if (LivingEntityIn != null && !this.level().isClientSide()) {
 
 
             boolean blindness = this.hasEffect(MobEffects.BLINDNESS) || LivingEntityIn.hasEffect(MobEffects.BLINDNESS) || LivingEntityIn instanceof BlacklistedFromStatues && !((BlacklistedFromStatues) LivingEntityIn).canBeTurnedToStone() || isBlindfolded(LivingEntityIn);
@@ -142,7 +144,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    protected int getBaseExperienceReward(@NonNull ServerLevel level) {
         return 30;
     }
 
@@ -150,7 +152,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
     protected void tickDeath() {
         ++this.deathTime;
         this.ambientSoundTime = 20;
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             for (int k = 0; k < 5; ++k) {
                 double d2 = 0.4;
                 double d0 = 0.1;
@@ -159,8 +161,8 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
             }
         }
         if (this.deathTime >= 200) {
-            if (!this.level().isClientSide && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS))) {
-                int i = this.getBaseExperienceReward();
+            if (this.level() instanceof ServerLevel serverLevel && (this.isAlwaysExperienceDropper() || this.getLastHurtByPlayerMemoryTime() > 0 && this.shouldDropExperience() && serverLevel.getGameRules().get(GameRules.ENTITY_DROPS))) {
+                int i = this.getBaseExperienceReward(serverLevel);
                 while (i > 0) {
                     int j = ExperienceOrb.getExperienceValue(i);
                     i -= j;
@@ -205,11 +207,11 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
                 }
                 if (this.getAnimation() == ANIMATION_SCARE) {
                     if (this.getAnimationTick() > 10) {
-                        if (!this.level().isClientSide) {
+                        if (!this.level().isClientSide()) {
                             if (this.playerStatueCooldown == 0) {
                                 StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(attackTarget);
-                                statue.absMoveTo(attackTarget.getX(), attackTarget.getY(), attackTarget.getZ(), attackTarget.getYRot(), attackTarget.getXRot());
-                                if (!this.level().isClientSide)
+                statue.snapTo(attackTarget.getX(), attackTarget.getY(), attackTarget.getZ(), attackTarget.getYRot(), attackTarget.getXRot());
+                                if (!this.level().isClientSide())
                                     this.level().addFreshEntity(statue);
                                 statue.setYRot(attackTarget.getYRot());
                                 statue.setYRot(attackTarget.getYRot());
@@ -246,8 +248,8 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
+    protected void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
         this.setConfigurableAttributes();
     }
 

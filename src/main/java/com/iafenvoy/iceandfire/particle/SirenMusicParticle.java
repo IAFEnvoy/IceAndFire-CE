@@ -2,28 +2,27 @@ package com.iafenvoy.iceandfire.particle;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-public class SirenMusicParticle extends TextureSheetParticle {
+public class SirenMusicParticle extends SingleQuadParticle {
     private float colorScale;
 
-    protected SirenMusicParticle(ClientLevel world, double x, double y, double z, double motX, double motY, double motZ, SpriteSet spriteProvider) {
-        super(world, x, y, z, motX, motY, motZ);
+    protected SirenMusicParticle(ClientLevel world, double x, double y, double z, double motX, double motY, double motZ, TextureAtlasSprite sprite) {
+        super(world, x, y, z, motX, motY, motZ, sprite);
         this.setPos(x, y, z);
         this.colorScale = (float) 1;
         this.rCol = Math.max(0, Mth.sin((this.colorScale + 0.0F) * 6.2831855F) * 0.65F + 0.35F);
         this.gCol = Math.max(0, Mth.sin((this.colorScale + 0.33333334F) * 6.2831855F) * 0.65F + 0.35F);
         this.bCol = Math.max(0, Mth.sin((this.colorScale + 0.6666667F) * 6.2831855F) * 0.65F + 0.35F);
-        this.pickSprite(spriteProvider);
     }
 
     public static ParticleProvider<SimpleParticleType> factory(SpriteSet spriteProvider) {
-        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new SirenMusicParticle(world, x, y, z, 1, 1, 1, spriteProvider);
+        return (parameters, world, x, y, z, velocityX, velocityY, velocityZ, random) -> new SirenMusicParticle(world, x, y, z, 1, 1, 1, spriteProvider.get(random));
     }
 
     @Override
@@ -37,12 +36,12 @@ public class SirenMusicParticle extends TextureSheetParticle {
     }
 
     @Override
-    public int getLightColor(float partialTick) {
-        return super.getLightColor(partialTick);
+    public int getLightCoords(float partialTick) {
+        return super.getLightCoords(partialTick);
     }
 
     @Override
-    public @NotNull ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_LIT;
+    public @NotNull Layer getLayer() {
+        return Layer.TRANSLUCENT;
     }
 }

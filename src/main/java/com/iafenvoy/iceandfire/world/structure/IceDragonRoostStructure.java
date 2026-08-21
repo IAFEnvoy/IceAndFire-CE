@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
@@ -53,7 +53,7 @@ public class IceDragonRoostStructure extends DragonRoostStructure {
     }
 
     public static class IceDragonRoostPiece extends DragonRoostPiece {
-        private static final ResourceLocation DRAGON_CHEST = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/ice_dragon_roost");
+        private static final Identifier DRAGON_CHEST = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/ice_dragon_roost");
 
         protected IceDragonRoostPiece(int length, BoundingBox boundingBox, Block treasureBlock, boolean isMale) {
             super(IafStructurePieces.ICE_DRAGON_ROOST.get(), length, boundingBox, treasureBlock, isMale);

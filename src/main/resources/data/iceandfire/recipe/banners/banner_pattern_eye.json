@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:cyclops_eye"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:cyclops_eye",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_eye",

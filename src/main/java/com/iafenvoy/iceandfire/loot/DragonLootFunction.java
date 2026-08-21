@@ -7,14 +7,12 @@ import com.iafenvoy.iceandfire.item.DragonFleshItem;
 import com.iafenvoy.iceandfire.item.DragonScalesItem;
 import com.iafenvoy.iceandfire.item.DragonSkullItem;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import com.iafenvoy.iceandfire.registry.IafLoots;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +28,7 @@ public class DragonLootFunction extends LootItemConditionalFunction {
 
     @Override
     protected @NotNull ItemStack run(final ItemStack stack, final @NotNull LootContext context) {
-        if (!stack.isEmpty() && context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof DragonBaseEntity dragon) {
+        if (!stack.isEmpty() && context.getOptionalParameter(LootContextParams.THIS_ENTITY) instanceof DragonBaseEntity dragon) {
             if (stack.getItem() == IafItems.DRAGON_BONE.get()) {
                 stack.setCount(1 + dragon.getRandom().nextInt(1 + (dragon.getAgeInDays() / 25)));
                 return stack;
@@ -57,7 +55,7 @@ public class DragonLootFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public @NotNull LootItemFunctionType<? extends LootItemConditionalFunction> getType() {
-        return IafLoots.DRAGON_LOOT.get();
+    public @NotNull MapCodec<DragonLootFunction> codec() {
+        return CODEC;
     }
 }

@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "T": {
-      "item": "iceandfire:troll_leather_forest"
-    },
-    "U": {
-      "item": "iceandfire:troll_tusk"
-    }
+    "T": "iceandfire:troll_leather_forest",
+    "U": "iceandfire:troll_tusk"
   },
   "pattern": [
     "TTT",

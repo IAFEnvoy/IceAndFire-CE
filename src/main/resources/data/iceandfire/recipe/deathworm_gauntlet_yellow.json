@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "C": {
-      "item": "iceandfire:deathworm_chitin_yellow"
-    },
-    "H": {
-      "item": "iceandfire:chain"
-    },
-    "T": {
-      "item": "iceandfire:deathworm_tounge"
-    }
+    "C": "iceandfire:deathworm_chitin_yellow",
+    "H": "iceandfire:chain",
+    "T": "iceandfire:deathworm_tounge"
   },
   "pattern": [
     " T ",

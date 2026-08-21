@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -133,6 +133,6 @@ public final class IafSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GHOST_JUMPSCARE = of("ghost_jumpscare");
 
     private static DeferredHolder<SoundEvent, SoundEvent> of(String soundName) {
-        return REGISTRY.register(soundName, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, soundName)));
+        return REGISTRY.register(soundName, () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, soundName)));
     }
 }

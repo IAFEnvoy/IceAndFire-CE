@@ -1218,5 +1218,10 @@
   "sound.iceandfire.subtitle.icedragon_hurt": "Lodowy Smok cierpi",
   "sound.iceandfire.subtitle.icedragon_death": "Lodowy Smok umiera",
   "sound.iceandfire.subtitle.dragonegg_hatch": "Smocze Jajo wykluwa się",
-  "sound.iceandfire.subtitle.dragonflute": "Smoczy Flet gra"
+  "sound.iceandfire.subtitle.dragonflute": "Smoczy Flet gra",
+  "effect.iceandfire.depetrification": "Odpetryfikowanie",
+  "item.minecraft.lingering_potion.effect.depetrification": "Eliksir utrzymujący odpetryfikowanie",
+  "item.minecraft.potion.effect.depetrification": "Eliksir odpetryfikowania",
+  "item.minecraft.splash_potion.effect.depetrification": "Miotany eliksir odpetryfikowania",
+  "item.minecraft.tipped_arrow.effect.depetrification": "Strzała odpetryfikowania"
 }

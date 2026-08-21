@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:dragon_skull_fire"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:dragon_skull_fire",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_fire_head",

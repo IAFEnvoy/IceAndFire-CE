@@ -1,89 +1,91 @@
 package com.iafenvoy.iceandfire.entity.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.item.FallingBlockEntity;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.ServerExplosion;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import org.jspecify.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
-public class BlockLaunchExplosion extends Explosion {
-    private final float size;
-    private final Level world;
-    private final double x;
-    private final double y;
-    private final double z;
-    private final BlockInteraction mode;
+/**
+ * Recreates legacy exploding-block launch behavior on the 26.1 server explosion pipeline.
+ */
+public final class BlockLaunchExplosion {
+    private static final ThreadLocal<Deque<LaunchRequest>> ACTIVE_REQUESTS = ThreadLocal.withInitial(ArrayDeque::new);
 
-    public BlockLaunchExplosion(Level world, Mob entity, double x, double y, double z, float size) {
-        this(world, entity, x, y, z, size, BlockInteraction.DESTROY);
+    static {
+        NeoForge.EVENT_BUS.addListener(BlockLaunchExplosion::onExplosionDetonate);
     }
 
-    public BlockLaunchExplosion(Level world, Mob entity, double x, double y, double z, float size, BlockInteraction mode) {
-        this(world, entity, null, x, y, z, size, mode);
+    private BlockLaunchExplosion() {
     }
 
-    public BlockLaunchExplosion(Level world, Mob entity, DamageSource source, double x, double y, double z, float size, BlockInteraction mode) {
-        super(world, entity, source, null, x, y, z, size, false, mode, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
-        this.world = world;
-        this.size = size;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.mode = mode;
+    public static void explode(Level level, Mob source, double x, double y, double z, float radius) {
+        explode(level, source, null, x, y, z, radius, true);
     }
 
-    /**
-     * Does the second part of the explosion (sound, particles, drop spawn)
-     */
-    @Override
-    public void finalizeExplosion(boolean spawnParticles) {
-        if (this.world.isClientSide)
-            this.world.playLocalSound(this.x, this.y, this.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4.0F, (1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F, false);
+    public static void explode(Level level, Mob source, @Nullable DamageSource damageSource, double x, double y, double z, float radius, boolean destroyBlocks) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
 
-        boolean flag = this.mode != BlockInteraction.KEEP;
-        if (spawnParticles) {
-            if (!(this.size < 2.0F) && flag)
-                this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
-            else
-                this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0D, 0.0D, 0.0D);
+        LaunchRequest request = new LaunchRequest(source, x, y, z, radius, destroyBlocks);
+        Deque<LaunchRequest> requests = ACTIVE_REQUESTS.get();
+        requests.push(request);
+        try {
+            // This preserves vanilla 26.1 damage, sounds, particles and client synchronization.
+            serverLevel.explode(source, damageSource, null, x, y, z, radius, false, Level.ExplosionInteraction.MOB);
+        } finally {
+            requests.pop();
+            if (requests.isEmpty()) ACTIVE_REQUESTS.remove();
+        }
+    }
+
+    private static void onExplosionDetonate(ExplosionEvent.Detonate event) {
+        Deque<LaunchRequest> requests = ACTIVE_REQUESTS.get();
+        LaunchRequest request = requests.peek();
+        if (request == null || !request.matches(event.getExplosion())) return;
+
+        if (!request.destroyBlocks) {
+            event.getAffectedBlocks().clear();
+            return;
         }
 
-        if (flag) {
-            Collections.shuffle(this.getToBlow(), ThreadLocalRandom.current());
+        ServerLevel level = (ServerLevel) event.getLevel();
+        List<BlockPos> affectedBlocks = new ArrayList<>(event.getAffectedBlocks());
+        event.getAffectedBlocks().clear();
+        for (BlockPos pos : affectedBlocks) {
+            BlockState state = level.getBlockState(pos);
+            if (state.isAir()) continue;
 
-            for (BlockPos blockpos : this.getToBlow()) {
-                BlockState blockstate = this.world.getBlockState(blockpos);
-                if (!blockstate.isAir()) {
-                    BlockPos blockpos1 = blockpos.immutable();
-                    this.world.getProfiler().push("explosion_blocks");
-                    Vec3 Vector3d = new Vec3(this.x, this.y, this.z);
-                    this.world.setBlock(blockpos, Blocks.AIR.defaultBlockState(), 3);
-                    blockstate.getBlock().wasExploded(this.world, blockpos, this);
-                    FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(EntityType.FALLING_BLOCK, this.world);
-                    fallingBlockEntity.setStartPos(blockpos1);
-                    fallingBlockEntity.setPos(blockpos1.getX() + 0.5D, blockpos1.getY() + 0.5D, blockpos1.getZ() + 0.5D);
-                    double d5 = fallingBlockEntity.getX() - this.x;
-                    double d7 = fallingBlockEntity.getEyeY() - this.y;
-                    double d9 = fallingBlockEntity.getZ() - this.z;
-                    float f3 = this.size * 2.0F;
-                    double d12 = Math.sqrt(fallingBlockEntity.distanceToSqr(Vector3d)) / f3;
-                    double d14 = getSeenPercent(Vector3d, fallingBlockEntity);
-                    double d11 = (1.0D - d12) * d14;
-                    fallingBlockEntity.setDeltaMovement(fallingBlockEntity.getDeltaMovement().add(d5 * d11, d7 * d11, d9 * d11));
-                    this.world.getProfiler().pop();
-                }
-            }
+            FallingBlockEntity fallingBlock = FallingBlockEntity.fall(level, pos, state);
+            Vec3 offset = fallingBlock.getEyePosition().subtract(request.center());
+            double normalizedDistance = Math.sqrt(offset.lengthSqr()) / (request.radius * 2.0F);
+            double exposure = ServerExplosion.getSeenPercent(request.center(), fallingBlock);
+            double force = Math.max(0.0, 1.0 - normalizedDistance) * exposure;
+            fallingBlock.setDeltaMovement(fallingBlock.getDeltaMovement().add(offset.scale(force)));
+        }
+    }
+
+    private record LaunchRequest(Entity source, double x, double y, double z, float radius, boolean destroyBlocks) {
+        private Vec3 center() {
+            return new Vec3(this.x, this.y, this.z);
+        }
+
+        private boolean matches(ServerExplosion explosion) {
+            return explosion.getDirectSourceEntity() == this.source
+                    && explosion.radius() == this.radius
+                    && explosion.center().equals(this.center());
         }
     }
 }

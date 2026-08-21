@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.CyclopsEntity;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -21,7 +22,7 @@ public class CyclopsAIAttackMeleeGoal extends MeleeAttackGoal {
         }
         if (distance <= d0) {
             this.mob.swing(InteractionHand.MAIN_HAND);
-            this.mob.doHurtTarget(entity);
+            if (this.mob.level() instanceof ServerLevel level) this.mob.doHurtTarget(level, entity);
         }
     }
 

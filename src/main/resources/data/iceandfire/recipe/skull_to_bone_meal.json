@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "iceandfire:mob_skulls"
-    }
+    "#iceandfire:mob_skulls"
   ],
   "result": {
     "count": 5,

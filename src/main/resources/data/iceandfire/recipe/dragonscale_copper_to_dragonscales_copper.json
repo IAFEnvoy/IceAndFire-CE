@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:dragonscale_copper"
-    }
+    "iceandfire:dragonscale_copper"
   ],
   "result": {
     "count": 9,

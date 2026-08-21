@@ -1,40 +1,30 @@
 package com.iafenvoy.iceandfire.item.armor;
 
-import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.data.DragonColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.equipment.ArmorType;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.Locale;
 
-public class DragonScaleArmorItem extends ArmorItem {
+public class DragonScaleArmorItem extends Item {
     private final DragonColor color;
+    private final ArmorType type;
 
-    public DragonScaleArmorItem(DragonColor color, Type slot) {
-        super(color.getMaterial(), slot, new Properties().durability(switch (slot) {
-            case HELMET -> 397;
-            case CHESTPLATE -> 577;
-            case LEGGINGS -> 541;
-            case BOOTS -> 469;
-            case BODY -> 0;
-        }));
+    public DragonScaleArmorItem(DragonColor color, ArmorType type) {
+        super(new Properties().humanoidArmor(color.getMaterial().value(), type));
         this.color = color;
+        this.type = type;
     }
 
     @Override
-    public @NotNull String getDescriptionId() {
-        return String.format(Locale.ROOT, "item.%s.dragon_%s", IceAndFire.MOD_ID, this.type.getName());
-    }
-
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, List<Component> tooltip, @NotNull TooltipFlag type) {
-        tooltip.add(Component.translatable("dragon." + this.color.getName().toLowerCase(Locale.ROOT)).withStyle(this.color.getColorFormatting()));
-        tooltip.add(Component.translatable("item.dragonscales_armor.desc").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, net.minecraft.world.item.component.@NonNull TooltipDisplay display, java.util.function.Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        tooltip.accept(Component.translatable("dragon." + this.color.getName().toLowerCase(Locale.ROOT)).withStyle(this.color.getColorFormatting()));
+        tooltip.accept(Component.translatable("item.dragonscales_armor.desc").withStyle(ChatFormatting.GRAY));
     }
 
     public DragonColor getColor() {

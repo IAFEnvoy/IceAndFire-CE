@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -19,7 +20,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEntityModel<T> implements ICustomStatueModel, ArmedModel {
+public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEntityModel<T> implements ICustomStatueModel, ArmedModel<EntityRenderState> {
     public HideableModelRenderer head;
     public HideableModelRenderer headware;
     public HideableModelRenderer body;
@@ -44,7 +45,7 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     }
 
     @Override
-    public void translateToHand(@NotNull HumanoidArm sideIn, @NotNull PoseStack matrixStackIn) {
+    public void translateToHand(@NotNull EntityRenderState state, @NotNull HumanoidArm sideIn, @NotNull PoseStack matrixStackIn) {
         this.getArmForSide(sideIn).translateAndRotate(matrixStackIn);
     }
 
@@ -110,7 +111,6 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     }
 
     public void setModelAttributes(BipedBaseModel<T> modelIn) {
-        super.copyPropertiesTo(modelIn);
         modelIn.animator = this.animator;
         modelIn.leftArmPose = this.leftArmPose;
         modelIn.rightArmPose = this.rightArmPose;
@@ -122,20 +122,6 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
         this.copyFrom(modelIn.armLeft, this.armLeft);
         this.copyFrom(modelIn.legRight, this.legRight);
         this.copyFrom(modelIn.legLeft, this.legLeft);
-    }
-
-    public void setModelAttributes(HumanoidModel<T> modelIn) {
-        super.copyPropertiesTo(modelIn);
-        modelIn.leftArmPose = this.leftArmPose;
-        modelIn.rightArmPose = this.rightArmPose;
-        modelIn.crouching = this.isSneak;
-        this.copyFrom(modelIn.head, this.head);
-        this.copyFrom(modelIn.hat, this.headware);
-        this.copyFrom(modelIn.body, this.body);
-        this.copyFrom(modelIn.rightArm, this.armRight);
-        this.copyFrom(modelIn.leftArm, this.armLeft);
-        this.copyFrom(modelIn.rightLeg, this.legRight);
-        this.copyFrom(modelIn.leftLeg, this.legLeft);
     }
 
     public void setVisible(boolean visible) {
@@ -152,6 +138,7 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
     public void setupAnim(@NotNull T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.resetToDefaultPose();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
+        float attackTime = entity.getAttackAnim(animationProgress);
         this.faceTarget(headYaw, headPitch, 1.0F, this.head);
         float f = 1.0F;
         this.armRight.rotateAngleX += Mth.cos(limbAngle * 0.6662F + (float) Math.PI) * 2.0F * limbDistance * 0.5F / f;
@@ -173,10 +160,10 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
             this.legLeft.rotateAngleY = -((float) Math.PI / 10F);
             this.legLeft.rotateAngleZ = -0.07853982F;
         }
-        if (this.attackTime > 0.0F) {
+        if (attackTime > 0.0F) {
             HumanoidArm handSide = this.getMainHand(entity);
             HideableModelRenderer modelrenderer = this.getArmForSide(handSide);
-            float f1 = this.attackTime;
+            float f1 = attackTime;
             this.body.rotateAngleY = Mth.sin(Mth.sqrt(f1) * ((float) Math.PI * 2F)) * 0.2F;
 
             if (handSide == HumanoidArm.LEFT)
@@ -189,15 +176,15 @@ public abstract class BipedBaseModel<T extends LivingEntity> extends AdvancedEnt
             this.armRight.rotateAngleY += this.body.rotateAngleY;
             this.armLeft.rotateAngleY += this.body.rotateAngleY;
             this.armLeft.rotateAngleX += this.body.rotateAngleX;
-            f1 = 1.0F - this.attackTime;
+            f1 = 1.0F - attackTime;
             f1 = f1 * f1;
             f1 = f1 * f1;
             f1 = 1.0F - f1;
             float f2 = Mth.sin(f1 * (float) Math.PI);
-            float f3 = Mth.sin(this.attackTime * (float) Math.PI) * -(this.head.rotateAngleX - 0.7F) * 0.75F;
+            float f3 = Mth.sin(attackTime * (float) Math.PI) * -(this.head.rotateAngleX - 0.7F) * 0.75F;
             modelrenderer.rotateAngleX = (float) ((double) modelrenderer.rotateAngleX - ((double) f2 * 1.2D + (double) f3));
             modelrenderer.rotateAngleY += this.body.rotateAngleY * 2.0F;
-            modelrenderer.rotateAngleZ += Mth.sin(this.attackTime * (float) Math.PI) * -0.4F;
+            modelrenderer.rotateAngleZ += Mth.sin(attackTime * (float) Math.PI) * -0.4F;
         }
         if (this.isSneak) {
             this.body.rotateAngleX = 0.5F;

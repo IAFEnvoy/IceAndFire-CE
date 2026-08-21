@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "iceandfire:dragonscales_electric"
-    }
+    "#": "iceandfire:dragonscales_electric"
   },
   "pattern": [
     "###",

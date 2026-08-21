@@ -5,12 +5,8 @@
     "W W"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather_boots"
-    },
-    "W": {
-      "item": "minecraft:white_wool"
-    }
+    "L": "minecraft:leather_boots",
+    "W": "minecraft:white_wool"
   },
   "result": {
     "id": "iceandfire:sheep_boots"

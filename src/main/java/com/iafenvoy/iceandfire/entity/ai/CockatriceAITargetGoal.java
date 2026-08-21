@@ -4,15 +4,14 @@ import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
-
 public class CockatriceAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final CockatriceEntity cockatrice;
 
-    public CockatriceAITargetGoal(CockatriceEntity entityIn, Class<T> classTarget, boolean checkSight, Predicate<LivingEntity> targetSelector) {
+    public CockatriceAITargetGoal(CockatriceEntity entityIn, Class<T> classTarget, boolean checkSight, TargetingConditions.Selector targetSelector) {
         super(entityIn, classTarget, 0, checkSight, false, targetSelector);
         this.cockatrice = entityIn;
         this.setFlags(EnumSet.of(Flag.TARGET));

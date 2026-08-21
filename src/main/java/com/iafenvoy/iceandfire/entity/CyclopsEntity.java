@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
 
-import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.ai.CyclopsAIAttackMeleeGoal;
 import com.iafenvoy.iceandfire.entity.ai.CyclopsAITargetSheepPlayersGoal;
@@ -19,7 +18,7 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -37,9 +36,9 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.PolarBear;
-import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.animal.polarbear.PolarBear;
+import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -50,10 +49,13 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class CyclopsEntity extends Monster implements IAnimatedEntity, BlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
     private static final EntityDataAccessor<Boolean> BLINDED = SynchedEntityData.defineId(CyclopsEntity.class, EntityDataSerializers.BOOLEAN);
@@ -75,7 +77,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         ANIMATION_KICK = Animation.create(20);
         ANIMATION_ROAR = Animation.create(30);
         this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.6F, 1);
-        this.setId(this.getId());
+        this.setId(MultipartPartEntity.reserveParentId(this.getParts().length));
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -105,7 +107,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    protected int getBaseExperienceReward(@NonNull ServerLevel level) {
         return 40;
     }
 
@@ -119,7 +121,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F, 1.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, true, (Predicate<LivingEntity>) entity -> {
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, true, (entity, level) -> {
             if (GorgonEntity.isStoneMob(entity))
                 return false;
             if (!DragonUtils.isAlive(entity))
@@ -137,22 +139,22 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
                     return false;
                 }
             }
-            return !entity.getType().is(IafEntityTags.SHEEP);
+            return !entity.getType().builtInRegistryHolder().is(IafEntityTags.SHEEP);
         }));
 
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, true, entity -> entity instanceof Player player && !(player.isCreative() || player.isSpectator())));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, true, (player, level) -> player instanceof Player actual && !(actual.isCreative() || actual.isSpectator())));
         this.targetSelector.addGoal(3, new CyclopsAITargetSheepPlayersGoal<>(this, Player.class, true));
     }
 
     @Override
     protected void doPush(Entity entityIn) {
-        if (!entityIn.getType().is(IafEntityTags.SHEEP)) {
+        if (!entityIn.getType().builtInRegistryHolder().is(IafEntityTags.SHEEP)) {
             entityIn.push(this);
         }
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NotNull ServerLevel level, @NotNull Entity entityIn) {
         int attackDescision = this.getRandom().nextInt(3);
         if (attackDescision == 0) {
             this.setAnimation(ANIMATION_STOMP);
@@ -161,10 +163,10 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
             if (!entityIn.hasPassenger(this)
                     && entityIn.getBbWidth() < 1.95F
                     && !(entityIn instanceof DragonBaseEntity)
-                    && !entityIn.getType().is(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
+                    && !entityIn.getType().builtInRegistryHolder().is(IafEntityTags.CYCLOPS_UNLIFTABLES)) {
                 this.setAnimation(ANIMATION_EATPLAYER);
                 entityIn.stopRiding();
-                entityIn.startRiding(this, true);
+                entityIn.startRiding(this, true, true);
             } else {
                 this.setAnimation(ANIMATION_STOMP);
             }
@@ -183,19 +185,19 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putBoolean("Blind", this.isBlinded());
-        compound.putInt("Variant", this.getVariant());
+    protected void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putBoolean("Blind", this.isBlinded());
+        output.putInt("Variant", this.getVariant());
         if (this.eyeEntity != null)
             this.eyeEntity.remove(RemovalReason.DISCARDED);
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setBlinded(compound.getBoolean("Blind"));
-        this.setVariant(compound.getInt("Variant"));
+    protected void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setBlinded(input.getBooleanOr("Blind", false));
+        this.setVariant(input.getIntOr("Variant", 0));
         this.setConfigurableAttributes();
     }
 
@@ -294,7 +296,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
 
                 BlockState BlockState = this.level().getBlockState(BlockPos.containing(this.getX() + extraX, this.getY() + extraY - 1, this.getZ() + extraZ));
                 if (BlockState.isAir()) {
-                    if (this.level().isClientSide) {
+                    if (this.level().isClientSide()) {
                         this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, BlockState), this.getX() + extraX, this.getY() + extraY, this.getZ() + extraZ, motionX, motionY, motionZ);
                     }
                 }
@@ -334,7 +336,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setVariant(this.getRandom().nextInt(4));
         return spawnDataIn;
@@ -352,7 +354,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
                             this.getDeltaMovement().scale(0.6D);
                             if (NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, a, b, c)).isCanceled()) continue;
                             if (block != Blocks.AIR)
-                                if (!this.level().isClientSide)
+                                if (!this.level().isClientSide())
                                     this.level().destroyBlock(pos, true);
                         }
                     }

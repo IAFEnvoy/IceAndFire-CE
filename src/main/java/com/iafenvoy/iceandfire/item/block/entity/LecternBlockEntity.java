@@ -8,9 +8,7 @@ import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.screen.menu.LecternMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.util.Mth;
@@ -24,6 +22,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -129,7 +129,7 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
 
     public void randomizePages(ItemStack bestiary, ItemStack manuscript) {
         assert this.level != null;
-        if (!this.level.isClientSide && bestiary.getItem() == IafItems.BESTIARY.get()) {
+        if (!this.level.isClientSide() && bestiary.getItem() == IafItems.BESTIARY.get()) {
             List<BestiaryPage> possibleList = this.getPossiblePages();
             this.localRand.setSeed(this.level.getGameTime());
             Collections.shuffle(possibleList, this.localRand);
@@ -140,23 +140,21 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
     }
 
     @Override
-    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
         this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.stacks, registryLookup);
+        ContainerHelper.loadAllItems(input, this.stacks);
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        ContainerHelper.saveAllItems(nbt, this.stacks, registryLookup);
+    public void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, this.stacks);
     }
 
-    @Override
     public void startOpen(@NotNull Player player) {
     }
 
-    @Override
     public void stopOpen(@NotNull Player player) {
     }
 
@@ -219,11 +217,6 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryLookup) {
-        return this.saveWithFullMetadata(registryLookup);
     }
 
     @Override

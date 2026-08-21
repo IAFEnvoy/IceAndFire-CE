@@ -1,12 +1,14 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
+import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
-import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +41,7 @@ public class JarBlock extends BaseEntityBlock {
     private final int pixieType;
 
     public JarBlock(int pixieType) {
-        super(pixieType != -1 ? Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).lightLevel((state) -> 10).dropsLike(IafBlocks.JAR_EMPTY.get()) : Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS));
+        super(pixieType != -1 ? Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).lightLevel((state) -> 10).overrideLootTable(java.util.Optional.of(ResourceKey.create(Registries.LOOT_TABLE, IceAndFire.id("blocks/pixie_jar_empty")))) : Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS));
         this.empty = pixieType == -1;
         this.pixieType = pixieType;
     }
@@ -59,12 +61,6 @@ public class JarBlock extends BaseEntityBlock {
         return AABB;
     }
 
-    @Override
-    public void onRemove(@NotNull BlockState state, @NotNull Level worldIn, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        this.dropPixie(worldIn, pos);
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
     public void dropPixie(Level world, BlockPos pos) {
         if (world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie)
             jar.releasePixie();
@@ -75,7 +71,7 @@ public class JarBlock extends BaseEntityBlock {
         if (!this.empty && world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie && jar.hasProduced) {
             jar.hasProduced = false;
             ItemEntity item = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get()));
-            if (!world.isClientSide)
+            if (!world.isClientSide())
                 world.addFreshEntity(item);
             world.playLocalSound(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5, IafSounds.PIXIE_HURT.get(), SoundSource.NEUTRAL, 1, 1, false);
             return InteractionResult.SUCCESS;

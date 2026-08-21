@@ -6,12 +6,8 @@
     "FFF"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:string"
-    },
-    "F": {
-      "item": "iceandfire:stymphalian_bird_feather"
-    }
+    "S": "minecraft:string",
+    "F": "iceandfire:stymphalian_bird_feather"
   },
   "result": {
     "id": "iceandfire:stymphalian_feather_bundle"

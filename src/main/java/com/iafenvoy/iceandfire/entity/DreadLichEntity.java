@@ -19,7 +19,6 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -40,11 +39,14 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear, RangedAttackMob {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
@@ -62,9 +64,9 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
         super(type, worldIn);
     }
 
-    public static boolean canLichSpawnOn(EntityType<? extends Mob> typeIn, ServerLevelAccessor worldIn, MobSpawnType reason, BlockPos pos, RandomSource randomIn) {
+    public static boolean canLichSpawnOn(EntityType<? extends Mob> typeIn, ServerLevelAccessor worldIn, EntitySpawnReason reason, BlockPos pos, RandomSource randomIn) {
         BlockPos blockpos = pos.below();
-        if (reason == MobSpawnType.SPAWNER) return true;
+        if (reason == EntitySpawnReason.SPAWNER) return true;
         if (!new DangerousGeneration() {
         }.isFarEnoughFromSpawn(worldIn, pos)) return false;
         if (!worldIn.getBlockState(blockpos).isValidSpawn(worldIn, blockpos, typeIn)) return false;
@@ -92,7 +94,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, IDreadMob.class));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (target, level) -> DragonUtils.canHostilesTarget(target)));
         this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
     }
 
@@ -116,7 +118,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             this.setDeltaMovement(0, this.getDeltaMovement().y, this.getDeltaMovement().z);
 
         }
-        if (this.level().isClientSide && this.getAnimation() == ANIMATION_SUMMON) {
+        if (this.level().isClientSide() && this.getAnimation() == ANIMATION_SUMMON) {
             double d0 = 0;
             double d1 = 0;
             double d2 = 0;
@@ -142,7 +144,7 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
@@ -162,17 +164,17 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Variant", this.getVariant());
-        compound.putInt("MinionCount", this.getMinionCount());
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Variant", this.getVariant());
+        output.putInt("MinionCount", this.getMinionCount());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setMinionCount(compound.getInt("MinionCount"));
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setVariant(input.getIntOr("Variant", 0));
+        this.setMinionCount(input.getIntOr("MinionCount", 0));
         this.setCombatTask();
     }
 
@@ -221,13 +223,13 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     public void setItemSlot(@NotNull EquipmentSlot slotIn, @NotNull ItemStack stack) {
         super.setItemSlot(slotIn, stack);
 
-        if (!this.level().isClientSide && slotIn == EquipmentSlot.MAINHAND) {
+        if (!this.level().isClientSide() && slotIn == EquipmentSlot.MAINHAND) {
             this.setCombatTask();
         }
     }
 
     public void setCombatTask() {
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.goalSelector.removeGoal(this.aiAttackOnCollide);
             this.goalSelector.removeGoal(this.aiArrowAttack);
             ItemStack itemstack = this.getMainHandItem();
@@ -251,14 +253,14 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
             int x = (int) (this.getX()) - 5 + this.random.nextInt(10);
             int z = (int) (this.getZ()) - 5 + this.random.nextInt(10);
             double y = this.getHeightFromXZ(x, z);
-            minion.moveTo(x + 0.5D, y, z + 0.5D, this.getYRot(), this.getXRot());
+            minion.snapTo(x + 0.5D, y, z + 0.5D, this.getYRot(), this.getXRot());
             minion.setTarget(target);
             Level currentLevel = this.level();
             if (currentLevel instanceof ServerLevelAccessor serverWorldAccess)
-                minion.finalizeSpawn(serverWorldAccess, currentLevel.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
+                minion.finalizeSpawn(serverWorldAccess, serverWorldAccess.getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.MOB_SUMMONED, null);
             if (minion instanceof DreadMobEntity mob)
                 mob.setCommanderId(this.getUUID());
-            if (!currentLevel.isClientSide)
+            if (!currentLevel.isClientSide())
                 currentLevel.addFreshEntity(minion);
             this.minionCooldown = 100;
             this.setMinionCount(this.getMinionCount() + 1);
@@ -300,8 +302,8 @@ public class DreadLichEntity extends DreadMobEntity implements IAnimatedEntity, 
     }
 
     @Override
-    public boolean isAlliedTo(@NotNull Entity entityIn) {
-        return entityIn instanceof IDreadMob || super.isAlliedTo(entityIn);
+    protected boolean considersEntityAsAlly(@NonNull Entity entityIn) {
+        return entityIn instanceof IDreadMob || super.considersEntityAsAlly(entityIn);
     }
 
     @Override

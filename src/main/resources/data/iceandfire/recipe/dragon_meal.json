@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:bone"
-    },
-    "M": {
-      "tag": "iceandfire:dragon_food_meat"
-    }
+    "B": "minecraft:bone",
+    "M": "#iceandfire:dragon_food_meat"
   },
   "pattern": [
     "BMB",

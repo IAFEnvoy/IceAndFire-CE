@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.item.block.entity;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.DragonForgeBrickBlock;
 import com.iafenvoy.iceandfire.item.block.DragonForgeCoreBlock;
+import com.iafenvoy.iceandfire.mixin.RecipeManagerAccessor;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.screen.menu.DragonForgeMenu;
@@ -29,10 +30,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -78,7 +82,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
         boolean flag1 = false;
         if (blockEntity.lastDragonFlameTimer > 0) blockEntity.lastDragonFlameTimer--;
         blockEntity.updateGrills(blockEntity.assembled());
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (blockEntity.prevAssembled != blockEntity.assembled() && state.getBlock() instanceof DragonForgeCoreBlock core)
                 DragonForgeCoreBlock.setState(core.getDragonType(), level, pos);
             blockEntity.prevAssembled = blockEntity.assembled();
@@ -86,10 +90,10 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
         }
         if (blockEntity.cookTime > 0 && blockEntity.canSmelt() && blockEntity.lastDragonFlameTimer == 0)
             blockEntity.cookTime--;
-        if (blockEntity.getItem(0).isEmpty() && !level.isClientSide)
+        if (blockEntity.getItem(0).isEmpty() && !level.isClientSide())
             blockEntity.cookTime = 0;
         assert blockEntity.level != null;
-        if (!blockEntity.level.isClientSide) {
+        if (!blockEntity.level.isClientSide()) {
             if (blockEntity.isBurning()) {
                 if (blockEntity.canSmelt()) {
                     ++blockEntity.cookTime;
@@ -166,18 +170,18 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
     }
 
     @Override
-    protected void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    protected void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
         this.forgeItemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.forgeItemStacks, registryLookup);
-        this.cookTime = nbt.getInt("CookTime");
+        ContainerHelper.loadAllItems(input, this.forgeItemStacks);
+        this.cookTime = input.getIntOr("CookTime", 0);
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.saveAdditional(nbt, registryLookup);
-        nbt.putInt("CookTime", (short) this.cookTime);
-        ContainerHelper.saveAllItems(nbt, this.forgeItemStacks, registryLookup);
+    protected void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        output.putInt("CookTime", (int) this.cookTime);
+        ContainerHelper.saveAllItems(output, this.forgeItemStacks);
     }
 
     @Override
@@ -219,12 +223,12 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public Optional<DragonForgeRecipe> getCurrentRecipe() {
         assert this.level != null;
-        return this.level.getRecipeManager().getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
+        return ((RecipeManager) this.level.recipeAccess()).getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
     }
 
     public List<DragonForgeRecipe> getRecipes() {
         assert this.level != null;
-        return this.level.getRecipeManager().getAllRecipesFor(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        return ((RecipeManagerAccessor) this.level.recipeAccess()).iceandfire$getRecipes().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {
@@ -318,7 +322,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public void transferPower(double i) {
         assert this.level != null;
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             if (this.canSmelt()) this.cookTime = Math.min(this.getMaxCookTime() + 1, this.cookTime + i);
             else this.cookTime = 0;
         }

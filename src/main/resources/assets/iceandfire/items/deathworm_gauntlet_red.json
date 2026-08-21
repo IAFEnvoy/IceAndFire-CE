@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire:item/deathworm_gauntlet_red",
+    "model": {
+      "type": "uranus:dynamic"
+    }
+  }
+}

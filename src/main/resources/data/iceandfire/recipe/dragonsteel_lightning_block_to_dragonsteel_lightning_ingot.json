@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:dragonsteel_lightning_block"
-    }
+    "iceandfire:dragonsteel_lightning_block"
   ],
   "result": {
     "count": 9,

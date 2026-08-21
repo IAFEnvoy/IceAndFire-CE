@@ -4,14 +4,19 @@
   "package": "com.iafenvoy.iceandfire.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "BlockPropertiesMixin",
     "ChickenMixin",
+    "EntityIdAccessor",
+    "ItemPropertiesMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "MobMixin",
+    "RecipeManagerAccessor",
+    "ServerLevelMultipartAccessor",
     "WorldGenRegionMixin"
   ],
   "client": [
-    "LevelRendererMixin",
+    "client.EntityHitboxDebugRendererMixin",
     "PanoramaRendererMixin",
     "TitleScreenMixin"
   ],

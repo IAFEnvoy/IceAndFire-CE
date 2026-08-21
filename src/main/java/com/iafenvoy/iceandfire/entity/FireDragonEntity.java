@@ -15,7 +15,8 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
@@ -40,13 +41,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 public class FireDragonEntity extends DragonBaseEntity {
-    public static final ResourceLocation FEMALE_LOOT = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/dragon/fire_dragon_female");
-    public static final ResourceLocation MALE_LOOT = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/dragon/fire_dragon_male");
-    public static final ResourceLocation SKELETON_LOOT = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/dragon/fire_dragon_skeleton");
+    public static final Identifier FEMALE_LOOT = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/dragon/fire_dragon_female");
+    public static final Identifier MALE_LOOT = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/dragon/fire_dragon_male");
+    public static final Identifier SKELETON_LOOT = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "entities/dragon/fire_dragon_skeleton");
 
     public FireDragonEntity(EntityType<? extends FireDragonEntity> t, Level worldIn) {
         super(t, worldIn, IafDragonTypes.FIRE, 1, 1 + IafCommonConfig.INSTANCE.dragon.attackDamage.getValue(), IafCommonConfig.INSTANCE.dragon.maxHealth.getValue() * 0.04, IafCommonConfig.INSTANCE.dragon.maxHealth.getValue(), 0.15F, 0.4F);
-        this.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
+        this.setPathfindingMalus(PathType.DAMAGING, 0.0F);
         this.setPathfindingMalus(PathType.LAVA, 8.0F);
         ANIMATION_SPEAK = Animation.create(20);
         ANIMATION_BITE = Animation.create(35);
@@ -83,7 +84,7 @@ public class FireDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NotNull ServerLevel level, @NotNull Entity entityIn) {
         this.getLookControl().setLookAt(entityIn, 30.0F, 30.0F);
         if (!this.isPlayingAttackAnimation()) {
             switch (this.groundAttack) {
@@ -112,9 +113,9 @@ public class FireDragonEntity extends DragonBaseEntity {
     public void aiStep() {
         super.aiStep();
         LivingEntity attackTarget = this.getTarget();
-        if (!this.level().isClientSide && attackTarget != null) {
+        if (this.level() instanceof ServerLevel level && attackTarget != null) {
             if (this.getBoundingBox().inflate(2.5F + this.getRenderSize() * 0.33F, 2.5F + this.getRenderSize() * 0.33F, 2.5F + this.getRenderSize() * 0.33F).intersects(attackTarget.getBoundingBox())) {
-                this.doHurtTarget(attackTarget);
+                this.doHurtTarget(level, attackTarget);
             }
             if (this.groundAttack == IafDragonAttacks.Ground.FIRE && (this.usingGroundAttack || this.onGround())) {
                 this.shootFireAtMob(attackTarget);
@@ -125,7 +126,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                 double difZ = attackTarget.getZ() - this.getZ();
                 this.setDeltaMovement(this.getDeltaMovement().add(difX * 0.1D, difY * 0.1D, difZ * 0.1D));
                 if (this.getBoundingBox().inflate(1 + this.getRenderSize() * 0.5F, 1 + this.getRenderSize() * 0.5F, 1 + this.getRenderSize() * 0.5F).intersects(attackTarget.getBoundingBox())) {
-                    this.doHurtTarget(attackTarget);
+                    this.doHurtTarget(level, attackTarget);
                     this.usingGroundAttack = true;
                     this.randomizeAttacks();
                     this.setFlying(false);
@@ -171,7 +172,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                         IafEntities.FIRE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
 
                 entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
-                if (!this.level().isClientSide) {
+                if (!this.level().isClientSide()) {
                     this.level().addFreshEntity(entitylargefireball);
                 }
             }
@@ -225,13 +226,13 @@ public class FireDragonEntity extends DragonBaseEntity {
                     vertical = 0.8f;
                 } else if (this.isGoingDown() && !this.isGoingUp()) {
                     vertical = -0.8f;
-                } else if (this.isGoingUp() && this.isGoingDown() && this.isControlledByLocalInstance()) {
+                } else if (this.isGoingUp() && this.isGoingDown() && this.isEffectiveAi()) {
                     // Try floating
                     this.setDeltaMovement(this.getDeltaMovement().multiply(1.0f, 0.3f, 1.0f));
                 }
 
                 Vec3 travelVector = new Vec3(rider.xxa, vertical, rider.zza);
-                if (this.isControlledByLocalInstance()) {
+                if (this.isEffectiveAi()) {
                     this.setSpeed(speed);
 
                     this.moveRelative(this.getSpeed(), travelVector);
@@ -245,7 +246,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                     this.calculateEntityAnimation(false);
                 } else
                     this.setDeltaMovement(Vec3.ZERO);
-                this.tryCheckInsideBlocks();
+                this.applyEffectsFromBlocks();
             } else {
                 super.travel(pTravelVector);
             }
@@ -272,7 +273,7 @@ public class FireDragonEntity extends DragonBaseEntity {
             // Slower going sideway
             strafing *= 0.05f;
 
-            if (this.isControlledByLocalInstance()) {
+            if (this.isEffectiveAi()) {
                 this.setSpeed(speed);
 
                 // Vanilla walking behavior includes going up steps
@@ -286,7 +287,7 @@ public class FireDragonEntity extends DragonBaseEntity {
             } else {
                 this.setDeltaMovement(Vec3.ZERO);
             }
-            this.tryCheckInsideBlocks();
+            this.applyEffectsFromBlocks();
 //            this.updatePitch(this.yOld - this.getY());
         } else {
             super.travel(pTravelVector);
@@ -294,7 +295,7 @@ public class FireDragonEntity extends DragonBaseEntity {
     }
 
     @Override
-    public ResourceLocation getDeadLootTable() {
+    public Identifier getDeadLootTable() {
         if (this.getDeathStage() >= (this.getAgeInDays() / 5) / 2) {
             return SKELETON_LOOT;
         } else {
@@ -321,7 +322,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                     FireDragonChargeEntity entitylargefireball = new FireDragonChargeEntity(IafEntities.FIRE_DRAGON_CHARGE.get(), this.level(), this, d2, d3, d4);
 
                     entitylargefireball.setPos(headVec.x, headVec.y, headVec.z);
-                    if (!this.level().isClientSide)
+                    if (!this.level().isClientSide())
                         this.level().addFreshEntity(entitylargefireball);
                     if (!entity.isAlive())
                         this.setBreathingFire(false);
@@ -394,14 +395,14 @@ public class FireDragonEntity extends DragonBaseEntity {
             double d2 = this.random.nextGaussian() * 0.02D;
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
-            if (this.level().isClientSide)
+            if (this.level().isClientSide())
                 this.level().addParticle(ParticleTypes.FLAME, this.getX() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), this.getY() + this.random.nextFloat() * this.getBbHeight(), this.getZ() + this.random.nextFloat() * this.getBbWidth() * 2.0F - this.getBbWidth(), d2, d0, d1);
         }
     }
 
     @Override
     public void spawnBabyParticles() {
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             for (int i = 0; i < 5; i++) {
                 float radiusAdd = i * 0.15F;
                 float headPosX = (float) (this.getX() + 1.8F * this.getRenderSize() * (0.3F + radiusAdd) * Mth.cos((float) ((this.getYRot() + 90) * Math.PI / 180)));

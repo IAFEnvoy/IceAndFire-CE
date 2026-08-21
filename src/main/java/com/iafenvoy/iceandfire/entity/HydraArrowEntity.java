@@ -10,13 +10,14 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class HydraArrowEntity extends AbstractArrow {
+    private static final float HYDRA_ARROW_DAMAGE = 5.0F;
     public HydraArrowEntity(EntityType<? extends AbstractArrow> t, Level worldIn) {
         super(t, worldIn);
         this.setBaseDamage(5F);
@@ -37,7 +38,7 @@ public class HydraArrowEntity extends AbstractArrow {
     @Override
     public void tick() {
         super.tick();
-        if (this.level().isClientSide && !this.inGround) {
+        if (this.level().isClientSide() && !this.isInGround()) {
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
@@ -53,11 +54,11 @@ public class HydraArrowEntity extends AbstractArrow {
         if (damage >= 3.0F && player.getUseItem().getItem() instanceof ShieldItem) {
             ItemStack copyBeforeUse = player.getUseItem().copy();
             int i = 1 + Mth.floor(damage);
-            player.getUseItem().hurtAndBreak(i, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+            player.getUseItem().hurtAndBreak(i, player, player.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();
-                this.playSound(SoundEvents.SHIELD_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                this.playSound(SoundEvents.SHIELD_BREAK.value(), 0.8F, 0.8F + this.getRandom().nextFloat() * 0.4F);
             }
         }
     }
@@ -65,11 +66,11 @@ public class HydraArrowEntity extends AbstractArrow {
     @Override
     protected void doPostHurtEffects(@NotNull LivingEntity living) {
         if (living instanceof Player player)
-            this.damageShield(player, (float) this.getBaseDamage());
+            this.damageShield(player, HYDRA_ARROW_DAMAGE);
         living.addEffect(new MobEffectInstance(MobEffects.POISON, 300, 0));
         Entity shootingEntity = this.getOwner();
         if (shootingEntity instanceof LivingEntity living1)
-            living1.heal((float) this.getBaseDamage());
+            living1.heal(HYDRA_ARROW_DAMAGE);
     }
 
     @Override

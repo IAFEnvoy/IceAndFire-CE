@@ -15,7 +15,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.features.TreeFeatures;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
@@ -59,7 +59,7 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
     }
 
     public static class HydraCavePiece extends StructurePiece {
-        public static final ResourceKey<LootTable> HYDRA_CHEST = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/hydra_cave"));
+        public static final ResourceKey<LootTable> HYDRA_CHEST = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/hydra_cave"));
 
         protected HydraCavePiece(int length, BoundingBox boundingBox) {
             super(IafStructurePieces.HYDRA_CAVE.get(), length, boundingBox);
@@ -100,7 +100,7 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
                             if (random.nextInt(4) == 0)
                                 world.setBlock(blockpos.above(), Blocks.SHORT_GRASS.defaultBlockState(), 2);
                             if (random.nextInt(9) == 0)
-                                world.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(TreeFeatures.SWAMP_OAK).ifPresent(holder -> holder.value().place(world, chunkGenerator, random, blockpos.above()));
+                                world.registryAccess().lookup(Registries.CONFIGURED_FEATURE).flatMap(registry -> registry.get(TreeFeatures.SWAMP_OAK)).ifPresent(holder -> holder.value().place(world, chunkGenerator, random, blockpos.above()));
                         }
                         if (blockpos.getY() == pivot.getY())
                             world.setBlock(blockpos, Blocks.GRASS_BLOCK.defaultBlockState(), 3);
@@ -150,8 +150,8 @@ public class HydraCaveStructure extends Structure implements DangerousGeneration
             }
             HydraEntity hydra = new HydraEntity(IafEntities.HYDRA.get(), world.getLevel());
             hydra.setVariant(random.nextInt(3));
-            hydra.restrictTo(pivot, 15);
-            hydra.absMoveTo(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5, random.nextFloat() * 360, 0);
+            hydra.setHomeTo(pivot, 15);
+            hydra.snapTo(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5, random.nextFloat() * 360, 0);
             world.addFreshEntity(hydra);
         }
 

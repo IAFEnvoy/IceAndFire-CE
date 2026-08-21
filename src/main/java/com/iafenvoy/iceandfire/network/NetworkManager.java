@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.network.payload.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @EventBusSubscriber
@@ -21,6 +20,6 @@ public final class NetworkManager {
 
         registrar.playToServer(DragonControlC2SPayload.ID, DragonControlC2SPayload.CODEC, ServerNetworkHandlers::handleDragonControl);
 
-        registrar.playBidirectional(StartRidingMobPayload.ID, StartRidingMobPayload.CODEC, new DirectionalPayloadHandler<>(ClientNetworkHandlers::handleStartRidingMob, ServerNetworkHandlers::handleStartRidingMob));
+        registrar.playBidirectional(StartRidingMobPayload.ID, StartRidingMobPayload.CODEC, ServerNetworkHandlers::handleStartRidingMob, ClientNetworkHandlers::handleStartRidingMob);
     }
 }

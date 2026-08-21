@@ -6,17 +6,24 @@ import com.iafenvoy.iceandfire.render.misc.LightningRenderer;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Supplier;
 
 public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<LightningDragonEntity> {
     private final LightningRenderer lightningRenderer = new LightningRenderer();
 
     public LightningDragonEntityRenderer(EntityRendererProvider.Context context, TabulaModel<LightningDragonEntity> modelSupplier) {
+        super(context, modelSupplier);
+    }
+
+    public LightningDragonEntityRenderer(EntityRendererProvider.Context context, Supplier<TabulaModel<LightningDragonEntity>> modelSupplier) {
         super(context, modelSupplier);
     }
 
@@ -38,8 +45,9 @@ public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<Ligh
     }
 
     @Override
-    public void render(@NotNull LightningDragonEntity entityIn, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+    public void submit(LegacyEntityRenderState<LightningDragonEntity> state, @NotNull PoseStack matrixStackIn, @NotNull SubmitNodeCollector collector, @NotNull CameraRenderState camera) {
+        super.submit(state, matrixStackIn, collector, camera);
+        LightningDragonEntity entityIn = state.entity;
         matrixStackIn.pushPose();
         if (entityIn.hasLightningTarget()) {
             Minecraft client = Minecraft.getInstance();
@@ -53,9 +61,9 @@ public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<Ligh
                         .size(0.05F * getBoundedScale(energyScale))
                         .lifespan(4)
                         .spawn(LightningBoltData.SpawnFunction.NO_DELAY);
-                this.lightningRenderer.update(null, bolt, partialTicks);
+                this.lightningRenderer.update(null, bolt, state.partialTick);
                 matrixStackIn.translate(-entityIn.getX(), -entityIn.getY(), -entityIn.getZ());
-                this.lightningRenderer.render(partialTicks, matrixStackIn, bufferIn);
+                this.lightningRenderer.submit(state.partialTick, matrixStackIn, collector, state.lightCoords);
             }
         }
         matrixStackIn.popPose();

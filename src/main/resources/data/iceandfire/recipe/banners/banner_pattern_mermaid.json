@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:siren_tear"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:siren_tear",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_mermaid",

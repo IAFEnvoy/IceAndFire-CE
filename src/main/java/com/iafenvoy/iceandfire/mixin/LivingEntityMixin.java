@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Collection;
+
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
     @Shadow
@@ -24,8 +26,11 @@ public abstract class LivingEntityMixin {
             BuiltinAbilities.SUMMON_GHOST_SWORD.active((LivingEntity) (Object) this);
     }
 
-    @Inject(method = "onEffectRemoved", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;refreshDirtyAttributes()V"))
-    private void handleFrozenEffectRemove(MobEffectInstance effectInstance, CallbackInfo ci) {
-        if (effectInstance.getEffect().value() instanceof FrozenStatusEffect e) e.onRemoved((LivingEntity) (Object) this);
+    @Inject(method = "onEffectsRemoved", at = @At("HEAD"))
+    private void handleFrozenEffectRemove(Collection<MobEffectInstance> effects, CallbackInfo ci) {
+        for (MobEffectInstance effect : effects) {
+            if (effect.getEffect().value() instanceof FrozenStatusEffect frozen)
+                frozen.onRemoved((LivingEntity) (Object) this);
+        }
     }
 }

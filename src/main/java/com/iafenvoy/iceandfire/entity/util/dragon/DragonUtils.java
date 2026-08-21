@@ -13,12 +13,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.animal.AbstractGolem;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.animal.golem.AbstractGolem;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -240,11 +241,11 @@ public class DragonUtils {
     }
 
     public static boolean isDragonTargetable(Entity entity, TagKey<EntityType<?>> tag) {
-        return entity.getType().is(tag);
+        return entity.getType().builtInRegistryHolder().is(tag);
     }
 
     public static String getDimensionName(Level world) {
-        return world.dimension().location().toString();
+        return world.dimension().identifier().toString();
     }
 
     public static boolean isInHomeDimension(DragonBaseEntity dragonBase) {
@@ -252,7 +253,7 @@ public class DragonUtils {
     }
 
     public static boolean canDragonBreak(final BlockState state, final Entity entity) {
-        if (!entity.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) return false;
+        if (entity.level() instanceof ServerLevel level && !level.getGameRules().get(GameRules.MOB_GRIEFING)) return false;
         if (entity instanceof DragonBaseEntity dragon && !canGrief(dragon, state)) return false;
         Block block = state.getBlock();
         return block.getExplosionResistance() < 1200 && !state.is(IafBlockTags.DRAGON_BLOCK_BREAK_BLACKLIST);
@@ -261,7 +262,8 @@ public class DragonUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean hasSameOwner(TamableAnimal cockatrice, Entity entity) {
         if (entity instanceof TamableAnimal tameable)
-            return tameable.getOwnerUUID() != null && cockatrice.getOwnerUUID() != null && tameable.getOwnerUUID().equals(cockatrice.getOwnerUUID());
+            return tameable.getOwnerReference() != null && cockatrice.getOwnerReference() != null
+                    && tameable.getOwnerReference().equals(cockatrice.getOwnerReference());
         return false;
     }
 

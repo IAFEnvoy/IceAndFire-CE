@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "tag": "minecraft:planks"
-    }
+    "B": "#minecraft:planks"
   },
   "pattern": [
     "B B"

@@ -4,13 +4,11 @@ import com.iafenvoy.iceandfire.entity.DreadKnightEntity;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
 
 public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
     public final HideableModelRenderer chestplate;
@@ -116,13 +114,4 @@ public class DreadKnightModel extends DreadBaseModel<DreadKnightEntity> {
         return DreadKnightEntity.ANIMATION_SPAWN;
     }
 
-    @Override
-    public void copyPropertiesTo(@NotNull EntityModel<DreadKnightEntity> model) {
-        super.copyPropertiesTo(model);
-        if (model instanceof HumanoidModel<?> bipedEntityModel) {
-            bipedEntityModel.leftArmPose = this.leftArmPose;
-            bipedEntityModel.rightArmPose = this.rightArmPose;
-            bipedEntityModel.crouching = this.isSneak;
-        }
-    }
 }

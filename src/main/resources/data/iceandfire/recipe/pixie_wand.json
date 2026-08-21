@@ -6,15 +6,9 @@
     "B"
   ],
   "key": {
-    "D": {
-      "item": "minecraft:diamond"
-    },
-    "B": {
-      "item": "minecraft:blaze_rod"
-    },
-    "W": {
-      "item": "iceandfire:pixie_wings"
-    }
+    "D": "minecraft:diamond",
+    "B": "minecraft:blaze_rod",
+    "W": "iceandfire:pixie_wings"
   },
   "result": {
     "id": "iceandfire:pixie_wand"

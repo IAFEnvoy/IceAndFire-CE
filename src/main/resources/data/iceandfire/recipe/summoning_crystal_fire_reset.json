@@ -1,9 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:summoning_crystal_fire"
-    }
+    "iceandfire:summoning_crystal_fire"
   ],
   "result": {
     "id": "iceandfire:summoning_crystal_fire",

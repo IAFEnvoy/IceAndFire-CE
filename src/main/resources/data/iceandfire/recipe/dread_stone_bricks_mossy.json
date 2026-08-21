@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "building",
   "ingredients": [
-    {
-      "item": "minecraft:vine"
-    },
-    {
-      "item": "iceandfire:dread_stone_bricks"
-    }
+    "minecraft:vine",
+    "iceandfire:dread_stone_bricks"
   ],
   "result": {
     "id": "iceandfire:dread_stone_bricks_mossy"

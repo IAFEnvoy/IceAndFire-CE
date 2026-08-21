@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire;
 
-import com.iafenvoy.iceandfire.compat.IceAndFireArsNouveauCompat;
 import com.iafenvoy.iceandfire.compat.curios.CuriosRegistry;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.DragonColor;
@@ -11,7 +10,7 @@ import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.integration.IntegrationExecutor;
 import com.iafenvoy.jupiter.ConfigManager;
 import com.iafenvoy.jupiter.ServerConfigManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.alchemy.Potions;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,9 +36,9 @@ public final class IceAndFire {
     }
 
     //TODO: IceAndFire::id is a temporary fix to capable with old version, should be removed in later versions
-    public static ResourceLocation id(String path) {
-        if (path.contains(":")) return ResourceLocation.tryParse(path);
-        else return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        if (path.contains(":")) return Identifier.tryParse(path);
+        else return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public IceAndFire(IEventBus bus) {
@@ -60,7 +59,6 @@ public final class IceAndFire {
 
         IafAttachments.REGISTRY.register(bus);
         IafAttributes.REGISTRY.register(bus);
-        IafArmorMaterials.REGISTRY.register(bus);
         IafSounds.REGISTRY.register(bus);
         IafBlocks.REGISTRY.register(bus);
         IafBlockEntities.REGISTRY.register(bus);
@@ -86,11 +84,10 @@ public final class IceAndFire {
 
     @SubscribeEvent
     public static void init(FMLCommonSetupEvent event) {
-        IafTrades.init();
+        IafTrades.registerPoiStates();
         IafRecipes.init();
         IafTiers.init();
 
-        IntegrationExecutor.runWhenLoad("ars_nouveau", () -> IceAndFireArsNouveauCompat::init);
         IntegrationExecutor.runWhenLoad("curios", () -> CuriosRegistry::registerItems);
     }
 

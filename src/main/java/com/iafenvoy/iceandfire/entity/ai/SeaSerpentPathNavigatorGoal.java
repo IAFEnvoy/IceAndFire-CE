@@ -1,10 +1,9 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.protocol.game.DebugPackets;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.ClipContext;
@@ -51,7 +50,6 @@ public class SeaSerpentPathNavigatorGoal extends PathNavigation {
                     this.path.advance();
             }
 
-            DebugPackets.sendPathFindingPacket(this.level, this.mob, this.path, this.maxDistanceToWaypoint);
             if (!this.isDone()) {
                 assert this.path != null;
                 Vec3 vec3d = this.path.getNextEntityPos(this.mob);
@@ -129,10 +127,15 @@ public class SeaSerpentPathNavigatorGoal extends PathNavigation {
 
     @Override
     public boolean isStableDestination(@NotNull BlockPos pos) {
-        return !this.level.getBlockState(pos).isSolidRender(this.level, pos);
+        return !this.level.getBlockState(pos).isSolidRender();
     }
 
     @Override
     public void setCanFloat(boolean canSwim) {
+    }
+
+    @Override
+    public boolean canNavigateGround() {
+        return false;
     }
 }

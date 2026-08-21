@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
@@ -27,9 +27,9 @@ public class StymphalianFeatherEntity extends AbstractArrow {
     public void remove(@NotNull RemovalReason reason) {
         super.remove(reason);
         if (IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue() > 0)
-            if (this.level().isClientSide)
-                if (this.random.nextDouble() < IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue())
-                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
+            if (this.level() instanceof net.minecraft.server.level.ServerLevel level
+                    && this.random.nextDouble() < IafCommonConfig.INSTANCE.stymphalianBird.featherDropChance.getValue())
+                this.spawnAtLocation(level, this.getPickupItem(), 0.1F);
     }
 
     @Override

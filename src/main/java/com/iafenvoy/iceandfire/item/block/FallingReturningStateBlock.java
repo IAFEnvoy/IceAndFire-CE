@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class FallingReturningStateBlock extends FallingBlock {
     public static final BooleanProperty REVERTS = BooleanProperty.create("revert");
@@ -36,11 +38,16 @@ public class FallingReturningStateBlock extends FallingBlock {
         return simpleCodec(s -> this);
     }
 
+    @Override
+    public int getDustColor(BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos) {
+        return state.getMapColor(level, pos).col;
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public void tick(@NotNull BlockState state, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource rand) {
         super.tick(state, world, pos, rand);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (!world.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3))) return;
             if (state.getValue(REVERTS) && rand.nextInt(3) == 0)
                 world.setBlockAndUpdate(pos, this.returnState);

@@ -1,29 +1,31 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
+import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
+import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Mob;
 
-public class GenericGlowingFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
-    private final ResourceLocation texture;
+public class GenericGlowingFeatureRenderer<T extends Mob, M extends AdvancedEntityModel<T>> implements LegacyEntityFeature<T> {
+    private final M model;
+    private final Identifier texture;
 
-    public GenericGlowingFeatureRenderer(LivingEntityRenderer<T, M> renderIn, ResourceLocation texture) {
-        super(renderIn);
+    public GenericGlowingFeatureRenderer(LegacyMobRenderer<T, M> renderer, Identifier texture) {
+        this.model = renderer.getLegacyModel();
         this.texture = texture;
     }
 
     @Override
-    public void render(@NotNull PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, @NotNull LivingEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        RenderType eyes = RenderType.eyes(this.texture);
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(eyes);
-        this.getParentModel().renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+    public void submit(T entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int lightCoords, int outlineColor) {
+        collector.submitCustomGeometry(poseStack, RenderTypes.eyes(this.texture), (pose, buffer) -> {
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
+            this.model.renderToBuffer(modelStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 }

@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.141'
+    id 'net.neoforged.moddev' version '2.0.144'
     id 'idea'
 }
 
@@ -32,6 +32,14 @@ sourceSets.main.resources {
     exclude("src/generated/**/.cache") // datagen cache files
 }
 
+sourceSets.main.java {
+    // No Minecraft 26.1.2 release is available for these optional integrations.
+    exclude 'com/iafenvoy/iceandfire/compat/ponder/**'
+    exclude 'com/iafenvoy/iceandfire/compat/emi/**'
+    exclude 'com/iafenvoy/iceandfire/compat/ProjectEDragonForgeMapper.java'
+    exclude 'com/iafenvoy/iceandfire/compat/IceAndFireArsNouveauCompat.java'
+}
+
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
     maven { url = "https://maven.terraformersmc.com/" }
@@ -49,17 +57,12 @@ base {
     archivesName = mod_id
 }
 
-// Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+// Minecraft 26.1.2 ships Java 25 to end users, so mods should target Java 25.
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     // This line is optional. Access Transformers are automatically detected
     // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
@@ -89,7 +92,7 @@ neoForge {
         }
 
         data {
-            data()
+            clientData()
 
             // example of overriding the workingDirectory set in configureEach above, uncomment if you want to use it
             // gameDirectory = project.file('run-data')
@@ -135,25 +138,14 @@ configurations {
 dependencies {
     implementation(jarJar("com.github.IAFEnvoy.Integration:integration-neoforge:$integration_version"))
 
-    implementation "curse.maven:uranus-1010827:8682870"
-    implementation "curse.maven:jupiter-1072905:7738312"
+    implementation "curse.maven:uranus-1010827:8689800"
+    implementation "curse.maven:jupiter-1072905:8621734"
 
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
-    localRuntime "dev.emi:emi-neoforge:$emi_version"
-
-    implementation "curse.maven:jade-324717:8591319"
+    implementation "curse.maven:jade-324717:8651070"
 
     api "top.theillusivec4.curios:curios-neoforge:${curios_version}"
 
-    //ProjectE
-    compileOnly "curse.maven:projecte-226410:6611984"
-
-    compileOnly "net.createmod.ponder:Ponder-NeoForge-$minecraft_version:$ponder_version"
-
-    // Ars Nouveau
-    compileOnly "com.hollingsworth.ars_nouveau:ars_nouveau-$minecraft_version:$ars_version"
-    compileOnly "software.bernie.geckolib:geckolib-neoforge-$minecraft_version:$geckolib_version"
     compileOnly "top.theillusivec4.curios:curios-neoforge:$curios_version"
 }
 

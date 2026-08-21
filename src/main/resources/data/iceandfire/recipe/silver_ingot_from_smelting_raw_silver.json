@@ -4,9 +4,7 @@
   "cookingtime": 200,
   "experience": 0.7,
   "group": "raw_silver",
-  "ingredient": {
-    "item": "iceandfire:raw_silver"
-  },
+  "ingredient": "iceandfire:raw_silver",
   "result": {
     "id": "iceandfire:silver_ingot"
   }

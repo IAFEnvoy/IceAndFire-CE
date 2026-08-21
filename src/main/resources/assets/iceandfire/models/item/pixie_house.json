@@ -1,5 +1,7 @@
 {
-  "parent": "builtin/entity",
+  "textures": {
+    "particle": "block/mushroom_stem"
+  },
   "display": {
     "gui": {
       "rotation": [

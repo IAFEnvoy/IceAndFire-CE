@@ -5,7 +5,6 @@ import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LecternBlock extends BaseEntityBlock {
     private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new LecternBlock());
-    public static final DirectionProperty FACING = DirectionProperty.create("facing", Direction.Plane.HORIZONTAL);
+    public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
     protected static final VoxelShape AABB = Block.box(4, 0, 4, 12, 19, 12);
 
     public LecternBlock() {
@@ -58,18 +57,8 @@ public class LecternBlock extends BaseEntityBlock {
 
 
     @Override
-    public void onRemove(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-        if (blockEntity instanceof LecternBlockEntity) {
-            Containers.dropContents(worldIn, pos, (LecternBlockEntity) blockEntity);
-            worldIn.updateNeighbourForOutputSignal(pos, this);
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, @NotNull BlockState state, @NotNull BlockEntityType<T> entityType) {
-        return world.isClientSide ? createTickerHelper(entityType, IafBlockEntities.IAF_LECTERN.get(), LecternBlockEntity::bookAnimationTick) : null;
+        return world.isClientSide() ? createTickerHelper(entityType, IafBlockEntities.IAF_LECTERN.get(), LecternBlockEntity::bookAnimationTick) : null;
     }
 
     @Override
@@ -95,7 +84,7 @@ public class LecternBlock extends BaseEntityBlock {
     @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, Player player, @NotNull BlockHitResult hit) {
         if (!player.isShiftKeyDown()) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 MenuProvider screenHandlerFactory = this.getMenuProvider(state, world, pos);
                 if (screenHandlerFactory != null)
                     player.openMenu(screenHandlerFactory);

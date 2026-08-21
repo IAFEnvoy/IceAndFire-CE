@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.render.model;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 
 abstract class DreadBaseModel<T extends LivingEntity & IAnimatedEntity> extends BipedBaseModel<T> {
     DreadBaseModel() {
@@ -12,7 +13,7 @@ abstract class DreadBaseModel<T extends LivingEntity & IAnimatedEntity> extends 
     public abstract Animation getSpawnAnimation();
 
     @Override
-    public void setupAnim(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NonNull T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         super.setupAnim(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         this.setRotationAnglesSpawn(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
     }

@@ -7,7 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +33,7 @@ public class DragonBowItem extends BowItem {
 
     //Copied from parent
     @Override
-    public void releaseUsing(@NotNull ItemStack stack, @NotNull Level world, @NotNull LivingEntity user, int remainingUseTicks) {
+    public boolean releaseUsing(@NotNull ItemStack stack, @NotNull Level world, @NotNull LivingEntity user, int remainingUseTicks) {
         if (user instanceof Player playerEntity) {
             boolean bl = playerEntity.getAbilities().instabuild || EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.INFINITY), stack) > 0;
             ItemStack itemStack = playerEntity.getProjectile(stack);
@@ -44,17 +44,14 @@ public class DragonBowItem extends BowItem {
                 float f = getPowerForTime(i);
                 if (!((double) f < 0.1)) {
                     boolean bl2 = bl && this.getAllSupportedProjectiles().test(itemStack);
-                    if (!world.isClientSide) {
+                    if (!world.isClientSide()) {
                         ArrowItem arrowItem = (ArrowItem) (itemStack.getItem() instanceof ArrowItem ? itemStack.getItem() : Items.ARROW);
                         AbstractArrow persistentProjectileEntity = arrowItem.createArrow(world, itemStack, playerEntity, stack);
                         persistentProjectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, f * 3.0F, 1.0F);
                         if (f == 1.0F) persistentProjectileEntity.setCritArrow(true);
-                        int j = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.POWER), stack);
-                        if (j > 0)
-                            persistentProjectileEntity.setBaseDamage(persistentProjectileEntity.getBaseDamage() + (double) j * 0.5 + 0.5);
                         if (EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.FLAME), stack) > 0)
                             persistentProjectileEntity.igniteForSeconds(100);
-                        stack.hurtAndBreak(1, playerEntity, LivingEntity.getSlotForHand(user.getUsedItemHand()));
+                        stack.hurtAndBreak(1, playerEntity, user.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
                         if (bl2 || playerEntity.getAbilities().instabuild && (itemStack.is(Items.SPECTRAL_ARROW) || itemStack.is(Items.TIPPED_ARROW)))
                             persistentProjectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                         world.addFreshEntity(persistentProjectileEntity);
@@ -69,5 +66,6 @@ public class DragonBowItem extends BowItem {
                 }
             }
         }
+        return true;
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 public class HippogryphModel extends DragonBaseModel<HippogryphEntity> {
+    private boolean young;
     public final AdvancedModelBox Body;
     public final AdvancedModelBox Neck;
     public final AdvancedModelBox HindThighR;
@@ -540,6 +541,7 @@ public class HippogryphModel extends DragonBaseModel<HippogryphEntity> {
 
     @Override
     public void setupAnim(@NotNull HippogryphEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+        this.young = entity.isBaby();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 1);
         if (this.young) {
             this.Body.setShouldScaleChildren(true);

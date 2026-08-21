@@ -1,14 +1,8 @@
 {
   "type": "minecraft:smithing_transform",
-  "template": {
-    "item": "minecraft:netherite_upgrade_smithing_template"
-  },
-  "base": {
-    "item": "iceandfire:dragonarmor_diamond_body"
-  },
-  "addition": {
-    "item": "minecraft:netherite_block"
-  },
+  "template": "minecraft:netherite_upgrade_smithing_template",
+  "base": "iceandfire:dragonarmor_diamond_body",
+  "addition": "minecraft:netherite_block",
   "result": {
     "id": "iceandfire:dragonarmor_netherite_body"
   },

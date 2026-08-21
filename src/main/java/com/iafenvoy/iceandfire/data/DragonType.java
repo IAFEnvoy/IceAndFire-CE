@@ -2,7 +2,7 @@ package com.iafenvoy.iceandfire.data;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
@@ -29,7 +29,7 @@ public record DragonType(String name, List<DragonColor> colors, Function<Level, 
         return this.crystalItem.get();
     }
 
-    public ResourceLocation getSkeletonTexture(int stage) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_skeleton_%d.png", this.name, this.name, stage));
+    public Identifier getSkeletonTexture(int stage) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format("textures/entity/%sdragon/%s_skeleton_%d.png", this.name, this.name, stage));
     }
 }

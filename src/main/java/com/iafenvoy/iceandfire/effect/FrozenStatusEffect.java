@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class FrozenStatusEffect extends MobEffect {
     public FrozenStatusEffect() {
@@ -21,7 +22,7 @@ public class FrozenStatusEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(@NonNull ServerLevel level, @NotNull LivingEntity entity, int amplifier) {
         if (entity instanceof IceDragonEntity || entity.isDeadOrDying()) return false;
         else if (entity.isOnFire()) {
             entity.clearFire();

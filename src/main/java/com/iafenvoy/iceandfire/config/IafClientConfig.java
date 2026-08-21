@@ -3,7 +3,7 @@ package com.iafenvoy.iceandfire.config;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.jupiter.config.container.FileConfigContainer;
 import com.iafenvoy.jupiter.config.entry.BooleanEntry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class IafClientConfig extends FileConfigContainer {
     public static final IafClientConfig INSTANCE = new IafClientConfig();
@@ -12,7 +12,7 @@ public class IafClientConfig extends FileConfigContainer {
     public final BooleanEntry sirenShader = BooleanEntry.builder("config.iceandfire.siren.shader", true).key("siren.shader").build();
 
     public IafClientConfig() {
-        super(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "client"), "screen.iceandfire.client.title", "./config/iceandfire/iaf-client.json");
+        super(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "client"), "screen.iceandfire.client.title", "./config/iceandfire/iaf-client.json");
     }
 
     @Override

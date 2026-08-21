@@ -13,7 +13,7 @@ public enum DragonArmorPart {
 
     public static DragonArmorPart fromSlot(EquipmentSlot slot) {
         return switch (slot) {
-            case MAINHAND, OFFHAND, BODY -> null;
+            case MAINHAND, OFFHAND, BODY, SADDLE -> null;
             case FEET -> TAIL;
             case LEGS -> BODY;
             case CHEST -> NECK;

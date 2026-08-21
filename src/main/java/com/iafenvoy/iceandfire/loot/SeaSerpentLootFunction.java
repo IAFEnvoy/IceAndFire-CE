@@ -3,13 +3,11 @@ package com.iafenvoy.iceandfire.loot;
 import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
 import com.iafenvoy.iceandfire.item.SeaSerpentScaleItem;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import com.iafenvoy.iceandfire.registry.IafLoots;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +23,7 @@ public class SeaSerpentLootFunction extends LootItemConditionalFunction {
 
     @Override
     public @NotNull ItemStack run(ItemStack stack, @NotNull LootContext context) {
-        if (!stack.isEmpty() && context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof SeaSerpentEntity seaSerpent) {
+        if (!stack.isEmpty() && context.getOptionalParameter(LootContextParams.THIS_ENTITY) instanceof SeaSerpentEntity seaSerpent) {
             final int ancientModifier = seaSerpent.isAncient() ? 2 : 1;
             if (stack.getItem() instanceof SeaSerpentScaleItem) {
                 stack.setCount(1 + seaSerpent.getRandom().nextInt(1 + (int) Math.ceil(seaSerpent.getSeaSerpentScale() * 3 * ancientModifier)));
@@ -40,7 +38,7 @@ public class SeaSerpentLootFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public @NotNull LootItemFunctionType<? extends LootItemConditionalFunction> getType() {
-        return IafLoots.SEA_SERPENT_LOOT.get();
+    public @NotNull MapCodec<SeaSerpentLootFunction> codec() {
+        return CODEC;
     }
 }

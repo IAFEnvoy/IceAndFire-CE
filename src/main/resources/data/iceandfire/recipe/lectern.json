@@ -6,12 +6,8 @@
     "P"
   ],
   "key": {
-    "P": {
-      "tag": "minecraft:planks"
-    },
-    "B": {
-      "item": "iceandfire:manuscript"
-    }
+    "P": "#minecraft:planks",
+    "B": "iceandfire:manuscript"
   },
   "result": {
     "id": "iceandfire:lectern"

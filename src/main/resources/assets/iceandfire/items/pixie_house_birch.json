@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire:item/pixie_house_birch",
+    "model": {
+      "type": "uranus:dynamic"
+    }
+  }
+}

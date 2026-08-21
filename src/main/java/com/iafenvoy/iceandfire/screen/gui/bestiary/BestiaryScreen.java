@@ -10,18 +10,17 @@ import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.screen.menu.BestiaryMenu;
 import com.iafenvoy.iceandfire.util.ItemRandomizer;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -37,10 +36,10 @@ import java.util.*;
 public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     protected static final int X = 390;
     protected static final int Y = 245;
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/bestiary.png");
-    private static final ResourceLocation DRAWINGS_0 = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_0.png");
-    private static final ResourceLocation DRAWINGS_1 = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_1.png");
-    private static final Map<String, ResourceLocation> PICTURE_LOCATION_CACHE = Maps.newHashMap();
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/bestiary.png");
+    private static final Identifier DRAWINGS_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_0.png");
+    private static final Identifier DRAWINGS_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_1.png");
+    private static final Map<String, Identifier> PICTURE_LOCATION_CACHE = Maps.newHashMap();
     public final List<BestiaryPage> allPageTypes = new ArrayList<>();
     public final List<IndexPageButton> indexButtons = new ArrayList<>();
     protected final ItemStack book;
@@ -68,7 +67,8 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     }
 
     private static Item getItemByRegistryName(String registryName) {
-        return BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(registryName));
+        Identifier id = Identifier.tryParse(registryName);
+        return id == null ? Items.AIR : BuiltInRegistries.ITEM.get(id).map(Holder.Reference::value).orElse(Items.AIR);
     }
 
     @Override
@@ -119,8 +119,8 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics context, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(context, mouseX, mouseY, partialTicks);
+    public void extractRenderState(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float partialTicks) {
+        this.extractBg(context, partialTicks, mouseX, mouseY);
         for (Renderable widget : this.renderables)
             if (widget instanceof IndexPageButton button) {
                 button.active = this.index;
@@ -128,33 +128,28 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         for (int i = 0; i < this.indexButtons.size(); i++)
             this.indexButtons.get(i).active = i < 10 * (this.indexPages + 1) && i >= 10 * (this.indexPages) && this.index;
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        super.render(context, mouseX, mouseY, partialTicks);
+        super.extractRenderState(context, mouseX, mouseY, partialTicks);
         int cornerX = (this.width - X) / 2;
         int cornerY = (this.height - Y) / 2;
-        context.pose().pushPose();
-        context.pose().translate(cornerX, cornerY, 0.0F);
-        RenderSystem.disableDepthTest();
+        context.pose().pushMatrix();
+        context.pose().translate(cornerX, cornerY);
         if (!this.index) {
             this.drawPerPage(context, this.bookPages);
             int pageLeft = this.bookPages * 2 + 1;
             int pageRight = pageLeft + 1;
-            context.drawString(this.font, String.valueOf(pageLeft), X / 4, Y - 32, 0X303030, false);
-            context.drawString(this.font, String.valueOf(pageRight), X * 3 / 4, Y - 32, 0X303030, false);
+            context.text(this.font, String.valueOf(pageLeft), X / 4, Y - 32, 0X303030, false);
+            context.text(this.font, String.valueOf(pageRight), X * 3 / 4, Y - 32, 0X303030, false);
         }
-        context.pose().popPose();
-        this.renderables.forEach((widget -> widget.render(context, mouseX, mouseY, partialTicks)));
-        RenderSystem.enableDepthTest();
+        context.pose().popMatrix();
     }
 
-    @Override
-    protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+    private void extractBg(GuiGraphicsExtractor context, float delta, int mouseX, int mouseY) {
         int cornerX = (this.width - X) / 2;
         int cornerY = (this.height - Y) / 2;
         context.blit(TEXTURE, cornerX, cornerY, 0, 0, X, Y, 390, 390);
     }
 
-    public void drawPerPage(GuiGraphics ms, int bookPages) {
+    public void drawPerPage(GuiGraphicsExtractor ms, int bookPages) {
         this.imageFromTxt(ms);
         LocalPlayer player = Minecraft.getInstance().player;
         assert player != null;
@@ -162,18 +157,18 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(IafBlocks.SAPPHIRE_ORE.get()), 30, 20, 2.5F);
                 this.drawItemStack(ms, new ItemStack(IafItems.SAPPHIRE_GEM.get()), 40, 55, 2F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 0, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 boolean drawGold = player.tickCount % 20 < 10;
                 this.drawItemStack(ms, new ItemStack(drawGold ? Items.GOLD_NUGGET : IafItems.SILVER_NUGGET.get()), 144, 34, 1.5F);
                 this.drawItemStack(ms, new ItemStack(drawGold ? Items.GOLD_NUGGET : IafItems.SILVER_NUGGET.get()), 161, 34, 1.5F);
                 this.drawItemStack(ms, new ItemStack(drawGold ? IafBlocks.GOLD_PILE.get() : IafBlocks.SILVER_PILE.get()), 151, 7, 2F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 90, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Blocks.OAK_PLANKS), 161, 124, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Blocks.OAK_PLANKS), 161, 107, 1.5F);
                 this.drawItemStack(ms, new ItemStack(IafItems.MANUSCRIPT.get()), 161, 91, 1.5F);
@@ -181,10 +176,10 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.TAMED_DRAGONS)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 90, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Items.BONE), 145, 124, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Items.PORKCHOP), 145, 107, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Items.BONE), 145, 91, 1.5F);
@@ -197,34 +192,34 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGON_MEAL.get()), 151, 78, 2F);
             }
             if (bookPages == 1) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 0, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGON_SKULL_FIRE.get()), 161, 17, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 161, 32, 1.5F);
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGON_STAFF.get()), 151, 10, 2F);
             }
             if (bookPages == 2) {
-                ms.pose().pushPose();
+                ms.pose().pushMatrix();
                 this.drawItemStack(ms, new ItemStack(IafBlocks.FIRE_LILY.get()), 5, 14, 3.75F);
                 this.drawItemStack(ms, new ItemStack(IafBlocks.FROST_LILY.get()), 17, 14, 3.75F);
                 this.drawItemStack(ms, new ItemStack(IafBlocks.LIGHTNING_LILY.get()), 30, 14, 3.75F);
-                ms.pose().popPose();
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().popMatrix();
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 0, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 int type = (player.tickCount / 20) % 3;
                 this.drawItemStack(ms, new ItemStack(type == 0 ? IafBlocks.FIRE_LILY.get() : type == 1 ? IafBlocks.FROST_LILY.get() : IafBlocks.LIGHTNING_LILY.get()), 161, 17, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Items.BOWL), 161, 32, 1.5F);
                 this.drawItemStack(ms, new ItemStack(type == 0 ? Items.BLAZE_ROD : type == 1 ? Items.PRISMARINE_CRYSTALS : Items.CHORUS_FRUIT), 177, 17, 1.5F);
                 this.drawItemStack(ms, new ItemStack(type == 0 ? IafItems.FIRE_STEW.get() : type == 1 ? IafItems.FROST_STEW.get() : IafItems.LIGHTNING_STEW.get()), 151, 10, 2F);
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 65, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 144, 97, 1.5F);
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGON_BONE.get()), 180, 110, 1.35f);
@@ -241,10 +236,10 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGONARMOR_IRON_BODY.get(), 1), j += 16, 60, 1.5F);
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGONARMOR_IRON_TAIL.get(), 1), j + 16, 60, 1.5F);
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 10, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGON_BONE.get()), 160, 12, 1.35f);
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGON_BONE.get()), 180, 31, 1.35f);
                 this.drawItemStack(ms, new ItemStack(Items.IRON_INGOT), 199, 50, 1.35f);
@@ -286,15 +281,15 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(IafItems.DRAGONBONE_SWORD.get()), 161, 17, 1.5F);
                 this.drawItemStack(ms, new ItemStack(type == 0 ? IafItems.FIRE_DRAGON_BLOOD.get() : type == 1 ? IafItems.ICE_DRAGON_BLOOD.get() : IafItems.LIGHTNING_DRAGON_BLOOD.get()), 161, 32, 1.5F);
                 this.drawItemStack(ms, new ItemStack(type == 0 ? IafItems.DRAGONBONE_SWORD_FIRE.get() : type == 1 ? IafItems.DRAGONBONE_SWORD_ICE.get() : IafItems.DRAGONBONE_SWORD_LIGHTNING.get()), 151, 10, 2F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 0, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
         } else if (this.pageType.equals(IafBestiaryPages.HIPPOGRYPH)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(0.8F, 0.8F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(0.8F, 0.8F);
                 this.drawImage(ms, DRAWINGS_0, 29, 150, 303, 151, 61, 36, 512F);
                 this.drawImage(ms, DRAWINGS_0, 91, 150, 364, 151, 61, 36, 512F);
                 this.drawImage(ms, DRAWINGS_0, 151, 150, 425, 151, 61, 36, 512F);
@@ -302,16 +297,16 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawImage(ms, DRAWINGS_0, 91, 190, 364, 187, 61, 36, 512F);
                 this.drawImage(ms, DRAWINGS_0, 151, 190, 425, 187, 61, 36, 512F);
                 this.drawImage(ms, DRAWINGS_0, 90, 230, 425, 223, 61, 35, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(ItemRandomizer.random(IafItemTags.TAME_HIPPOGRYPH)), 70, 20, 3.75F);
             }
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 16, 24, 3.75F);
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 10, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Items.FEATHER), 160, 31, 1.35F);
                 int drawType = player.tickCount % 60 > 40 ? 2 : player.tickCount % 60 > 20 ? 1 : 0;
                 this.drawItemStack(ms, new ItemStack(drawType == 0 ? Items.IRON_HORSE_ARMOR : drawType == 1 ? Items.GOLDEN_HORSE_ARMOR : Items.DIAMOND_HORSE_ARMOR), 180, 31, 1.35F);
@@ -321,17 +316,17 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.GORGON)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 10, 89, 473, 117, 19, 34, 512F);
                 this.drawImage(ms, DRAWINGS_0, 50, 78, 399, 106, 28, 45, 512F);
                 this.drawImage(ms, DRAWINGS_0, 100, 89, 455, 117, 18, 34, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 70, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
                 this.drawItemStack(ms, new ItemStack(Items.STRING), 160, 97, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Items.LEATHER), 180, 97, 1.35F);
@@ -340,30 +335,30 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(IafItems.GORGON_HEAD.get()), 16, 12, 3.75F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.7F, 1.7F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.7F, 1.7F);
                 this.drawImage(ms, DRAWINGS_0, 37, 95, 473, 117, 19, 34, 512F);
                 this.drawImage(ms, DRAWINGS_0, 60, 95, 455, 117, 18, 34, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
         } else if (this.pageType.equals(IafBestiaryPages.PIXIE)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
+                ms.pose().pushMatrix();
                 this.drawImage(ms, DRAWINGS_0, 20, 60, 371, 258, 47, 35, 512F);
                 this.drawImage(ms, DRAWINGS_0, 42, 95, 416, 258, 45, 35, 512F);
                 this.drawImage(ms, DRAWINGS_0, 67, 60, 462, 258, 47, 35, 512F);
                 this.drawImage(ms, DRAWINGS_0, 88, 95, 370, 293, 47, 35, 512F);
                 this.drawImage(ms, DRAWINGS_0, 110, 60, 416, 293, 47, 35, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(IafItems.PIXIE_DUST.get()), 70, 10, 3.75F);
-                ms.pose().pushPose();
-                ms.pose().scale(0.9F, 0.9F, 1F);
-                ms.pose().translate(20, 24, 0);
-                ms.pose().pushPose();
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(0.9F, 0.9F);
+                ms.pose().translate(20, 24);
+                ms.pose().pushMatrix();
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 150, 100, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Blocks.GLASS), 160, 113, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.GLASS), 199, 113, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.OAK_PLANKS), 180, 113, 1.35F);
@@ -373,16 +368,16 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(Blocks.GLASS), 160, 150, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.GLASS), 199, 150, 1.35F);
                 this.drawItemStack(ms, new ItemStack(IafBlocks.JAR_EMPTY.get()), 171, 85, 2F);
-                ms.pose().popPose();
-                ms.pose().popPose();
+                ms.pose().popMatrix();
+                ms.pose().popMatrix();
 
             }
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(IafItems.AMBROSIA.get()), 14, 22, 3.75F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 100, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
                 this.drawItemStack(ms, new ItemStack(IafItems.PIXIE_DUST.get()), 180, 131, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Items.BOWL), 180, 150, 1.35F);
@@ -390,22 +385,22 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.CYCLOPS)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1.5F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 185, 8, 399, 328, 24, 63, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1.5F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 50, 35, 423, 328, 24, 63, 512F);
                 //drawImage(ms, DRAWINGS_0, 68, 60, 447, 328, 24, 63, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 50, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
                 this.drawItemStack(ms, new ItemStack(Items.LEATHER_HELMET), 180, 76, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 160, 76, 1.35F);
@@ -415,10 +410,10 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 199, 57, 1.35F);
                 this.drawItemStack(ms, new ItemStack(IafItems.SHEEP_HELMET.get()), 165, 45, 2F);
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 144, 95, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Items.LEATHER_CHESTPLATE), 180, 126, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 160, 126, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 199, 126, 1.35F);
@@ -430,15 +425,15 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(IafItems.SHEEP_CHESTPLATE.get()), 165, 95, 2F);
             }
             if (bookPages == 2) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1.5F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 185, 30, 447, 328, 24, 63, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 13, 24, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Items.LEATHER_LEGGINGS), 34, 46, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 14, 46, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 53, 46, 1.35F);
@@ -449,10 +444,10 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 53, 65, 1.35F);
 
                 this.drawItemStack(ms, new ItemStack(IafItems.SHEEP_LEGGINGS.get()), 64, 27, 2F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 13, 84, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Items.LEATHER_BOOTS), 34, 94, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 14, 113, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Blocks.WHITE_WOOL), 53, 113, 1.35F);
@@ -462,8 +457,8 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.SIREN)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.25F, 1.25F, 1.25F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.25F, 1.25F);
                 this.drawImage(ms, DRAWINGS_1, 190, 25, 0, 0, 25, 42, 512F);
                 this.drawImage(ms, DRAWINGS_1, 220, 15, 25, 0, 25, 42, 512F);
                 this.drawImage(ms, DRAWINGS_1, 255, 25, 50, 0, 25, 42, 512F);
@@ -471,15 +466,15 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawImage(ms, DRAWINGS_1, 190, 135, 0, 42, 26, 28, 512F);
                 this.drawImage(ms, DRAWINGS_1, 220, 125, 26, 42, 26, 28, 512F);
                 this.drawImage(ms, DRAWINGS_1, 255, 135, 52, 42, 26, 28, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(IafItems.EARPLUGS.get()), 18, 40, 3.75F);
 
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 160, 0, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
 
                 this.drawItemStack(ms, new ItemStack(Blocks.OAK_BUTTON), 180, 20, 1.35F);
@@ -489,14 +484,14 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.HIPPOCAMPUS)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
+                ms.pose().pushMatrix();
                 this.drawImage(ms, DRAWINGS_1, 210, 25, 0, 70, 57, 49, 512F);
                 this.drawImage(ms, DRAWINGS_1, 265, 25, 57, 70, 57, 49, 512F);
                 this.drawImage(ms, DRAWINGS_1, 320, 25, 0, 119, 57, 49, 512F);
                 this.drawImage(ms, DRAWINGS_1, 210, 80, 57, 119, 57, 49, 512F);
                 this.drawImage(ms, DRAWINGS_1, 265, 80, 0, 168, 57, 49, 512F);
                 this.drawImage(ms, DRAWINGS_1, 320, 80, 57, 168, 57, 49, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
                 this.drawItemStack(ms, new ItemStack(ItemRandomizer.random(IafItemTags.TEMPT_HIPPOCAMPUS)), 37, 33, 2.25F);
@@ -508,17 +503,17 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.DEATHWORM)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
+                ms.pose().pushMatrix();
                 this.drawImage(ms, DRAWINGS_1, 230, 25, 0, 217, 133, 16, 512F);
                 this.drawImage(ms, DRAWINGS_1, 230, 50, 0, 233, 133, 16, 512F);
                 this.drawImage(ms, DRAWINGS_1, 230, 75, 0, 249, 133, 16, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
-                ms.pose().pushPose();
+                ms.pose().pushMatrix();
                 this.drawImage(ms, DRAWINGS_1, 25, 95, 0, 265, 148, 44, 512F);
                 this.drawImage(ms, DRAWINGS_1, 250, 5, 0, 309, 81, 162, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 2) {
                 int drawType = player.tickCount % 60 > 40 ? 2 : player.tickCount % 60 > 20 ? 1 : 0;
@@ -541,17 +536,17 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.COCKATRICE)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_1, 155, 10, 114, 0, 88, 36, 512F);
                 this.drawImage(ms, DRAWINGS_1, 155, 45, 114, 36, 88, 36, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 18, 10, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
                 this.drawItemStack(ms, new ItemStack(Items.STRING), 20, 30, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Items.LEATHER), 40, 30, 1.35F);
@@ -562,18 +557,18 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.STYMPHALIAN_BIRD)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_1, 34, 46, 114, 72, 59, 37, 512F);
                 this.drawImage(ms, DRAWINGS_1, 155, 35, 114, 109, 67, 35, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(IafItems.STYMPHALIAN_BIRD_FEATHER.get()), 109, 60, 2.5F);
             }
             if (bookPages == 1) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 18, 10, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
 
                 this.drawItemStack(ms, new ItemStack(Items.FLINT), 40, 13, 1.35F);
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 40, 30, 1.35F);
@@ -582,14 +577,14 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.TROLL)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_1, 15, 60, 156, 211, 25, 58, 512F);
                 this.drawImage(ms, DRAWINGS_1, 50, 55, 181, 211, 25, 58, 512F);
                 this.drawImage(ms, DRAWINGS_1, 85, 60, 206, 211, 25, 58, 512F);
                 this.drawImage(ms, DRAWINGS_1, 155, 22, 114, 145, 24, 66, 512F);
                 this.drawImage(ms, DRAWINGS_1, 190, 19, 188, 142, 47, 69, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
                 int i = (player.tickCount % (TrollType.BuiltinWeapon.values().length * 20)) / 20;
@@ -607,22 +602,22 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.AMPHITHERE)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(0.75F, 0.75F, 0.75F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(0.75F, 0.75F);
                 this.drawImage(ms, DRAWINGS_1, 70, 97, 257, 163, 136, 93, 512F);
                 this.drawImage(ms, DRAWINGS_1, 270, 50, 148, 267, 120, 51, 512F);
                 this.drawImage(ms, DRAWINGS_1, 380, 50, 148, 318, 120, 51, 512F);
                 this.drawImage(ms, DRAWINGS_1, 270, 100, 148, 369, 120, 51, 512F);
                 this.drawImage(ms, DRAWINGS_1, 380, 100, 148, 420, 120, 51, 512F);
                 this.drawImage(ms, DRAWINGS_1, 330, 150, 268, 267, 120, 51, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 2) {
                 this.drawItemStack(ms, new ItemStack(IafItems.AMPHITHERE_FEATHER.get()), 30, 20, 2.5F);
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 19, 71, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 this.drawItemStack(ms, new ItemStack(Items.FLINT), 36, 73, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 36, 89, 1.5F);
                 this.drawItemStack(ms, new ItemStack(IafItems.AMPHITHERE_FEATHER.get()), 36, 106, 1.5F);
@@ -630,8 +625,8 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             }
         } else if (this.pageType.equals(IafBestiaryPages.SEA_SERPENT)) {
             if (bookPages == 0) {
-                ms.pose().pushPose();
-                ms.pose().scale(0.75F, 0.75F, 0.75F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(0.75F, 0.75F);
                 this.drawImage(ms, DRAWINGS_1, 290, 5, 422, 0, 90, 64, 512F);
                 this.drawImage(ms, DRAWINGS_1, 380, 5, 422, 64, 90, 64, 512F);
                 this.drawImage(ms, DRAWINGS_1, 290, 70, 422, 128, 90, 64, 512F);
@@ -639,7 +634,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawImage(ms, DRAWINGS_1, 290, 140, 422, 256, 90, 64, 512F);
                 this.drawImage(ms, DRAWINGS_1, 380, 140, 422, 320, 90, 64, 512F);
                 this.drawImage(ms, DRAWINGS_1, 345, 210, 422, 384, 90, 64, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
             if (bookPages == 1) {
                 this.drawImage(ms, DRAWINGS_1, 60, 90, 337, 0, 70, 83, 512F);
@@ -648,10 +643,10 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                 this.drawItemStack(ms, new ItemStack(IafItems.SERPENT_FANG.get()), 90, 40, 2.5F);
             }
             if (bookPages == 2) {
-                ms.pose().pushPose();
-                ms.pose().scale(1.5F, 1.5F, 1F);
+                ms.pose().pushMatrix();
+                ms.pose().scale(1.5F, 1.5F);
                 this.drawImage(ms, DRAWINGS_0, 19, 31, 389, 1, 50, 50, 512F);
-                ms.pose().popPose();
+                ms.pose().popMatrix();
                 int j = (player.tickCount % (SeaSerpentType.values().size() * 20)) / 20;
                 this.drawItemStack(ms, new ItemStack(IafItems.SERPENT_FANG.get()), 36, 32, 1.5F);
                 this.drawItemStack(ms, new ItemStack(Items.STICK), 36, 48, 1.5F);
@@ -666,11 +661,11 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         this.writeFromTxt(ms);
     }
 
-    public void imageFromTxt(GuiGraphics ms) {
+    public void imageFromTxt(GuiGraphicsExtractor ms) {
         String fileName = this.pageType.name() + "_" + this.bookPages + ".txt";
         String languageName = Minecraft.getInstance().options.languageCode.toLowerCase(Locale.ROOT);
-        ResourceLocation fileLoc = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
-        ResourceLocation backupLoc = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
+        Identifier fileLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
+        Identifier backupLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
         Optional<Resource> resource;
 
         resource = Minecraft.getInstance().getResourceManager().getResource(fileLoc);
@@ -686,29 +681,26 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                         if (line.contains("<image>")) {
                             line = line.substring(8, line.length() - 1);
                             String[] split = line.split(" ");
-                            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/" + split[0]);
-                            ResourceLocation resourcelocation = PICTURE_LOCATION_CACHE.computeIfAbsent(id.toString(), k -> id);
-                            ms.pose().pushPose();
+                            Identifier id = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/" + split[0]);
+                            Identifier resourcelocation = PICTURE_LOCATION_CACHE.computeIfAbsent(id.toString(), k -> id);
+                            ms.pose().pushMatrix();
                             this.drawImage(ms, resourcelocation, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]), Integer.parseInt(split[5]), Integer.parseInt(split[6]), Float.parseFloat(split[7]) * 512F);
-                            ms.pose().popPose();
+                            ms.pose().popMatrix();
                         }
                     if (line.contains("<item>")) {
                         line = line.substring(7, line.length() - 1);
                         String[] split = line.split(" ");
-                        RenderSystem.enableDepthTest();
                         this.drawItemStack(ms, new ItemStack(getItemByRegistryName(split[0]), 1), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Float.parseFloat(split[4]) * 2F);
                     }
                     if (line.contains("<block>")) {
                         zLevelAdd += 1;
                         line = line.substring(8, line.length() - 1);
                         String[] split = line.split(" ");
-                        RenderSystem.enableDepthTest();
                         this.drawBlockStack(ms, new ItemStack(getItemByRegistryName(split[0]), 1), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Float.parseFloat(split[4]) * 2F, zLevelAdd);
                     }
                     if (line.contains("<recipe>")) {
                         line = line.substring(9, line.length() - 1);
                         String[] split = line.split(" ");
-                        RenderSystem.enableDepthTest();
                         float scale = Float.parseFloat(split[split.length - 1]);
                         int x = Integer.parseInt(split[split.length - 3]);
                         int y = Integer.parseInt(split[split.length - 2]);
@@ -719,10 +711,9 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                             ingredients[j] = new ItemStack(getItemByRegistryName(split[i]), 1);
                             j--;
                         }
-                        RenderSystem.enableDepthTest();
-                        ms.pose().pushPose();
+                        ms.pose().pushMatrix();
                         this.drawRecipe(ms, result, ingredients, x, y, scale);
-                        ms.pose().popPose();
+                        ms.pose().popMatrix();
                     }
                 }
             }
@@ -731,40 +722,40 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         }
     }
 
-    private void drawRecipe(GuiGraphics ms, ItemStack result, ItemStack[] ingredients, int x, int y, float scale) {
-        ms.pose().pushPose();
-        ms.pose().translate(x, y, 0.0D);
-        ms.pose().scale(scale, scale, scale);
-        ms.pose().popPose();
+    private void drawRecipe(GuiGraphicsExtractor ms, ItemStack result, ItemStack[] ingredients, int x, int y, float scale) {
+        ms.pose().pushMatrix();
+        ms.pose().translate(x, y);
+        ms.pose().scale(scale, scale);
+        ms.pose().popMatrix();
         for (int i = 0; i < 9; i++) {
-            ms.pose().pushPose();
-            ms.pose().translate(44, 20, 32.0D);
-            ms.pose().translate(x + i % 3 * 22 * scale, y + Math.floor((double) i / 3) * 22 * scale, 0.0D);
-            ms.renderItem(ingredients[i], 0, 0);
-            ms.pose().popPose();
+            ms.pose().pushMatrix();
+            ms.pose().translate(44, 20);
+            ms.pose().translate(x + i % 3 * 22 * scale, (float) (y + Math.floor((double) i / 3) * 22 * scale));
+            ms.item(ingredients[i], 0, 0);
+            ms.pose().popMatrix();
         }
-        ms.pose().pushPose();
-        ms.pose().translate(40, 20, 32.0D);
+        ms.pose().pushMatrix();
+        ms.pose().translate(40, 20);
         float finScale = scale * 1.5F;
-        ms.pose().translate((x + 70.0F * finScale), (y + 10.0F * finScale), 0.0D);
-        ms.pose().scale(finScale, finScale, finScale);
-        ms.renderItem(result, 0, 0);
-        ms.pose().popPose();
+        ms.pose().translate((x + 70.0F * finScale), (y + 10.0F * finScale));
+        ms.pose().scale(finScale, finScale);
+        ms.item(result, 0, 0);
+        ms.pose().popMatrix();
 
-        ms.pose().pushPose();
-        ms.pose().translate(x, y, 0);
-        ms.pose().scale(scale, scale, 0);
-        ms.pose().translate(37F, 13, 1F);
-        ms.pose().scale(1.5F, 1.5F, 1F);
+        ms.pose().pushMatrix();
+        ms.pose().translate(x, y);
+        ms.pose().scale(scale, scale);
+        ms.pose().translate(37F, 13);
+        ms.pose().scale(1.5F, 1.5F);
         this.drawImage(ms, DRAWINGS_0, 0, 0, 389, 1, 50, 50, 512F);
-        ms.pose().popPose();
+        ms.pose().popMatrix();
     }
 
-    public void writeFromTxt(GuiGraphics ms) {
+    public void writeFromTxt(GuiGraphicsExtractor ms) {
         String fileName = this.pageType.name() + "_" + this.bookPages + ".txt";
         String languageName = Minecraft.getInstance().options.languageCode.toLowerCase(Locale.ROOT);
-        ResourceLocation fileLoc = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
-        ResourceLocation backupLoc = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
+        Identifier fileLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
+        Identifier backupLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
         Optional<Resource> resource;
 
         resource = Minecraft.getInstance().getResourceManager().getResource(fileLoc);
@@ -777,58 +768,57 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             for (String line : lines) {
                 line = line.trim();
                 if (line.contains("<") || line.contains(">")) continue;
-                ms.pose().pushPose();
+                ms.pose().pushMatrix();
                 if (this.usingVanillaFont()) {
-                    ms.pose().scale(0.945F, 0.945F, 0.945F);
-                    ms.pose().translate(0, 5.5F, 0);
+                    ms.pose().scale(0.945F, 0.945F);
+                    ms.pose().translate(0, 5.5F);
                 }
                 if (linenumber <= 19)
-                    this.font.drawInBatch(line, 15, 20 + linenumber * 10, 0X303030, false, ms.pose().last().pose(), ms.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+                    ms.text(this.font, line, 15, 20 + linenumber * 10, 0X303030, false);
                 else
-                    this.font.drawInBatch(line, 220, (linenumber - 19) * 10, 0X303030, false, ms.pose().last().pose(), ms.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+                    ms.text(this.font, line, 220, (linenumber - 19) * 10, 0X303030, false);
                 linenumber++;
-                ms.pose().popPose();
+                ms.pose().popMatrix();
             }
         } catch (Exception e) {
             IceAndFire.LOGGER.error(e);
         }
-        ms.pose().pushPose();
+        ms.pose().pushMatrix();
         String s = I18n.get("bestiary." + this.pageType.name());
         float scale = this.font.width(s) <= 100 ? 2 : this.font.width(s) * 0.0125F;
-        ms.pose().scale(scale, scale, scale);
-        this.font.drawInBatch(s, 10, 2, 0x7a756a, false, ms.pose().last().pose(), ms.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
-        ms.pose().popPose();
+        ms.pose().scale(scale, scale);
+        ms.text(this.font, s, 10, 2, 0x7a756a, false);
+        ms.pose().popMatrix();
     }
 
     private boolean usingVanillaFont() {
         return this.font == Minecraft.getInstance().font;
     }
 
-    public void drawImage(GuiGraphics ms, ResourceLocation texture, int x, int y, int u, int v, int width, int height, float scale) {
-        ms.pose().pushPose();
-        RenderSystem.setShaderTexture(0, texture);
-        ms.pose().scale(scale / 512F, scale / 512F, scale / 512F);
+    public void drawImage(GuiGraphicsExtractor ms, Identifier texture, int x, int y, int u, int v, int width, int height, float scale) {
+        ms.pose().pushMatrix();
+        ms.pose().scale(scale / 512F, scale / 512F);
         ms.blit(texture, x, y, u, v, width, height, 512, 512);
-        ms.pose().popPose();
+        ms.pose().popMatrix();
     }
 
-    private void drawItemStack(GuiGraphics ms, ItemStack stack, int x, int y, float scale) {
-        ms.pose().pushPose();
-        ms.pose().scale(scale, scale, scale);
-        ms.renderItem(stack, x, y);
-        ms.pose().popPose();
+    private void drawItemStack(GuiGraphicsExtractor ms, ItemStack stack, int x, int y, float scale) {
+        ms.pose().pushMatrix();
+        ms.pose().scale(scale, scale);
+        ms.item(stack, x, y);
+        ms.pose().popMatrix();
     }
 
-    private void drawBlockStack(GuiGraphics ms, ItemStack stack, int x, int y, float scale, int zScale) {
-        ms.pose().pushPose();
-        ms.pose().scale(scale, scale, scale);
-        ms.pose().translate(0, 0, zScale * 10);
-        ms.renderItem(stack, x, y);
-        ms.pose().popPose();
+    private void drawBlockStack(GuiGraphicsExtractor ms, ItemStack stack, int x, int y, float scale, int zScale) {
+        ms.pose().pushMatrix();
+        ms.pose().scale(scale, scale);
+        ms.pose().translate(0, 0);
+        ms.item(stack, x, y);
+        ms.pose().popMatrix();
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics context, int mouseX, int mouseY) {
+    protected void extractLabels(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY) {
         //Remove texts.
     }
 }

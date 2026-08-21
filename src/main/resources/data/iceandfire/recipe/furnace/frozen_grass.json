@@ -1,8 +1,6 @@
 {
   "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "iceandfire:frozen_grass"
-  },
+  "ingredient": "iceandfire:frozen_grass",
   "result": {
     "id": "minecraft:short_grass"
   },

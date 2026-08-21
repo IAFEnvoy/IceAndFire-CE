@@ -4,8 +4,6 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
 import com.iafenvoy.iceandfire.data.TrollType;
-import com.iafenvoy.iceandfire.item.DragonHornItem;
-import com.iafenvoy.iceandfire.item.SummoningCrystalItem;
 import com.iafenvoy.iceandfire.particle.*;
 import com.iafenvoy.iceandfire.render.block.*;
 import com.iafenvoy.iceandfire.render.entity.*;
@@ -22,28 +20,26 @@ import com.iafenvoy.uranus.client.render.armor.IArmorRendererBase;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
 public final class IafRenderers {
-    public static final ResourceLocation FIRE_DRAGON = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "firedragon/firedragon_ground");
-    public static final ResourceLocation ICE_DRAGON = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "icedragon/icedragon_ground");
-    public static final ResourceLocation LIGHTNING_DRAGON = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "lightningdragon/lightningdragon_ground");
-    public static final ResourceLocation SEA_SERPENT = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "seaserpent/seaserpent_base");
+    // Uranus prefixes every Tabula model lookup with models/tabula/.
+    public static final Identifier FIRE_DRAGON = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "firedragon/firedragon_ground");
+    public static final Identifier ICE_DRAGON = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "icedragon/icedragon_ground");
+    public static final Identifier LIGHTNING_DRAGON = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lightningdragon/lightningdragon_ground");
+    public static final Identifier SEA_SERPENT = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "seaserpent/seaserpent_base");
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(IafEntities.FIRE_DRAGON.get(), x -> new DragonBaseEntityRenderer<>(x, TabulaModelHandlerHelper.getModel(FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new))));
-        event.registerEntityRenderer(IafEntities.ICE_DRAGON.get(), manager -> new DragonBaseEntityRenderer<>(manager, TabulaModelHandlerHelper.getModel(ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new))));
-        event.registerEntityRenderer(IafEntities.LIGHTNING_DRAGON.get(), manager -> new LightningDragonEntityRenderer(manager, TabulaModelHandlerHelper.getModel(LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new))));
+        event.registerEntityRenderer(IafEntities.FIRE_DRAGON.get(), x -> new DragonBaseEntityRenderer<>(x, () -> TabulaModelHandlerHelper.getModel(FIRE_DRAGON, new MemorizeSupplier<>(FireDragonTabulaModelAnimator::new))));
+        event.registerEntityRenderer(IafEntities.ICE_DRAGON.get(), manager -> new DragonBaseEntityRenderer<>(manager, () -> TabulaModelHandlerHelper.getModel(ICE_DRAGON, new MemorizeSupplier<>(IceDragonTabulaModelAnimator::new))));
+        event.registerEntityRenderer(IafEntities.LIGHTNING_DRAGON.get(), manager -> new LightningDragonEntityRenderer(manager, () -> TabulaModelHandlerHelper.getModel(LIGHTNING_DRAGON, new MemorizeSupplier<>(LightningTabulaDragonAnimator::new))));
         event.registerEntityRenderer(IafEntities.DRAGON_EGG.get(), DragonEggEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DRAGON_ARROW.get(), DragonArrowEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DRAGON_SKULL.get(), DragonSkullEntityRenderer::new);
@@ -151,13 +147,7 @@ public final class IafRenderers {
 
 
     public static void registerModelPredicates() {
-        ItemProperties.register(IafItems.DRAGON_BOW.get(), ResourceLocation.withDefaultNamespace("pulling"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getUseItem() == itemStack ? 1 : 0);
-        ItemProperties.register(IafItems.DRAGON_BOW.get(), ResourceLocation.withDefaultNamespace("pull"), (itemStack, clientWorld, livingEntity, seed) -> livingEntity == null ? 0 : livingEntity.getUseItem() != itemStack ? 0 : (float) (itemStack.getUseDuration(livingEntity) - livingEntity.getUseItemRemainingTicks()) / 20);
-
-        ItemProperties.register(IafItems.DRAGON_HORN.get(), ResourceLocation.withDefaultNamespace("iceorfire"), (stack, level, entity, p) -> DragonHornItem.getDragonType(stack) * 0.25F);
-        ItemProperties.register(IafItems.SUMMONING_CRYSTAL_FIRE.get(), ResourceLocation.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemProperties.register(IafItems.SUMMONING_CRYSTAL_ICE.get(), ResourceLocation.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemProperties.register(IafItems.SUMMONING_CRYSTAL_LIGHTNING.get(), ResourceLocation.withDefaultNamespace("has_dragon"), (stack, level, entity, p) -> SummoningCrystalItem.hasDragon(stack) ? 1.0F : 0.0F);
-        ItemProperties.register(IafItems.TIDE_TRIDENT.get(), ResourceLocation.withDefaultNamespace("throwing"), (stack, level, entity, p) -> entity != null && entity.isUsingItem() && entity.getMainHandItem() == stack ? 1.0F : 0.0F);
+        // Item predicates were replaced by data-driven item model properties in 26.1.2.
+        // The corresponding item model JSONs are migrated separately; this hook remains for compatibility with the client bootstrap.
     }
 }

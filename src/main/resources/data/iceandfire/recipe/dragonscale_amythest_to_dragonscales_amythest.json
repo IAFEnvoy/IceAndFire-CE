@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:dragonscale_amethyst"
-    }
+    "iceandfire:dragonscale_amethyst"
   ],
   "result": {
     "count": 9,

@@ -6,13 +6,12 @@ import com.iafenvoy.iceandfire.render.entity.feature.GenericGlowingFeatureRender
 import com.iafenvoy.iceandfire.render.model.DreadScuttlerModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-public class DreadScuttlerEntityRenderer extends MobRenderer<DreadScuttlerEntity, DreadScuttlerModel> {
-    public static final ResourceLocation TEXTURE_EYES = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_scuttler_eyes.png");
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_scuttler.png");
+public class DreadScuttlerEntityRenderer extends LegacyMobRenderer<DreadScuttlerEntity, DreadScuttlerModel> {
+    public static final Identifier TEXTURE_EYES = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_scuttler_eyes.png");
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/dread/dread_scuttler.png");
 
     public DreadScuttlerEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new DreadScuttlerModel(), 0.75F);
@@ -25,7 +24,7 @@ public class DreadScuttlerEntityRenderer extends MobRenderer<DreadScuttlerEntity
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull DreadScuttlerEntity beast) {
+    public @NotNull Identifier getTextureLocation(@NotNull DreadScuttlerEntity beast) {
         return TEXTURE;
     }
 }

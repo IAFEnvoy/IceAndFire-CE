@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.IafHippogryphTypes;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
@@ -35,7 +35,7 @@ public record HippogryphType(String name, boolean developer, TagKey<Biome> spawn
         return biome.is(this.spawnBiomes);
     }
 
-    public ResourceLocation getTexture(boolean blink) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/" + this.name.toLowerCase(Locale.ROOT) + (blink ? "_blink" : "") + ".png");
+    public Identifier getTexture(boolean blink) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hippogryph/" + this.name.toLowerCase(Locale.ROOT) + (blink ? "_blink" : "") + ".png");
     }
 }

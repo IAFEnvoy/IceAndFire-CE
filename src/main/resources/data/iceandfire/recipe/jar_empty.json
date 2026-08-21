@@ -6,12 +6,8 @@
     "GGG"
   ],
   "key": {
-    "G": {
-      "tag": "c:glass_blocks/colorless"
-    },
-    "P": {
-      "tag": "minecraft:planks"
-    }
+    "G": "#c:glass_blocks/colorless",
+    "P": "#minecraft:planks"
   },
   "result": {
     "id": "iceandfire:pixie_jar_empty"

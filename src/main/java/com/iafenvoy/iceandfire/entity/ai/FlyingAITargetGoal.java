@@ -4,10 +4,9 @@ import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Predicate;
 
 public class FlyingAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     public FlyingAITargetGoal(Mob creature, Class<T> classTarget, boolean checkSight) {
@@ -18,7 +17,7 @@ public class FlyingAITargetGoal<T extends LivingEntity> extends NearestAttackabl
         super(creature, classTarget, checkSight, onlyNearby);
     }
 
-    public FlyingAITargetGoal(Mob creature, Class<T> classTarget, int chance, boolean checkSight, boolean onlyNearby, final Predicate<LivingEntity> targetSelector) {
+    public FlyingAITargetGoal(Mob creature, Class<T> classTarget, int chance, boolean checkSight, boolean onlyNearby, final TargetingConditions.Selector targetSelector) {
         super(creature, classTarget, chance, checkSight, onlyNearby, targetSelector);
     }
 

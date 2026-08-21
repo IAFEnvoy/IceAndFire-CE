@@ -2,31 +2,35 @@ package com.iafenvoy.iceandfire.render.entity.feature;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
+import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.resources.Identifier;
 
-public class SeaSerpentAncientFeatureRenderer extends RenderLayer<SeaSerpentEntity, AdvancedEntityModel<SeaSerpentEntity>> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/seaserpent/ancient_overlay.png");
-    private static final ResourceLocation TEXTURE_BLINK = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/seaserpent/ancient_overlay_blink.png");
+public class SeaSerpentAncientFeatureRenderer implements LegacyEntityFeature<SeaSerpentEntity> {
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/seaserpent/ancient_overlay.png");
+    private static final Identifier TEXTURE_BLINK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/seaserpent/ancient_overlay_blink.png");
+    private final AdvancedEntityModel<SeaSerpentEntity> model;
 
-    public SeaSerpentAncientFeatureRenderer(MobRenderer<SeaSerpentEntity, AdvancedEntityModel<SeaSerpentEntity>> renderer) {
-        super(renderer);
+    public SeaSerpentAncientFeatureRenderer(LegacyMobRenderer<SeaSerpentEntity, AdvancedEntityModel<SeaSerpentEntity>> renderer) {
+        this.model = renderer.getLegacyModel();
     }
 
     @Override
-    public void render(@NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn, SeaSerpentEntity serpent, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (serpent.isAncient()) {
-            RenderType tex = RenderType.entityNoOutline(serpent.isBlinking() ? TEXTURE_BLINK : TEXTURE);
-            VertexConsumer vertexConsumer = bufferIn.getBuffer(tex);
-            this.getParentModel().renderToBuffer(matrixStackIn, vertexConsumer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
-        }
+    public void submit(SeaSerpentEntity serpent, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int lightCoords, int outlineColor) {
+        if (!serpent.isAncient()) return;
+        ModelPose modelPose = ModelPose.capture(this.model);
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(serpent.isBlinking() ? TEXTURE_BLINK : TEXTURE, false), (pose, buffer) -> {
+            modelPose.apply();
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
+            this.model.renderToBuffer(modelStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);
+        });
     }
 }

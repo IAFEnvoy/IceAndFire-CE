@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
@@ -113,9 +113,9 @@ public class PixieVillageStructure extends Structure {
                             default -> IafBlocks.PIXIE_HOUSE_OAK.get().defaultBlockState();
                         };
                         if (spawnedPixies < maxPixies) {
-                            PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel());
+                            PixieEntity pixie = IafEntities.PIXIE.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
                             assert pixie != null;
-                            pixie.finalizeSpawn(world, world.getCurrentDifficultyAt(buildPosition2.above()), MobSpawnType.SPAWNER, null);
+                            pixie.finalizeSpawn(world, world.getCurrentDifficultyAt(buildPosition2.above()), EntitySpawnReason.STRUCTURE, null);
                             pixie.setPos(buildPosition2.getX(), buildPosition2.getY() + 2, buildPosition2.getZ());
                             pixie.setPersistenceRequired();
                             world.addFreshEntity(pixie);

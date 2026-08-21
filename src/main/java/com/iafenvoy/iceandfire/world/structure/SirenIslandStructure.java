@@ -81,7 +81,7 @@ public class SirenIslandStructure extends Structure implements DangerousGenerati
             super.boundingBox = new BoundingBox(center.getX() - radius, center.getY() - up, center.getZ() - radius,
                     center.getX() + radius, center.getY() + 1, center.getZ() + radius);
 
-            while (!world.getBlockState(center).canOcclude() && center.getY() >= world.getMinBuildHeight()) {
+            while (!world.getBlockState(center).canOcclude() && center.getY() >= world.getMinY()) {
                 layer++;
                 for (float i = 0; i < this.getRadius(layer, up); i += 0.5f) {
                     for (float j = 0; j < 2 * Math.PI * i + random.nextInt(2); j += 0.5f) {
@@ -125,7 +125,7 @@ public class SirenIslandStructure extends Structure implements DangerousGenerati
             siren.setSinging(true);
             siren.setHairColor(rand.nextInt(2));
             siren.setSingingPose(rand.nextInt(2));
-            siren.absMoveTo(position.getX() + 0.5D, position.getY() + 1, position.getZ() + 0.5D, rand.nextFloat() * 360, 0);
+            siren.snapTo(position.getX() + 0.5D, position.getY() + 1, position.getZ() + 0.5D, rand.nextFloat() * 360, 0);
             worldIn.addFreshEntity(siren);
         }
     }

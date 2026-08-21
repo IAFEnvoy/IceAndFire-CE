@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:dragonscale_sapphire"
-    }
+    "iceandfire:dragonscale_sapphire"
   ],
   "result": {
     "count": 9,

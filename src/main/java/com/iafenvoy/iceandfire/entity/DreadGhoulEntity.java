@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
@@ -75,7 +76,7 @@ public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity,
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, IDreadMob.class));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, DragonUtils::canHostilesTarget));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (target, level) -> DragonUtils.canHostilesTarget(target)));
         this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
     }
 
@@ -96,7 +97,7 @@ public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(net.minecraft.server.level.@NonNull ServerLevel level, @NotNull Entity entityIn) {
         if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SLASH);
         }
@@ -130,7 +131,7 @@ public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity,
                 attackTarget.knockback(0.25F, this.getX() - attackTarget.getX(), this.getZ() - attackTarget.getZ());
             }
         }
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (this.getTarget() != null) {
                 this.hostileTicks++;
                 if (this.getScreamStage() == 0) {
@@ -169,9 +170,9 @@ public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity,
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setVariant(compound.getInt("Variant"));
-        this.setScreamStage(compound.getInt("ScreamStage"));
-        this.setSize(compound.getFloat("DreadScale"));
+        this.setVariant(compound.getInt("Variant").orElse(0));
+        this.setScreamStage(compound.getInt("ScreamStage").orElse(0));
+        this.setSize(compound.getFloat("DreadScale").orElse(1.0F));
     }
 
     public int getVariant() {
@@ -196,7 +197,7 @@ public class DreadGhoulEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
         this.setVariant(this.random.nextInt(3));

@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "#": {
-      "item": "iceandfire:troll_leather_frost"
-    }
+    "#": "iceandfire:troll_leather_frost"
   },
   "pattern": [
     "###",

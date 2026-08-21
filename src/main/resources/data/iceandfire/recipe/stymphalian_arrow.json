@@ -6,15 +6,9 @@
     "Y"
   ],
   "key": {
-    "#": {
-      "item": "minecraft:stick"
-    },
-    "X": {
-      "item": "minecraft:flint"
-    },
-    "Y": {
-      "item": "iceandfire:stymphalian_bird_feather"
-    }
+    "#": "minecraft:stick",
+    "X": "minecraft:flint",
+    "Y": "iceandfire:stymphalian_bird_feather"
   },
   "result": {
     "id": "iceandfire:stymphalian_arrow",

@@ -1218,5 +1218,10 @@
   "sound.iceandfire.subtitle.icedragon_hurt": "Ice Dragon hurts",
   "sound.iceandfire.subtitle.icedragon_death": "Ice Dragon dies",
   "sound.iceandfire.subtitle.dragonegg_hatch": "Dragon egg hatches",
-  "sound.iceandfire.subtitle.dragonflute": "Dragon flute plays"
+  "sound.iceandfire.subtitle.dragonflute": "Dragon flute plays",
+  "effect.iceandfire.depetrification": "脱石化",
+  "item.minecraft.lingering_potion.effect.depetrification": "残留型脱石化のポーション",
+  "item.minecraft.potion.effect.depetrification": "脱石化のポーション",
+  "item.minecraft.splash_potion.effect.depetrification": "スプラッシュ脱石化のポーション",
+  "item.minecraft.tipped_arrow.effect.depetrification": "脱石化の矢"
 }

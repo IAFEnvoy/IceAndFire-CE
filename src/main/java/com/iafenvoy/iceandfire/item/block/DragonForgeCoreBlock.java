@@ -9,7 +9,6 @@ import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -75,22 +74,17 @@ public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof
     }
 
     @Override
-    public void onRemove(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof DragonForgeBlockEntity) {
-            Containers.dropContents(world, pos, (DragonForgeBlockEntity) blockEntity);
-            world.updateNeighbourForOutputSignal(pos, this);
-            world.removeBlockEntity(pos);
-        }
+    protected boolean shouldChangedStateKeepBlockEntity(BlockState state) {
+        return state.getBlock() instanceof DragonForgeCoreBlock;
     }
 
     @Override
-    public int getAnalogOutputSignal(@NotNull BlockState state, Level world, @NotNull BlockPos pos) {
+    protected int getAnalogOutputSignal(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull net.minecraft.core.Direction direction) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
 
     @Override
-    public boolean hasAnalogOutputSignal(@NotNull BlockState state) {
+    protected boolean hasAnalogOutputSignal(@NotNull BlockState state) {
         return true;
     }
 

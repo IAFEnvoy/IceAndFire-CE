@@ -6,12 +6,8 @@
     "HSH"
   ],
   "key": {
-    "S": {
-      "item": "iceandfire:sea_serpent_scales_deepblue"
-    },
-    "H": {
-      "item": "iceandfire:shiny_scales"
-    }
+    "S": "iceandfire:sea_serpent_scales_deepblue",
+    "H": "iceandfire:shiny_scales"
   },
   "result": {
     "id": "iceandfire:tide_deepblue_chestplate"

@@ -7,7 +7,7 @@ import com.iafenvoy.iceandfire.item.component.DragonSkullComponent;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -27,7 +27,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class DragonSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob {
     private static final EntityDataAccessor<String> DRAGON_TYPE = SynchedEntityData.defineId(DragonSkullEntity.class, EntityDataSerializers.STRING);
@@ -40,7 +43,6 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
 
     public DragonSkullEntity(EntityType<DragonSkullEntity> type, Level worldIn) {
         super(type, worldIn);
-        this.noCulling = true;
         // setScale(this.getDragonAge());
     }
 
@@ -58,8 +60,8 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource i) {
-        return i.getEntity() != null && super.isInvulnerableTo(i);
+    public boolean isInvulnerableTo(@NonNull ServerLevel level, DamageSource source) {
+        return source.getEntity() != null && super.isInvulnerableTo(level, source);
     }
 
     @Override
@@ -127,23 +129,22 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource var1, float var2) {
-        this.turnIntoItem();
-        return super.hurt(var1, var2);
+    public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float amount) {
+        this.turnIntoItem(level);
+        return true;
     }
 
-    public void turnIntoItem() {
+    public void turnIntoItem(ServerLevel level) {
         if (this.isRemoved())
             return;
         this.remove(RemovalReason.DISCARDED);
         ItemStack stack = new ItemStack(this.getDragonSkullItem());
         stack.set(IafDataComponents.DRAGON_SKULL.get(), new DragonSkullComponent(this.getStage(), this.getDragonAge()));
-        if (!this.level().isClientSide)
-            this.spawnAtLocation(stack, 0.0F);
+        this.spawnAtLocation(level, stack);
     }
 
     public Item getDragonSkullItem() {
-        return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(this.getDragonType())).getSkullItem();
+        return IafRegistries.DRAGON_TYPE.get(IceAndFire.id(this.getDragonType())).map(Holder.Reference::value).orElse(IafDragonTypes.FIRE).getSkullItem();
     }
 
     @Override
@@ -160,21 +161,21 @@ public class DragonSkullEntity extends Animal implements BlacklistedFromStatues,
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        this.setDragonType(compound.getString("Type"));
-        this.setStage(compound.getInt("Stage"));
-        this.setDragonAge(compound.getInt("DragonAge"));
-        this.setYRot(compound.getFloat("DragonYaw"));
-        super.readAdditionalSaveData(compound);
+    public void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setDragonType(input.getStringOr("Type", IafDragonTypes.FIRE.name()));
+        this.setStage(input.getIntOr("Stage", 0));
+        this.setDragonAge(input.getIntOr("DragonAge", 0));
+        this.setYRot(input.getFloatOr("DragonYaw", 0.0F));
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        compound.putString("Type", this.getDragonType());
-        compound.putInt("Stage", this.getStage());
-        compound.putInt("DragonAge", this.getDragonAge());
-        compound.putFloat("DragonYaw", this.getYRot());
-        super.addAdditionalSaveData(compound);
+    public void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putString("Type", this.getDragonType());
+        output.putInt("Stage", this.getStage());
+        output.putInt("DragonAge", this.getDragonAge());
+        output.putFloat("DragonYaw", this.getYRot());
     }
 
     @Override

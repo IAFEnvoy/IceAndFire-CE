@@ -10,9 +10,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownEgg;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEgg;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,7 +45,7 @@ public class HippogryphEggEntity extends ThrownEgg {
     public void handleEntityEvent(byte id) {
         if (id == 3) {
             for (int i = 0; i < 8; ++i) {
-                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem()), this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D);
+                this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, this.getItem().getItem()), this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D, (this.random.nextFloat() - 0.5D) * 0.08D);
             }
         }
     }
@@ -59,8 +59,8 @@ public class HippogryphEggEntity extends ThrownEgg {
         if (this.level() instanceof ServerLevel serverWorld) {
             HippogryphEntity hippogryph = new HippogryphEntity(IafEntities.HIPPOGRYPH.get(), this.level());
             hippogryph.setAge(-24000);
-            hippogryph.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
-            hippogryph.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), MobSpawnType.SPAWN_EGG, null);
+            hippogryph.snapTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
+            hippogryph.finalizeSpawn(serverWorld, serverWorld.getCurrentDifficultyAt(this.blockPosition()), EntitySpawnReason.SPAWN_ITEM_USE, null);
             if (this.itemstack != null) {
                 HippogryphType variant = this.itemstack.get(IafDataComponents.HIPPOGRYPH_EGG.get());
                 if (variant != null) hippogryph.setVariant(variant);

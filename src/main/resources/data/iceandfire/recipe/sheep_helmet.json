@@ -5,12 +5,8 @@
     "WLW"
   ],
   "key": {
-    "L": {
-      "item": "minecraft:leather_helmet"
-    },
-    "W": {
-      "item": "minecraft:white_wool"
-    }
+    "L": "minecraft:leather_helmet",
+    "W": "minecraft:white_wool"
   },
   "result": {
     "id": "iceandfire:sheep_helmet"

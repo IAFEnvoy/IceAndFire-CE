@@ -2,25 +2,31 @@ package com.iafenvoy.iceandfire.render.entity.feature;
 
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
+import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.resources.Identifier;
 
-public class DragonMaleOverlayFeatureRenderer<T extends DragonBaseEntity> extends RenderLayer<T, TabulaModel<T>> {
-    public DragonMaleOverlayFeatureRenderer(MobRenderer<T, TabulaModel<T>> renderIn) {
-        super(renderIn);
+public class DragonMaleOverlayFeatureRenderer<T extends DragonBaseEntity> implements LegacyEntityFeature<T> {
+    private final TabulaModel<T> model;
+
+    public DragonMaleOverlayFeatureRenderer(LegacyMobRenderer<T, TabulaModel<T>> renderer) {
+        this.model = renderer.getLegacyModel();
     }
 
     @Override
-    public void render(@NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn, T dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        ResourceLocation texture = DragonColor.getById(dragon.getVariant()).getTextureProvider().getMaleOverlay();
+    public void submit(T dragon, float partialTick, PoseStack matrixStackIn, SubmitNodeCollector collector, CameraRenderState camera, int packedLightIn, int outlineColor) {
+        Identifier texture = DragonColor.getById(dragon.getVariant()).getTextureProvider().getMaleOverlay();
         if (dragon.isMale() && !dragon.isSkeletal() && texture != null)
-            this.getParentModel().renderToBuffer(matrixStackIn, bufferIn.getBuffer(RenderType.entityTranslucent(texture)), packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+            collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityTranslucent(texture), (pose, buffer) -> {
+                PoseStack modelStack = new PoseStack();
+                modelStack.last().set(pose);
+                this.model.renderToBuffer(modelStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+            });
     }
 }

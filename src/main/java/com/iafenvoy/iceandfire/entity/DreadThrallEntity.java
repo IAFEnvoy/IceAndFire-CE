@@ -76,7 +76,7 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, IDreadMob.class));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (Predicate<LivingEntity>) DragonUtils::canHostilesTarget));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (target, level) -> DragonUtils.canHostilesTarget(target)));
         this.targetSelector.addGoal(3, new DreadAITargetNonDreadGoal(this, LivingEntity.class, false, (Predicate<LivingEntity>) entity -> entity instanceof LivingEntity && DragonUtils.canHostilesTarget(entity)));
     }
 
@@ -146,7 +146,7 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         SpawnGroupData data = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setAnimation(ANIMATION_SPAWN);
         this.populateDefaultEquipmentSlots(worldIn.getRandom(), difficultyIn);
@@ -176,11 +176,11 @@ public class DreadThrallEntity extends DreadMobEntity implements IAnimatedEntity
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setBodyArmorVariant(compound.getInt("ArmorVariant"));
-        this.setCustomArmorHead(compound.getBoolean("HasCustomHelmet"));
-        this.setCustomArmorChest(compound.getBoolean("HasCustomChestplate"));
-        this.setCustomArmorLegs(compound.getBoolean("HasCustomLeggings"));
-        this.setCustomArmorFeet(compound.getBoolean("HasCustomBoots"));
+        this.setBodyArmorVariant(compound.getInt("ArmorVariant").orElse(0));
+        this.setCustomArmorHead(compound.getBoolean("HasCustomHelmet").orElse(false));
+        this.setCustomArmorChest(compound.getBoolean("HasCustomChestplate").orElse(false));
+        this.setCustomArmorLegs(compound.getBoolean("HasCustomLeggings").orElse(false));
+        this.setCustomArmorFeet(compound.getBoolean("HasCustomBoots").orElse(false));
     }
 
     @Override

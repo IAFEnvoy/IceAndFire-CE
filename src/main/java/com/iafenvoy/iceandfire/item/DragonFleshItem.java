@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.registry.IafDragonTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
@@ -23,15 +24,15 @@ public class DragonFleshItem extends Item {
 
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, Level world, @NotNull LivingEntity living) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (this.type == IafDragonTypes.FIRE)
                 living.igniteForSeconds(5);
             else if (this.type == IafDragonTypes.ICE)
-                living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
+                living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 2));
             else {
-                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level());
+                LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(living.level(), EntitySpawnReason.EVENT);
                 assert lightning != null;
-                lightning.moveTo(living.position());
+                lightning.snapTo(living.position());
                 living.level().addFreshEntity(lightning);
             }
         }

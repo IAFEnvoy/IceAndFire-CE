@@ -82,7 +82,7 @@
         },
         {
           "type": "item",
-          "name": "minecraft:chain",
+          "name": "minecraft:iron_chain",
           "functions": [
             {
               "function": "set_count",

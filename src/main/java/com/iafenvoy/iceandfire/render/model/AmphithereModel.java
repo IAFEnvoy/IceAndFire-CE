@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
+    private boolean young;
     public final AdvancedModelBox BodyUpper;
     public final AdvancedModelBox BodyLower;
     public final AdvancedModelBox Neck1;
@@ -434,6 +435,7 @@ public class AmphithereModel extends DragonBaseModel<AmphithereEntity> {
 
     @Override
     public void setupAnim(@NotNull AmphithereEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+        this.young = entity.isBaby();
         this.resetToDefaultPose();
         this.animate(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch, 0);
         if (this.young) {

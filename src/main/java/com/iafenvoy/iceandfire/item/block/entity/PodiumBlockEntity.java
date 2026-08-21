@@ -6,9 +6,7 @@ import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.screen.menu.PodiumMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.ContainerHelper;
@@ -20,6 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,27 +79,26 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
         if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize())
             stack.setCount(this.getMaxStackSize());
         assert this.level != null;
-        if (!this.level.isClientSide)
+        if (!this.level.isClientSide())
             PacketDistributor.sendToAllPlayers(new UpdatePodiumS2CPayload(this.getBlockPos(), this.stacks.getFirst()));
     }
 
     @Override
-    public void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void loadAdditional(@NotNull ValueInput input) {
+        super.loadAdditional(input);
         this.stacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.stacks, registryLookup);
+        ContainerHelper.loadAllItems(input, this.stacks);
     }
 
     @Override
-    public void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
-        ContainerHelper.saveAllItems(nbt, this.stacks, registryLookup);
+    public void saveAdditional(@NotNull ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, this.stacks);
     }
 
-    @Override
     public void startOpen(@NotNull Player player) {
     }
 
-    @Override
     public void stopOpen(@NotNull Player player) {
     }
 
@@ -148,11 +147,6 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryLookup) {
-        return this.saveWithFullMetadata(registryLookup);
     }
 
     @Override

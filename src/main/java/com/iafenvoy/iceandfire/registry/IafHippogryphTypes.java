@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.HippogryphType;
 import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
 
@@ -21,7 +21,7 @@ public final class IafHippogryphTypes {
     public static final HippogryphType DODO = register("dodo", true, IafBiomeTags.EMPTY);
 
     private static HippogryphType register(String name, boolean developer, TagKey<Biome> spawnBiomes) {
-        return Registry.register(IafRegistries.HIPPOGRYPH_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new HippogryphType(name, developer, spawnBiomes));
+        return Registry.register(IafRegistries.HIPPOGRYPH_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new HippogryphType(name, developer, spawnBiomes));
     }
 
     public static void init() {

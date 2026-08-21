@@ -126,7 +126,7 @@ public final class IafBlocks {
     public static final DeferredBlock<Block> DREAD_STONE_BRICKS_SLAB = register("dread_stone_slab", () -> new DreadSlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(10F, 10000F)));
     public static final DeferredBlock<Block> DREADWOOD_LOG = register("dreadwood_log", DreadWoodLogBlock::new);
     public static final DeferredBlock<DreadBaseBlock> DREADWOOD_PLANKS = register("dreadwood_planks", () -> new DreadBaseBlock(true));
-    public static final DeferredBlock<Block> DREADWOOD_LEAVES = register("dreadwood_leaves", () -> Blocks.leaves(SoundType.GRASS));
+    public static final DeferredBlock<Block> DREADWOOD_LEAVES = register("dreadwood_leaves", () -> new DreadLeavesBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_LEAVES).sound(SoundType.GRASS)));
     public static final DeferredBlock<Block> DREADWOOD_SAPLING = register("dreadwood_sapling", DreadwoodSaplingBlock::new);
     public static final DeferredBlock<Block> DREADWOOD_PLANKS_LOCK = register("dreadwood_planks_lock", DreadWoodLockBlock::new);
     public static final DeferredBlock<Block> DREAD_SPAWNER = register("dread_spawner", DreadSpawnerBlock::new);
@@ -148,18 +148,18 @@ public final class IafBlocks {
     }
 
     public static <T extends Block> DeferredBlock<T> register(String name, Supplier<T> block) {
-        DeferredBlock<T> r = REGISTRY.register(name, block);
-        IafItems.registerBlock(name, () -> new BlockItem(r.get(), new Item.Properties()));
+        DeferredBlock<T> r = REGISTRY.register(name, id -> IafRegistrationContext.createBlock(id, block));
+        IafItems.registerBlock(name, () -> new BlockItem(r.get(), new Item.Properties().useBlockDescriptionPrefix()));
         return r;
     }
 
     private static <T extends TorchBlock> DeferredBlock<T> registerWallBlock(String name, Supplier<T> block) {
-        DeferredBlock<T> r = REGISTRY.register(name, block);
-        IafItems.registerBlock(name, () -> new StandingAndWallBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), new Item.Properties(), Direction.DOWN));
+        DeferredBlock<T> r = REGISTRY.register(name, id -> IafRegistrationContext.createBlock(id, block));
+        IafItems.registerBlock(name, () -> new StandingAndWallBlockItem(r.get(), ((WallBlock) r.get()).wallBlock(), Direction.DOWN, new Item.Properties().useBlockDescriptionPrefix()));
         return r;
     }
 
     private static <T extends WallTorchBlock> DeferredBlock<T> registerWallTorch(String name, Supplier<T> block) {
-        return REGISTRY.register(name, block);
+        return REGISTRY.register(name, id -> IafRegistrationContext.createBlock(id, block));
     }
 }

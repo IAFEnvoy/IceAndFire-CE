@@ -88,7 +88,7 @@ public class DragonForgeInputBlock extends BaseEntityBlock implements DragonProo
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, @NotNull BlockState state, @NotNull BlockEntityType<T> entityType) {
-        return world.isClientSide ? null : createTickerHelper(entityType, IafBlockEntities.DRAGONFORGE_INPUT.get(), DragonForgeInputBlockEntity::tick);
+        return world.isClientSide() ? null : createTickerHelper(entityType, IafBlockEntities.DRAGONFORGE_INPUT.get(), DragonForgeInputBlockEntity::tick);
     }
 
     @Override

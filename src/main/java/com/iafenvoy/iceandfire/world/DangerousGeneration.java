@@ -21,7 +21,7 @@ public interface DangerousGeneration {
     }
 
     default BlockPos getOrigin(LevelAccessor world, BlockPos pos) {
-        BlockPos spawn = world.getLevelData().getSpawnPos();
+        BlockPos spawn = world.getLevelData().getRespawnData().pos();
         return new BlockPos(spawn.getX(), pos.getY(), spawn.getZ());
     }
 }

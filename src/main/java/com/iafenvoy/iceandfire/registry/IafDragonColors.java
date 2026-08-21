@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.data.DragonType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 import java.util.function.Supplier;
@@ -25,7 +25,7 @@ public final class IafDragonColors {
     public static final DragonColor BLACK = register("black", ChatFormatting.DARK_GRAY, IafDragonTypes.LIGHTNING, IafItems.DRAGONEGG_BLACK, IafItems.DRAGONSCALES_BLACK);
 
     private static DragonColor register(String name, ChatFormatting color, DragonType dragonType, Supplier<Item> eggItem, Supplier<Item> scaleItem) {
-        return Registry.register(IafRegistries.DRAGON_COLOR, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new DragonColor(name, color, dragonType, eggItem, scaleItem));
+        return Registry.register(IafRegistries.DRAGON_COLOR, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, name), new DragonColor(name, color, dragonType, eggItem, scaleItem));
     }
 
     public static void init() {

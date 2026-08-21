@@ -6,12 +6,8 @@
     "SPS"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:oak_slab"
-    },
-    "P": {
-      "item": "minecraft:oak_planks"
-    }
+    "S": "minecraft:oak_slab",
+    "P": "minecraft:oak_planks"
   },
   "result": {
     "id": "iceandfire:podium_oak"

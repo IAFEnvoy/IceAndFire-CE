@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.item.MobSkullItem;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.SkullBlock;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,7 @@ public enum IafSkullType implements SkullBlock.Type {
     }
 
     public Item getSkullItem() {
-        return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, this.itemResourceName));
+        return BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, this.itemResourceName)).orElseThrow().value();
     }
 
     @Override

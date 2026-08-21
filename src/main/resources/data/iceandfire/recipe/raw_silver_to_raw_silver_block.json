@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "iceandfire:raw_silver"
-    }
+    "#": "iceandfire:raw_silver"
   },
   "pattern": [
     "###",

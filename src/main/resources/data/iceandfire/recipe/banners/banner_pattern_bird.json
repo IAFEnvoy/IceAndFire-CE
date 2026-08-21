@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:stymphalian_bird_feather"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:stymphalian_bird_feather",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_bird",

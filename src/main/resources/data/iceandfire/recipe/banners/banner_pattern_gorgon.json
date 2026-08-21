@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "iceandfire:gorgon_head"
-    },
-    {
-      "item": "minecraft:paper"
-    }
+    "iceandfire:gorgon_head",
+    "minecraft:paper"
   ],
   "result": {
     "id": "iceandfire:banner_pattern_gorgon",

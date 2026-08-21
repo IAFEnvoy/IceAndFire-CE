@@ -81,7 +81,7 @@ public class AmphithereAITargetItemsGoal extends TargetGoal {
         if (this.targetEntity != null && this.targetEntity.isAlive() && this.mob.distanceToSqr(this.targetEntity) < 1) {
             AmphithereEntity hippo = (AmphithereEntity) this.mob;
             this.targetEntity.getItem().shrink(1);
-            this.mob.playSound(SoundEvents.GENERIC_EAT, 1, 1);
+            this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             hippo.heal(5);
             this.stop();
         }

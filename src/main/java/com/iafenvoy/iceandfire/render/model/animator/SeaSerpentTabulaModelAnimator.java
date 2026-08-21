@@ -7,7 +7,7 @@ import com.iafenvoy.uranus.client.model.ITabulaModelAnimator;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator<SeaSerpentEntity> implements ITabulaModelAnimator<SeaSerpentEntity> {
     public final SeaSerpentAnimations[] swimPose = {SeaSerpentAnimations.SWIM1, SeaSerpentAnimations.SWIM3, SeaSerpentAnimations.SWIM4, SeaSerpentAnimations.SWIM6};
@@ -28,8 +28,10 @@ public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator
         TabulaModel<SeaSerpentEntity> prevPosition = resolve(this.swimPose[prevIndex].getModelId());
         TabulaModel<SeaSerpentEntity> currentPosition = resolve(this.swimPose[currentIndex].getModelId());
         if (prevPosition == null || currentPosition == null) return;
-        float partialTicks = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        float partialTicks = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
         float delta = ((entity.swimCycle) / 10.0F) % 1.0F + (partialTicks / 10.0F);
+        // Sea serpents drive their water movement independently of the vanilla walk animation.
+        float swimPoseWeight = entity.isInWater() ? 1.0F : limbSwingAmount;
 
         for (AdvancedModelBox cube : model.getCubes().values()) {
             if (entity.jumpProgress > 0.0F)
@@ -46,7 +48,7 @@ public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator
             float x = currPositionCube.rotateAngleX;
             float y = currPositionCube.rotateAngleY;
             float z = currPositionCube.rotateAngleZ;
-            this.addToRotateAngle(cube, limbSwingAmount, prevX + delta * this.distance(prevX, x), prevY + delta * this.distance(prevY, y), prevZ + delta * this.distance(prevZ, z));
+            this.addToRotateAngle(cube, swimPoseWeight, prevX + delta * this.distance(prevX, x), prevY + delta * this.distance(prevY, y), prevZ + delta * this.distance(prevZ, z));
 
         }
         if (entity.breathProgress > 0.0F) {
@@ -117,7 +119,7 @@ public class SeaSerpentTabulaModelAnimator extends IceAndFireTabulaModelAnimator
         }
     }
 
-    private static TabulaModel<SeaSerpentEntity> resolve(ResourceLocation id) {
+    private static TabulaModel<SeaSerpentEntity> resolve(Identifier id) {
         return TabulaModelHandlerHelper.getModel(id);
     }
 }

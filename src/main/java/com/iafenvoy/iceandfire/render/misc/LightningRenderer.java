@@ -6,7 +6,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
 
@@ -24,7 +25,7 @@ public class LightningRenderer {
     private Timestamp refreshTimestamp = new Timestamp();
 
     public void render(float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn) {
-        VertexConsumer buffer = bufferIn.getBuffer(RenderType.lightning());
+        VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.lightning());
         Matrix4f matrix = matrixStackIn.last().pose();
         assert this.client.level != null;
         Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
@@ -43,6 +44,26 @@ public class LightningRenderer {
             if (data.bolts.isEmpty() && timestamp.isPassed(data.lastUpdateTimestamp, MAX_OWNER_TRACK_TIME))
                 iter.remove();
         }
+    }
+
+    public void submit(float partialTicks, PoseStack matrixStackIn, SubmitNodeCollector collector, int light) {
+        if (this.client.level == null) return;
+        Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
+        boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
+        if (refresh) this.refreshTimestamp = timestamp;
+        collector.submitCustomGeometry(matrixStackIn, RenderTypes.lightning(), (pose, buffer) -> {
+            for (Iterator<Map.Entry<Object, BoltOwnerData>> iter = this.boltOwners.entrySet().iterator(); iter.hasNext(); ) {
+                Map.Entry<Object, BoltOwnerData> entry = iter.next();
+                BoltOwnerData data = entry.getValue();
+                if (refresh)
+                    data.bolts.removeIf(bolt -> bolt.tick(timestamp));
+                if (data.bolts.isEmpty() && data.lastBolt != null && data.lastBolt.getSpawnFunction().isConsecutive())
+                    data.addBolt(new BoltInstance(data.lastBolt, timestamp), timestamp);
+                data.bolts.forEach(bolt -> bolt.render(pose.pose(), buffer, timestamp));
+                if (data.bolts.isEmpty() && timestamp.isPassed(data.lastUpdateTimestamp, MAX_OWNER_TRACK_TIME))
+                    iter.remove();
+            }
+        });
     }
 
     public void update(Object owner, LightningBoltData newBoltData, float partialTicks) {

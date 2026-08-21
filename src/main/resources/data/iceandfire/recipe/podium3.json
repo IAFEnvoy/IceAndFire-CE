@@ -6,12 +6,8 @@
     "SPS"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:spruce_slab"
-    },
-    "P": {
-      "item": "minecraft:spruce_planks"
-    }
+    "S": "minecraft:spruce_slab",
+    "P": "minecraft:spruce_planks"
   },
   "result": {
     "id": "iceandfire:podium_spruce"

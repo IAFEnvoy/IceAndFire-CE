@@ -6,12 +6,8 @@
     "SPS"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:birch_slab"
-    },
-    "P": {
-      "item": "minecraft:birch_planks"
-    }
+    "S": "minecraft:birch_slab",
+    "P": "minecraft:birch_planks"
   },
   "result": {
     "id": "iceandfire:podium_birch"

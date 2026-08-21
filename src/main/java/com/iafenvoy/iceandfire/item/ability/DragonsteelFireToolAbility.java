@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class DragonsteelFireToolAbility implements PostHitAbility {
     private final PostHitAbility ignite = new IgniteTargetAbility(IafCommonConfig.INSTANCE.tools.dragonsteelFireDuration.getValue());
@@ -25,9 +25,9 @@ public class DragonsteelFireToolAbility implements PostHitAbility {
     }
 
     @Override
-    public void addDescription(List<Component> tooltip) {
+    public void addDescription(Consumer<Component> tooltip) {
         if (this.isEnable()) {
-            tooltip.add(Component.translatable("dragon_sword_fire.hurt2").withStyle(ChatFormatting.DARK_RED));
+            tooltip.accept(Component.translatable("dragon_sword_fire.hurt2").withStyle(ChatFormatting.DARK_RED));
         }
     }
 }

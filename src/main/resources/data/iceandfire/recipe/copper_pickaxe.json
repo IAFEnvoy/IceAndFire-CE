@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "H": {
-      "item": "minecraft:stick"
-    },
-    "M": {
-      "item": "minecraft:copper_ingot"
-    }
+    "H": "minecraft:stick",
+    "M": "minecraft:copper_ingot"
   },
   "pattern": [
     "MMM",

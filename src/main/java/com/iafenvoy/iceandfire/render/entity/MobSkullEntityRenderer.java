@@ -14,19 +14,21 @@ import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Locale;
 import java.util.Map;
 
-public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
-    private static final Map<String, ResourceLocation> SKULL_TEXTURE_CACHE = Maps.newHashMap();
+public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity, LegacyEntityRenderState<MobSkullEntity>> {
+    private static final Map<String, Identifier> SKULL_TEXTURE_CACHE = Maps.newHashMap();
     private final HippogryphModel hippogryphModel;
     private final CyclopsModel cyclopsModel;
     private final CockatriceModel cockatriceModel;
@@ -55,8 +57,19 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
     }
 
     @Override
-    public void render(@NotNull MobSkullEntity entity, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        super.render(entity, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
+    public LegacyEntityRenderState<MobSkullEntity> createRenderState() {
+        return new LegacyEntityRenderState<>();
+    }
+
+    @Override
+    public void extractRenderState(MobSkullEntity entity, LegacyEntityRenderState<MobSkullEntity> state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.entity = entity;
+    }
+
+    @Override
+    public void submit(LegacyEntityRenderState<MobSkullEntity> state, PoseStack matrixStackIn, SubmitNodeCollector collector, @NonNull CameraRenderState camera) {
+        MobSkullEntity entity = state.entity;
         matrixStackIn.pushPose();
         matrixStackIn.mulPose(Axis.XP.rotationDegrees(-180.0F));
         matrixStackIn.mulPose(Axis.YN.rotationDegrees(180.0F - entity.getYRot()));
@@ -64,12 +77,16 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
         float size = 1.0F;
         matrixStackIn.scale(size, size, size);
         matrixStackIn.translate(0, entity.isOnWall() ? -0.24F : -0.12F, 0.5F);
-        this.renderForEnum(entity.getSkullType(), entity.isOnWall(), matrixStackIn, bufferIn, packedLightIn);
+        collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityTranslucent(this.getSkullTexture(entity.getSkullType())), (pose, buffer) -> {
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
+            this.renderForEnum(entity.getSkullType(), entity.isOnWall(), modelStack, buffer, state.lightCoords);
+        });
         matrixStackIn.popPose();
+        super.submit(state, matrixStackIn, collector, camera);
     }
 
-    private void renderForEnum(IafSkullType skull, boolean onWall, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityTranslucent(this.getSkullTexture(skull)));
+    private void renderForEnum(IafSkullType skull, boolean onWall, PoseStack matrixStackIn, VertexConsumer ivertexbuilder, int packedLightIn) {
         switch (skull) {
             case HIPPOGRYPH -> {
                 matrixStackIn.translate(0, -0.0F, -0.2F);
@@ -128,13 +145,12 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity> {
         }
     }
 
-    @Override
-    public @NotNull ResourceLocation getTextureLocation(MobSkullEntity entity) {
+    public @NotNull Identifier getTextureLocation(MobSkullEntity entity) {
         return this.getSkullTexture(entity.getSkullType());
     }
 
-    public ResourceLocation getSkullTexture(IafSkullType skull) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/skulls/skull_" + skull.name().toLowerCase(Locale.ROOT) + ".png");
+    public Identifier getSkullTexture(IafSkullType skull) {
+        Identifier id = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/skulls/skull_" + skull.name().toLowerCase(Locale.ROOT) + ".png");
         return SKULL_TEXTURE_CACHE.computeIfAbsent(id.toString(), k -> id);
     }
 

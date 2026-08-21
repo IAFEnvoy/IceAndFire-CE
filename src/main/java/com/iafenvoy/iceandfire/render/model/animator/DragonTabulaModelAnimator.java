@@ -11,7 +11,7 @@ import com.iafenvoy.uranus.client.model.ITabulaModelAnimator;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.util.LinkedHashMap;
@@ -37,8 +37,8 @@ public abstract class DragonTabulaModelAnimator<T extends DragonBaseEntity> exte
         this.modelType = modelType;
     }
 
-    public static ResourceLocation buildId(IEnumDragonPoses pose, IEnumDragonModelTypes modelType) {
-        return ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, modelType.getModelType() + "dragon/" + modelType.getModelType() + "dragon_" + pose.getPose());
+    public static Identifier buildId(IEnumDragonPoses pose, IEnumDragonModelTypes modelType) {
+        return Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, modelType.getModelType() + "dragon/" + modelType.getModelType() + "dragon_" + pose.getPose());
     }
 
     public void init(TabulaModel<T> model) {
@@ -67,7 +67,7 @@ public abstract class DragonTabulaModelAnimator<T extends DragonBaseEntity> exte
 
         TabulaModel<T> currentPosition = swimming ? this.swimPoses[currentIndex] : walking ? this.walkPoses[currentIndex] : this.flyPoses[currentIndex];
         TabulaModel<T> prevPosition = swimming ? this.swimPoses[prevIndex] : walking ? this.walkPoses[prevIndex] : this.flyPoses[prevIndex];
-        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
         float cyclePos = swimming ? entity.swimCycle : walking ? entity.walkCycle : entity.flightCycle;
         float tickAdvance = (walking || swimming) ? 1.0F : 2.0F;
         float smoothCycle = cyclePos + partialTick * tickAdvance;
@@ -145,7 +145,7 @@ public abstract class DragonTabulaModelAnimator<T extends DragonBaseEntity> exte
                     model.getCube("armL1"), model.getCube("armL2"), this.clawL,
                     model.getCube("armR1"), model.getCube("armR2"), this.clawR,
                     1.0F, 0.5F, 0.5F, -0.15F, -0.15F, 0F,
-                    Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false)
+                    Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)
             );
     }
 
@@ -224,7 +224,7 @@ public abstract class DragonTabulaModelAnimator<T extends DragonBaseEntity> exte
             // TabulaModel customPose = customPose(entity);
             TabulaModel<T> pose = this.getModel(DragonPoses.DEAD);
             if (!this.isRotationEqual(cube, pose.getCube(cube.boxName)))
-                this.transitionTo(cube, pose.getCube(cube.boxName), entity.prevModelDeadProgress + (entity.modelDeadProgress - entity.prevModelDeadProgress) * Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false), 20, cube.boxName.equals("ThighR") || cube.boxName.equals("ThighL"));
+                this.transitionTo(cube, pose.getCube(cube.boxName), entity.prevModelDeadProgress + (entity.modelDeadProgress - entity.prevModelDeadProgress) * Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false), 20, cube.boxName.equals("ThighR") || cube.boxName.equals("ThighL"));
             //Ugly hack to make sure ice dragon models are touching the ground when dead
             if (this instanceof IceDragonTabulaModelAnimator)
                 if (cube.boxName.equals("BodyUpper"))

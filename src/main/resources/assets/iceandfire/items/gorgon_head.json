@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "iceandfire:item/gorgon_head",
+    "model": {
+      "type": "uranus:dynamic"
+    }
+  }
+}

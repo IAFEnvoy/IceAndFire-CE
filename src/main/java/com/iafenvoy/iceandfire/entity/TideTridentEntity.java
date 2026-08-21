@@ -11,9 +11,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrownTrident;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -57,7 +58,7 @@ public class TideTridentEntity extends ThrownTrident {
         if (this.entitiesHit >= this.getMaxPiercing())
             this.dealtDamage = true;
         SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
-        if (entity.hurt(damagesource, f)) {
+        if (entity.hurtOrSimulate(damagesource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) return;
 
             if (entity instanceof LivingEntity livingentity1) {
@@ -68,14 +69,14 @@ public class TideTridentEntity extends ThrownTrident {
         }
 
         float f1 = 1.0F;
-        if (this.level() instanceof ServerLevel && this.level().isThundering() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(this.level().registryAccess(), Enchantments.CHANNELING), this.getPickupItemStackOrigin()) > 0) {
+        if (this.level() instanceof ServerLevel level && level.isThundering() && EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(level.registryAccess(), Enchantments.CHANNELING), this.getPickupItemStackOrigin()) > 0) {
             BlockPos blockpos = entity.blockPosition();
             if (this.level().canSeeSky(blockpos)) {
-                LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(this.level());
-                assert lightningboltentity != null;
-                lightningboltentity.moveTo(Vec3.atCenterOf(blockpos));
+                LightningBolt lightningboltentity = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
+                if (lightningboltentity == null) return;
+                lightningboltentity.snapTo(Vec3.atCenterOf(blockpos));
                 lightningboltentity.setCause(entity1 instanceof ServerPlayer ? (ServerPlayer) entity1 : null);
-                this.level().addFreshEntity(lightningboltentity);
+                level.addFreshEntity(lightningboltentity);
                 soundevent = SoundEvents.TRIDENT_THUNDER.value();
                 f1 = 5.0F;
             }

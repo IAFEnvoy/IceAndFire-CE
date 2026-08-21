@@ -9,7 +9,7 @@ import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public class ForgeRecipeHolder {
     private final EmiStack workstation;
     private final EmiRecipeCategory category;
 
-    public ForgeRecipeHolder(ResourceLocation id, String dragonType, EmiTexture texture, EmiStack workstation) {
+    public ForgeRecipeHolder(Identifier id, String dragonType, EmiTexture texture, EmiStack workstation) {
         this.dragonType = dragonType;
         this.texture = texture;
         this.workstation = workstation;
@@ -51,7 +51,7 @@ public class ForgeRecipeHolder {
         }
 
         @Override
-        public @Nullable ResourceLocation getId() {
+        public @Nullable Identifier getId() {
             return this.entry.id();
         }
 

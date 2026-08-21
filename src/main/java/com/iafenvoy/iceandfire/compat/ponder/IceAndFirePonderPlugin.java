@@ -11,11 +11,11 @@ import net.createmod.ponder.api.registration.PonderPlugin;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
 import net.createmod.ponder.foundation.PonderIndex;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class IceAndFirePonderPlugin implements PonderPlugin {
-    private static final ResourceLocation DRAGON_TAG_ID = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_forge");
+    private static final Identifier DRAGON_TAG_ID = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_forge");
 
     @Override
     public @NotNull String getModId() {
@@ -23,7 +23,7 @@ public class IceAndFirePonderPlugin implements PonderPlugin {
     }
 
     @Override
-    public void registerScenes(@NotNull PonderSceneRegistrationHelper<ResourceLocation> helper) {
+    public void registerScenes(@NotNull PonderSceneRegistrationHelper<Identifier> helper) {
         helper.forComponents(IafBlocks.DRAGONFORGE_FIRE_CORE_DISABLED.getId())
                 .addStoryBoard(DragonForgeStoryBoard.id(IafDragonTypes.FIRE), new DragonForgeStoryBoard<>(IafEntities.FIRE_DRAGON.get()::create, FireDragonEntity.class));
         helper.forComponents(IafBlocks.DRAGONFORGE_ICE_CORE_DISABLED.getId())
@@ -33,7 +33,7 @@ public class IceAndFirePonderPlugin implements PonderPlugin {
     }
 
     @Override
-    public void registerTags(@NotNull PonderTagRegistrationHelper<ResourceLocation> helper) {
+    public void registerTags(@NotNull PonderTagRegistrationHelper<Identifier> helper) {
         helper.registerTag(DRAGON_TAG_ID)
                 .addToIndex()
                 .item(IafBlocks.DRAGONFORGE_FIRE_CORE_DISABLED.get(), true, false)

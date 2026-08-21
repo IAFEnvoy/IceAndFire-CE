@@ -4,11 +4,11 @@ import com.iafenvoy.iceandfire.entity.DreadLichEntity;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.client.model.ModelAnimator;
 import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
-import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.util.Mth;
+import org.jspecify.annotations.NonNull;
 
-public class DreadLichModel extends DreadBaseModel<DreadLichEntity> implements ArmedModel {
+public class DreadLichModel extends DreadBaseModel<DreadLichEntity> {
     public final HideableModelRenderer robe;
     public final HideableModelRenderer mask;
     public final HideableModelRenderer hood;
@@ -89,7 +89,7 @@ public class DreadLichModel extends DreadBaseModel<DreadLichEntity> implements A
     }
 
     @Override
-    public void setupAnim(DreadLichEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setupAnim(@NonNull DreadLichEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         super.setupAnim(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         if (entity.getAnimation() == DreadLichEntity.ANIMATION_SUMMON) {
             this.armRight.rotationPointZ = 0.0F;

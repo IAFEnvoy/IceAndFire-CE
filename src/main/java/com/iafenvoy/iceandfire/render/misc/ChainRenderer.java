@@ -6,23 +6,20 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix4f;
 
 import java.util.List;
 import java.util.UUID;
 
-@OnlyIn(Dist.CLIENT)
 public class ChainRenderer {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/misc/chain_link.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/misc/chain_link.png");
 
     public static void render(LivingEntity entityLivingIn, PoseStack matrixStackIn, MultiBufferSource bufferIn, int lightIn, List<UUID> chainedTo) {
         for (UUID uuid : chainedTo) {
@@ -72,7 +69,7 @@ public class ChainRenderer {
         float f32 = 0.75F;
         float f31 = f4 + f32;
 
-        VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(getTexture()));
+        VertexConsumer ivertexbuilder = bufferIn.getBuffer(RenderTypes.entityCutout(getTexture(), false));
         PoseStack.Pose entry = matrixStackIn.last();
         Matrix4f matrix4f = entry.pose();
         matrixStackIn.pushPose();
@@ -97,7 +94,7 @@ public class ChainRenderer {
         return LivingEntityIn.position().add(0, p_177110_2_, 0);
     }
 
-    public static ResourceLocation getTexture() {
+    public static Identifier getTexture() {
         return TEXTURE;
     }
 }

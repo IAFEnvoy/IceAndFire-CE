@@ -1,0 +1,22 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": ["gui", "ground", "fixed", "none"],
+        "model": {
+          "type": "minecraft:model",
+          "model": "iceandfire:item/tide_trident_inventory"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:special",
+      "base": "iceandfire:item/tide_trident",
+      "model": {
+        "type": "uranus:dynamic"
+      }
+    }
+  }
+}

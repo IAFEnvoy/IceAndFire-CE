@@ -2,25 +2,30 @@ package com.iafenvoy.iceandfire.render.entity.feature;
 
 import com.iafenvoy.iceandfire.entity.GorgonEntity;
 import com.iafenvoy.iceandfire.entity.TrollEntity;
+import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.entity.TrollEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.TrollModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import org.jetbrains.annotations.NotNull;
 
-public class TrollWeaponFeatureRenderer extends RenderLayer<TrollEntity, TrollModel> {
+public class TrollWeaponFeatureRenderer implements LegacyEntityFeature<TrollEntity> {
+    private final TrollModel model;
+
     public TrollWeaponFeatureRenderer(TrollEntityRenderer renderer) {
-        super(renderer);
+        this.model = renderer.getLegacyModel();
     }
 
     @Override
-    public void render(@NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn, TrollEntity troll, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void submit(TrollEntity troll, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int light, int outlineColor) {
         if (troll.getWeaponType() != null && !GorgonEntity.isStoneMob(troll)) {
-            RenderType tex = RenderType.entityCutout(troll.getWeaponType().getTexture());
-            this.getParentModel().renderToBuffer(matrixStackIn, bufferIn.getBuffer(tex), packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+            collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(troll.getWeaponType().getTexture()), (pose, buffer) -> {
+                PoseStack modelStack = new PoseStack();
+                modelStack.last().set(pose);
+                this.model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, outlineColor == 0 ? -1 : outlineColor);
+            });
         }
     }
 }

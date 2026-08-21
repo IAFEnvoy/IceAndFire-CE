@@ -12,12 +12,9 @@ import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
@@ -37,15 +34,17 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+
 
 public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHumanoid, BlacklistedFromStatues, IHasCustomizableAttributes {
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(GhostEntity.class, EntityDataSerializers.INT);
@@ -81,8 +80,10 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    protected @NotNull ResourceKey<LootTable> getDefaultLootTable() {
-        return this.wasFromChest() ? BuiltInLootTables.EMPTY : this.getType().getDefaultLootTable();
+    protected void dropFromLootTable(@NonNull @NonNull ServerLevel level, @NonNull @NonNull DamageSource source, boolean causedByPlayer) {
+        if (!this.wasFromChest()) {
+            super.dropFromLootTable(level, source, causedByPlayer);
+        }
     }
 
     @Override
@@ -112,8 +113,8 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean isInvulnerableTo(@NotNull DamageSource source) {
-        return super.isInvulnerableTo(source) || source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CACTUS)
+    public boolean isInvulnerableTo(@NotNull ServerLevel level, @NotNull DamageSource source) {
+        return super.isInvulnerableTo(level, source) || source.is(DamageTypeTags.IS_FIRE) || source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.CACTUS)
                 || source.is(DamageTypes.DROWN) || source.is(DamageTypes.FALLING_BLOCK) || source.is(DamageTypes.FALLING_ANVIL) || source.is(DamageTypes.SWEET_BERRY_BUSH);
     }
 
@@ -184,15 +185,15 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         });
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, Entity::isAlive));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, entity -> DragonUtils.isAlive(entity) && DragonUtils.isVillager(entity)));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, false, false, (entity, level) -> entity.isAlive()));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, false, false, (entity, level) -> DragonUtils.isAlive(entity) && DragonUtils.isVillager(entity)));
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
         this.noPhysics = true;
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             boolean day = this.isSunBurnTick() && !this.wasFromChest();
             if (day) {
                 if (!this.isDaytimeMode()) {
@@ -216,7 +217,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         } else {
             if (this.getAnimation() == ANIMATION_SCARE && this.getAnimationTick() == 3 && !this.isHauntedShoppingList() && this.random.nextInt(3) == 0) {
                 this.playSound(IafSounds.GHOST_JUMPSCARE.get(), this.getSoundVolume(), this.getVoicePitch());
-                if (this.level().isClientSide) {
+                if (this.level().isClientSide()) {
                     this.level().addParticle(IafParticles.GHOST_APPEARANCE.get(), this.getX(), this.getY(), this.getZ(), this.getId(), 0, 0);
                 }
             }
@@ -224,7 +225,8 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         if (this.getAnimation() == ANIMATION_HIT && this.getTarget() != null) {
             if (this.distanceTo(this.getTarget()) < 1.4D && this.getAnimationTick() >= 4 && this.getAnimationTick() < 6) {
                 this.playSound(IafSounds.GHOST_ATTACK.get(), this.getSoundVolume(), this.getVoicePitch());
-                this.doHurtTarget(this.getTarget());
+                if (this.level() instanceof ServerLevel level)
+                    this.doHurtTarget(level, this.getTarget());
             }
         }
         AnimationHandler.INSTANCE.updateAnimations(this);
@@ -240,9 +242,8 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
         return this.isDaytimeMode() || super.isSilent();
     }
 
-    @Override
     protected boolean isSunBurnTick() {
-        if (this.level().isDay() && !this.level().isClientSide) {
+        if (this.level().isBrightOutside() && !this.level().isClientSide()) {
             float f = this.level().getBrightness(LightLayer.BLOCK, this.blockPosition());
             BlockPos blockpos = this.getVehicle() instanceof Boat ? (new BlockPos(this.getBlockX(), this.getBlockY(), this.getBlockZ())).above() : new BlockPos(this.getBlockX(), this.getBlockY() + 4, this.getBlockZ());
             return f > 0.5F && this.level().canSeeSky(blockpos);
@@ -280,7 +281,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setColor(this.random.nextInt(3));
         if (this.random.nextInt(200) == 0)
@@ -316,23 +317,23 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        this.setColor(compound.getInt("Color"));
-        this.setDaytimeMode(compound.getBoolean("DaytimeMode"));
-        this.setDaytimeCounter(compound.getInt("DaytimeCounter"));
-        this.setFromChest(compound.getBoolean("FromChest"));
+    protected void readAdditionalSaveData(@NonNull @NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setColor(input.getIntOr("Color", 0));
+        this.setDaytimeMode(input.getBooleanOr("DaytimeMode", false));
+        this.setDaytimeCounter(input.getIntOr("DaytimeCounter", 0));
+        this.setFromChest(input.getBooleanOr("FromChest", false));
 
         this.setConfigurableAttributes();
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt("Color", this.getColor());
-        compound.putBoolean("DaytimeMode", this.isDaytimeMode());
-        compound.putInt("DaytimeCounter", this.getDaytimeCounter());
-        compound.putBoolean("FromChest", this.wasFromChest());
+    protected void addAdditionalSaveData(@NonNull @NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("Color", this.getColor());
+        output.putBoolean("DaytimeMode", this.isDaytimeMode());
+        output.putInt("DaytimeCounter", this.getDaytimeCounter());
+        output.putBoolean("FromChest", this.wasFromChest());
 
     }
 

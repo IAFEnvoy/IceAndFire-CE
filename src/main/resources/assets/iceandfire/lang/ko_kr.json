@@ -1218,5 +1218,10 @@
   "sound.iceandfire.subtitle.icedragon_hurt": "아이스 드래곤이 상처를 입음",
   "sound.iceandfire.subtitle.icedragon_death": "아이스 드래곤이 죽음",
   "sound.iceandfire.subtitle.dragonegg_hatch": "드래곤 알이 부화함",
-  "sound.iceandfire.subtitle.dragonflute": "드래곤 피리를 연주함"
+  "sound.iceandfire.subtitle.dragonflute": "드래곤 피리를 연주함",
+  "effect.iceandfire.depetrification": "석화 해제",
+  "item.minecraft.lingering_potion.effect.depetrification": "석화 해제의 잔류형 물약",
+  "item.minecraft.potion.effect.depetrification": "석화 해제의 물약",
+  "item.minecraft.splash_potion.effect.depetrification": "석화 해제의 투척용 물약",
+  "item.minecraft.tipped_arrow.effect.depetrification": "석화 해제의 화살"
 }

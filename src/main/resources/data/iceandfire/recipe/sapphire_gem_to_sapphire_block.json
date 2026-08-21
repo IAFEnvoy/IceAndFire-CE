@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "#": {
-      "item": "iceandfire:sapphire_gem"
-    }
+    "#": "iceandfire:sapphire_gem"
   },
   "pattern": [
     "###",

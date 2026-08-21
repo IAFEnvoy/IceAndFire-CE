@@ -4,7 +4,7 @@ import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.screen.TitleScreenRenderManager;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -34,10 +34,10 @@ public abstract class TitleScreenMixin extends Screen {
             this.splash = renderer;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/LogoRenderer;renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IF)V"))
-    private void renderModBrand(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci, @Local(name = "i") int i) {
+    @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/LogoRenderer;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IF)V"))
+    private void renderModBrand(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci, @Local(name = "widgetFade") float widgetFade) {
         if (!IafClientConfig.INSTANCE.customMainMenu.getValue()) return;
         if (Minecraft.getInstance().screen instanceof TitleScreen)
-            TitleScreenRenderManager.drawModName(guiGraphics, this.width, this.height, 16777215 | i);
+            TitleScreenRenderManager.drawModName(guiGraphics, this.width, this.height, ((int) (widgetFade * 255.0F) << 24) | 0xFFFFFF);
     }
 }

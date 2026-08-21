@@ -5,28 +5,27 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
-
-public class ActivePostHitPickaxeItem extends PickaxeItem {
+public class ActivePostHitPickaxeItem extends Item {
     private final PostHitAbility ability;
 
-    public ActivePostHitPickaxeItem(Tier material, Properties settings, PostHitAbility ability) {
-        super(material, settings);
+    public ActivePostHitPickaxeItem(ToolMaterial material, Properties settings, PostHitAbility ability) {
+        super(settings.pickaxe(material, 1.0F, -2.8F));
         this.ability = ability;
     }
 
     @Override
-    public boolean hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
+    public void hurtEnemy(@NotNull ItemStack stack, @NotNull LivingEntity target, @NotNull LivingEntity attacker) {
         if (this.ability.isEnable()) {
             this.ability.active(stack, target, attacker);
         }
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         if (this.ability.isEnable()) {
             this.ability.addDescription(tooltip);
         }

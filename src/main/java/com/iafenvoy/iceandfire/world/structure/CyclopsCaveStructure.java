@@ -16,10 +16,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
@@ -62,7 +63,7 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
     }
 
     public static class CyclopsCavePiece extends StructurePiece {
-        public static final ResourceKey<LootTable> CYCLOPS_CHEST = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/cyclops_cave"));
+        public static final ResourceKey<LootTable> CYCLOPS_CHEST = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "chest/cyclops_cave"));
 
         protected CyclopsCavePiece(int length, BoundingBox boundingBox) {
             super(IafStructurePieces.CYCLOPS_CAVE.get(), length, boundingBox);
@@ -132,9 +133,9 @@ public class CyclopsCaveStructure extends Structure implements DangerousGenerati
                 }
             }
 
-            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel());
+            CyclopsEntity cyclops = IafEntities.CYCLOPS.get().create(world.getLevel(), EntitySpawnReason.STRUCTURE);
             if (cyclops != null) {
-                cyclops.absMoveTo(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5, random.nextFloat() * 360, 0);
+                cyclops.snapTo(pivot.getX() + 0.5, pivot.getY() + 1.5, pivot.getZ() + 0.5, random.nextFloat() * 360, 0);
                 world.addFreshEntity(cyclops);
             }
         }

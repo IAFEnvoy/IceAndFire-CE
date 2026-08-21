@@ -5,12 +5,8 @@
     "S "
   ],
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "T": {
-      "item": "iceandfire:hippocampus_fin"
-    }
+    "S": "minecraft:stick",
+    "T": "iceandfire:hippocampus_fin"
   },
   "result": {
     "id": "iceandfire:hippocampus_slapper"

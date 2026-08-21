@@ -6,15 +6,9 @@
     "SSS"
   ],
   "key": {
-    "T": {
-      "item": "iceandfire:siren_tear"
-    },
-    "S": {
-      "item": "iceandfire:shiny_scales"
-    },
-    "F": {
-      "item": "iceandfire:dragon_flute"
-    }
+    "T": "iceandfire:siren_tear",
+    "S": "iceandfire:shiny_scales",
+    "F": "iceandfire:dragon_flute"
   },
   "result": {
     "id": "iceandfire:siren_flute"

@@ -10,15 +10,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.Optional;
 
 public class StoneStatueItem extends Item {
@@ -27,8 +29,8 @@ public class StoneStatueItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         if (stack.has(IafDataComponents.STONE_STATUS.get())) {
             StoneStatusComponent component = stack.get(IafDataComponents.STONE_STATUS.get());
             Optional<EntityType<?>> optional = EntityType.byString(component.entityType());
@@ -36,7 +38,7 @@ public class StoneStatueItem extends Item {
                 MutableComponent untranslated;
                 if (component.isPlayer()) untranslated = Component.translatable("entity.minecraft.player");
                 else untranslated = Component.translatable(optional.get().getDescriptionId());
-                tooltip.add(untranslated.withStyle(ChatFormatting.GRAY));
+                tooltip.accept(untranslated.withStyle(ChatFormatting.GRAY));
             }
         }
     }
@@ -50,7 +52,7 @@ public class StoneStatueItem extends Item {
             if (stack.has(IafDataComponents.STONE_STATUS.get())) {
                 StoneStatusComponent component = stack.get(IafDataComponents.STONE_STATUS.get());
                 StoneStatueEntity statue = new StoneStatueEntity(IafEntities.STONE_STATUE.get(), context.getLevel());
-                statue.readAdditionalSaveData(component.nbt());
+                statue.readAdditionalSaveData(TagValueInput.create(ProblemReporter.DISCARDING, statue.registryAccess(), component.nbt()));
                 statue.setTrappedEntityTypeString(component.entityType());
                 double d1 = context.getPlayer().getX() - (context.getClickedPos().getX() + 0.5);
                 double d2 = context.getPlayer().getZ() - (context.getClickedPos().getZ() + 0.5);
@@ -60,8 +62,8 @@ public class StoneStatueItem extends Item {
                 statue.yHeadRot = yaw;
                 statue.yBodyRot = yaw;
                 statue.yBodyRotO = yaw;
-                statue.absMoveTo(context.getClickedPos().getX() + 0.5, context.getClickedPos().getY() + 1, context.getClickedPos().getZ() + 0.5, yaw, 0);
-                if (!context.getLevel().isClientSide) context.getLevel().addFreshEntity(statue);
+                statue.snapTo(context.getClickedPos().getX() + 0.5, context.getClickedPos().getY() + 1, context.getClickedPos().getZ() + 0.5, yaw, 0);
+                if (!context.getLevel().isClientSide()) context.getLevel().addFreshEntity(statue);
                 statue.setCrackAmount(0);
                 if (!context.getPlayer().isCreative()) stack.shrink(1);
                 return InteractionResult.SUCCESS;

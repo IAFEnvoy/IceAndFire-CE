@@ -6,7 +6,7 @@ import com.iafenvoy.jupiter.config.entry.BooleanEntry;
 import com.iafenvoy.jupiter.config.entry.DoubleEntry;
 import com.iafenvoy.jupiter.config.entry.IntegerEntry;
 import com.iafenvoy.jupiter.config.entry.SeparatorEntry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class IafCommonConfig extends AutoInitConfigContainer {
     public static final IafCommonConfig INSTANCE = new IafCommonConfig();
@@ -33,7 +33,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
     public final Misc misc = new Misc();
 
     public IafCommonConfig() {
-        super(ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "common"), "screen.iceandfire.common.title", "./config/iceandfire/iaf-common.json");
+        super(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "common"), "screen.iceandfire.common.title", "./config/iceandfire/iaf-common.json");
     }
 
     @SuppressWarnings("unused")

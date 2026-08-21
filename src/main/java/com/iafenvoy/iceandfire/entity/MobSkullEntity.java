@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.entity;
 import com.iafenvoy.iceandfire.data.IafSkullType;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.entity.util.IDeadMob;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -22,7 +21,10 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class MobSkullEntity extends Animal implements BlacklistedFromStatues, IDeadMob {
     private static final EntityDataAccessor<Float> SKULL_DIRECTION = SynchedEntityData.defineId(MobSkullEntity.class, EntityDataSerializers.FLOAT);
@@ -30,7 +32,6 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
 
     public MobSkullEntity(EntityType<? extends MobSkullEntity> t, Level worldIn) {
         super(t, worldIn);
-        this.noCulling = true;
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -42,8 +43,8 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource i) {
-        return i.getEntity() != null;
+    public boolean isInvulnerableTo(@NonNull ServerLevel level, DamageSource source) {
+        return source.getEntity() != null;
     }
 
     @Override
@@ -96,18 +97,17 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
     }
 
     @Override
-    public boolean hurt(@NotNull DamageSource var1, float var2) {
-        this.turnIntoItem();
-        return super.hurt(var1, var2);
+    public boolean hurtServer(@NotNull ServerLevel level, @NotNull DamageSource source, float amount) {
+        this.turnIntoItem(level);
+        return true;
     }
 
-    public void turnIntoItem() {
+    public void turnIntoItem(ServerLevel level) {
         if (this.isRemoved())
             return;
         this.remove(RemovalReason.DISCARDED);
         ItemStack stack = new ItemStack(this.getSkullType().getSkullItem(), 1);
-        if (!this.level().isClientSide)
-            this.spawnAtLocation(stack, 0.0F);
+        this.spawnAtLocation(level, stack);
     }
 
     @Override
@@ -124,17 +124,17 @@ public class MobSkullEntity extends Animal implements BlacklistedFromStatues, ID
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        this.setYRot(compound.getFloat("SkullYaw"));
-        this.setEnumOrdinal(compound.getInt("SkullType"));
-        super.readAdditionalSaveData(compound);
+    public void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.setYRot(input.getFloatOr("SkullYaw", 0.0F));
+        this.setEnumOrdinal(input.getIntOr("SkullType", 0));
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        compound.putFloat("SkullYaw", this.getYRot());
-        compound.putInt("SkullType", this.getEnumOrdinal());
-        super.addAdditionalSaveData(compound);
+    public void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putFloat("SkullYaw", this.getYRot());
+        output.putInt("SkullType", this.getEnumOrdinal());
     }
 
     @Override

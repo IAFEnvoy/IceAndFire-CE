@@ -46,9 +46,9 @@ public final class ClientNetworkHandlers {
             Entity entity = player.level().getEntity(payload.dragonId());
             if (entity instanceof ISyncMount && entity instanceof TamableAnimal tamable && tamable.isOwnedBy(player) && tamable.distanceTo(player) < 14) {
                 if (payload.ride()) {
-                    if (payload.baby()) tamable.startRiding(player, true);
+                    if (payload.baby()) tamable.startRiding(player, true, true);
                     else {
-                        player.startRiding(tamable, true);
+                        player.startRiding(tamable, true, true);
                         if (IafClientConfig.INSTANCE.dragonAuto3rdPerson.getValue()) {
                             prev = options.getCameraType();
                             options.setCameraType(CameraType.THIRD_PERSON_BACK);

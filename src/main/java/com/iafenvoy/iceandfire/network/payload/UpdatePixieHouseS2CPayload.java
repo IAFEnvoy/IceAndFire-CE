@@ -8,12 +8,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public record UpdatePixieHouseS2CPayload(BlockPos blockPos, boolean hasPixie,
                                          int pixieType) implements CustomPacketPayload {
-    private static final ResourceLocation IDENTIFIER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "update_pixie_house");
+    private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "update_pixie_house");
     public static final Type<UpdatePixieHouseS2CPayload> ID = new Type<>(IDENTIFIER);
     public static final StreamCodec<ByteBuf, UpdatePixieHouseS2CPayload> CODEC = ByteBufCodecs.fromCodec(RecordCodecBuilder.create(i -> i.group(
             BlockPos.CODEC.fieldOf("blockPos").forGetter(UpdatePixieHouseS2CPayload::blockPos),

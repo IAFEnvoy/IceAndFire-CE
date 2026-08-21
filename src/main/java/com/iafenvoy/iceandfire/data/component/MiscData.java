@@ -49,7 +49,7 @@ public class MiscData extends NeedUpdateData<LivingEntity> {
                 return;
             }
             if (entity instanceof Mob mob) {
-                mob.setLastHurtByPlayer(null);
+                mob.setLastHurtByPlayer((UUID) null, 0);
                 mob.setLastHurtByMob(null);
                 mob.setTarget(null);
                 mob.setAggressive(false);

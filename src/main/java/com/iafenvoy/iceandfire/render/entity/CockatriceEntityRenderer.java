@@ -2,33 +2,33 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
-import com.iafenvoy.iceandfire.entity.util.IafEntityUtil;
-import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
-import com.iafenvoy.iceandfire.render.model.CockatriceChickModel;
 import com.iafenvoy.iceandfire.render.model.CockatriceModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
-public class CockatriceEntityRenderer extends MobRenderer<CockatriceEntity, AdvancedEntityModel<CockatriceEntity>> {
-    public static final ResourceLocation TEXTURE_ROOSTER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_0.png");
-    public static final ResourceLocation TEXTURE_HEN = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_1.png");
-    public static final ResourceLocation TEXTURE_ROOSTER_CHICK = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_0_chick.png");
-    public static final ResourceLocation TEXTURE_HEN_CHICK = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_1_chick.png");
+public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, LegacyEntityRenderState<CockatriceEntity>> {
+    public static final Identifier TEXTURE_ROOSTER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_0.png");
+    public static final Identifier TEXTURE_HEN = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_1.png");
+    public static final Identifier TEXTURE_ROOSTER_CHICK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_0_chick.png");
+    public static final Identifier TEXTURE_HEN_CHICK = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/cockatrice/cockatrice_1_chick.png");
     public static final CockatriceModel ADULT_MODEL = new CockatriceModel();
     public static final CockatriceChickModel BABY_MODEL = new CockatriceChickModel();
 
     public CockatriceEntityRenderer(EntityRendererProvider.Context context) {
-        super(context, new CockatriceModel(), 0.6F);
+        super(context);
+        this.shadowRadius = 0.6F;
     }
 
     private Vec3 getPosition(LivingEntity LivingEntityIn, double p_177110_2_) {
@@ -55,24 +55,39 @@ public class CockatriceEntityRenderer extends MobRenderer<CockatriceEntity, Adva
         }
     }
 
-    @Override
-    public void render(CockatriceEntity entityIn, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        this.model = entityIn.isBaby() ? BABY_MODEL : ADULT_MODEL;
-        super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-        LivingEntity livingentity = entityIn.getTargetedEntity();
-        boolean blindness = entityIn.hasEffect(MobEffects.BLINDNESS) || livingentity != null && livingentity.hasEffect(MobEffects.BLINDNESS);
-        if (!blindness && livingentity != null && IafEntityUtil.isEntityLookingAt(entityIn, livingentity, CockatriceEntity.VIEW_RADIUS) && IafEntityUtil.isEntityLookingAt(livingentity, entityIn, CockatriceEntity.VIEW_RADIUS))
-            CockatriceBeamRenderer.render(entityIn, livingentity, matrixStackIn, bufferIn, partialTicks);
-    }
-
-    @Override
-    protected void scale(CockatriceEntity entity, @NotNull PoseStack matrixStackIn, float partialTickTime) {
+    protected void scale(CockatriceEntity entity, @NotNull PoseStack matrixStackIn) {
         if (entity.isBaby())
             matrixStackIn.scale(0.5F, 0.5F, 0.5F);
     }
 
-    @Override
-    public @NotNull ResourceLocation getTextureLocation(CockatriceEntity cockatrice) {
+    public @NotNull Identifier getTextureLocation(CockatriceEntity cockatrice) {
         return cockatrice.isBaby() ? cockatrice.isHen() ? TEXTURE_HEN_CHICK : TEXTURE_ROOSTER_CHICK : cockatrice.isHen() ? TEXTURE_HEN : TEXTURE_ROOSTER;
+    }
+
+    @Override
+    public LegacyEntityRenderState<CockatriceEntity> createRenderState() {
+        return new LegacyEntityRenderState<>();
+    }
+
+    @Override
+    public void extractRenderState(CockatriceEntity entity, LegacyEntityRenderState<CockatriceEntity> state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.entity = entity;
+    }
+
+    @Override
+    public void submit(LegacyEntityRenderState<CockatriceEntity> state, PoseStack poseStack, SubmitNodeCollector collector, @NonNull CameraRenderState camera) {
+        CockatriceEntity entity = state.entity;
+        AdvancedEntityModel<CockatriceEntity> model = entity.isBaby() ? BABY_MODEL : ADULT_MODEL;
+        poseStack.pushPose();
+        poseStack.scale(-1.0F, -1.0F, 1.0F);
+        this.scale(entity, poseStack);
+        model.setupAnim(entity, 0.0F, 0.0F, state.ageInTicks, 0.0F, 0.0F);
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity)), (pose, buffer) -> {
+            PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+            model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor == 0 ? -1 : state.outlineColor);
+        });
+        poseStack.popPose();
+        super.submit(state, poseStack, collector, camera);
     }
 }

@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.SeaSerpentEntity;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.player.Player;
@@ -86,7 +87,7 @@ public class SeaSerpentAIAttackMeleeGoal extends Goal {
             return false;
         else if (!this.longMemory)
             return !this.attacker.getNavigation().isDone();
-        else if (!this.attacker.isWithinRestriction(LivingEntity.blockPosition()))
+        else if (!this.attacker.isWithinHome(LivingEntity.blockPosition()))
             return false;
         else
             return !(LivingEntity instanceof Player) || !LivingEntity.isSpectator() && !((Player) LivingEntity).isCreative();
@@ -153,7 +154,8 @@ public class SeaSerpentAIAttackMeleeGoal extends Goal {
         if (this.attacker.isTouchingMob(enemy)) {
             this.attackTick = 20;
             this.attacker.swing(InteractionHand.MAIN_HAND);
-            this.attacker.doHurtTarget(enemy);
+            if (this.attacker.level() instanceof ServerLevel level)
+                this.attacker.doHurtTarget(level, enemy);
         }
     }
 

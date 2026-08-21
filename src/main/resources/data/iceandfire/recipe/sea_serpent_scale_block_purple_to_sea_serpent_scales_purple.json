@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "iceandfire:sea_serpent_scale_block_purple"
-    }
+    "iceandfire:sea_serpent_scale_block_purple"
   ],
   "result": {
     "count": 9,

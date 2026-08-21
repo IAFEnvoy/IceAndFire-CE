@@ -7,15 +7,14 @@ import com.iafenvoy.iceandfire.render.entity.feature.HydraHeadFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.HydraBodyModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-public class HydraEntityRenderer extends MobRenderer<HydraEntity, HydraBodyModel> {
-    public static final ResourceLocation TEXUTURE_0 = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_0.png");
-    public static final ResourceLocation TEXUTURE_1 = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_1.png");
-    public static final ResourceLocation TEXUTURE_2 = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_2.png");
-    public static final ResourceLocation TEXUTURE_EYES = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_eyes.png");
+public class HydraEntityRenderer extends LegacyMobRenderer<HydraEntity, HydraBodyModel> {
+    public static final Identifier TEXUTURE_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_0.png");
+    public static final Identifier TEXUTURE_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_1.png");
+    public static final Identifier TEXUTURE_2 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_2.png");
+    public static final Identifier TEXUTURE_EYES = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/hydra/hydra_eyes.png");
 
     public HydraEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new HydraBodyModel(), 1.2F);
@@ -29,7 +28,7 @@ public class HydraEntityRenderer extends MobRenderer<HydraEntity, HydraBodyModel
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(HydraEntity gorgon) {
+    public @NotNull Identifier getTextureLocation(HydraEntity gorgon) {
         return switch (gorgon.getVariant()) {
             case 1 -> TEXUTURE_1;
             case 2 -> TEXUTURE_2;

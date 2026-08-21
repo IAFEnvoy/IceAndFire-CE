@@ -13,11 +13,10 @@ import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.players.OldUsersConverter;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -36,9 +35,12 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -50,7 +52,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     public static final Animation ANIMATION_SHOOT_ARROWS = Animation.create(30);
     public static final Animation ANIMATION_SPEAK = Animation.create(10);
     private static final int FLIGHT_CHANCE_PER_TICK = 100;
-    private static final EntityDataAccessor<Optional<UUID>> VICTOR_ENTITY = SynchedEntityData.defineId(StymphalianBirdEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> VICTOR_ENTITY = SynchedEntityData.defineId(StymphalianBirdEntity.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
     private static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(StymphalianBirdEntity.class, EntityDataSerializers.BOOLEAN);
     public float flyProgress;
     public BlockPos airTarget;
@@ -106,50 +108,34 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(@NonNull ServerLevel level) {
         return 10;
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!this.level().isClientSide && this.level().getDifficulty() == Difficulty.PEACEFUL) {
+        if (!this.level().isClientSide() && this.level().getDifficulty() == Difficulty.PEACEFUL) {
             this.remove(RemovalReason.DISCARDED);
         }
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        if (this.getVictorId() != null) {
-            tag.putUUID("VictorUUID", this.getVictorId());
-        }
-        tag.putBoolean("Flying", this.isFlying());
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        EntityReference.store(this.entityData.get(VICTOR_ENTITY).orElse(null), output, "VictorUUID");
+        output.putBoolean("Flying", this.isFlying());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        UUID s;
-
-        if (tag.hasUUID("VictorUUID")) {
-            s = tag.getUUID("VictorUUID");
-        } else {
-            String s1 = tag.getString("VictorUUID");
-            s = OldUsersConverter.convertMobOwnerIfNecessary(this.getServer(), s1);
-        }
-
-        if (s != null) {
-            try {
-                this.setVictorId(s);
-            } catch (Throwable ignored) {
-            }
-        }
-        this.setFlying(tag.getBoolean("Flying"));
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.entityData.set(VICTOR_ENTITY, Optional.ofNullable(EntityReference.readWithOldOwnerConversion(input, "VictorUUID", this.level())));
+        this.setFlying(input.getBooleanOr("Flying", false));
     }
 
     public boolean isFlying() {
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             return this.isFlying = this.entityData.get(FLYING);
         }
         return this.isFlying;
@@ -157,14 +143,14 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
 
     public void setFlying(boolean flying) {
         this.entityData.set(FLYING, flying);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.isFlying = flying;
         }
     }
 
     @Override
     public void die(DamageSource cause) {
-        if (cause.getEntity() != null && cause.getEntity() instanceof LivingEntity && !this.level().isClientSide) {
+        if (cause.getEntity() != null && cause.getEntity() instanceof LivingEntity && !this.level().isClientSide()) {
             this.setVictorId(cause.getEntity().getUUID());
             if (this.flock != null) {
                 this.flock.setFearTarget((LivingEntity) cause.getEntity());
@@ -174,20 +160,15 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     public UUID getVictorId() {
-        return this.entityData.get(VICTOR_ENTITY).orElse(null);
+        return this.entityData.get(VICTOR_ENTITY).map(EntityReference::getUUID).orElse(null);
     }
 
     public void setVictorId(UUID uuid) {
-        this.entityData.set(VICTOR_ENTITY, Optional.ofNullable(uuid));
+        this.entityData.set(VICTOR_ENTITY, Optional.ofNullable(uuid).map(EntityReference::of));
     }
 
     public LivingEntity getVictor() {
-        try {
-            UUID uuid = this.getVictorId();
-            return uuid == null ? null : this.level().getPlayerByUUID(uuid);
-        } catch (IllegalArgumentException var2) {
-            return null;
-        }
+        return EntityReference.getLivingEntity(this.entityData.get(VICTOR_ENTITY).orElse(null), this.level());
     }
 
     public void setVictor(LivingEntity player) {
@@ -203,7 +184,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NotNull ServerLevel level, @NotNull Entity entityIn) {
         if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_PECK);
         }
@@ -247,7 +228,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
             }
             this.flock.update();
         }
-        if (!this.level().isClientSide && this.getTarget() != null && this.getTarget().isAlive()) {
+        if (!this.level().isClientSide() && this.getTarget() != null && this.getTarget().isAlive()) {
             double dist = this.distanceToSqr(this.getTarget());
             if (this.getAnimation() == ANIMATION_PECK && this.getAnimationTick() == 7) {
                 if (dist < 1.5F) {
@@ -294,7 +275,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
         } else if (!flying && this.flyProgress > 0.0F) {
             this.flyProgress -= 1F;
         }
-        if (!this.isFlying() && this.airTarget != null && this.onGround() && !this.level().isClientSide) {
+        if (!this.isFlying() && this.airTarget != null && this.onGround() && !this.level().isClientSide()) {
             this.airTarget = null;
         }
         if (this.isFlying() && this.getTarget() == null) {
@@ -302,27 +283,27 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
         } else if (this.getTarget() != null) {
             this.flyTowardsTarget();
         }
-        if (!this.level().isClientSide && this.doesWantToLand() && !this.aiFlightLaunch && this.getAnimation() != ANIMATION_SHOOT_ARROWS) {
+        if (!this.level().isClientSide() && this.doesWantToLand() && !this.aiFlightLaunch && this.getAnimation() != ANIMATION_SHOOT_ARROWS) {
             this.setFlying(false);
             this.airTarget = null;
         }
-        if (!this.level().isClientSide && this.isFree(0, 0, 0) && !this.isFlying()) {
+        if (!this.level().isClientSide() && this.isFree(0, 0, 0) && !this.isFlying()) {
             this.setFlying(true);
             this.launchTicks = 0;
             this.flyTicks = 0;
             this.aiFlightLaunch = true;
         }
-        if (!this.level().isClientSide && this.onGround() && this.isFlying() && !this.aiFlightLaunch && this.getAnimation() != ANIMATION_SHOOT_ARROWS) {
+        if (!this.level().isClientSide() && this.onGround() && this.isFlying() && !this.aiFlightLaunch && this.getAnimation() != ANIMATION_SHOOT_ARROWS) {
             this.setFlying(false);
             this.airTarget = null;
         }
-        if (!this.level().isClientSide && (this.flock == null || this.flock.isLeader(this)) && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isFlying() && this.getPassengers().isEmpty() && !this.isBaby() && this.onGround()) {
+        if (!this.level().isClientSide() && (this.flock == null || this.flock.isLeader(this)) && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isFlying() && this.getPassengers().isEmpty() && !this.isBaby() && this.onGround()) {
             this.setFlying(true);
             this.launchTicks = 0;
             this.flyTicks = 0;
             this.aiFlightLaunch = true;
         }
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             if (this.aiFlightLaunch && this.launchTicks < 40) {
                 this.launchTicks++;
             } else {
@@ -340,7 +321,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
         } else {
             this.airBorneCounter = 0;
         }
-        if (this.getAnimation() == ANIMATION_SHOOT_ARROWS && !this.isFlying() && !this.level().isClientSide) {
+        if (this.getAnimation() == ANIMATION_SHOOT_ARROWS && !this.isFlying() && !this.level().isClientSide()) {
             this.setFlying(true);
             this.aiFlightLaunch = true;
         }
@@ -428,7 +409,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(IafCommonConfig.INSTANCE.stymphalianBird.targetSearchLength.getValue());
         return spawnDataIn;

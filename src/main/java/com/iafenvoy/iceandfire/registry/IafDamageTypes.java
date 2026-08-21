@@ -6,7 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -15,15 +15,15 @@ import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public final class IafDamageTypes {
-    public static final ResourceKey<DamageType> BONUS = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "bonus"));
-    public static final ResourceKey<DamageType> GORGON_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "gorgon"));
-    public static final ResourceKey<DamageType> DRAGON_FIRE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_fire"));
-    public static final ResourceKey<DamageType> DRAGON_ICE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_ice"));
-    public static final ResourceKey<DamageType> DRAGON_LIGHTNING_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_lightning"));
+    public static final ResourceKey<DamageType> BONUS = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "bonus"));
+    public static final ResourceKey<DamageType> GORGON_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "gorgon"));
+    public static final ResourceKey<DamageType> DRAGON_FIRE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_fire"));
+    public static final ResourceKey<DamageType> DRAGON_ICE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_ice"));
+    public static final ResourceKey<DamageType> DRAGON_LIGHTNING_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "dragon_lightning"));
 
     private static Holder<DamageType> get(Entity entity, ResourceKey<DamageType> key) {
         Registry<DamageType> registry = entity.level().damageSources.damageTypes;
-        return registry.getHolder(key).orElse(registry.getHolderOrThrow(DamageTypes.FELL_OUT_OF_WORLD));
+        return registry.get(key).orElseGet(() -> registry.get(DamageTypes.FELL_OUT_OF_WORLD).orElseThrow());
     }
 
     public static DamageSource bonusDamage(Entity attacker) {

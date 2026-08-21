@@ -5,12 +5,11 @@ import com.iafenvoy.iceandfire.entity.StymphalianBirdEntity;
 import com.iafenvoy.iceandfire.render.model.StymphalianBirdModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
-public class StymphalianBirdEntityRenderer extends MobRenderer<StymphalianBirdEntity, StymphalianBirdModel> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/stymphalianbird/stymphalian_bird.png");
+public class StymphalianBirdEntityRenderer extends LegacyMobRenderer<StymphalianBirdEntity, StymphalianBirdModel> {
+    public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/entity/stymphalianbird/stymphalian_bird.png");
 
     public StymphalianBirdEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new StymphalianBirdModel(), 0.6F);
@@ -22,7 +21,7 @@ public class StymphalianBirdEntityRenderer extends MobRenderer<StymphalianBirdEn
     }
 
     @Override
-    public @NotNull ResourceLocation getTextureLocation(@NotNull StymphalianBirdEntity cyclops) {
+    public @NotNull Identifier getTextureLocation(@NotNull StymphalianBirdEntity cyclops) {
         return TEXTURE;
     }
 }

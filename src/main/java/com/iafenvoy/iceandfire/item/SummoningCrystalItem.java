@@ -9,6 +9,7 @@ import com.iafenvoy.iceandfire.world.DragonPosWorldData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,13 +19,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class SummoningCrystalItem extends Item {
     public SummoningCrystalItem() {
@@ -32,8 +35,8 @@ public class SummoningCrystalItem extends Item {
     }
 
     @Override
-    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level world, @NotNull Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel world, @NotNull Entity entity, EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
         //Data Fix
         if (stack.has(IafDataComponents.NBT_COMPOUND.get())) {
             stack.set(IafDataComponents.CRYSTAL_DRAGON_DATA.get(), stack.get(IafDataComponents.NBT_COMPOUND.get()));
@@ -44,33 +47,32 @@ public class SummoningCrystalItem extends Item {
     public static boolean hasDragon(ItemStack stack) {
         CompoundTag nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (stack.getItem() instanceof SummoningCrystalItem && nbt != null)
-            for (String tagInfo : nbt.getAllKeys())
+            for (String tagInfo : nbt.keySet())
                 if (tagInfo.contains("Dragon"))
                     return true;
         return false;
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
-        super.appendHoverText(stack, context, tooltip, type);
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull TooltipDisplay display, @NotNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+        super.appendHoverText(stack, context, display, tooltip, type);
         boolean flag = false;
         String desc = "entity.iceandfire.fire_dragon";
         if (stack.getItem() == IafItems.SUMMONING_CRYSTAL_ICE.get()) desc = "entity.iceandfire.ice_dragon";
         if (stack.getItem() == IafItems.SUMMONING_CRYSTAL_LIGHTNING.get()) desc = "entity.iceandfire.lightning_dragon";
         CompoundTag nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (nbt != null)
-            for (String tagInfo : nbt.getAllKeys())
+            for (String tagInfo : nbt.keySet())
                 if (tagInfo.contains("Dragon")) {
-                    CompoundTag dragonTag = nbt.getCompound(tagInfo);
+                    CompoundTag dragonTag = nbt.getCompoundOrEmpty(tagInfo);
                     String dragonName = I18n.get(desc);
-                    if (!dragonTag.getString("CustomName").isEmpty())
-                        dragonName = dragonTag.getString("CustomName");
-                    tooltip.add(Component.translatable("item.iceandfire.summoning_crystal.bound", dragonName).withStyle(ChatFormatting.GRAY));
+                    dragonName = dragonTag.getStringOr("CustomName", dragonName);
+                    tooltip.accept(Component.translatable("item.iceandfire.summoning_crystal.bound", dragonName).withStyle(ChatFormatting.GRAY));
                     flag = true;
                 }
         if (!flag) {
-            tooltip.add(Component.translatable("item.iceandfire.summoning_crystal.desc_0").withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("item.iceandfire.summoning_crystal.desc_1").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("item.iceandfire.summoning_crystal.desc_0").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("item.iceandfire.summoning_crystal.desc_1").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -84,11 +86,12 @@ public class SummoningCrystalItem extends Item {
         boolean displayError = false;
         CompoundTag nbt = stack.get(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
         if (nbt != null && stack.getItem() == this && hasDragon(stack)) {
-            for (String tagInfo : nbt.getAllKeys()) {
+            for (String tagInfo : nbt.keySet()) {
                 if (tagInfo.contains("Dragon")) {
-                    CompoundTag dragonTag = nbt.getCompound(tagInfo);
-                    UUID id = dragonTag.getUUID("DragonUUID");
-                    if (!context.getLevel().isClientSide) {
+                    CompoundTag dragonTag = nbt.getCompoundOrEmpty(tagInfo);
+                    UUID id = dragonTag.read("DragonUUID", UUIDUtil.CODEC).orElse(null);
+                    if (id == null) continue;
+                    if (!context.getLevel().isClientSide()) {
                         try {
                             Entity entity = context.getLevel().getServer().getLevel(context.getPlayer().level().dimension()).getEntity(id);
                             if (entity != null) {
@@ -105,10 +108,12 @@ public class SummoningCrystalItem extends Item {
                             dragonChunkPos = data.getDragonPos(id);
                         if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {
                             try {
-                                if (!flag && data != null && context.getLevel().isClientSide) {//server side but couldn't find dragon
+                                if (!flag && data != null && !context.getLevel().isClientSide()) {
                                     ServerLevel serverWorld = (ServerLevel) context.getLevel();
-                                    ChunkPos pos = new ChunkPos(dragonChunkPos);
-                                    serverWorld.setChunkForced(pos.x, pos.z, true);
+                                    if (dragonChunkPos != null) {
+                                        ChunkPos pos = new ChunkPos(dragonChunkPos.getX() >> 4, dragonChunkPos.getZ() >> 4);
+                                        serverWorld.setChunkForced(pos.x(), pos.z(), true);
+                                    }
                                 }
                             } catch (Exception e) {
                                 IceAndFire.LOGGER.warn("Could not load chunk when summoning dragon", e);
@@ -121,16 +126,16 @@ public class SummoningCrystalItem extends Item {
                 context.getPlayer().playSound(SoundEvents.ENDERMAN_TELEPORT, 1, 1);
                 context.getPlayer().playSound(SoundEvents.GLASS_BREAK, 1, 1);
                 context.getPlayer().swing(context.getHand());
-                context.getPlayer().displayClientMessage(Component.translatable("message.iceandfire.dragonTeleport"), true);
+                context.getPlayer().sendSystemMessage(Component.translatable("message.iceandfire.dragonTeleport"));
                 stack.remove(IafDataComponents.CRYSTAL_DRAGON_DATA.get());
             } else if (displayError)
-                context.getPlayer().displayClientMessage(Component.translatable("message.iceandfire.noDragonTeleport"), true);
+                context.getPlayer().sendSystemMessage(Component.translatable("message.iceandfire.noDragonTeleport"));
         }
         return InteractionResult.PASS;
     }
 
     public void summonEntity(Entity entity, Level worldIn, BlockPos offsetPos, float yaw) {
-        entity.moveTo(offsetPos.getX() + 0.5D, offsetPos.getY() + 0.5D, offsetPos.getZ() + 0.5D, yaw, 0);
+        entity.snapTo(offsetPos.getX() + 0.5D, offsetPos.getY() + 0.5D, offsetPos.getZ() + 0.5D, yaw, 0);
         if (entity instanceof DragonBaseEntity dragon)
             dragon.setCrystalBound(false);
         if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {

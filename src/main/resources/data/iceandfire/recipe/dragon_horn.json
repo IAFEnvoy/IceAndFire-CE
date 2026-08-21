@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "iceandfire:dragonbone"
-    },
-    "I": {
-      "item": "minecraft:stick"
-    }
+    "B": "iceandfire:dragonbone",
+    "I": "minecraft:stick"
   },
   "pattern": [
     "  B",

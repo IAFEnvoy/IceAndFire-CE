@@ -6,12 +6,8 @@
     "SPS"
   ],
   "key": {
-    "S": {
-      "item": "minecraft:acacia_slab"
-    },
-    "P": {
-      "item": "minecraft:acacia_planks"
-    }
+    "S": "minecraft:acacia_slab",
+    "P": "minecraft:acacia_planks"
   },
   "result": {
     "id": "iceandfire:podium_acacia"

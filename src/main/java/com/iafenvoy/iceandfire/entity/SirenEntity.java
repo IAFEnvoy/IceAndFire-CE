@@ -20,12 +20,9 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -45,7 +42,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.AmphibiousPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -53,15 +50,18 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 
 public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFear, IHasCustomizableAttributes {
     public static final int SEARCH_RANGE = 32;
-    public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof Player player && !player.isCreative() && !entity.isSpectator()) || entity.getType().is(IafEntityTags.SIREN_CHARMABLE);
+    public static final Predicate<Entity> SIREN_PREY = entity -> (entity instanceof Player player && !player.isCreative() && !entity.isSpectator()) || entity.getType().builtInRegistryHolder().is(IafEntityTags.SIREN_CHARMABLE);
     public static final Animation ANIMATION_BITE = Animation.create(20);
     public static final Animation ANIMATION_PULL = Animation.create(20);
     private static final EntityDataAccessor<Integer> HAIR_COLOR = SynchedEntityData.defineId(SirenEntity.class, EntityDataSerializers.INT);
@@ -85,7 +85,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     public SirenEntity(EntityType<SirenEntity> t, Level worldIn) {
         super(t, worldIn);
         this.switchNavigator(true);
-        if (worldIn.isClientSide) this.tail_buffer = new ChainBuffer();
+        if (worldIn.isClientSide()) this.tail_buffer = new ChainBuffer();
     }
 
     public static boolean isWearingEarplugs(LivingEntity entity) {
@@ -117,12 +117,12 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F, 1.0F));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, entity -> entity instanceof Player player && SirenEntity.this.isAgressive() && !(player.isCreative() || player.isSpectator())));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, 10, true, false, entity -> SirenEntity.this.isAgressive()));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, (entity, level) -> entity instanceof Player player && SirenEntity.this.isAgressive() && !(player.isCreative() || player.isSpectator())));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, 10, true, false, (entity, level) -> SirenEntity.this.isAgressive()));
     }
 
     @Override
-    public int getBaseExperienceReward() {
+    public int getBaseExperienceReward(@NonNull ServerLevel level) {
         return 8;
     }
 
@@ -132,7 +132,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NonNull ServerLevel level, @NotNull Entity entityIn) {
         if (this.getRandom().nextInt(2) == 0) {
             if (this.getAnimation() != ANIMATION_PULL) {
                 this.setAnimation(ANIMATION_PULL);
@@ -188,7 +188,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
             this.singCooldown--;
             this.setSinging(false);
         }
-        if (!this.level().isClientSide && attackTarget == null && !this.isAgressive())
+        if (!this.level().isClientSide() && attackTarget == null && !this.isAgressive())
             this.setSinging(true);
         if (this.getAnimation() == ANIMATION_BITE && attackTarget != null && this.distanceToSqr(attackTarget) < 7D && this.getAnimationTick() == 5)
             attackTarget.hurt(this.level().damageSources().mobAttack(this), (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());
@@ -208,12 +208,12 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
             attackTarget.setXRot(updateRotation(attackTarget.getXRot(), f1, 30F));
             attackTarget.setYRot(updateRotation(attackTarget.getYRot(), f, 30F));
         }
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             this.tail_buffer.calculateChainSwingBuffer(40, 10, 2.5F, this);
         if (this.isAgressive()) this.ticksAgressive++;
         else this.ticksAgressive = 0;
 
-        if (this.ticksAgressive > 300 && this.isAgressive() && attackTarget == null && !this.level().isClientSide) {
+        if (this.ticksAgressive > 300 && this.isAgressive() && attackTarget == null && !this.level().isClientSide()) {
             this.setAggressive(false);
             this.ticksAgressive = 0;
             this.setSinging(false);
@@ -226,7 +226,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
             this.setSwimming(false);
         }
         LivingEntity target = this.getTarget();
-        boolean pathOnHighGround = this.isPathOnHighGround() || !this.level().isClientSide && target != null && !target.isInWater();
+        boolean pathOnHighGround = this.isPathOnHighGround() || !this.level().isClientSide() && target != null && !target.isInWater();
         if (target == null || !target.isInWater()) {
             if (pathOnHighGround && this.isInWater()) {
                 this.jumpFromGround();
@@ -258,7 +258,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         } else if (!swimming && this.swimProgress > 0.0F) {
             this.swimProgress -= 0.5F;
         }
-        if (!this.level().isClientSide && !GorgonEntity.isStoneMob(this) && this.isActuallySinging()) {
+        if (!this.level().isClientSide() && !GorgonEntity.isStoneMob(this) && this.isActuallySinging()) {
             if (this.tickCount % 20 == 0) {
                 List<LivingEntity> targets = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(50, 12, 50), SIREN_PREY)
                         .stream().filter(x -> !isWearingEarplugs(x)).filter(x -> x.distanceTo(this) >= 5).toList();
@@ -269,13 +269,13 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
             this.setSinging(true);
             this.tickCharm();
         }
-        if (!this.level().isClientSide && GorgonEntity.isStoneMob(this) && this.isSinging()) {
+        if (!this.level().isClientSide() && GorgonEntity.isStoneMob(this) && this.isSinging()) {
             this.setSinging(false);
         }
         if (this.isActuallySinging() && !this.isInWater()) {
             if (this.getRandom().nextInt(3) == 0) {
                 this.yBodyRot = this.getYRot();
-                if (this.level().isClientSide) {
+                if (this.level().isClientSide()) {
                     float radius = -0.9F;
                     float angle = (0.01745329251F * this.yBodyRot) - 3F;
                     double extraX = radius * Mth.sin((float) (Math.PI + angle));
@@ -342,10 +342,10 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(@NonNull ServerLevel level, DamageSource source, float amount) {
         if (source.getEntity() != null && source.getEntity() instanceof LivingEntity)
             this.triggerOtherSirens((LivingEntity) source.getEntity());
-        return super.hurt(source, amount);
+        return super.hurtServer(level, source, amount);
     }
 
     public void triggerOtherSirens(LivingEntity aggressor) {
@@ -360,43 +360,41 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
-        ListTag list = new ListTag();
+    protected void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        List<CompoundTag> list = new java.util.ArrayList<>();
         for (Object2IntMap.Entry<LivingEntity> entry : this.charmingEntities.object2IntEntrySet()) {
             CompoundTag nbt = new CompoundTag();
-            nbt.putUUID("Uuid", entry.getKey().getUUID());
+            nbt.store("Uuid", UUIDUtil.AUTHLIB_CODEC, entry.getKey().getUUID());
             nbt.putInt("CharmTime", entry.getIntValue());
             list.add(nbt);
         }
-        tag.put("CharmingEntities", list);
-        tag.putInt("HairColor", this.getHairColor());
-        tag.putBoolean("Aggressive", this.isAgressive());
-        tag.putInt("SingingPose", this.getSingingPose());
-        tag.putBoolean("Singing", this.isSinging());
-        tag.putBoolean("Swimming", this.isSwimming());
-        tag.putBoolean("Passive", this.isCharmed());
+        output.store("CharmingEntities", CompoundTag.CODEC.listOf(), list);
+        output.putInt("HairColor", this.getHairColor());
+        output.putBoolean("Aggressive", this.isAgressive());
+        output.putInt("SingingPose", this.getSingingPose());
+        output.putBoolean("Singing", this.isSinging());
+        output.putBoolean("Swimming", this.isSwimming());
+        output.putBoolean("Passive", this.isCharmed());
     }
 
     @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
+    protected void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
         this.charmingEntities.clear();
-        if (tag.contains("CharmingEntities", Tag.TAG_LIST) && this.level() instanceof ServerLevel world) {
-            ListTag list = tag.getList("CharmingEntities", Tag.TAG_COMPOUND);
-            for (Tag element : list)
-                if (element instanceof CompoundTag nbt) {
-                    Entity entity = world.getEntity(nbt.getUUID("Uuid"));
-                    if (entity instanceof LivingEntity living)
-                        this.charmingEntities.put(living, nbt.getInt("CharmTime"));
-                }
+        if (this.level() instanceof ServerLevel world) {
+            for (CompoundTag nbt : input.read("CharmingEntities", CompoundTag.CODEC.listOf()).orElse(List.of())) {
+                Entity entity = nbt.read("Uuid", UUIDUtil.AUTHLIB_CODEC).map(world::getEntity).orElse(null);
+                if (entity instanceof LivingEntity living)
+                    this.charmingEntities.put(living, nbt.getInt("CharmTime").orElse(0));
+            }
         }
-        this.setHairColor(tag.getInt("HairColor"));
-        this.setAggressive(tag.getBoolean("Aggressive"));
-        this.setSingingPose(tag.getInt("SingingPose"));
-        this.setSinging(tag.getBoolean("Singing"));
-        this.setSwimming(tag.getBoolean("Swimming"));
-        this.setCharmed(tag.getBoolean("Passive"));
+        this.setHairColor(input.getIntOr("HairColor", 0));
+        this.setAggressive(input.getBooleanOr("Aggressive", false));
+        this.setSingingPose(input.getIntOr("SingingPose", 0));
+        this.setSinging(input.getBooleanOr("Singing", false));
+        this.setSwimming(input.getBooleanOr("Swimming", false));
+        this.setCharmed(input.getBooleanOr("Passive", false));
         this.setConfigurableAttributes();
     }
 
@@ -419,7 +417,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
 
     @Override
     public boolean isSwimming() {
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             return this.isSwimming = this.entityData.get(SWIMMING);
         }
         return this.isSwimming;
@@ -428,7 +426,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     @Override
     public void setSwimming(boolean swimming) {
         this.entityData.set(SWIMMING, swimming);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             this.isSwimming = swimming;
         }
     }
@@ -484,7 +482,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, SpawnGroupData spawnDataIn) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
         this.setHairColor(this.getRandom().nextInt(3));
         this.setSingingPose(this.getRandom().nextInt(3));

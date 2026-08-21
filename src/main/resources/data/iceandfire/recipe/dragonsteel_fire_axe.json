@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "H": {
-      "tag": "c:bones/wither"
-    },
-    "M": {
-      "item": "iceandfire:dragonsteel_fire_ingot"
-    }
+    "H": "#c:bones/wither",
+    "M": "iceandfire:dragonsteel_fire_ingot"
   },
   "pattern": [
     "MM",
