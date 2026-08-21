@@ -6,10 +6,11 @@ import com.iafenvoy.iceandfire.render.model.HippocampusModel;
 import com.iafenvoy.iceandfire.util.Color4i;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.NotNull;
@@ -44,9 +45,10 @@ public class HippocampusEntityRenderer extends LegacyMobRenderer<HippocampusEnti
         this.addLayer(this::submitSaddle);
     }
 
-    private void submitSaddle(HippocampusEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, net.minecraft.client.renderer.state.level.CameraRenderState camera, int light, int outline) {
+    private void submitSaddle(HippocampusEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int light, int outline) {
         if (entity.isSaddled()) submit(this.model, poseStack, collector, SADDLE, light, -1);
-        if (entity.isSaddled() && entity.getControllingPassenger() != null) submit(this.model, poseStack, collector, BRIDLE, light, -1);
+        if (entity.isSaddled() && entity.getControllingPassenger() != null)
+            submit(this.model, poseStack, collector, BRIDLE, light, -1);
         if (entity.isChested()) submit(this.model, poseStack, collector, CHEST, light, -1);
         RenderType armor = switch (entity.getArmorValue()) {
             case 1 -> ARMOR_IRON;
@@ -57,8 +59,9 @@ public class HippocampusEntityRenderer extends LegacyMobRenderer<HippocampusEnti
         if (armor != null) submit(this.model, poseStack, collector, armor, light, -1);
     }
 
-    private void submitRainbow(HippocampusEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, net.minecraft.client.renderer.state.level.CameraRenderState camera, int light, int outline) {
-        if (!entity.hasCustomName() || !entity.getCustomName().getString().toLowerCase(Locale.ROOT).contains("rainbow")) return;
+    private void submitRainbow(HippocampusEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int light, int outline) {
+        if (!entity.hasCustomName() || !entity.getCustomName().getString().toLowerCase(Locale.ROOT).contains("rainbow"))
+            return;
         int first = (entity.tickCount / 25 + entity.getId()) % DyeColor.values().length;
         int second = (first + 1) % DyeColor.values().length;
         float blend = (entity.tickCount % 25 + partialTick) / 25.0F;

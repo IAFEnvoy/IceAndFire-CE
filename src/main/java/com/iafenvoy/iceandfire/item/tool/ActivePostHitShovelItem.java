@@ -4,8 +4,11 @@ import com.iafenvoy.iceandfire.item.ability.PostHitAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+
+import java.util.function.Consumer;
 
 public class ActivePostHitShovelItem extends ShovelItem {
     private final PostHitAbility ability;
@@ -24,7 +27,7 @@ public class ActivePostHitShovelItem extends ShovelItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+    public void appendHoverText(@NotNull ItemStack stack, Item.@NotNull TooltipContext context, @NotNull TooltipDisplay display, @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
         if (this.ability.isEnable()) {
             this.ability.addDescription(tooltip);

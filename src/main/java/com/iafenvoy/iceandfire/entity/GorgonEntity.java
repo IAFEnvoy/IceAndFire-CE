@@ -27,8 +27,8 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -62,7 +62,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.gorgon.maxHealth.getValue())
                 //SPEED
@@ -210,7 +210,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
                         if (!this.level().isClientSide()) {
                             if (this.playerStatueCooldown == 0) {
                                 StoneStatueEntity statue = StoneStatueEntity.buildStatueEntity(attackTarget);
-                statue.snapTo(attackTarget.getX(), attackTarget.getY(), attackTarget.getZ(), attackTarget.getYRot(), attackTarget.getXRot());
+                                statue.snapTo(attackTarget.getX(), attackTarget.getY(), attackTarget.getZ(), attackTarget.getYRot(), attackTarget.getXRot());
                                 if (!this.level().isClientSide())
                                     this.level().addFreshEntity(statue);
                                 statue.setYRot(attackTarget.getYRot());

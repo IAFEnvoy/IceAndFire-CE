@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.registry;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.item.block.entity.*;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -27,7 +28,7 @@ public final class IafBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<PodiumBlockEntity>> PODIUM = register("podium", PodiumBlockEntity::new, IafBlocks.PODIUM_OAK, IafBlocks.PODIUM_BIRCH, IafBlocks.PODIUM_SPRUCE, IafBlocks.PODIUM_JUNGLE, IafBlocks.PODIUM_DARK_OAK, IafBlocks.PODIUM_ACACIA);
 
     @SafeVarargs
-    private static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> register(String entityName, BlockEntityType.BlockEntitySupplier<T> factory, Supplier<? extends net.minecraft.world.level.block.Block>... validBlocks) {
-        return REGISTRY.register(entityName, () -> new BlockEntityType<>(factory, Set.of(Arrays.stream(validBlocks).map(Supplier::get).toArray(net.minecraft.world.level.block.Block[]::new))));
+    private static <T extends BlockEntity> DeferredHolder<BlockEntityType<?>, BlockEntityType<T>> register(String entityName, BlockEntityType.BlockEntitySupplier<T> factory, Supplier<? extends Block>... validBlocks) {
+        return REGISTRY.register(entityName, () -> new BlockEntityType<>(factory, Set.of(Arrays.stream(validBlocks).map(Supplier::get).toArray(Block[]::new))));
     }
 }

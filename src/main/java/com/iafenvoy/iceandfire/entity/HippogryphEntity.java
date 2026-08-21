@@ -22,14 +22,20 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.AdvancedPathNavigate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
@@ -53,9 +59,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -119,7 +125,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 .add(Attributes.TEMPT_RANGE, 10.0D)
                 .add(Attributes.MAX_HEALTH, 40.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.3D)
@@ -160,7 +166,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, LivingEntity.class, 6.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
         this.goalSelector.addGoal(5, new HippogryphAIMateGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ITEM).getOrThrow(IafItemTags.TEMPT_HIPPOGRYPH)), false));
+        this.goalSelector.addGoal(6, new TemptGoal(this, 1.0D, Ingredient.of(this.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(IafItemTags.TEMPT_HIPPOGRYPH)), false));
         this.goalSelector.addGoal(8, new HippogryphAIWanderGoal(this, 1.0D));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -264,18 +270,21 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
                 if (player.isShiftKeyDown()) {
                     if (this.hasHomePosition) {
                         this.hasHomePosition = false;
-                        if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("hippogryph.command.remove_home"));
+                        if (player instanceof ServerPlayer serverPlayer)
+                            serverPlayer.sendOverlayMessage(Component.translatable("hippogryph.command.remove_home"));
                     } else {
                         this.homePos = this.blockPosition();
                         this.hasHomePosition = true;
-                        if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("hippogryph.command.new_home", this.homePos.getX(), this.homePos.getY(), this.homePos.getZ()));
+                        if (player instanceof ServerPlayer serverPlayer)
+                            serverPlayer.sendOverlayMessage(Component.translatable("hippogryph.command.new_home", this.homePos.getX(), this.homePos.getY(), this.homePos.getZ()));
                     }
                     return InteractionResult.SUCCESS;
                 } else {
                     this.setCommand(this.getCommand() + 1);
                     if (this.getCommand() > 1)
                         this.setCommand(0);
-                    if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("hippogryph.command." + (this.getCommand() == 1 ? "sit" : "stand")));
+                    if (player instanceof ServerPlayer serverPlayer)
+                        serverPlayer.sendOverlayMessage(Component.translatable("hippogryph.command." + (this.getCommand() == 1 ? "sit" : "stand")));
                 }
                 return InteractionResult.SUCCESS;
             }
@@ -387,7 +396,8 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
         output.putBoolean("Flying", this.isFlying());
         output.putInt("Armor", this.getArmorValue());
         output.putInt("Feedings", this.feedings);
-        if (this.hippogryphInventory != null) output.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.hippogryphInventory.getItems());
+        if (this.hippogryphInventory != null)
+            output.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.hippogryphInventory.getItems());
         output.putBoolean("HasHomePosition", this.hasHomePosition);
         if (this.homePos != null && this.hasHomePosition) {
             output.putInt("HomeAreaX", this.homePos.getX());
@@ -435,7 +445,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
     }
 
     public HippogryphType getEnumVariant() {
-        return IafRegistries.HIPPOGRYPH_TYPE.get(IceAndFire.id(this.getVariant())).map(net.minecraft.core.Holder.Reference::value).orElse(IafHippogryphTypes.BLACK);
+        return IafRegistries.HIPPOGRYPH_TYPE.get(IceAndFire.id(this.getVariant())).map(Holder.Reference::value).orElse(IafHippogryphTypes.BLACK);
     }
 
     public void setVariant(HippogryphType variant) {
@@ -589,7 +599,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
 
     @Override
     public void playAmbientSound() {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playAmbientSound();
@@ -597,7 +607,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
 
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playHurtSound(source);
@@ -625,7 +635,7 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{IAnimatedEntity.NO_ANIMATION, HippogryphEntity.ANIMATION_EAT, HippogryphEntity.ANIMATION_BITE, HippogryphEntity.ANIMATION_SPEAK, HippogryphEntity.ANIMATION_SCRATCH};
+        return new Animation[]{NO_ANIMATION, ANIMATION_EAT, ANIMATION_BITE, ANIMATION_SPEAK, ANIMATION_SCRATCH};
     }
 
     @Override
@@ -910,7 +920,8 @@ public class HippogryphEntity extends TamableAnimal implements MenuProvider, ISy
             for (int i = 0; i < this.hippogryphInventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.hippogryphInventory.getItem(i);
                 if (!itemstack.isEmpty())
-                    if (this.level() instanceof ServerLevel serverLevel) this.spawnAtLocation(serverLevel, itemstack, 0.0F);
+                    if (this.level() instanceof ServerLevel serverLevel)
+                        this.spawnAtLocation(serverLevel, itemstack, 0.0F);
             }
     }
 

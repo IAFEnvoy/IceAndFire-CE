@@ -1,7 +1,7 @@
 package com.iafenvoy.iceandfire.item.block;
 
-import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafSounds;
@@ -18,7 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -33,15 +32,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Optional;
 
 public class JarBlock extends BaseEntityBlock {
     private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new JarBlock(-1));
-    protected static final VoxelShape AABB = Block.box(3, 0, 3, 13, 16, 13);
+    protected static final VoxelShape AABB = box(3, 0, 3, 13, 16, 13);
     private final boolean empty;
     private final int pixieType;
 
     public JarBlock(int pixieType) {
-        super(pixieType != -1 ? Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).lightLevel((state) -> 10).overrideLootTable(java.util.Optional.of(ResourceKey.create(Registries.LOOT_TABLE, IceAndFire.id("blocks/pixie_jar_empty")))) : Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS));
+        super(pixieType != -1 ? Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS).lightLevel((state) -> 10).overrideLootTable(Optional.of(ResourceKey.create(Registries.LOOT_TABLE, IceAndFire.id("blocks/pixie_jar_empty")))) : Properties.of().mapColor(MapColor.NONE).instrument(NoteBlockInstrument.HAT).noOcclusion().dynamicShape().strength(1, 2).sound(SoundType.GLASS));
         this.empty = pixieType == -1;
         this.pixieType = pixieType;
     }

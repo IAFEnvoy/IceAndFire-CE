@@ -29,15 +29,17 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/** Renders a frozen copy using the trapped entity's current model and render state. */
+/**
+ * Renders a frozen copy using the trapped entity's current model and render state.
+ */
 public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity, LegacyEntityRenderState<StoneStatueEntity>> {
     protected static final Identifier[] DESTROY_STAGES = new Identifier[]{
             Identifier.withDefaultNamespace("textures/block/destroy_stage_0.png"),
@@ -105,7 +107,8 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
                 }
             }
         }
-        if (statue.getTrappedEntityType() == EntityType.PLAYER) model = new StonePlayerModel(this.context.bakeLayer(ModelLayers.PLAYER));
+        if (statue.getTrappedEntityType() == EntityType.PLAYER)
+            model = new StonePlayerModel(this.context.bakeLayer(ModelLayers.PLAYER));
         this.modelMap.put(typeId, model);
         return model;
     }
@@ -144,7 +147,8 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
         Entity fakeEntity = this.getHollowEntity(statue);
         Object model = this.getModel(statue, fakeEntity);
         RenderType stoneType = IafRenderTypes.getStoneMobRenderType(200, 200);
-        if (fakeEntity instanceof TrollEntity troll) stoneType = RenderTypes.entityCutout(troll.getTrollType().getStatueTexture());
+        if (fakeEntity instanceof TrollEntity troll)
+            stoneType = RenderTypes.entityCutout(troll.getTrollType().getStatueTexture());
         poseStack.pushPose();
         preparePose(statue, poseStack, state.partialTick);
         this.submitModel(model, fakeEntity, state, poseStack, collector, stoneType);

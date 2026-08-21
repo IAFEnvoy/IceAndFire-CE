@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.render.model.armor;
 
 import com.iafenvoy.uranus.client.render.armor.ArmorModelBase;
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -18,7 +17,7 @@ public class DragonSteelIceArmorModel extends ArmorModelBase {
     }
 
     public static MeshDefinition createMesh(CubeDeformation deformation, float offset, boolean inner) {
-        MeshDefinition modelData = HumanoidModel.createMesh(deformation, offset);
+        MeshDefinition modelData = createMesh(deformation, offset);
         PartDefinition root = modelData.getRoot();
         float legYOffset = inner ? 0.0F : 2.0F;
 

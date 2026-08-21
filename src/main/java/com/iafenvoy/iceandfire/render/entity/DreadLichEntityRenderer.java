@@ -2,8 +2,8 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.DreadLichEntity;
-import com.iafenvoy.iceandfire.render.entity.feature.GenericGlowingFeatureRenderer;
 import com.iafenvoy.iceandfire.render.entity.feature.DreadItemFeatureRenderer;
+import com.iafenvoy.iceandfire.render.entity.feature.GenericGlowingFeatureRenderer;
 import com.iafenvoy.iceandfire.render.model.DreadLichModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

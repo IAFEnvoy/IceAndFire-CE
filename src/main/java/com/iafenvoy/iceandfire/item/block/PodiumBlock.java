@@ -9,7 +9,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PodiumBlock extends BaseEntityBlock {
     private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new PodiumBlock());
-    protected static final VoxelShape AABB = Block.box(2, 0, 2, 14, 23, 14);
+    protected static final VoxelShape AABB = box(2, 0, 2, 14, 23, 14);
 
     public PodiumBlock() {
         super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2.0F).sound(SoundType.WOOD));

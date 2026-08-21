@@ -16,12 +16,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.storage.TagValueInput;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class StoneStatueItem extends Item {
     public StoneStatueItem() {
@@ -29,7 +31,7 @@ public class StoneStatueItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull TooltipDisplay display, @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
         if (stack.has(IafDataComponents.STONE_STATUS.get())) {
             StoneStatusComponent component = stack.get(IafDataComponents.STONE_STATUS.get());

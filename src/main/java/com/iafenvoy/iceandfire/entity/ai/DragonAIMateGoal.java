@@ -5,14 +5,15 @@ import com.iafenvoy.iceandfire.entity.DragonEggEntity;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -130,7 +131,7 @@ public class DragonAIMateGoal extends Goal {
                 }
             if (this.theWorld.getBlockState(dirtPos).canBeReplaced() || this.theWorld.getBlockState(dirtPos) == NEST)
                 this.theWorld.setBlockAndUpdate(dirtPos, Blocks.DIRT_PATH.defaultBlockState());
-            if (this.theWorld instanceof net.minecraft.server.level.ServerLevel level && level.getGameRules().get(GameRules.ENTITY_DROPS))
+            if (this.theWorld instanceof ServerLevel level && level.getGameRules().get(GameRules.ENTITY_DROPS))
                 this.theWorld.addFreshEntity(new ExperienceOrb(this.theWorld, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), random.nextInt(15) + 10));
         }
     }

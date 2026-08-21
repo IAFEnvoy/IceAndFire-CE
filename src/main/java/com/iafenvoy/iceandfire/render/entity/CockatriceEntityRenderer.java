@@ -2,18 +2,20 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
+import com.iafenvoy.iceandfire.render.model.CockatriceChickModel;
 import com.iafenvoy.iceandfire.render.model.CockatriceModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -84,7 +86,8 @@ public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, L
         this.scale(entity, poseStack);
         model.setupAnim(entity, 0.0F, 0.0F, state.ageInTicks, 0.0F, 0.0F);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity)), (pose, buffer) -> {
-            PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
             model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor == 0 ? -1 : state.outlineColor);
         });
         poseStack.popPose();

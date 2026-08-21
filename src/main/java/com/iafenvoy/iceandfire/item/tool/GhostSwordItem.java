@@ -7,8 +7,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+
+import java.util.function.Consumer;
 
 public class GhostSwordItem extends Item {
     public GhostSwordItem() {
@@ -16,7 +19,7 @@ public class GhostSwordItem extends Item {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, net.minecraft.world.item.component.@NonNull @NonNull TooltipDisplay display, java.util.function.Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull Item.TooltipContext context, @NonNull TooltipDisplay display, Consumer<Component> tooltip, @NotNull TooltipFlag type) {
         tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
         super.appendHoverText(stack, context, display, tooltip, type);
         BuiltinAbilities.SUMMON_GHOST_SWORD.addDescription(tooltip);

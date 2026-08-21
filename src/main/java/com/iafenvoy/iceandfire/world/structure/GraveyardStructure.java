@@ -12,11 +12,11 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
+import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
 import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public class GraveyardStructure extends IafJigsawStructure {
     public static final MapCodec<GraveyardStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
-            instance.group(GraveyardStructure.settingsCodec(instance),
+            instance.group(settingsCodec(instance),
                     StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
                     Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
                     Codec.intRange(0, 30).fieldOf("size").forGetter(structure -> structure.size),

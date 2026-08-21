@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Small bridge for Uranus models that still animate from live entities. */
+/**
+ * Small bridge for Uranus models that still animate from live entities.
+ */
 public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityModel<T>> extends EntityRenderer<T, LegacyEntityRenderState<T>> {
     protected M model;
     private final Supplier<? extends M> modelSupplier;
@@ -38,7 +40,9 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
         this.shadowRadius = shadowRadius;
     }
 
-    /** Called once when a resource-backed model becomes available after startup reload. */
+    /**
+     * Called once when a resource-backed model becomes available after startup reload.
+     */
     protected void onModelAvailable() {
     }
 

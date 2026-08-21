@@ -2,8 +2,8 @@ package com.iafenvoy.iceandfire.util;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 
 public final class EntityDataHelper {

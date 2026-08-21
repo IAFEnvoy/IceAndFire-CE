@@ -11,6 +11,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -23,12 +25,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+
+import java.util.function.Consumer;
 
 public class TideTridentItem extends TridentItem {
     public TideTridentItem() {
@@ -50,7 +55,7 @@ public class TideTridentItem extends TridentItem {
                 int riptideLevel = EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(worldIn.registryAccess(), Enchantments.RIPTIDE), stack);
                 if (riptideLevel <= 0 || player.isInWaterOrRain()) {
                     if (!worldIn.isClientSide()) {
-                        stack.hurtAndBreak(1, player, user.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+                        stack.hurtAndBreak(1, player, user.getUsedItemHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                         if (riptideLevel == 0) {
                             TideTridentEntity tideTrident = new TideTridentEntity(worldIn, player, stack);
                             tideTrident.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F + (float) riptideLevel * 0.5F, 1.0F);
@@ -94,7 +99,7 @@ public class TideTridentItem extends TridentItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull TooltipDisplay display, @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
         tooltip.accept(Component.translatable("item.iceandfire.legendary_weapon.desc").withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("item.iceandfire.tide_trident.desc_0").withStyle(ChatFormatting.GRAY));

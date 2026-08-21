@@ -12,6 +12,7 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.BossEvent;
@@ -29,9 +30,11 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.UUID;
+
 public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity, IVillagerFear, IAnimalFear {
     public static final Animation ANIMATION_SPAWN = Animation.create(40);
-    private final ServerBossEvent bossInfo = new ServerBossEvent(java.util.UUID.randomUUID(), this.getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
+    private final ServerBossEvent bossInfo = new ServerBossEvent(UUID.randomUUID(), this.getDisplayName(), BossEvent.BossBarColor.BLUE, BossEvent.BossBarOverlay.PROGRESS);
     private int animationTick;
     private Animation currentAnimation;
 
@@ -75,7 +78,7 @@ public class DreadQueenEntity extends DreadMobEntity implements IAnimatedEntity,
     }
 
     @Override
-    protected void customServerAiStep(net.minecraft.server.level.@NonNull ServerLevel level) {
+    protected void customServerAiStep(@NonNull ServerLevel level) {
         super.customServerAiStep(level);
         this.bossInfo.setProgress(this.getHealth() / this.getMaxHealth());
     }

@@ -30,8 +30,8 @@ public final class IafAttachments {
     @SubscribeEvent
     public static void onLivingTick(EntityTickEvent.Post event) {
         if (event.getEntity() instanceof LivingEntity living) {
-            tickAndSync(IafAttachments.CHAIN_DATA, living);
-            tickAndSync(IafAttachments.MISC_DATA, living);
+            tickAndSync(CHAIN_DATA, living);
+            tickAndSync(MISC_DATA, living);
         }
     }
 

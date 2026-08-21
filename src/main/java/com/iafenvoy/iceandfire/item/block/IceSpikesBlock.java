@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
@@ -19,14 +20,14 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 public class IceSpikesBlock extends Block {
-    protected static final VoxelShape VOXEL_SHAPE = Block.box(1, 0, 1, 15, 8, 15);
+    protected static final VoxelShape VOXEL_SHAPE = box(1, 0, 1, 15, 8, 15);
 
     public IceSpikesBlock() {
         super(Properties.of().mapColor(MapColor.ICE).noOcclusion().dynamicShape().randomTicks().sound(SoundType.GLASS).strength(2.5F).requiresCorrectToolForDrops());
     }
 
     @Override
-    protected @NotNull BlockState updateShape(BlockState stateIn, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos facingPos, @NotNull BlockState facingState, @NotNull net.minecraft.util.RandomSource random) {
+    protected @NotNull BlockState updateShape(BlockState stateIn, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos facingPos, @NotNull BlockState facingState, @NotNull RandomSource random) {
         return !stateIn.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, level, scheduledTickAccess, currentPos, facing, facingPos, facingState, random);
     }
 

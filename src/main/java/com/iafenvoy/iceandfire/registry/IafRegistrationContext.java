@@ -8,7 +8,9 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.function.Supplier;
 
-/** Supplies the registry key required by the 26.1.2 property constructors. */
+/**
+ * Supplies the registry key required by the 26.1.2 property constructors.
+ */
 public final class IafRegistrationContext {
     private static final ThreadLocal<ResourceKey<Block>> BLOCK_ID = new ThreadLocal<>();
     private static final ThreadLocal<ResourceKey<Item>> ITEM_ID = new ThreadLocal<>();

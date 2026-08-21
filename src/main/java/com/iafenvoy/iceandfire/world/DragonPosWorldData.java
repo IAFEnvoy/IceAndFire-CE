@@ -11,11 +11,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.storage.SavedDataStorage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class DragonPosWorldData extends SavedData {
     private static final Codec<DragonPosition> DRAGON_POSITION_CODEC = RecordCodecBuilder.create(instance -> instance.group(

@@ -19,7 +19,8 @@ public class TrollWeaponRenderer implements DynamicItemRenderer {
         stackIn.pushPose();
         stackIn.translate(0.5F, -0.75F, 0.5F);
         collector.submitCustomGeometry(stackIn, RenderTypes.entityCutout(weapon.getTexture(), false), (pose, buffer) -> {
-            PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
             this.model.renderToBuffer(modelStack, buffer, combinedLightIn, combinedOverlayIn, -1);
         });
         stackIn.popPose();

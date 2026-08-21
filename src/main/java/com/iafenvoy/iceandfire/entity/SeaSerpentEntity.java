@@ -18,6 +18,7 @@ import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -45,7 +46,9 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -106,7 +109,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.seaSerpent.baseHealth.getValue())
                 //SPEED
@@ -698,7 +701,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
 
     @Override
     public void playAmbientSound() {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playAmbientSound();
@@ -706,7 +709,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
 
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playHurtSound(source);
@@ -764,7 +767,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     public SeaSerpentType getEnum() {
-        return IafRegistries.SEA_SERPENT_TYPE.get(IceAndFire.id(this.getVariant())).map(net.minecraft.core.Holder.Reference::value).orElse(IafSeaSerpentTypes.BLUE);
+        return IafRegistries.SEA_SERPENT_TYPE.get(IceAndFire.id(this.getVariant())).map(Holder.Reference::value).orElse(IafSeaSerpentTypes.BLUE);
     }
 
     @Override

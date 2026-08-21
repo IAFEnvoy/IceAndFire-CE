@@ -1,17 +1,17 @@
 package com.iafenvoy.iceandfire.compat.jei;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.mixin.RecipeManagerAccessor;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafRecipes;
-import com.iafenvoy.iceandfire.mixin.RecipeManagerAccessor;
 import com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -31,9 +31,9 @@ import java.util.List;
 public class IceAndFireJeiPlugin implements IModPlugin {
     private static final Identifier ID = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, IceAndFire.MOD_ID);
 
-    public static final RecipeType<DragonForgeRecipe> FIRE = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "firedragonforge", DragonForgeRecipe.class);
-    public static final RecipeType<DragonForgeRecipe> ICE = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "icedragonforge", DragonForgeRecipe.class);
-    public static final RecipeType<DragonForgeRecipe> LIGHTNING = RecipeType.create(Identifier.DEFAULT_NAMESPACE, "lightningdragonforge", DragonForgeRecipe.class);
+    public static final IRecipeType<DragonForgeRecipe> FIRE = IRecipeType.create(Identifier.DEFAULT_NAMESPACE, "firedragonforge", DragonForgeRecipe.class);
+    public static final IRecipeType<DragonForgeRecipe> ICE = IRecipeType.create(Identifier.DEFAULT_NAMESPACE, "icedragonforge", DragonForgeRecipe.class);
+    public static final IRecipeType<DragonForgeRecipe> LIGHTNING = IRecipeType.create(Identifier.DEFAULT_NAMESPACE, "lightningdragonforge", DragonForgeRecipe.class);
 
     @Override
     public @NotNull Identifier getPluginUid() {
@@ -52,9 +52,9 @@ public class IceAndFireJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(IafBlocks.DRAGONFORGE_FIRE_CORE.get(), FIRE);
-        registration.addRecipeCatalyst(IafBlocks.DRAGONFORGE_ICE_CORE.get(), ICE);
-        registration.addRecipeCatalyst(IafBlocks.DRAGONFORGE_LIGHTNING_CORE.get(), LIGHTNING);
+        registration.addCraftingStation(FIRE, IafBlocks.DRAGONFORGE_FIRE_CORE.get());
+        registration.addCraftingStation(ICE, IafBlocks.DRAGONFORGE_ICE_CORE.get());
+        registration.addCraftingStation(LIGHTNING, IafBlocks.DRAGONFORGE_LIGHTNING_CORE.get());
     }
 
     @Override

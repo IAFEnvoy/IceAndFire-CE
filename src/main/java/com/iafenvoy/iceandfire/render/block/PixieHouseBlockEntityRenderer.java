@@ -11,11 +11,13 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
 public class PixieHouseBlockEntityRenderer<T extends PixieHouseBlockEntity> implements BlockEntityRenderer<T, PixieHouseBlockEntityRenderer.State> {
@@ -42,7 +44,7 @@ public class PixieHouseBlockEntityRenderer<T extends PixieHouseBlockEntity> impl
     }
 
     @Override
-    public void extractRenderState(T entity, State state, float partialTicks, net.minecraft.world.phys.@NonNull Vec3 cameraPosition, net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+    public void extractRenderState(T entity, State state, float partialTicks, @NonNull Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(entity, state, partialTicks, cameraPosition, breakProgress);
         state.entity = entity;
         state.partialTicks = partialTicks;

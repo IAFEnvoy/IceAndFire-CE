@@ -1,10 +1,11 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.world.level.block.FallingBlock;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ public class FallingGenericBlock extends FallingBlock {
     }
 
     @Override
-    public int getDustColor(net.minecraft.world.level.block.state.BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos) {
+    public int getDustColor(BlockState state, @NonNull BlockGetter level, @NonNull BlockPos pos) {
         return state.getMapColor(level, pos).col;
     }
 

@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.entity.util.IDeadMob;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -17,11 +18,10 @@ import net.minecraft.world.entity.animal.golem.AbstractGolem;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -253,7 +253,8 @@ public class DragonUtils {
     }
 
     public static boolean canDragonBreak(final BlockState state, final Entity entity) {
-        if (entity.level() instanceof ServerLevel level && !level.getGameRules().get(GameRules.MOB_GRIEFING)) return false;
+        if (entity.level() instanceof ServerLevel level && !level.getGameRules().get(GameRules.MOB_GRIEFING))
+            return false;
         if (entity instanceof DragonBaseEntity dragon && !canGrief(dragon, state)) return false;
         Block block = state.getBlock();
         return block.getExplosionResistance() < 1200 && !state.is(IafBlockTags.DRAGON_BLOCK_BREAK_BLACKLIST);

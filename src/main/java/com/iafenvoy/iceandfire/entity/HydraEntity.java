@@ -10,6 +10,7 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
@@ -29,7 +30,6 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
@@ -67,7 +67,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     private final float headDamageThreshold;
     private int animationTick;
     private Animation currentAnimation;
-    private HydraHeadEntity[] headBoxes = new HydraHeadEntity[HEADS * 2];
+    private final HydraHeadEntity[] headBoxes = new HydraHeadEntity[HEADS * 2];
     private int strikeCooldown = 0;
     private int breathCooldown = 0;
     private int lastHitHead = 0;
@@ -85,7 +85,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.hydra.maxHealth.getValue())
                 //SPEED

@@ -75,6 +75,7 @@ public class HydraHeadFeatureRenderer implements LegacyEntityFeature<HydraEntity
 
     @Override
     public void submit(HydraEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int lightCoords, int outlineColor) {
-        if (!entity.isInvisible()) submitHydraHeads(this.renderer.getLegacyModel(), false, poseStack, collector, lightCoords, entity, entity.tickCount + partialTick, outlineColor);
+        if (!entity.isInvisible())
+            submitHydraHeads(this.renderer.getLegacyModel(), false, poseStack, collector, lightCoords, entity, entity.tickCount + partialTick, outlineColor);
     }
 }

@@ -9,8 +9,8 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -21,7 +21,7 @@ abstract public class DragonForgeRecipeCategory extends AbstractRecipeCategory<D
     private final IDrawable background;
     private final IDrawable overlay;
 
-    public DragonForgeRecipeCategory(IGuiHelper guiHelper, RecipeType<DragonForgeRecipe> recipeType, String forgeType, IDrawable icon) {
+    public DragonForgeRecipeCategory(IGuiHelper guiHelper, IRecipeType<DragonForgeRecipe> recipeType, String forgeType, IDrawable icon) {
         super(
                 recipeType,
                 Component.translatable("jei." + IceAndFire.MOD_ID + ".dragon_forge_" + forgeType),
@@ -45,16 +45,16 @@ abstract public class DragonForgeRecipeCategory extends AbstractRecipeCategory<D
     public void setRecipe(IRecipeLayoutBuilder builder, DragonForgeRecipe recipe, @NotNull IFocusGroup focuses) {
         builder
                 .addSlot(RecipeIngredientRole.INPUT, 65, 30)
-                .addIngredients(recipe.getInput())
+                .add(recipe.getInput())
                 .setStandardSlotBackground();
 
         builder
                 .addSlot(RecipeIngredientRole.INPUT, 83, 30)
-                .addIngredients(recipe.getBlood())
+                .add(recipe.getBlood())
                 .setStandardSlotBackground();
 
         builder
                 .addSlot(RecipeIngredientRole.OUTPUT, 145, 31)
-                .addItemStack(recipe.getResultItem());
+                .add(recipe.getResultItem());
     }
 }

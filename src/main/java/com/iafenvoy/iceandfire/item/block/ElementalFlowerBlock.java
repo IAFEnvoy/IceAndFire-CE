@@ -6,7 +6,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -18,7 +17,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 public class ElementalFlowerBlock extends BushBlock {
-    private static final MapCodec<BushBlock> CODEC = ElementalFlowerBlock.simpleCodec(s -> new ElementalFlowerBlock());
+    private static final MapCodec<BushBlock> CODEC = simpleCodec(s -> new ElementalFlowerBlock());
 
     public ElementalFlowerBlock() {
         super(Properties.of().mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).offsetType(OffsetType.XZ).pushReaction(PushReaction.DESTROY));
@@ -26,7 +25,7 @@ public class ElementalFlowerBlock extends BushBlock {
 
     @Override
     public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter world, @NotNull BlockPos pos, @NotNull CollisionContext context) {
-        return Block.box(2.0D, 0.0D, 2.0D, 14.0D, 13.0D, 14.0D);
+        return box(2.0D, 0.0D, 2.0D, 14.0D, 13.0D, 14.0D);
     }
 
     @Override

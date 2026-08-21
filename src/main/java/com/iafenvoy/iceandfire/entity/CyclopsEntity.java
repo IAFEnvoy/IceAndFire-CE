@@ -18,10 +18,10 @@ import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
@@ -36,8 +36,8 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.polarbear.PolarBear;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.animal.polarbear.PolarBear;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -81,7 +81,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.cyclops.maxHealth.getValue())
                 //SPEED

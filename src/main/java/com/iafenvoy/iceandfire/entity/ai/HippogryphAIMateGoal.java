@@ -3,13 +3,14 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.item.HippogryphEggItem;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -96,7 +97,7 @@ public class HippogryphAIMateGoal extends Goal {
             this.world.addParticle(ParticleTypes.HEART, this.hippo.getX() + d3, this.hippo.getY() + d4, this.hippo.getZ() + d5, d0, d1, d2);
         }
 
-        if (this.world instanceof net.minecraft.server.level.ServerLevel level && level.getGameRules().get(GameRules.ENTITY_DROPS))
+        if (this.world instanceof ServerLevel level && level.getGameRules().get(GameRules.ENTITY_DROPS))
             this.world.addFreshEntity(new ExperienceOrb(this.world, this.hippo.getX(), this.hippo.getY(), this.hippo.getZ(), random.nextInt(7) + 1));
     }
 }

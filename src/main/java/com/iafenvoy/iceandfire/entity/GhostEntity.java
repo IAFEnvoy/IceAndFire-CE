@@ -15,6 +15,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
@@ -39,8 +41,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -66,7 +68,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.ghost.maxHealth.getValue())
                 //FOLLOW_RANGE
@@ -80,7 +82,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    protected void dropFromLootTable(@NonNull @NonNull ServerLevel level, @NonNull @NonNull DamageSource source, boolean causedByPlayer) {
+    protected void dropFromLootTable(@NonNull  ServerLevel level, @NonNull  DamageSource source, boolean causedByPlayer) {
         if (!this.wasFromChest()) {
             super.dropFromLootTable(level, source, causedByPlayer);
         }
@@ -317,7 +319,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    protected void readAdditionalSaveData(@NonNull @NonNull ValueInput input) {
+    protected void readAdditionalSaveData(@NonNull  ValueInput input) {
         super.readAdditionalSaveData(input);
         this.setColor(input.getIntOr("Color", 0));
         this.setDaytimeMode(input.getBooleanOr("DaytimeMode", false));
@@ -328,7 +330,7 @@ public class GhostEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     @Override
-    protected void addAdditionalSaveData(@NonNull @NonNull ValueOutput output) {
+    protected void addAdditionalSaveData(@NonNull  ValueOutput output) {
         super.addAdditionalSaveData(output);
         output.putInt("Color", this.getColor());
         output.putBoolean("DaytimeMode", this.isDaytimeMode());

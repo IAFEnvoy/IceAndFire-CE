@@ -97,7 +97,7 @@ public class GhostSwordEntity extends AbstractArrow {
             if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS) {
                 if (raytraceresult.getType() != HitResult.Type.BLOCK)
                     this.onHit(raytraceresult);
-        this.hurtMarked = true;
+                this.hurtMarked = true;
             }
             if (entityraytraceresult == null || this.getPierceLevel() <= 0)
                 break;

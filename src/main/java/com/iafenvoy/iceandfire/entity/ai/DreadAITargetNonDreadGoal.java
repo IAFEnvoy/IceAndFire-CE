@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+
 import java.util.function.Predicate;
 
 public class DreadAITargetNonDreadGoal extends NearestAttackableTargetGoal<LivingEntity> {

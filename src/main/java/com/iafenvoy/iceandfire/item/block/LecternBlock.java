@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 public class LecternBlock extends BaseEntityBlock {
     private static final MapCodec<? extends BaseEntityBlock> CODEC = simpleCodec(s -> new LecternBlock());
     public static final EnumProperty<Direction> FACING = EnumProperty.create("facing", Direction.class, Direction.Plane.HORIZONTAL);
-    protected static final VoxelShape AABB = Block.box(4, 0, 4, 12, 19, 12);
+    protected static final VoxelShape AABB = box(4, 0, 4, 12, 19, 12);
 
     public LecternBlock() {
         super(Properties.of().mapColor(MapColor.WOOD).instrument(NoteBlockInstrument.BASS).ignitedByLava().noOcclusion().dynamicShape().strength(2, 5).sound(SoundType.WOOD));

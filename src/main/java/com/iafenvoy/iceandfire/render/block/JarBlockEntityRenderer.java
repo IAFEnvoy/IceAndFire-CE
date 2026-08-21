@@ -7,19 +7,25 @@ import com.iafenvoy.iceandfire.render.model.PixieModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
 import java.util.function.Supplier;
 
 public class JarBlockEntityRenderer<T extends JarBlockEntity> implements BlockEntityRenderer<T, JarBlockEntityRenderer.State> {
-    public static class State extends BlockEntityRenderState { private JarBlockEntity entity; private float partialTicks; }
+    public static class State extends BlockEntityRenderState {
+        private JarBlockEntity entity;
+        private float partialTicks;
+    }
+
     public static final RenderType TEXTURE_0 = RenderTypes.entityCutout(PixieEntityRenderer.TEXTURE_0, false);
     public static final RenderType TEXTURE_1 = RenderTypes.entityCutout(PixieEntityRenderer.TEXTURE_1, false);
     public static final RenderType TEXTURE_2 = RenderTypes.entityCutout(PixieEntityRenderer.TEXTURE_2, false);
@@ -38,17 +44,19 @@ public class JarBlockEntityRenderer<T extends JarBlockEntity> implements BlockEn
     }
 
     @Override
-    public State createRenderState() { return new State(); }
+    public State createRenderState() {
+        return new State();
+    }
 
     @Override
-    public void extractRenderState(T entity, State state, float partialTicks, net.minecraft.world.phys.@NonNull @NonNull Vec3 cameraPosition, net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+    public void extractRenderState(T entity, State state, float partialTicks, @NonNull Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(entity, state, partialTicks, cameraPosition, breakProgress);
         state.entity = entity;
         state.partialTicks = partialTicks;
     }
 
     @Override
-    public void submit(State state, @NonNull @NonNull PoseStack matrixStackIn, @NonNull @NonNull SubmitNodeCollector submitNodeCollector, @NonNull @NonNull CameraRenderState camera) {
+    public void submit(State state, @NonNull PoseStack matrixStackIn, @NonNull SubmitNodeCollector submitNodeCollector, @NonNull CameraRenderState camera) {
         T entity = (T) state.entity;
         int meta = 0;
         boolean hasPixie = false;
@@ -88,11 +96,13 @@ public class JarBlockEntityRenderer<T extends JarBlockEntity> implements BlockEn
                 PixieModel model = MODEL_PIXIE.get();
                 model.animateInJar(entity.hasProduced, entity, 0);
                 submitNodeCollector.submitCustomGeometry(matrixStackIn, type, (pose, buffer) -> {
-                    PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+                    PoseStack modelStack = new PoseStack();
+                    modelStack.last().set(pose);
                     model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
                 });
                 submitNodeCollector.submitCustomGeometry(matrixStackIn, typeGlow, (pose, buffer) -> {
-                    PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+                    PoseStack modelStack = new PoseStack();
+                    modelStack.last().set(pose);
                     model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
                 });
             }

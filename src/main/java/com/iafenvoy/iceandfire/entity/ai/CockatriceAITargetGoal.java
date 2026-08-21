@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
+
 public class CockatriceAITargetGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final CockatriceEntity cockatrice;
 

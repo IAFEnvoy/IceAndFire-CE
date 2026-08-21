@@ -3,12 +3,16 @@ package com.iafenvoy.iceandfire.item.block;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
@@ -27,7 +31,7 @@ import org.jspecify.annotations.NonNull;
 
 public class PileBlock extends Block {
     public static final IntegerProperty LAYERS = IntegerProperty.create("layers", 1, 8);
-    protected static final VoxelShape[] SHAPES = new VoxelShape[]{Shapes.empty(), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
+    protected static final VoxelShape[] SHAPES = new VoxelShape[]{Shapes.empty(), box(0.0D, 0.0D, 0.0D, 16.0D, 2.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 4.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 6.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 10.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 14.0D, 16.0D), box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D)};
 
     public PileBlock() {
         super(Properties.of().mapColor(MapColor.DIRT).strength(0.3F, 1).randomTicks().sound(new SoundType(1.0F, 1.0F, IafSounds.GOLD_PILE_BREAK.get(), IafSounds.GOLD_PILE_STEP.get(), IafSounds.GOLD_PILE_BREAK.get(), IafSounds.GOLD_PILE_STEP.get(), IafSounds.GOLD_PILE_STEP.get())).pushReaction(PushReaction.DESTROY));
@@ -60,13 +64,13 @@ public class PileBlock extends Block {
         Block block = blockstate.getBlock();
         if (block != Blocks.ICE && block != Blocks.PACKED_ICE && block != Blocks.BARRIER) {
             if (block != Blocks.HONEY_BLOCK && block != Blocks.SOUL_SAND)
-                return Block.isFaceFull(blockstate.getCollisionShape(worldIn, pos.below()), Direction.UP) || block instanceof PileBlock && blockstate.getValue(LAYERS) == 8;
+                return isFaceFull(blockstate.getCollisionShape(worldIn, pos.below()), Direction.UP) || block instanceof PileBlock && blockstate.getValue(LAYERS) == 8;
             else return true;
         } else return false;
     }
 
     @Override
-    protected @NotNull BlockState updateShape(BlockState stateIn, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos facingPos, @NotNull BlockState facingState, @NotNull net.minecraft.util.RandomSource random) {
+    protected @NotNull BlockState updateShape(BlockState stateIn, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos currentPos, @NotNull Direction facing, @NotNull BlockPos facingPos, @NotNull BlockState facingState, @NotNull RandomSource random) {
         return !stateIn.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, level, scheduledTickAccess, currentPos, facing, facingPos, facingState, random);
     }
 
@@ -86,7 +90,7 @@ public class PileBlock extends Block {
     }
 
     @Override
-    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack item, @NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NonNull Player player, @NotNull net.minecraft.world.InteractionHand hand, @NotNull BlockHitResult hit) {
+    protected @NotNull InteractionResult useItemOn(@NotNull ItemStack item, @NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NonNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         if (!item.isEmpty() && item.getItem() == this.asItem() && state.getValue(LAYERS) < 8) {
             if (!world.isClientSide()) {
                 world.setBlock(pos, state.setValue(LAYERS, state.getValue(LAYERS) + 1), 3);

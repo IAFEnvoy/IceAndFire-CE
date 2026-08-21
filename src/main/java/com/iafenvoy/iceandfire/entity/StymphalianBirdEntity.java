@@ -70,7 +70,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, 24.0)
                 //SPEED
@@ -379,7 +379,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
 
     @Override
     public void playAmbientSound() {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playAmbientSound();
@@ -387,7 +387,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
 
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playHurtSound(source);

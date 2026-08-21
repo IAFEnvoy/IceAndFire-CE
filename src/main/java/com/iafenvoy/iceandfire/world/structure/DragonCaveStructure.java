@@ -38,10 +38,13 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilde
 import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class DragonCaveStructure extends Structure implements DangerousGeneration {
     protected DragonCaveStructure(StructureSettings config) {

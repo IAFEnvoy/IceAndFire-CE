@@ -9,9 +9,9 @@ import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,7 +45,8 @@ public class EggInIceBlockEntity extends BlockEntity {
                 dragon.setGender(ThreadLocalRandom.current().nextBoolean());
                 dragon.setTame(true, false);
                 dragon.setHunger(50);
-                if (entityEggInIce.ownerUUID != null) dragon.setOwnerReference(EntityReference.of(entityEggInIce.ownerUUID));
+                if (entityEggInIce.ownerUUID != null)
+                    dragon.setOwnerReference(EntityReference.of(entityEggInIce.ownerUUID));
                 level.addFreshEntity(dragon);
                 entityEggInIce.spawned = true;
                 level.destroyBlock(pos, false);

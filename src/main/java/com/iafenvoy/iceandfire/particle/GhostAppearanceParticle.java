@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.particle;
 
+import com.iafenvoy.iceandfire.render.model.GhostModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;

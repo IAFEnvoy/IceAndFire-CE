@@ -27,7 +27,8 @@ public class GorgonHeadRenderer implements DynamicItemRenderer {
         stackIn.pushPose();
         stackIn.translate(0.5F, active ? 1.5F : 1.25F, 0.5F);
         collector.submitCustomGeometry(stackIn, RenderTypes.entityCutout(active ? ACTIVE_TEXTURE : INACTIVE_TEXTURE, false), (pose, buffer) -> {
-            PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
             model.renderToBuffer(modelStack, buffer, combinedLightIn, combinedOverlayIn, -1);
         });
         stackIn.popPose();

@@ -226,12 +226,12 @@ public class IafDragonFlightManager {
                 float atan = (float) Mth.atan2(distZ, distX);
                 float yawTurn = Mth.wrapDegrees(this.dragon.getYRot() + 90);
                 float yawTurnAtan = Mth.wrapDegrees(atan * 57.295776F);
-                this.dragon.setYRot(IafDragonFlightManager.approachDegrees(yawTurn, yawTurnAtan, this.dragon.airAttack == IafDragonAttacks.Air.TACKLE && this.dragon.getTarget() != null ? 10 : 4.0F) - 90.0F);
+                this.dragon.setYRot(approachDegrees(yawTurn, yawTurnAtan, this.dragon.airAttack == IafDragonAttacks.Air.TACKLE && this.dragon.getTarget() != null ? 10 : 4.0F) - 90.0F);
                 this.dragon.yBodyRot = this.dragon.getYRot();
-                if (IafDragonFlightManager.degreesDifferenceAbs(yawCopy, this.dragon.getYRot()) < 3.0F)
-                    this.speedModifier = IafDragonFlightManager.approach((float) this.speedModifier, 1.8F, 0.005F * (1.8F / (float) this.speedModifier));
+                if (degreesDifferenceAbs(yawCopy, this.dragon.getYRot()) < 3.0F)
+                    this.speedModifier = approach((float) this.speedModifier, 1.8F, 0.005F * (1.8F / (float) this.speedModifier));
                 else {
-                    this.speedModifier = IafDragonFlightManager.approach((float) this.speedModifier, 0.2F, 0.025F);
+                    this.speedModifier = approach((float) this.speedModifier, 0.2F, 0.025F);
                     if (dist < 100D && this.dragon.getTarget() != null)
                         this.speedModifier = this.speedModifier * (dist / 100D);
                 }

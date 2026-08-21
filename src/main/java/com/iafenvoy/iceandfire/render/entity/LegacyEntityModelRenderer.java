@@ -12,7 +12,9 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import org.jspecify.annotations.NonNull;
 
-/** EntityRenderer bridge for Uranus models that animate from a live non-Mob entity. */
+/**
+ * EntityRenderer bridge for Uranus models that animate from a live non-Mob entity.
+ */
 public abstract class LegacyEntityModelRenderer<T extends Entity, M extends AdvancedEntityModel<T>> extends EntityRenderer<T, LegacyEntityRenderState<T>> {
     protected final M model;
 

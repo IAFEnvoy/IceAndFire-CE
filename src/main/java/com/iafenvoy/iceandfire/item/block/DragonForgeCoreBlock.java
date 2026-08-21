@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -79,7 +80,7 @@ public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof
     }
 
     @Override
-    protected int getAnalogOutputSignal(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull net.minecraft.core.Direction direction) {
+    protected int getAnalogOutputSignal(@NotNull BlockState state, Level world, @NotNull BlockPos pos, @NotNull Direction direction) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(world.getBlockEntity(pos));
     }
 

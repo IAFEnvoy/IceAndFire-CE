@@ -32,7 +32,7 @@ public final class IceAndFire {
     public static final String VERSION;
 
     static {
-        VERSION = ModList.get().getModContainerById(IceAndFire.MOD_ID).map(ModContainer::getModInfo).map(IModInfo::getVersion).map(Object::toString).orElse("UNKNOWN");
+        VERSION = ModList.get().getModContainerById(MOD_ID).map(ModContainer::getModInfo).map(IModInfo::getVersion).map(Object::toString).orElse("UNKNOWN");
     }
 
     //TODO: IceAndFire::id is a temporary fix to capable with old version, should be removed in later versions

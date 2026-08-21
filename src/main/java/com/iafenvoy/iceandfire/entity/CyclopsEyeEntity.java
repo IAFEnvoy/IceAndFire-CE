@@ -1,8 +1,8 @@
 package com.iafenvoy.iceandfire.entity;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 
 public class CyclopsEyeEntity extends MultipartPartEntity<CyclopsEntity> {

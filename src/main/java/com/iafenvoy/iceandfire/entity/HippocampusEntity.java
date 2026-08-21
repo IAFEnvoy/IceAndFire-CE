@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.entity;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.ai.AquaticAIFindWaterTargetGoal;
 import com.iafenvoy.iceandfire.entity.ai.AquaticAIGetInWaterGoal;
 import com.iafenvoy.iceandfire.entity.ai.HippocampusAIWanderGoal;
@@ -17,11 +18,16 @@ import com.iafenvoy.uranus.object.RegistryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.*;
@@ -33,6 +39,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.navigation.AmphibiousPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -98,7 +105,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 .add(Attributes.TEMPT_RANGE, 10.0D)
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, 40.0D)
@@ -128,7 +135,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     protected void addBehaviourGoals() {
-        this.goalSelector.addGoal(0, new TemptGoal(this, 1.0D, Ingredient.of(this.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ITEM).getOrThrow(IafItemTags.TEMPT_HIPPOCAMPUS)), false));
+        this.goalSelector.addGoal(0, new TemptGoal(this, 1.0D, Ingredient.of(this.registryAccess().lookupOrThrow(Registries.ITEM).getOrThrow(IafItemTags.TEMPT_HIPPOCAMPUS)), false));
     }
 
     @Override
@@ -469,7 +476,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{IAnimatedEntity.NO_ANIMATION, ANIMATION_SPEAK};
+        return new Animation[]{NO_ANIMATION, ANIMATION_SPEAK};
     }
 
     @Override
@@ -499,14 +506,14 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
 
     @Override
     public void playAmbientSound() {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
+        if (this.getAnimation() == NO_ANIMATION)
             this.setAnimation(ANIMATION_SPEAK);
         super.playAmbientSound();
     }
 
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION) {
+        if (this.getAnimation() == NO_ANIMATION) {
             this.setAnimation(ANIMATION_SPEAK);
         }
         super.playHurtSound(source);
@@ -708,8 +715,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
                     this.hippo.setDeltaMovement(this.hippo.getDeltaMovement().add(0.0D, -0.02D, 0.0D));
                 else if (waterDepth > 8)
                     this.hippo.setDeltaMovement(this.hippo.getDeltaMovement().add(0.0D, 0.006D, 0.0D));
-            }
-            else if (this.hippo.onGround())
+            } else if (this.hippo.onGround())
                 this.hippo.setSpeed(Math.max(this.hippo.getSpeed() / 4.0F, 0.06F));
         }
 
@@ -742,7 +748,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         }
     }
 
-    private class HippocampusDepthGoal extends net.minecraft.world.entity.ai.goal.Goal {
+    private class HippocampusDepthGoal extends Goal {
         @Nullable
         private Vec3 target;
         private int cooldown;
@@ -788,7 +794,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         }
     }
 
-    private class HippocampusSurfaceGoal extends net.minecraft.world.entity.ai.goal.Goal {
+    private class HippocampusSurfaceGoal extends Goal {
         @Nullable
         private Vec3 target;
         private int nextSurfaceTime = 1200 + HippocampusEntity.this.random.nextInt(1201);
@@ -836,7 +842,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         }
     }
 
-    private class HippocampusExplorationGoal extends net.minecraft.world.entity.ai.goal.Goal {
+    private class HippocampusExplorationGoal extends Goal {
         @Nullable
         private Vec3 target;
         private int explorationTicks;

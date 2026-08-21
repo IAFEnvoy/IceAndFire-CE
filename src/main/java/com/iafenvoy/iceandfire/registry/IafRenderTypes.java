@@ -4,7 +4,9 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 
-/** Render type helpers backed by the 26.1 render-state pipeline. */
+/**
+ * Render type helpers backed by the 26.1 render-state pipeline.
+ */
 public final class IafRenderTypes {
     private static final Identifier STONE_TEXTURE = Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/stone.png");
 

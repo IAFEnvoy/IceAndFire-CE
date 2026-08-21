@@ -8,7 +8,6 @@ import com.iafenvoy.iceandfire.entity.ai.EntitySheepAIFollowCyclopsGoal;
 import com.iafenvoy.iceandfire.entity.ai.VillagerAIFearUntamedGoal;
 import com.iafenvoy.iceandfire.entity.util.IAnimalFear;
 import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
-import com.iafenvoy.iceandfire.util.EntityDataHelper;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import com.iafenvoy.iceandfire.item.ChainItem;
 import com.iafenvoy.iceandfire.item.DragonHornItem;
@@ -18,6 +17,7 @@ import com.iafenvoy.iceandfire.item.armor.TrollArmorItem;
 import com.iafenvoy.iceandfire.item.component.StoneStatusComponent;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
+import com.iafenvoy.iceandfire.util.EntityDataHelper;
 import com.iafenvoy.uranus.object.RegistryHelper;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
@@ -150,7 +150,8 @@ public final class ServerEvents {
     public static void onLivingSetTarget(PlayerEvent.StartTracking event) {
         Player player = event.getEntity();
         if (event.getTarget() instanceof LivingEntity target) {
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHICKENS))
+                signalChickenAlarm(target, player);
             else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
         }
     }
@@ -197,7 +198,8 @@ public final class ServerEvents {
             return;
         }
         if (entity instanceof LivingEntity livingEntity) {
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);
+            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(entity.getType()).is(IafEntityTags.CHICKENS))
+                signalChickenAlarm(livingEntity, player);
             else if (DragonUtils.isVillager(entity)) signalAmphithereAlarm(livingEntity, player);
         }
     }
@@ -220,7 +222,7 @@ public final class ServerEvents {
             chainData.clearChains();
         }
 
-        if (entity.getUUID().equals(ServerEvents.ALEX_UUID) && entity.level() instanceof ServerLevel serverLevel)
+        if (entity.getUUID().equals(ALEX_UUID) && entity.level() instanceof ServerLevel serverLevel)
             entity.spawnAtLocation(serverLevel, new ItemStack(IafItems.WEEZER_BLUE_ALBUM.get()), 1.0F);
 
         if (entity instanceof Player) {
@@ -326,12 +328,12 @@ public final class ServerEvents {
         Entity entity = event.getEntity();
         if (entity instanceof Mob mob)
             try {
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.SHEEP) && mob instanceof Animal animal)
+                if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.SHEEP) && mob instanceof Animal animal)
                     animal.goalSelector.addGoal(8, new EntitySheepAIFollowCyclopsGoal(animal, 1.2D));
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.VILLAGERS))
+                if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.VILLAGERS))
                     if (IafCommonConfig.INSTANCE.dragon.villagersFear.getValue())
                         mob.goalSelector.addGoal(1, new VillagerAIFearUntamedGoal((PathfinderMob) mob, LivingEntity.class, 8.0F, 0.8D, 0.8D, VILLAGER_FEAR));
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.FEAR_DRAGONS))
+                if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(mob.getType()).is(IafEntityTags.FEAR_DRAGONS))
                     if (IafCommonConfig.INSTANCE.dragon.animalsFear.getValue())
                         mob.goalSelector.addGoal(1, new VillagerAIFearUntamedGoal((PathfinderMob) mob, LivingEntity.class, 30, 1.0D, 0.5D, e -> e instanceof IAnimalFear fear && fear.shouldAnimalsFear(mob)));
             } catch (Exception e) {

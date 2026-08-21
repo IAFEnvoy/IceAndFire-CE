@@ -25,7 +25,6 @@ public class DeathWormEntityRenderer extends LegacyMobRenderer<DeathWormEntity, 
     }
 
 
-
     @Override
     protected int getBlockLightLevel(DeathWormEntity entityIn, @NotNull BlockPos partialTicks) {
         return entityIn.isOnFire() ? 15 : entityIn.getWormBrightness(false);

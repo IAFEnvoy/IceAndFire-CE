@@ -36,12 +36,12 @@ public final class IafMenus {
 
     @SubscribeEvent
     public static void registerGui(RegisterMenuScreensEvent event) {
-        event.register(IafMenus.IAF_LECTERN_SCREEN.get(), LecternScreen::new);
-        event.register(IafMenus.PODIUM_SCREEN.get(), PodiumScreen::new);
-        event.register(IafMenus.DRAGON_SCREEN.get(), DragonScreen::new);
-        event.register(IafMenus.HIPPOGRYPH_SCREEN.get(), HippogryphScreen::new);
-        event.register(IafMenus.HIPPOCAMPUS_SCREEN.get(), HippocampusScreen::new);
-        event.register(IafMenus.DRAGON_FORGE_SCREEN.get(), DragonForgeScreen::new);
-        event.register(IafMenus.BESTIARY_SCREEN.get(), BestiaryScreen::new);
+        event.register(IAF_LECTERN_SCREEN.get(), LecternScreen::new);
+        event.register(PODIUM_SCREEN.get(), PodiumScreen::new);
+        event.register(DRAGON_SCREEN.get(), DragonScreen::new);
+        event.register(HIPPOGRYPH_SCREEN.get(), HippogryphScreen::new);
+        event.register(HIPPOCAMPUS_SCREEN.get(), HippocampusScreen::new);
+        event.register(DRAGON_FORGE_SCREEN.get(), DragonForgeScreen::new);
+        event.register(BESTIARY_SCREEN.get(), BestiaryScreen::new);
     }
 }

@@ -23,6 +23,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -57,6 +59,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFear, IHasCustomizableAttributes {
@@ -94,7 +97,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.siren.maxHealth.getValue())
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.ATTACK_DAMAGE, 6.0D)
@@ -294,7 +297,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
         for (LivingEntity charmingEntity : this.charmingEntities.keySet()) {
             if (this.charmingEntities.getInt(charmingEntity) > IafCommonConfig.INSTANCE.siren.maxSingTime.getValue())
                 this.stopCharm(charmingEntity);
-            else if (!this.isAlive() || this.distanceTo(charmingEntity) > SirenEntity.SEARCH_RANGE * 2 || this.charmingEntities instanceof Player player && (player.isCreative() || player.isSpectator())) {
+            else if (!this.isAlive() || this.distanceTo(charmingEntity) > SEARCH_RANGE * 2 || this.charmingEntities instanceof Player player && (player.isCreative() || player.isSpectator())) {
                 this.stopCharm(charmingEntity);
                 this.setAggressive(false);
             } else if (this.distanceTo(charmingEntity) < 5) {
@@ -362,7 +365,7 @@ public class SirenEntity extends Monster implements IAnimatedEntity, IVillagerFe
     @Override
     protected void addAdditionalSaveData(@NonNull ValueOutput output) {
         super.addAdditionalSaveData(output);
-        List<CompoundTag> list = new java.util.ArrayList<>();
+        List<CompoundTag> list = new ArrayList<>();
         for (Object2IntMap.Entry<LivingEntity> entry : this.charmingEntities.object2IntEntrySet()) {
             CompoundTag nbt = new CompoundTag();
             nbt.store("Uuid", UUIDUtil.AUTHLIB_CODEC, entry.getKey().getUUID());

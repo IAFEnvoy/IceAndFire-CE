@@ -5,8 +5,8 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.function.Function;

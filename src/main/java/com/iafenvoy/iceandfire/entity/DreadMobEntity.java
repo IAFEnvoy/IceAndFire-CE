@@ -12,8 +12,8 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
-import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -98,11 +98,15 @@ public class DreadMobEntity extends Monster implements IDreadMob {
         this.readAdditionalSaveData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElse(new CompoundTag()));
     }
 
-    /** Compatibility hook for Dread mob subclasses that still store extension NBT. */
+    /**
+     * Compatibility hook for Dread mob subclasses that still store extension NBT.
+     */
     protected void addAdditionalSaveData(CompoundTag compound) {
     }
 
-    /** Compatibility hook paired with {@link #addAdditionalSaveData(CompoundTag)}. */
+    /**
+     * Compatibility hook paired with {@link #addAdditionalSaveData(CompoundTag)}.
+     */
     protected void readAdditionalSaveData(CompoundTag compound) {
     }
 

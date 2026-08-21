@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -84,7 +85,7 @@ public class PixieChargeEntity extends Fireball {
                     if (this.level().isClientSide())
                         for (int i = 0; i < 20; ++i)
                             this.level().addParticle(this.getTrailParticle(), this.getX() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getY() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.getZ() + this.random.nextDouble() * 1F * (this.random.nextBoolean() ? -1 : 1), this.rgb[0], this.rgb[1], this.rgb[2]);
-                    if (this.level() instanceof net.minecraft.server.level.ServerLevel level
+                    if (this.level() instanceof ServerLevel level
                             && (!(shootingEntity instanceof Player) || !((Player) shootingEntity).isCreative())
                             && this.random.nextInt(3) == 0)
                         this.spawnAtLocation(level, new ItemStack(IafItems.PIXIE_DUST.get(), 1), 0.45F);

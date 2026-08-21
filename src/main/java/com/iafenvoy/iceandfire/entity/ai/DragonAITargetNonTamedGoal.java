@@ -11,6 +11,7 @@ import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
+
 public class DragonAITargetNonTamedGoal<T extends LivingEntity> extends NearestAttackableTargetGoal<T> {
     private final DragonBaseEntity dragon;
 

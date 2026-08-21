@@ -20,9 +20,9 @@ public final class LegArticulator {
         final float heightFrontLeft = legs.frontLeft.getHeight(delta);
         final float heightFrontRight = legs.frontRight.getHeight(delta);
         if (heightBackLeft > 0 || heightBackRight > 0 || heightFrontLeft > 0 || heightFrontRight > 0) {
-            final float sc = LegArticulator.getScale(entity);
-            final float backAvg = LegArticulator.avg(heightBackLeft, heightBackRight);
-            final float frontAvg = LegArticulator.avg(heightFrontLeft, heightFrontRight);
+            final float sc = getScale(entity);
+            final float backAvg = avg(heightBackLeft, heightBackRight);
+            final float frontAvg = avg(heightFrontLeft, heightFrontRight);
             final float bodyLength = Math.abs(avg(legs.backLeft.forward, legs.backRight.forward) - avg(legs.frontLeft.forward, legs.frontRight.forward));
             final float tilt = (float) (Mth.atan2(bodyLength * sc, backAvg - frontAvg) - Math.PI / 2);
             body.rotationPointY += 16 / sc * backAvg;
@@ -33,8 +33,8 @@ public final class LegArticulator {
             frontLeftThigh.rotateAngleX -= tilt;
             frontRightThigh.rotateAngleX -= tilt;
             neck.rotateAngleX -= tilt;
-            LegArticulator.articulateLegPair(sc, heightBackLeft, heightBackRight, backAvg, -backAvg, backLeftThigh, backLeftCalf, backLeftFoot, backRightThigh, backRightCalf, backRightFoot, rotBackThigh, rotBackCalf, rotBackFoot);
-            LegArticulator.articulateLegPair(sc, heightFrontLeft, heightFrontRight, frontAvg, -frontAvg, frontLeftThigh, frontLeftCalf, frontLeftFoot, frontRightThigh, frontRightCalf, frontRightFoot, rotFrontThigh, rotFrontCalf, rotFrontFoot);
+            articulateLegPair(sc, heightBackLeft, heightBackRight, backAvg, -backAvg, backLeftThigh, backLeftCalf, backLeftFoot, backRightThigh, backRightCalf, backRightFoot, rotBackThigh, rotBackCalf, rotBackFoot);
+            articulateLegPair(sc, heightFrontLeft, heightFrontRight, frontAvg, -frontAvg, frontLeftThigh, frontLeftCalf, frontLeftFoot, frontRightThigh, frontRightCalf, frontRightFoot, rotFrontThigh, rotFrontCalf, rotFrontFoot);
         }
     }
 

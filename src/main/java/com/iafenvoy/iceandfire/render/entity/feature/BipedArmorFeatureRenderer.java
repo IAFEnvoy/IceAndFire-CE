@@ -9,14 +9,16 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.equipment.Equippable;
 
-/** Legacy biped armor layer submitted through the 26.1 render-state collector. */
+/**
+ * Legacy biped armor layer submitted through the 26.1 render-state collector.
+ */
 public class BipedArmorFeatureRenderer<T extends Mob & IAnimatedEntity, M extends BipedBaseModel<T>, A extends BipedBaseModel<T>> implements LegacyEntityFeature<T> {
     private final M parentModel;
     private final A modelLeggings;
@@ -58,14 +60,36 @@ public class BipedArmorFeatureRenderer<T extends Mob & IAnimatedEntity, M extend
     protected void setModelSlotVisible(A model, EquipmentSlot slot) {
         model.setVisible(false);
         switch (slot) {
-            case HEAD -> { model.head.invisible = false; model.headware.invisible = false; }
-            case CHEST -> { model.body.invisible = false; model.armRight.invisible = false; model.armLeft.invisible = false; }
-            case LEGS -> { model.body.invisible = false; model.legRight.invisible = false; model.legLeft.invisible = false; }
-            case FEET -> { model.legRight.invisible = false; model.legLeft.invisible = false; }
+            case HEAD -> {
+                model.head.invisible = false;
+                model.headware.invisible = false;
+            }
+            case CHEST -> {
+                model.body.invisible = false;
+                model.armRight.invisible = false;
+                model.armLeft.invisible = false;
+            }
+            case LEGS -> {
+                model.body.invisible = false;
+                model.legRight.invisible = false;
+                model.legLeft.invisible = false;
+            }
+            case FEET -> {
+                model.legRight.invisible = false;
+                model.legLeft.invisible = false;
+            }
         }
     }
 
-    private A getSlotModel(EquipmentSlot slot) { return this.isLegSlot(slot) ? this.modelLeggings : this.modelArmor; }
-    protected boolean isLegSlot(EquipmentSlot slot) { return slot == EquipmentSlot.LEGS; }
-    public Identifier getArmorResource(T entity, ItemStack stack, EquipmentSlot slot, String type) { return this.isLegSlot(slot) ? this.defaultLegArmor : this.defaultArmor; }
+    private A getSlotModel(EquipmentSlot slot) {
+        return this.isLegSlot(slot) ? this.modelLeggings : this.modelArmor;
+    }
+
+    protected boolean isLegSlot(EquipmentSlot slot) {
+        return slot == EquipmentSlot.LEGS;
+    }
+
+    public Identifier getArmorResource(T entity, ItemStack stack, EquipmentSlot slot, String type) {
+        return this.isLegSlot(slot) ? this.defaultLegArmor : this.defaultArmor;
+    }
 }

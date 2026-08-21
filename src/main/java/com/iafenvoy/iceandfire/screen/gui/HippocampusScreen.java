@@ -32,7 +32,8 @@ public class HippocampusScreen extends AbstractContainerScreen<HippocampusMenu> 
         int j = (this.height - this.imageHeight) / 2;
         context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 256, 256);
         HippocampusEntity hippo = this.menu.getHippocampus();
-        if (hippo.isChested()) context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 79, j + 17, 0, this.imageHeight, 5 * 18, 54, 256, 256);
+        if (hippo.isChested())
+            context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 79, j + 17, 0, this.imageHeight, 5 * 18, 54, 256, 256);
         InventoryScreen.extractEntityInInventoryFollowsMouse(context, i + 26, j + 18, i + 77, j + 69, 17, 0.25F, mouseX, mouseY, hippo);
     }
 }

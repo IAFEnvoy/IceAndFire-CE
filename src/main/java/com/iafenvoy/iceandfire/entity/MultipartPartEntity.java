@@ -46,7 +46,9 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
         this.refreshDimensions();
     }
 
-    /** Reserves a contiguous entity ID range for a multipart parent and all of its parts. */
+    /**
+     * Reserves a contiguous entity ID range for a multipart parent and all of its parts.
+     */
     public static int reserveParentId(int partCount) {
         AtomicInteger counter = EntityIdAccessor.iceandfire$getEntityCounter();
         return counter.getAndAdd(partCount + 1) + 1;
@@ -104,7 +106,9 @@ public abstract class MultipartPartEntity<T extends LivingEntity> extends PartEn
         this.partYaw = yaw % 360;
     }
 
-    /** Updates this part from its parent's current state. Called by the parent every tick on both sides. */
+    /**
+     * Updates this part from its parent's current state. Called by the parent every tick on both sides.
+     */
     public void updatePosition() {
         T parent = this.getParent();
         if (parent.isRemoved()) return;

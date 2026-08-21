@@ -1,8 +1,8 @@
 package com.iafenvoy.iceandfire.screen.menu;
 
 import com.iafenvoy.iceandfire.data.DragonType;
-import com.iafenvoy.iceandfire.registry.IafMenus;
 import com.iafenvoy.iceandfire.registry.IafDragonTypes;
+import com.iafenvoy.iceandfire.registry.IafMenus;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.registry.IafResourceKeys;
 import net.minecraft.core.Holder;

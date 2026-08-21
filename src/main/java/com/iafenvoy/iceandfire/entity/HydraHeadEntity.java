@@ -1,14 +1,14 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.iafenvoy.iceandfire.registry.IafParticles;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import org.jetbrains.annotations.NotNull;
 
 public class HydraHeadEntity extends MultipartPartEntity<HydraEntity> {
     public int headIndex;
     public HydraEntity hydra;
-    private boolean neck;
+    private final boolean neck;
 
     public HydraHeadEntity(HydraEntity entity, float radius, float angle, float y, float width, float height, float damageMulti, int headIndex, boolean neck) {
         super(entity, radius, angle, y, width, height, damageMulti);

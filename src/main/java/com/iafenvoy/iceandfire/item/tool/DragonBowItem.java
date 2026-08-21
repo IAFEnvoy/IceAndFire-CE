@@ -5,6 +5,8 @@ import com.iafenvoy.uranus.object.RegistryHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -51,7 +53,7 @@ public class DragonBowItem extends BowItem {
                         if (f == 1.0F) persistentProjectileEntity.setCritArrow(true);
                         if (EnchantmentHelper.getItemEnchantmentLevel(RegistryHelper.getEnchantment(world.registryAccess(), Enchantments.FLAME), stack) > 0)
                             persistentProjectileEntity.igniteForSeconds(100);
-                        stack.hurtAndBreak(1, playerEntity, user.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+                        stack.hurtAndBreak(1, playerEntity, user.getUsedItemHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                         if (bl2 || playerEntity.getAbilities().instabuild && (itemStack.is(Items.SPECTRAL_ARROW) || itemStack.is(Items.TIPPED_ARROW)))
                             persistentProjectileEntity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                         world.addFreshEntity(persistentProjectileEntity);

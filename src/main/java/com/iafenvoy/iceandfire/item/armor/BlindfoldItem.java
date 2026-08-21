@@ -1,15 +1,15 @@
 package com.iafenvoy.iceandfire.item.armor;
 
 import com.iafenvoy.iceandfire.registry.IafArmorMaterials;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class BlindfoldItem extends Item {

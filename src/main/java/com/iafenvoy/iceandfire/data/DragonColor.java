@@ -10,10 +10,10 @@ import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.Locale;

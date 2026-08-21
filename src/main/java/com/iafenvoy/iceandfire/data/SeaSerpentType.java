@@ -13,10 +13,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.equipment.ArmorType;
-import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class SeaSerpentType {
     }
 
     public static void initArmors() {
-        for (SeaSerpentType type : SeaSerpentType.values()) {
+        for (SeaSerpentType type : values()) {
             IafBlocks.register(String.format(Locale.ROOT, "sea_serpent_scale_block_%s", type.name), () -> new SeaSerpentScalesBlock(type.name, type.color));
             Holder<ArmorMaterial> material = IafArmorMaterials.register(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), new int[]{4, 7, 8, 4}, 25, SoundEvents.ARMOR_EQUIP_GOLD, 2.5F, new MemorizeSupplier<>(() -> Ingredient.of(type.scale.get())));
             type.scale = IafItems.registerItem(String.format(Locale.ROOT, "sea_serpent_scales_%s", type.name), () -> new SeaSerpentScaleItem(type));

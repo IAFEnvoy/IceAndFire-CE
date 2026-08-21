@@ -63,7 +63,7 @@ public class LecternScreen extends AbstractContainerScreen<LecternMenu> {
     }
 
     @Override
-    public boolean mouseClicked(@NonNull @NonNull MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean doubleClick) {
         int left = (this.width - this.imageWidth) / 2;
         int top = (this.height - this.imageHeight) / 2;
         for (int index = 0; index < 3; ++index) {
@@ -79,7 +79,7 @@ public class LecternScreen extends AbstractContainerScreen<LecternMenu> {
     }
 
     @Override
-    public void extractBackground(@NonNull @NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractBackground(graphics, mouseX, mouseY, partialTick);
         int left = (this.width - this.imageWidth) / 2;
         int top = (this.height - this.imageHeight) / 2;

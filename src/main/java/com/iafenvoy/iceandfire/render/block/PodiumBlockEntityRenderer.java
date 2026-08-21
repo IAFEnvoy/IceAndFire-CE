@@ -6,18 +6,25 @@ import com.iafenvoy.iceandfire.item.block.entity.PodiumBlockEntity;
 import com.iafenvoy.iceandfire.render.model.DragonEggModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
 public class PodiumBlockEntityRenderer<T extends PodiumBlockEntity> implements BlockEntityRenderer<T, PodiumBlockEntityRenderer.State> {
-    public static class State extends BlockEntityRenderState { private PodiumBlockEntity entity; private float partialTicks; }
+    public static class State extends BlockEntityRenderState {
+        private PodiumBlockEntity entity;
+        private float partialTicks;
+    }
+
     public PodiumBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
 
@@ -26,10 +33,12 @@ public class PodiumBlockEntityRenderer<T extends PodiumBlockEntity> implements B
     }
 
     @Override
-    public State createRenderState() { return new State(); }
+    public State createRenderState() {
+        return new State();
+    }
 
     @Override
-    public void extractRenderState(T entity, State state, float partialTicks, net.minecraft.world.phys.@NonNull Vec3 cameraPosition, net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay breakProgress) {
+    public void extractRenderState(T entity, State state, float partialTicks, @NonNull Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(entity, state, partialTicks, cameraPosition, breakProgress);
         state.entity = entity;
         state.partialTicks = partialTicks;
@@ -46,8 +55,9 @@ public class PodiumBlockEntityRenderer<T extends PodiumBlockEntity> implements B
                 matrixStackIn.pushPose();
                 matrixStackIn.pushPose();
                 model.renderPodium();
-                submitNodeCollector.submitCustomGeometry(matrixStackIn, PodiumBlockEntityRenderer.getEggTexture(item.type), (pose, buffer) -> {
-                    PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+                submitNodeCollector.submitCustomGeometry(matrixStackIn, getEggTexture(item.type), (pose, buffer) -> {
+                    PoseStack modelStack = new PoseStack();
+                    modelStack.last().set(pose);
                     model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
                 });
                 matrixStackIn.popPose();

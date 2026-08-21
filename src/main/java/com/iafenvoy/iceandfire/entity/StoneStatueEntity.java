@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.entity;
 
+import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.util.BlacklistedFromStatues;
 import com.iafenvoy.iceandfire.mixin.LivingEntityAccessor;
 import com.iafenvoy.iceandfire.registry.IafEntities;
@@ -207,7 +208,8 @@ public class StoneStatueEntity extends LivingEntity implements BlacklistedFromSt
 
     private void tryDepetrify(ServerLevel level) {
         EntityType<?> entityType = this.getTrappedEntityType();
-        if (entityType == EntityType.PLAYER || entityType.builtInRegistryHolder().is(IafEntityTags.NO_DEPETRIFY)) return;
+        if (entityType == EntityType.PLAYER || entityType.builtInRegistryHolder().is(IafEntityTags.NO_DEPETRIFY))
+            return;
 
         CompoundTag entityTag = this.getTrappedTag();
         if (entityTag.isEmpty()) return;

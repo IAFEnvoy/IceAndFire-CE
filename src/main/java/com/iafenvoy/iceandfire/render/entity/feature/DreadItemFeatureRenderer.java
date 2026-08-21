@@ -17,7 +17,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-/** Item-in-hand feature for legacy biped models submitted through the 26.1 render-state pipeline. */
+/**
+ * Item-in-hand feature for legacy biped models submitted through the 26.1 render-state pipeline.
+ */
 public final class DreadItemFeatureRenderer<T extends Mob> implements LegacyEntityFeature<T> {
     private final LegacyMobRenderer<T, ? extends BipedBaseModel<T>> renderer;
     public boolean hidden;

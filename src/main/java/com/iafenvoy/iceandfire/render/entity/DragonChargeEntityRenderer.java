@@ -6,6 +6,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -49,7 +50,7 @@ public class DragonChargeEntityRenderer extends EntityRenderer<Fireball, LegacyE
         matrixStackIn.translate(-0.5D, -0.5D, 0.5D);
         matrixStackIn.mulPose(Axis.YP.rotationDegrees(90.0F));
         BlockModelRenderState blockState = new BlockModelRenderState();
-        Minecraft.getInstance().getBlockModelResolver().update(blockState, this.isFire ? Blocks.MAGMA_BLOCK.defaultBlockState() : IafBlocks.DRAGON_ICE.get().defaultBlockState(), net.minecraft.client.renderer.block.model.BlockDisplayContext.create());
+        Minecraft.getInstance().getBlockModelResolver().update(blockState, this.isFire ? Blocks.MAGMA_BLOCK.defaultBlockState() : IafBlocks.DRAGON_ICE.get().defaultBlockState(), BlockDisplayContext.create());
         blockState.submitMultiLayer(matrixStackIn, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         matrixStackIn.popPose();
         super.submit(state, matrixStackIn, collector, camera);

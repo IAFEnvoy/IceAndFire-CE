@@ -4,10 +4,12 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -18,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class HydraArrowEntity extends AbstractArrow {
     private static final float HYDRA_ARROW_DAMAGE = 5.0F;
+
     public HydraArrowEntity(EntityType<? extends AbstractArrow> t, Level worldIn) {
         super(t, worldIn);
         this.setBaseDamage(5F);
@@ -54,7 +57,7 @@ public class HydraArrowEntity extends AbstractArrow {
         if (damage >= 3.0F && player.getUseItem().getItem() instanceof ShieldItem) {
             ItemStack copyBeforeUse = player.getUseItem().copy();
             int i = 1 + Mth.floor(damage);
-            player.getUseItem().hurtAndBreak(i, player, player.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+            player.getUseItem().hurtAndBreak(i, player, player.getUsedItemHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
 
             if (player.getUseItem().isEmpty()) {
                 player.stopUsingItem();

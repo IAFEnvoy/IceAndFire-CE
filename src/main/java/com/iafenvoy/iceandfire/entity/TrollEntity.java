@@ -50,10 +50,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -80,7 +81,7 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.troll.maxHealth.getValue())
                 //SPEED
@@ -372,14 +373,14 @@ public class TrollEntity extends Monster implements IAnimatedEntity, IVillagerFe
 
     @Override
     public void playAmbientSound() {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
+        if (this.getAnimation() == NO_ANIMATION)
             this.setAnimation(ANIMATION_SPEAK);
         super.playAmbientSound();
     }
 
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
+        if (this.getAnimation() == NO_ANIMATION)
             this.setAnimation(ANIMATION_SPEAK);
         super.playHurtSound(source);
     }

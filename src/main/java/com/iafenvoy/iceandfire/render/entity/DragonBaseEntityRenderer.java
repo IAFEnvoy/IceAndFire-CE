@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 
 public class DragonBaseEntityRenderer<T extends DragonBaseEntity> extends LegacyMobRenderer<T, TabulaModel<T>> {
     private boolean layersAdded;
+
     public DragonBaseEntityRenderer(EntityRendererProvider.Context context, TabulaModel<T> model) {
         super(context, model, 0.0025F);
         if (model != null) this.addDragonLayers();

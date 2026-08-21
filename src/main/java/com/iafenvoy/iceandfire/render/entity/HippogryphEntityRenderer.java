@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,7 @@ public class HippogryphEntityRenderer extends LegacyMobRenderer<HippogryphEntity
         matrix.scale(1.2F, 1.2F, 1.2F);
     }
 
-    private void submitEquipment(HippogryphEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, net.minecraft.client.renderer.state.level.CameraRenderState camera, int light, int outline) {
+    private void submitEquipment(HippogryphEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int light, int outline) {
         RenderType armor = switch (entity.getArmorValue()) {
             case 1 -> ARMOR_IRON;
             case 2 -> ARMOR_GOLD;
@@ -41,7 +42,8 @@ public class HippogryphEntityRenderer extends LegacyMobRenderer<HippogryphEntity
         };
         if (armor != null) submit(this.model, poseStack, collector, armor, light);
         if (entity.isSaddled()) submit(this.model, poseStack, collector, SADDLE, light);
-        if (entity.isSaddled() && entity.getControllingPassenger() != null) submit(this.model, poseStack, collector, BRIDLE, light);
+        if (entity.isSaddled() && entity.getControllingPassenger() != null)
+            submit(this.model, poseStack, collector, BRIDLE, light);
         if (entity.isChested()) submit(this.model, poseStack, collector, CHEST, light);
     }
 

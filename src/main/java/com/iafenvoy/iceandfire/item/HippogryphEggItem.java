@@ -20,11 +20,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 public class HippogryphEggItem extends Item implements ProjectileItem {
     public HippogryphEggItem() {
@@ -52,7 +54,7 @@ public class HippogryphEggItem extends Item implements ProjectileItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull net.minecraft.world.item.component.TooltipDisplay display, java.util.function.@NonNull @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull TooltipDisplay display, @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
         HippogryphType eggOrdinal = stack.getOrDefault(IafDataComponents.HIPPOGRYPH_EGG.get(), IafHippogryphTypes.BLACK);
         tooltip.accept(Component.translatable("entity.iceandfire.hippogryph." + eggOrdinal.name()).withStyle(ChatFormatting.GRAY));

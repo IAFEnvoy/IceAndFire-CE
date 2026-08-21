@@ -19,7 +19,8 @@ public class TideTridentItemRenderer implements DynamicItemRenderer {
         matrices.translate(0, 0.2F, -0.15F);
         matrices.mulPose(Axis.XP.rotationDegrees(160.0F));
         collector.submitCustomGeometry(matrices, RenderTypes.entityCutout(TideTridentEntityRenderer.TRIDENT, false), (pose, buffer) -> {
-            PoseStack modelStack = new PoseStack(); modelStack.last().set(pose);
+            PoseStack modelStack = new PoseStack();
+            modelStack.last().set(pose);
             MODEL.renderToBuffer(modelStack, buffer, light, overlay, -1);
         });
         matrices.popPose();

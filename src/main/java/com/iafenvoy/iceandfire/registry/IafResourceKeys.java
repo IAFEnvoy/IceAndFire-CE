@@ -3,8 +3,8 @@ package com.iafenvoy.iceandfire.registry;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.*;
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 
 public final class IafResourceKeys {
     public static final ResourceKey<Registry<BestiaryPage>> BESTIARY_PAGE = createKey("bestiary_page");

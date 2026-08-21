@@ -84,7 +84,7 @@ public final class IafBlocks {
     public static final DeferredBlock<Block> DRAGON_SCALE_BLACK = register("dragonscale_black", () -> new DragonScalesBlock(IafDragonColors.BLACK));
 
     public static final DeferredBlock<Block> DRAGON_BONE_BLOCK = register("dragon_bone_block", DragonBoneBlock::new);
-    public static final DeferredBlock<Block> DRAGON_BONE_BLOCK_WALL = register("dragon_bone_wall", () -> new DragonBoneWallBlock(BlockBehaviour.Properties.ofFullCopy(IafBlocks.DRAGON_BONE_BLOCK.get())));
+    public static final DeferredBlock<Block> DRAGON_BONE_BLOCK_WALL = register("dragon_bone_wall", () -> new DragonBoneWallBlock(BlockBehaviour.Properties.ofFullCopy(DRAGON_BONE_BLOCK.get())));
     public static final DeferredBlock<Block> DRAGONFORGE_FIRE_BRICK = forgeBrick(IafDragonTypes.FIRE);
     public static final DeferredBlock<Block> DRAGONFORGE_ICE_BRICK = forgeBrick(IafDragonTypes.ICE);
     public static final DeferredBlock<Block> DRAGONFORGE_LIGHTNING_BRICK = forgeBrick(IafDragonTypes.LIGHTNING);

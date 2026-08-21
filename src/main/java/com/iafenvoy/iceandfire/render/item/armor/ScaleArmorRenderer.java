@@ -22,8 +22,8 @@ public class ScaleArmorRenderer implements IArmorRendererBase {
     @Override
     public Model getHumanoidArmorModel(ItemStack itemStack, EquipmentClientInfo.LayerType layerType, Model defaultModel) {
         return itemStack.getItem() instanceof DragonScaleArmorItem scaleArmor
-            ? MODEL_BY_TYPE.getOrDefault(scaleArmor.getColor().getType(), b -> null).get(layerType == EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS)
-            : defaultModel;
+                ? MODEL_BY_TYPE.getOrDefault(scaleArmor.getColor().getType(), b -> null).get(layerType == EquipmentClientInfo.LayerType.HUMANOID_LEGGINGS)
+                : defaultModel;
     }
 
     public static void register(DragonType type, Boolean2ObjectFunction<ArmorModelBase> model) {

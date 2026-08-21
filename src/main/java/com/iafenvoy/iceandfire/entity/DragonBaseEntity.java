@@ -35,26 +35,33 @@ import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.PathingStuckHandler
 import com.iafenvoy.uranus.object.entity.pathfinding.raycoms.pathjobs.ICustomSizeNavigator;
 import com.iafenvoy.uranus.object.item.FoodUtils;
 import com.iafenvoy.uranus.util.RandomHelper;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -79,22 +86,22 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.*;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -263,7 +270,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 // TemptGoal queries this attribute in Minecraft 26.1.2.
                 .add(Attributes.TEMPT_RANGE, 10.0D)
                 //HEALTH
@@ -450,7 +457,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             parts[i].setId(this.getId() + i + 1);
     }
 
-    /** Keeps server-side ray tracing and interaction packets aware of all dragon parts. */
+    /**
+     * Keeps server-side ray tracing and interaction packets aware of all dragon parts.
+     */
     private void registerParts() {
         if (!(this.level() instanceof ServerLevel serverLevel)) return;
         Int2ObjectMap<PartEntity<?>> parts = ((ServerLevelMultipartAccessor) serverLevel).iceandfire$getDragonParts();
@@ -826,11 +835,15 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.readAdditionalSaveData(input.read(MapCodec.assumeMapUnsafe(CompoundTag.CODEC)).orElse(new CompoundTag()));
     }
 
-    /** Compatibility hook for dragon subclasses that still serialize their own extra NBT fields. */
+    /**
+     * Compatibility hook for dragon subclasses that still serialize their own extra NBT fields.
+     */
     protected void addAdditionalSaveData(CompoundTag compound) {
     }
 
-    /** Compatibility hook paired with {@link #addAdditionalSaveData(CompoundTag)}. */
+    /**
+     * Compatibility hook paired with {@link #addAdditionalSaveData(CompoundTag)}.
+     */
     protected void readAdditionalSaveData(CompoundTag compound) {
     }
 
@@ -1118,7 +1131,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 if (stack.getItem() == this.dragonType.getCrystalItem() && !SummoningCrystalItem.hasDragon(stack)) {
                     this.setCrystalBound(true);
                     CompoundTag compound = new CompoundTag(), dragonTag = new CompoundTag();
-                    dragonTag.put("DragonUUID", net.minecraft.core.UUIDUtil.AUTHLIB_CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, this.getUUID()).getOrThrow());
+                    dragonTag.put("DragonUUID", UUIDUtil.AUTHLIB_CODEC.encodeStart(NbtOps.INSTANCE, this.getUUID()).getOrThrow());
                     if (this.getCustomName() != null)
                         dragonTag.putString("CustomName", this.getCustomName().getString());
                     compound.put("Dragon", dragonTag);
@@ -1194,12 +1207,14 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                         if (player.isShiftKeyDown()) {
                             if (this.hasHomePosition) {
                                 this.hasHomePosition = false;
-                                if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("dragon.command.remove_home"));
+                                if (player instanceof ServerPlayer serverPlayer)
+                                    serverPlayer.sendOverlayMessage(Component.translatable("dragon.command.remove_home"));
                             } else {
                                 BlockPos pos = this.blockPosition();
                                 this.homePos = new HomePosition(pos, this.level());
                                 this.hasHomePosition = true;
-                                if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("dragon.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()));
+                                if (player instanceof ServerPlayer serverPlayer)
+                                    serverPlayer.sendOverlayMessage(Component.translatable("dragon.command.new_home", pos.getX(), pos.getY(), pos.getZ(), this.homePos.getDimension()));
                             }
                         } else {
                             this.playSound(SoundEvents.ZOMBIE_INFECT, this.getSoundVolume(), this.getVoicePitch());
@@ -1215,7 +1230,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                             } else if (this.getCommand() == 2) {
                                 commandText = "escort";
                             }
-                            if (player instanceof ServerPlayer serverPlayer) serverPlayer.sendOverlayMessage(Component.translatable("dragon.command." + commandText));
+                            if (player instanceof ServerPlayer serverPlayer)
+                                serverPlayer.sendOverlayMessage(Component.translatable("dragon.command." + commandText));
                         }
                         return InteractionResult.SUCCESS;
                     }
@@ -1438,7 +1454,9 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         }
     }
 
-    /** Returns the collision area occupied by the dragon body and all of its multipart hitboxes. */
+    /**
+     * Returns the collision area occupied by the dragon body and all of its multipart hitboxes.
+     */
     private AABB getMultipartBoundingBox() {
         AABB bounds = this.getBoundingBox();
         for (PartEntity<?> part : this.getParts()) {
@@ -1676,7 +1694,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.updateParts();
         this.registerParts();
         this.prevDragonPitch = this.getDragonPitch();
-        net.minecraft.util.profiling.Profiler.get().push("dragonLogic");
+        Profiler.get().push("dragonLogic");
         this.getAttribute(Attributes.STEP_HEIGHT).setBaseValue(this.maxUpStep());
         this.isOverAir = this.isOverAirLogic();
         this.logic.updateDragonCommon();
@@ -1702,13 +1720,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 this.logic.updateDragonAttack();
             }
         }
-        net.minecraft.util.profiling.Profiler.get().pop();
-        net.minecraft.util.profiling.Profiler.get().push("dragonFlight");
+        Profiler.get().pop();
+        Profiler.get().push("dragonFlight");
         if (this.useFlyingPathFinder() && !this.level().isClientSide() /*&& isControlledByLocalInstance()*/) {
             this.flightManager.update();
         }
-        net.minecraft.util.profiling.Profiler.get().pop();
-        net.minecraft.util.profiling.Profiler.get().pop();
+        Profiler.get().pop();
+        Profiler.get().pop();
 
         if (!this.level().isClientSide()) {
             if (IafCommonConfig.INSTANCE.dragon.digWhenStuck.getValue() && this.isStuck()) {
@@ -1832,7 +1850,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Override
     public void playAmbientSound() {
         if (!this.isSleeping() && !this.isModelDead() && !this.level().isClientSide()) {
-            if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
+            if (this.getAnimation() == NO_ANIMATION)
                 this.setAnimation(ANIMATION_SPEAK);
             super.playAmbientSound();
         }
@@ -1841,7 +1859,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
         if (!this.isModelDead()) {
-            if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION && !this.level().isClientSide())
+            if (this.getAnimation() == NO_ANIMATION && !this.level().isClientSide())
                 this.setAnimation(ANIMATION_SPEAK);
             super.playHurtSound(source);
         }
@@ -1849,7 +1867,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public Animation[] getAnimations() {
-        return new Animation[]{IAnimatedEntity.NO_ANIMATION, DragonBaseEntity.ANIMATION_EAT};
+        return new Animation[]{NO_ANIMATION, ANIMATION_EAT};
     }
 
     @Override
@@ -2223,8 +2241,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             // Dragon bite attack
             if (this.isAggressive() && this.getControllingPassenger() != null && this.getControllingPassenger() instanceof Player) {
                 LivingEntity target = DragonUtils.riderLookingAtEntity(this, this.getControllingPassenger(), this.getDragonStage() + (this.getBoundingBox().maxX - this.getBoundingBox().minX));
-                if (this.getAnimation() != DragonBaseEntity.ANIMATION_BITE) {
-                    this.setAnimation(DragonBaseEntity.ANIMATION_BITE);
+                if (this.getAnimation() != ANIMATION_BITE) {
+                    this.setAnimation(ANIMATION_BITE);
                 }
                 if (target != null && !DragonUtils.hasSameOwner(this, target)) {
                     int damage = (int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
@@ -2272,8 +2290,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             }
             if (this.isAggressive() && this.getControllingPassenger() != null && this.getControllingPassenger() instanceof Player) {
                 LivingEntity target = DragonUtils.riderLookingAtEntity(this, this.getControllingPassenger(), this.getDragonStage() + (this.getBoundingBox().maxX - this.getBoundingBox().minX));
-                if (this.getAnimation() != DragonBaseEntity.ANIMATION_BITE) {
-                    this.setAnimation(DragonBaseEntity.ANIMATION_BITE);
+                if (this.getAnimation() != ANIMATION_BITE) {
+                    this.setAnimation(ANIMATION_BITE);
                 }
                 if (target != null && !DragonUtils.hasSameOwner(this, target)) {
                     this.logic.attackTarget(target, ridingPlayer, (int) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue());

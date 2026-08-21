@@ -32,6 +32,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -104,7 +105,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
-        return Mob.createMobAttributes()
+        return createMobAttributes()
                 //HEALTH
                 .add(Attributes.MAX_HEALTH, IafCommonConfig.INSTANCE.cockatrice.maxHealth.getValue())
                 //SPEED
@@ -204,7 +205,7 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
             if (entity.getType().builtInRegistryHolder().is(IafEntityTags.SCARES_COCKATRICES))
                 damage *= 5;
         }
-        if (source.is(net.minecraft.world.damagesource.DamageTypes.IN_WALL))
+        if (source.is(DamageTypes.IN_WALL))
             return false;
         return super.hurtServer(level, source, damage);
     }
@@ -623,14 +624,14 @@ public class CockatriceEntity extends TamableAnimal implements IAnimatedEntity, 
 
     @Override
     public void playAmbientSound() {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
+        if (this.getAnimation() == NO_ANIMATION)
             this.setAnimation(ANIMATION_SPEAK);
         super.playAmbientSound();
     }
 
     @Override
     protected void playHurtSound(@NotNull DamageSource source) {
-        if (this.getAnimation() == IAnimatedEntity.NO_ANIMATION)
+        if (this.getAnimation() == NO_ANIMATION)
             this.setAnimation(ANIMATION_SPEAK);
         super.playHurtSound(source);
     }

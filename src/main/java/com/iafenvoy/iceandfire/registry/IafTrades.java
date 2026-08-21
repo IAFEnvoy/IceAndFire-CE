@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -29,7 +30,7 @@ public final class IafTrades {
     public static final Function<Block, Set<BlockState>> SCRIBE_WORKSTATION = block -> new HashSet<>(block.getStateDefinition().getPossibleStates());
     public static final DeferredHolder<PoiType, PoiType> SCRIBE_POI = POI_REGISTRY.register(SCRIBE, () -> new PoiType(SCRIBE_WORKSTATION.apply(SCRIBE_BLOCK.get()), 1, 1));
     public static final DeferredHolder<VillagerProfession, VillagerProfession> SCRIBE_PROFESSION = PROFESSION_REGISTRY.register(SCRIBE, () -> new VillagerProfession(
-            net.minecraft.network.chat.Component.translatable("entity.iceandfire.villager.scribe"),
+            Component.translatable("entity.iceandfire.villager.scribe"),
             e -> e.is(SCRIBE_POI.getKey()), e -> e.is(SCRIBE_POI.getKey()), ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_LIBRARIAN,
             Int2ObjectMap.ofEntries(
                     Int2ObjectMap.entry(1, tradeSet(1)), Int2ObjectMap.entry(2, tradeSet(2)), Int2ObjectMap.entry(3, tradeSet(3)),

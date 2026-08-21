@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.DreadQueenEntity;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -225,7 +226,7 @@ public class IafDragonLogic {
         }
         if (this.dragon.isFlying()) {
             if (this.dragon.getTarget() != null && this.dragon.getBoundingBox().expandTowards(3.0F, 3.0F, 3.0F).intersects(this.dragon.getTarget().getBoundingBox()))
-                if (this.dragon.level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+                if (this.dragon.level() instanceof ServerLevel serverLevel)
                     this.dragon.doHurtTarget(serverLevel, this.dragon.getTarget());
             if (this.dragon.airAttack == IafDragonAttacks.Air.TACKLE && (this.dragon.horizontalCollision || this.dragon.onGround())) {
                 this.dragon.usingGroundAttack = true;
