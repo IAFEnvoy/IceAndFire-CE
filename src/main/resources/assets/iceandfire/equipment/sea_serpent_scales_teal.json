@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "iceandfire:sea_serpent_scales_teal"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "iceandfire:sea_serpent_scales_teal"
+      }
+    ]
+  }
+}

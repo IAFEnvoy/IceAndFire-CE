@@ -140,7 +140,6 @@ public final class IafRenderers {
         DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_SPRUCE.get().asItem(), new MiscItemRenderer());
         DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get().asItem(), new MiscItemRenderer());
         DynamicItemRenderer.RENDERERS.put(IafBlocks.PIXIE_HOUSE_MUSHROOM_BROWN.get().asItem(), new MiscItemRenderer());
-        DynamicItemRenderer.RENDERERS.put(IafBlocks.GHOST_CHEST.get().asItem(), new MiscItemRenderer());
         for (TrollType.BuiltinWeapon weapon : TrollType.BuiltinWeapon.values())
             DynamicItemRenderer.RENDERERS.put(weapon.getItem(), new TrollWeaponRenderer());
     }

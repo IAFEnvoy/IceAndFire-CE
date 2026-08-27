@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "iceandfire:troll_frost"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "iceandfire:troll_frost"
+      }
+    ]
+  }
+}

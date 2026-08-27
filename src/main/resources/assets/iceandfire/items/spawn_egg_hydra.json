@@ -1,6 +1,16 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "iceandfire:item/spawn_egg_hydra"
+    "model": "iceandfire:item/template_spawn_egg",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 9145208
+      },
+      {
+        "type": "minecraft:constant",
+        "value": 3028779
+      }
+    ]
   }
 }

@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.compat.jei;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.mixin.RecipeManagerAccessor;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafRecipes;
@@ -18,6 +17,7 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -31,9 +31,9 @@ import java.util.List;
 public class IceAndFireJeiPlugin implements IModPlugin {
     private static final Identifier ID = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, IceAndFire.MOD_ID);
 
-    public static final IRecipeType<DragonForgeRecipe> FIRE = IRecipeType.create(Identifier.DEFAULT_NAMESPACE, "firedragonforge", DragonForgeRecipe.class);
-    public static final IRecipeType<DragonForgeRecipe> ICE = IRecipeType.create(Identifier.DEFAULT_NAMESPACE, "icedragonforge", DragonForgeRecipe.class);
-    public static final IRecipeType<DragonForgeRecipe> LIGHTNING = IRecipeType.create(Identifier.DEFAULT_NAMESPACE, "lightningdragonforge", DragonForgeRecipe.class);
+    public static final IRecipeType<DragonForgeRecipe> FIRE = IRecipeType.create(IceAndFire.MOD_ID, "firedragonforge", DragonForgeRecipe.class);
+    public static final IRecipeType<DragonForgeRecipe> ICE = IRecipeType.create(IceAndFire.MOD_ID, "icedragonforge", DragonForgeRecipe.class);
+    public static final IRecipeType<DragonForgeRecipe> LIGHTNING = IRecipeType.create(IceAndFire.MOD_ID, "lightningdragonforge", DragonForgeRecipe.class);
 
     @Override
     public @NotNull Identifier getPluginUid() {
@@ -59,31 +59,27 @@ public class IceAndFireJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
-        RecipeManager recipeManager = (RecipeManager) Minecraft.getInstance().level.recipeAccess();
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null || !(level.recipeAccess() instanceof RecipeManager recipeManager)) {
+            IceAndFire.LOGGER.warn("Skipping Dragon Forge JEI recipes because the client recipe manager is not ready");
+            return;
+        }
 
-        List<RecipeHolder<DragonForgeRecipe>> recipeList = new ArrayList<>(((RecipeManagerAccessor) recipeManager).iceandfire$getRecipes().byType(IafRecipes.DRAGON_FORGE_TYPE.get()));
+        List<DragonForgeRecipe> fireRecipes = new ArrayList<>();
+        List<DragonForgeRecipe> iceRecipes = new ArrayList<>();
+        List<DragonForgeRecipe> lightningRecipes = new ArrayList<>();
 
-        List<DragonForgeRecipe> FIRE_RECIPES = new ArrayList<>();
-        List<DragonForgeRecipe> ICE_RECIPES = new ArrayList<>();
-        List<DragonForgeRecipe> LIGHTNING_RECIPES = new ArrayList<>();
-
-        for (RecipeHolder<DragonForgeRecipe> recipe : recipeList) {
+        for (RecipeHolder<DragonForgeRecipe> recipe : recipeManager.recipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get())) {
             switch (recipe.value().getDragonType()) {
-                case "fire":
-                    FIRE_RECIPES.add(recipe.value());
-                    break;
-                case "ice":
-                    ICE_RECIPES.add(recipe.value());
-                    break;
-                case "lightning":
-                    LIGHTNING_RECIPES.add(recipe.value());
-                    break;
+                case "fire" -> fireRecipes.add(recipe.value());
+                case "ice" -> iceRecipes.add(recipe.value());
+                case "lightning" -> lightningRecipes.add(recipe.value());
             }
         }
 
-        registration.addRecipes(FIRE, FIRE_RECIPES);
-        registration.addRecipes(ICE, ICE_RECIPES);
-        registration.addRecipes(LIGHTNING, LIGHTNING_RECIPES);
+        registration.addRecipes(FIRE, fireRecipes);
+        registration.addRecipes(ICE, iceRecipes);
+        registration.addRecipes(LIGHTNING, lightningRecipes);
     }
 
     @Override

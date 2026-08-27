@@ -1,6 +1,16 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "iceandfire:item/spawn_egg_siren"
+    "model": "iceandfire:item/template_spawn_egg",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 9365194
+      },
+      {
+        "type": "minecraft:constant",
+        "value": 15917000
+      }
+    ]
   }
 }
