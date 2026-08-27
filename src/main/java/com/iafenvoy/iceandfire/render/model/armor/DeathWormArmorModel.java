@@ -30,13 +30,14 @@ public class DeathWormArmorModel extends ArmorModelBase {
         root.getChild("right_arm").addOrReplaceChild("spineR2", CubeListBuilder.create().texOffs(32, 40).addBox(-0.6F, -1.7F, -0.5F, 1, 2, 1), PartPose.offsetAndRotation(-2.5F, -1.6F, 0.0F, -0.4914847173616032F, 0.0F, 0.0F));
         root.getChild("left_arm").addOrReplaceChild("spineL2", CubeListBuilder.create().texOffs(32, 40).addBox(-0.4F, -1.7F, -0.5F, 1, 2, 1), PartPose.offsetAndRotation(2.5F, -1.6F, 0.0F, -0.4914847173616032F, 0.0F, 0.0F));
 
-        root.getChild("hat").addOrReplaceChild("spineH1", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -9.0F, -3.0F, -0.4914847173616032F, 0.0F, 0.0F));
-        root.getChild("hat").addOrReplaceChild("spineH2", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -2.7F, -0.5F, 1, 4, 1), PartPose.offsetAndRotation(0.0F, -9.0F, 0.0F, -0.4914847173616032F, 0.0F, 0.0F));
-        root.getChild("hat").addOrReplaceChild("spineH3", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -9.0F, 3.0F, -0.8651597102135892F, 0.0F, 0.0F));
-        root.getChild("hat").addOrReplaceChild("spineH4", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -2.7F, -0.5F, 1, 4, 1), PartPose.offsetAndRotation(0.0F, -8.0F, 5.0F, -1.5481070465189704F, 0.0F, 0.0F));
-        root.getChild("hat").addOrReplaceChild("spineH5", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -6.0F, 5.0F, -1.8212510744560826F, 0.0F, 0.0F));
-        root.getChild("hat").addOrReplaceChild("spineH6", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -2.7F, -0.5F, 1, 5, 1), PartPose.offsetAndRotation(0.0F, -3.5F, 5.0F, -2.0032889154390916F, 0.0F, 0.0F));
-        root.getChild("hat").addOrReplaceChild("spineH7", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -1.3F, 4.5F, -2.0032889154390916F, 0.0F, 0.0F));
+        PartDefinition helmet = ArmorMeshParts.helmetDecor(root);
+        helmet.addOrReplaceChild("spineH1", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -9.0F, -3.0F, -0.4914847173616032F, 0.0F, 0.0F));
+        helmet.addOrReplaceChild("spineH2", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -2.7F, -0.5F, 1, 4, 1), PartPose.offsetAndRotation(0.0F, -9.0F, 0.0F, -0.4914847173616032F, 0.0F, 0.0F));
+        helmet.addOrReplaceChild("spineH3", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -9.0F, 3.0F, -0.8651597102135892F, 0.0F, 0.0F));
+        helmet.addOrReplaceChild("spineH4", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -2.7F, -0.5F, 1, 4, 1), PartPose.offsetAndRotation(0.0F, -8.0F, 5.0F, -1.5481070465189704F, 0.0F, 0.0F));
+        helmet.addOrReplaceChild("spineH5", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -6.0F, 5.0F, -1.8212510744560826F, 0.0F, 0.0F));
+        helmet.addOrReplaceChild("spineH6", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -2.7F, -0.5F, 1, 5, 1), PartPose.offsetAndRotation(0.0F, -3.5F, 5.0F, -2.0032889154390916F, 0.0F, 0.0F));
+        helmet.addOrReplaceChild("spineH7", CubeListBuilder.create().texOffs(32, 40).addBox(-0.5F, -1.7F, -0.5F, 1, 3, 1), PartPose.offsetAndRotation(0.0F, -1.3F, 4.5F, -2.0032889154390916F, 0.0F, 0.0F));
 
         return modelData;
     }

@@ -112,20 +112,20 @@ public final class IafRenderers {
     }
 
     public static void registerArmorRenderers() {
-        IArmorRendererBase.register(new BasicArmorRenderer(CopperArmorModel::new), IafItems.COPPER_HELMET.get(), IafItems.COPPER_CHESTPLATE.get(), IafItems.COPPER_LEGGINGS.get(), IafItems.COPPER_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DeathWormArmorModel::new), IafItems.DEATHWORM_WHITE_HELMET.get(), IafItems.DEATHWORM_WHITE_CHESTPLATE.get(), IafItems.DEATHWORM_WHITE_LEGGINGS.get(), IafItems.DEATHWORM_WHITE_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DeathWormArmorModel::new), IafItems.DEATHWORM_YELLOW_HELMET.get(), IafItems.DEATHWORM_YELLOW_CHESTPLATE.get(), IafItems.DEATHWORM_YELLOW_LEGGINGS.get(), IafItems.DEATHWORM_YELLOW_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DeathWormArmorModel::new), IafItems.DEATHWORM_RED_HELMET.get(), IafItems.DEATHWORM_RED_CHESTPLATE.get(), IafItems.DEATHWORM_RED_LEGGINGS.get(), IafItems.DEATHWORM_RED_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DragonSteelFireArmorModel::new), IafItems.DRAGONSTEEL_FIRE_HELMET.get(), IafItems.DRAGONSTEEL_FIRE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_FIRE_LEGGINGS.get(), IafItems.DRAGONSTEEL_FIRE_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DragonSteelIceArmorModel::new), IafItems.DRAGONSTEEL_ICE_HELMET.get(), IafItems.DRAGONSTEEL_ICE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_ICE_LEGGINGS.get(), IafItems.DRAGONSTEEL_ICE_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(DragonSteelLightningArmorModel::new), IafItems.DRAGONSTEEL_LIGHTNING_HELMET.get(), IafItems.DRAGONSTEEL_LIGHTNING_CHESTPLATE.get(), IafItems.DRAGONSTEEL_LIGHTNING_LEGGINGS.get(), IafItems.DRAGONSTEEL_LIGHTNING_BOOTS.get());
-        IArmorRendererBase.register(new BasicArmorRenderer(SilverArmorModel::new), IafItems.SILVER_HELMET.get(), IafItems.SILVER_CHESTPLATE.get(), IafItems.SILVER_LEGGINGS.get(), IafItems.SILVER_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> CopperArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.COPPER_HELMET.get(), IafItems.COPPER_CHESTPLATE.get(), IafItems.COPPER_LEGGINGS.get(), IafItems.COPPER_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> DeathWormArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.DEATHWORM_WHITE_HELMET.get(), IafItems.DEATHWORM_WHITE_CHESTPLATE.get(), IafItems.DEATHWORM_WHITE_LEGGINGS.get(), IafItems.DEATHWORM_WHITE_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> DeathWormArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.DEATHWORM_YELLOW_HELMET.get(), IafItems.DEATHWORM_YELLOW_CHESTPLATE.get(), IafItems.DEATHWORM_YELLOW_LEGGINGS.get(), IafItems.DEATHWORM_YELLOW_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> DeathWormArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.DEATHWORM_RED_HELMET.get(), IafItems.DEATHWORM_RED_CHESTPLATE.get(), IafItems.DEATHWORM_RED_LEGGINGS.get(), IafItems.DEATHWORM_RED_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> DragonSteelFireArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F, inner)), IafItems.DRAGONSTEEL_FIRE_HELMET.get(), IafItems.DRAGONSTEEL_FIRE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_FIRE_LEGGINGS.get(), IafItems.DRAGONSTEEL_FIRE_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> DragonSteelIceArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F, inner)), IafItems.DRAGONSTEEL_ICE_HELMET.get(), IafItems.DRAGONSTEEL_ICE_CHESTPLATE.get(), IafItems.DRAGONSTEEL_ICE_LEGGINGS.get(), IafItems.DRAGONSTEEL_ICE_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> DragonSteelLightningArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F, inner)), IafItems.DRAGONSTEEL_LIGHTNING_HELMET.get(), IafItems.DRAGONSTEEL_LIGHTNING_CHESTPLATE.get(), IafItems.DRAGONSTEEL_LIGHTNING_LEGGINGS.get(), IafItems.DRAGONSTEEL_LIGHTNING_BOOTS.get());
+        IArmorRendererBase.register(new BasicArmorRenderer(inner -> SilverArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.SILVER_HELMET.get(), IafItems.SILVER_CHESTPLATE.get(), IafItems.SILVER_LEGGINGS.get(), IafItems.SILVER_BOOTS.get());
         for (DragonColor armor : IafRegistries.DRAGON_COLOR)
             IArmorRendererBase.register(new ScaleArmorRenderer(), armor.helmet.get(), armor.chestplate.get(), armor.leggings.get(), armor.boots.get());
         for (SeaSerpentType seaSerpent : IafRegistries.SEA_SERPENT_TYPE)
-            IArmorRendererBase.register(new BasicArmorRenderer(SeaSerpentArmorModel::new), seaSerpent.helmet.get(), seaSerpent.chestplate.get(), seaSerpent.leggings.get(), seaSerpent.boots.get());
+            IArmorRendererBase.register(new BasicArmorRenderer(inner -> SeaSerpentArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), seaSerpent.helmet.get(), seaSerpent.chestplate.get(), seaSerpent.leggings.get(), seaSerpent.boots.get());
         for (TrollType troll : IafRegistries.TROLL_TYPE)
-            IArmorRendererBase.register(new BasicArmorRenderer(TrollArmorModel::new), troll.helmet.get(), troll.chestplate.get(), troll.leggings.get(), troll.boots.get());
+            IArmorRendererBase.register(new BasicArmorRenderer(inner -> TrollArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), troll.helmet.get(), troll.chestplate.get(), troll.leggings.get(), troll.boots.get());
     }
 
     public static void registerItemRenderers() {
