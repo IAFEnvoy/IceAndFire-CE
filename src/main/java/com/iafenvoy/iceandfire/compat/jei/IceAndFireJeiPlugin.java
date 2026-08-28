@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipeCache;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
-import com.iafenvoy.iceandfire.registry.IafRecipes;
 import com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -16,15 +15,9 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.Identifier;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,15 +57,7 @@ public class IceAndFireJeiPlugin implements IModPlugin {
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         List<DragonForgeRecipe> recipes = new ArrayList<>(DragonForgeRecipeCache.get());
         if (recipes.isEmpty()) {
-            RecipeManager recipeManager = serverRecipeManager();
-            if (recipeManager != null) {
-                for (RecipeHolder<DragonForgeRecipe> holder : recipeManager.recipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get())) {
-                    recipes.add(holder.value());
-                }
-            }
-        }
-        if (recipes.isEmpty()) {
-            IceAndFire.LOGGER.warn("Skipping Dragon Forge JEI recipes because no server recipes are available");
+            IceAndFire.LOGGER.warn("Skipping Dragon Forge JEI recipes because NeoForge has not synced iceandfire:dragonforge yet");
             return;
         }
 
@@ -92,19 +77,6 @@ public class IceAndFireJeiPlugin implements IModPlugin {
         registration.addRecipes(FIRE, fireRecipes);
         registration.addRecipes(ICE, iceRecipes);
         registration.addRecipes(LIGHTNING, lightningRecipes);
-    }
-
-    /**
-     * 26.1 keeps full recipes on the server. {@link net.minecraft.client.multiplayer.ClientLevel#recipeAccess()}
-     * is only a display container, so reading it never finds {@code iceandfire:dragonforge}.
-     */
-    private static @Nullable RecipeManager serverRecipeManager() {
-        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        if (server == null) {
-            Minecraft minecraft = Minecraft.getInstance();
-            server = minecraft.getSingleplayerServer();
-        }
-        return server != null ? server.getRecipeManager() : null;
     }
 
     @Override

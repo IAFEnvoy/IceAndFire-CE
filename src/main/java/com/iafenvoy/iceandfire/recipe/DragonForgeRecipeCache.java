@@ -2,21 +2,20 @@ package com.iafenvoy.iceandfire.recipe;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.registry.IafRecipes;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 
 import java.util.List;
 
 /**
- * 26.1 clients no longer receive a full {@link RecipeManager}. JEI has to read
- * dragon-forge recipes from the integrated server (same JVM) instead.
+ * Client copy of dragon-forge recipes delivered by
+ * {@link net.neoforged.neoforge.event.OnDatapackSyncEvent#sendRecipes}.
  */
-@EventBusSubscriber
+@EventBusSubscriber(Dist.CLIENT)
 public final class DragonForgeRecipeCache {
     private static volatile List<DragonForgeRecipe> RECIPES = List.of();
 
@@ -27,19 +26,14 @@ public final class DragonForgeRecipeCache {
         return RECIPES;
     }
 
-    public static void refresh(RecipeManager manager) {
-        RECIPES = manager.recipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
-        IceAndFire.LOGGER.info("Cached {} dragon forge recipes for JEI", RECIPES.size());
+    @SubscribeEvent
+    public static void onRecipesReceived(RecipesReceivedEvent event) {
+        RECIPES = event.getRecipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        IceAndFire.LOGGER.info("Received {} dragon forge recipes from NeoForge sync", RECIPES.size());
     }
 
     @SubscribeEvent
-    public static void onServerStarted(ServerStartedEvent event) {
-        refresh(event.getServer().getRecipeManager());
-    }
-
-    @SubscribeEvent
-    public static void onDatapackSync(OnDatapackSyncEvent event) {
-        MinecraftServer server = event.getPlayerList().getServer();
-        refresh(server.getRecipeManager());
+    public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event) {
+        RECIPES = List.of();
     }
 }
