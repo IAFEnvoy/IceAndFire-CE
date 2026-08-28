@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "iceandfire:earplugs"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "iceandfire:earplugs"
+      }
+    ]
+  }
+}

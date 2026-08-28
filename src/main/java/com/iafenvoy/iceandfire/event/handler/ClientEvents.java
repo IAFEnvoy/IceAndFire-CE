@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.event.handler;
 
+import com.iafenvoy.iceandfire.compat.IafClientCompat;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
@@ -77,10 +78,17 @@ public final class ClientEvents {
     public static void disablePlayerRenderWhenNeed(RenderPlayerEvent.Pre<?> event) {
         if (Minecraft.getInstance().level == null) return;
         Entity entity = Minecraft.getInstance().level.getEntity(event.getRenderState().id);
-        if (!(entity instanceof Player player)) return;
-        if (player.getVehicle() instanceof DragonBaseEntity && player instanceof LocalPlayer && (Minecraft.getInstance().options.getCameraType().isFirstPerson() || !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player)))
+        if (!(entity instanceof Player player) || !(player.getVehicle() instanceof DragonBaseEntity)) return;
+        if (player instanceof LocalPlayer && Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
             event.setCanceled(true);
-        if (player instanceof RemotePlayer && player.getVehicle() instanceof DragonBaseEntity && !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player))
+            return;
+        }
+        // Sodium skips the nested extract/submit used by DragonRiderFeatureRenderer, so
+        // cancelling here would make the rider vanish. Leave vanilla/Sodium passenger rendering.
+        if (IafClientCompat.isSodiumLoaded()) return;
+        if (player instanceof LocalPlayer && !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player))
+            event.setCanceled(true);
+        if (player instanceof RemotePlayer && !DragonRiderFeatureRenderer.RENDERING_RIDERS.contains(player))
             event.setCanceled(true);
     }
 

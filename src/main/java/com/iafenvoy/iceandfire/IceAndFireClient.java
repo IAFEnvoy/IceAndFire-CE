@@ -11,11 +11,13 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
@@ -28,6 +30,15 @@ public class IceAndFireClient {
     public IceAndFireClient() {
         ConfigManager.getInstance().registerConfigHandler(IafClientConfig.INSTANCE);
 
+    }
+
+    /**
+     * Uranus snapshots {@code IArmorRendererBase.RENDERERS} during this event,
+     * which fires while Minecraft is constructed — well before {@link FMLClientSetupEvent}.
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
+        IafRenderers.registerArmorRenderers();
     }
 
     @SubscribeEvent

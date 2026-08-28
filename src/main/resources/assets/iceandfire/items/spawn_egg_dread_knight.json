@@ -1,6 +1,16 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "iceandfire:item/spawn_egg_dread_knight"
+    "model": "iceandfire:item/template_spawn_egg",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": 14739174
+      },
+      {
+        "type": "minecraft:constant",
+        "value": 4877422
+      }
+    ]
   }
 }

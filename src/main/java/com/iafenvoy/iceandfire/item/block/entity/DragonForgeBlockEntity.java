@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.item.block.entity;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.DragonForgeBrickBlock;
 import com.iafenvoy.iceandfire.item.block.DragonForgeCoreBlock;
-import com.iafenvoy.iceandfire.mixin.RecipeManagerAccessor;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.screen.menu.DragonForgeMenu;
@@ -228,7 +227,7 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
 
     public List<DragonForgeRecipe> getRecipes() {
         assert this.level != null;
-        return ((RecipeManagerAccessor) this.level.recipeAccess()).iceandfire$getRecipes().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        return ((RecipeManager) this.level.recipeAccess()).recipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {
