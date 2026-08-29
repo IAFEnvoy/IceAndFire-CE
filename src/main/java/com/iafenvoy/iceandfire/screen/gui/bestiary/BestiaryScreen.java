@@ -22,6 +22,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -143,8 +144,8 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
             this.drawPerPage(context, this.bookPages);
             int pageLeft = this.bookPages * 2 + 1;
             int pageRight = pageLeft + 1;
-            context.text(this.font, String.valueOf(pageLeft), X / 4, Y - 32, 0X303030, false);
-            context.text(this.font, String.valueOf(pageRight), X * 3 / 4, Y - 32, 0X303030, false);
+            context.text(this.font, String.valueOf(pageLeft), X / 4, Y - 32, 0xFF303030, false);
+            context.text(this.font, String.valueOf(pageRight), X * 3 / 4, Y - 32, 0xFF303030, false);
         }
         context.pose().popMatrix();
     }
@@ -774,9 +775,9 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                     ms.pose().translate(0, 5.5F);
                 }
                 if (linenumber <= 19)
-                    ms.text(this.font, line, 15, 20 + linenumber * 10, 0X303030, false);
+                    ms.text(this.font, line, 15, 20 + linenumber * 10, 0xFF303030, false);
                 else
-                    ms.text(this.font, line, 220, (linenumber - 19) * 10, 0X303030, false);
+                    ms.text(this.font, line, 220, (linenumber - 19) * 10, 0xFF303030, false);
                 linenumber++;
                 ms.pose().popMatrix();
             }
@@ -787,7 +788,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         String s = I18n.get("bestiary." + this.pageType.name());
         float scale = this.font.width(s) <= 100 ? 2 : this.font.width(s) * 0.0125F;
         ms.pose().scale(scale, scale);
-        ms.text(this.font, s, 10, 2, 0x7a756a, false);
+        ms.text(this.font, s, 10, 2, 0xFF7A756A, false);
         ms.pose().popMatrix();
     }
 
