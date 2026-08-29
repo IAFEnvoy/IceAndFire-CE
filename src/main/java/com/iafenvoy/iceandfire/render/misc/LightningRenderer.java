@@ -77,6 +77,13 @@ public class LightningRenderer {
         });
     }
 
+    public boolean hasBolts() {
+        for (BoltOwnerData data : this.boltOwners.values()) {
+            if (!data.bolts.isEmpty()) return true;
+        }
+        return false;
+    }
+
     public void update(Object owner, LightningBoltData newBoltData, float partialTicks) {
         ClientLevel level = clientLevel();
         if (level == null) return;

@@ -21,8 +21,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
@@ -93,8 +93,13 @@ public final class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void renderLightningBolts(RenderLevelStageEvent.AfterOpaqueFeatures event) {
-        if (LIGHTNINGS.isEmpty()) return;
+    public static void submitLightningBolts(SubmitCustomGeometryEvent event) {
+        // 26.1 submits custom geometry before renderSolidFeatures/endBatch.
+        // AfterOpaqueFeatures + bufferSource is after that flush, so bolts never appear.
+        if (LIGHTNINGS.isEmpty() && !LIGHTNING_RENDERER.hasBolts()) return;
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft == null || minecraft.level == null) return;
+        float partialTicks = minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false);
         PoseStack poseStack = event.getPoseStack();
         Vec3 cameraPos = event.getLevelRenderState().cameraRenderState.pos;
         poseStack.pushPose();
@@ -105,10 +110,10 @@ public final class ClientEvents {
                     .lifespan(10)
                     .fade(LightningBoltData.FadeFunction.fade(0.1F))
                     .spawn(LightningBoltData.SpawnFunction.NO_DELAY);
-            LIGHTNING_RENDERER.update(null, bolt, 0.0F);
+            LIGHTNING_RENDERER.update(null, bolt, partialTicks);
         }
         LIGHTNINGS.clear();
-        LIGHTNING_RENDERER.render(0.0F, poseStack, Minecraft.getInstance().renderBuffers().bufferSource());
+        LIGHTNING_RENDERER.submit(partialTicks, poseStack, event.getSubmitNodeCollector(), 0xF000F0);
         poseStack.popPose();
     }
 
