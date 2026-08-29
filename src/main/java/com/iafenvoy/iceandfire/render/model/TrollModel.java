@@ -395,6 +395,7 @@ public class TrollModel extends DragonBaseModel<TrollEntity> {
 
     @Override
     public void renderStatue(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, Entity living) {
+        this.resetToDefaultPose();
         this.animateStatue((TrollEntity) living);
         this.log1.showModel = false;
         this.renderToBuffer(matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
