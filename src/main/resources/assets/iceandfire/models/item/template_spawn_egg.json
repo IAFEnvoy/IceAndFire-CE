@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "iceandfire:item/template_spawn_egg",
+    "layer1": "iceandfire:item/template_spawn_egg_overlay"
+  }
+}

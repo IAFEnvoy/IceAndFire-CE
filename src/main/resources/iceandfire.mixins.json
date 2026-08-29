@@ -11,7 +11,6 @@
     "LivingEntityAccessor",
     "LivingEntityMixin",
     "MobMixin",
-    "RecipeManagerAccessor",
     "ServerLevelMultipartAccessor",
     "WorldGenRegionMixin"
   ],

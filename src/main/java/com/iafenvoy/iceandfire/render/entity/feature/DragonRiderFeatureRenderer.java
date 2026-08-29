@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.render.entity.feature;
 
+import com.iafenvoy.iceandfire.compat.IafClientCompat;
 import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.DreadQueenEntity;
@@ -31,6 +32,7 @@ public class DragonRiderFeatureRenderer<T extends DragonBaseEntity> implements L
 
     @Override
     public void submit(T dragon, float partialTicks, PoseStack matrixStackIn, SubmitNodeCollector collector, CameraRenderState camera, int packedLightIn, int outlineColor) {
+        if (IafClientCompat.isSodiumLoaded()) return;
         matrixStackIn.pushPose();
         if (!dragon.getPassengers().isEmpty()) {
             float dragonScale = dragon.getRenderSize() / 3;

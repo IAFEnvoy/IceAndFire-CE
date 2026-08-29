@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "iceandfire:dragonsteel_fire"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "iceandfire:dragonsteel_fire"
+      }
+    ]
+  }
+}
