@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -135,9 +136,14 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
             return;
         }
         if (!(model instanceof EntityModel entityModel)) return;
-        EntityRenderState modelState = fakeEntity == null || model instanceof StonePlayerModel
-                ? state
-                : Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(fakeEntity, state.partialTick);
+        EntityRenderState modelState;
+        if (model instanceof StonePlayerModel) {
+            modelState = new HumanoidRenderState();
+        } else if (fakeEntity == null) {
+            modelState = state;
+        } else {
+            modelState = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(fakeEntity, state.partialTick);
+        }
         collector.submitModel(entityModel, modelState, poseStack, renderType, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
     }
 

@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Holder;
@@ -120,7 +121,6 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
 
     @Override
     public void extractRenderState(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float partialTicks) {
-        this.extractBg(context, partialTicks, mouseX, mouseY);
         for (Renderable widget : this.renderables)
             if (widget instanceof IndexPageButton button) {
                 button.active = this.index;
@@ -143,10 +143,11 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         context.pose().popMatrix();
     }
 
-    private void extractBg(GuiGraphicsExtractor context, float delta, int mouseX, int mouseY) {
+    @Override
+    public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         int cornerX = (this.width - X) / 2;
         int cornerY = (this.height - Y) / 2;
-        context.blit(TEXTURE, cornerX, cornerY, 0, 0, X, Y, 390, 390);
+        context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, cornerX, cornerY, 0, 0, X, Y, 390, 390);
     }
 
     public void drawPerPage(GuiGraphicsExtractor ms, int bookPages) {
@@ -798,7 +799,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     public void drawImage(GuiGraphicsExtractor ms, Identifier texture, int x, int y, int u, int v, int width, int height, float scale) {
         ms.pose().pushMatrix();
         ms.pose().scale(scale / 512F, scale / 512F);
-        ms.blit(texture, x, y, u, v, width, height, 512, 512);
+        ms.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, u, v, width, height, 512, 512);
         ms.pose().popMatrix();
     }
 

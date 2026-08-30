@@ -20,15 +20,15 @@ public class LightningRenderer {
     private static final float REFRESH_TIME = 3F;
     private static final double MAX_OWNER_TRACK_TIME = 100;
     private final Random random = new Random();
-    private final Minecraft client = Minecraft.getInstance();
     private final Map<Object, BoltOwnerData> boltOwners = new Object2ObjectOpenHashMap<>();
     private Timestamp refreshTimestamp = new Timestamp();
 
     public void render(float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn) {
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.level == null) return;
         VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.lightning());
         Matrix4f matrix = matrixStackIn.last().pose();
-        assert this.client.level != null;
-        Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
+        Timestamp timestamp = new Timestamp(client.level.getGameTime(), partialTicks);
         boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
         if (refresh) this.refreshTimestamp = timestamp;
         for (Iterator<Map.Entry<Object, BoltOwnerData>> iter = this.boltOwners.entrySet().iterator(); iter.hasNext(); ) {
@@ -47,8 +47,9 @@ public class LightningRenderer {
     }
 
     public void submit(float partialTicks, PoseStack matrixStackIn, SubmitNodeCollector collector, int light) {
-        if (this.client.level == null) return;
-        Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.level == null) return;
+        Timestamp timestamp = new Timestamp(client.level.getGameTime(), partialTicks);
         boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
         if (refresh) this.refreshTimestamp = timestamp;
         collector.submitCustomGeometry(matrixStackIn, RenderTypes.lightning(), (pose, buffer) -> {
@@ -67,10 +68,11 @@ public class LightningRenderer {
     }
 
     public void update(Object owner, LightningBoltData newBoltData, float partialTicks) {
-        if (this.client.level == null) return;
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.level == null) return;
         BoltOwnerData data = this.boltOwners.computeIfAbsent(owner, o -> new BoltOwnerData());
         data.lastBolt = newBoltData;
-        Timestamp timestamp = new Timestamp(this.client.level.getGameTime(), partialTicks);
+        Timestamp timestamp = new Timestamp(client.level.getGameTime(), partialTicks);
         if ((!data.lastBolt.getSpawnFunction().isConsecutive() || data.bolts.isEmpty()) && timestamp.isPassed(data.lastBoltTimestamp, data.lastBoltDelay))
             data.addBolt(new BoltInstance(newBoltData, timestamp), timestamp);
         data.lastUpdateTimestamp = timestamp;

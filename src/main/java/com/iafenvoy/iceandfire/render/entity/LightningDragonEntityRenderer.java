@@ -51,7 +51,10 @@ public class LightningDragonEntityRenderer extends DragonBaseEntityRenderer<Ligh
         matrixStackIn.pushPose();
         if (entityIn.hasLightningTarget()) {
             Minecraft client = Minecraft.getInstance();
-            assert client.player != null;
+            if (client == null || client.player == null) {
+                matrixStackIn.popPose();
+                return;
+            }
             double dist = client.player.distanceTo(entityIn);
             if (dist <= Math.max(256, client.options.renderDistance().get() * 16F)) {
                 Vec3 Vector3d1 = entityIn.getHeadPosition();
