@@ -27,6 +27,7 @@ public class PodiumScreen extends AbstractContainerScreen<PodiumMenu> {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor pGuiGraphics, int x, int y, float partialTicks) {
+        super.extractBackground(pGuiGraphics, x, y, partialTicks);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         pGuiGraphics.blit(RenderPipelines.GUI_TEXTURED, PODIUM_TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight, 256, 256);

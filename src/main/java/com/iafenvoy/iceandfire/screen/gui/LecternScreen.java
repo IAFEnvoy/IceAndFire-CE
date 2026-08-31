@@ -51,8 +51,8 @@ public class LecternScreen extends AbstractContainerScreen<LecternMenu> {
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.text(this.font, this.nameable, 12, 4, 4210752, false);
-        graphics.text(this.font, this.playerInventoryTitle, 8, this.imageHeight - 94, 4210752, false);
+        graphics.text(this.font, this.nameable, 12, 4, 0xFF404040, false);
+        graphics.text(this.font, this.playerInventoryTitle, 8, this.imageHeight - 94, 0xFF404040, false);
     }
 
     @Override
@@ -99,15 +99,18 @@ public class LecternScreen extends AbstractContainerScreen<LecternMenu> {
             Font font = this.font;
             String pageName = I18n.get("bestiary." + page.name());
             float textScale = font.width(pageName) > 80 ? 1.0F - (font.width(pageName) - 80) * 0.01F : 1.0F;
-            int textColor = 6839882;
-            int costColor = 0x9F988C;
-            if (this.menu.getSlot(0).getItem().getItem() == IafItems.BESTIARY.get()) {
+            boolean canTranscribe = this.menu.getSlot(0).getItem().getItem() == IafItems.BESTIARY.get()
+                    && this.menu.getSlot(1).getItem().getItem() == IafItems.MANUSCRIPT.get()
+                    && this.menu.getSlot(1).getItem().getCount() >= 3;
+            int textColor = canTranscribe ? 0xFF685E4A : 0xFF707070;
+            int costColor = canTranscribe ? 0xFF9F988C : 0xFF707070;
+            if (canTranscribe) {
                 int x = mouseX - buttonX;
                 int y = mouseY - (top + 14 + 19 * index);
                 if (x >= 0 && y >= 0 && x < 108 && y < 19) {
                     graphics.blit(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_TABLE_GUI_TEXTURE, buttonX, top + 14 + 19 * index, 0.0F, 204.0F, 108, 19, 256, 256);
-                    textColor = 16777088;
-                    costColor = 16777088;
+                    textColor = 0xFFFFFF80;
+                    costColor = 0xFFFFFF80;
                 } else {
                     graphics.blit(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_TABLE_GUI_TEXTURE, buttonX, top + 14 + 19 * index, 0.0F, 166.0F, 108, 19, 256, 256);
                 }
@@ -121,6 +124,12 @@ public class LecternScreen extends AbstractContainerScreen<LecternMenu> {
             } else {
                 graphics.blit(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_TABLE_GUI_TEXTURE, buttonX, top + 14 + 19 * index, 0.0F, 185.0F, 108, 19, 256, 256);
                 graphics.blit(RenderPipelines.GUI_TEXTURED, ENCHANTMENT_TABLE_GUI_TEXTURE, buttonX + 1, top + 15 + 19 * index, 16.0F * index, 239.0F, 16, 16, 256, 256);
+                graphics.pose().pushMatrix();
+                graphics.pose().translate(this.width / 2.0F - 10.0F, this.height / 2.0F - 83.0F + (1.0F - textScale) * 55.0F);
+                graphics.pose().scale(textScale, textScale);
+                graphics.text(font, pageName, 0, 20 + 19 * index, textColor, false);
+                graphics.pose().popMatrix();
+                graphics.text(this.font, "3", textX + 84 - this.font.width("3"), top + 20 + 19 * index, costColor, true);
             }
         }
     }

@@ -29,6 +29,7 @@ public class DragonForgeScreen extends AbstractContainerScreen<DragonForgeMenu> 
 
     @Override
     public void extractBackground(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.extractBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         Identifier texture = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, String.format(Locale.ROOT, "textures/gui/dragonforge_%s.png", this.menu.getDragonType().name()));
 
         int k = (this.width - this.imageWidth) / 2;
