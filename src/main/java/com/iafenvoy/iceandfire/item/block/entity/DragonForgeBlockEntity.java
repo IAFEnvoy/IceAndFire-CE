@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.DragonForgeBrickBlock;
 import com.iafenvoy.iceandfire.item.block.DragonForgeCoreBlock;
 import com.iafenvoy.iceandfire.recipe.DragonForgeRecipe;
+import com.iafenvoy.iceandfire.recipe.DragonForgeRecipeCache;
 import com.iafenvoy.iceandfire.registry.*;
 import com.iafenvoy.iceandfire.screen.menu.DragonForgeMenu;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
@@ -36,6 +37,7 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.server.level.ServerLevel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -221,13 +223,18 @@ public class DragonForgeBlockEntity extends BaseContainerBlockEntity implements 
     }
 
     public Optional<DragonForgeRecipe> getCurrentRecipe() {
-        assert this.level != null;
-        return ((RecipeManager) this.level.recipeAccess()).getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), this.level).map(RecipeHolder::value);
+        if (!(this.level instanceof ServerLevel serverLevel)) {
+            if (this.level == null) return Optional.empty();
+            DragonForgeRecipeInput input = new DragonForgeRecipeInput(this);
+            return DragonForgeRecipeCache.get().stream().filter(recipe -> recipe.matches(input, this.level)).findFirst();
+        }
+        RecipeManager recipeManager = serverLevel.getServer().getRecipeManager();
+        return recipeManager.getRecipeFor(IafRecipes.DRAGON_FORGE_TYPE.get(), new DragonForgeRecipeInput(this), serverLevel).map(RecipeHolder::value);
     }
 
     public List<DragonForgeRecipe> getRecipes() {
-        assert this.level != null;
-        return ((RecipeManager) this.level.recipeAccess()).recipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
+        if (!(this.level instanceof ServerLevel serverLevel)) return DragonForgeRecipeCache.get();
+        return serverLevel.getServer().getRecipeManager().recipeMap().byType(IafRecipes.DRAGON_FORGE_TYPE.get()).stream().map(RecipeHolder::value).toList();
     }
 
     public boolean canSmelt() {
