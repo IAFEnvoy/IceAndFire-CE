@@ -14,6 +14,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.animal.pig.PigModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -136,15 +137,29 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
             return;
         }
         if (!(model instanceof EntityModel entityModel)) return;
-        EntityRenderState modelState;
-        if (model instanceof StonePlayerModel) {
-            modelState = new HumanoidRenderState();
-        } else if (fakeEntity == null) {
-            modelState = state;
-        } else {
-            modelState = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(fakeEntity, state.partialTick);
+        collector.submitModel(entityModel, statueModelState(entityModel, fakeEntity, state), poseStack, renderType, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+    }
+
+    /**
+     * {@link HumanoidModel#setupAnim} requires {@link HumanoidRenderState}. Passing the
+     * statue's {@link LegacyEntityRenderState} crashes player (and other humanoid) statues.
+     */
+    private static EntityRenderState statueModelState(EntityModel<?> entityModel, Entity fakeEntity, LegacyEntityRenderState<StoneStatueEntity> state) {
+        boolean needsHumanoid = entityModel instanceof HumanoidModel || entityModel instanceof StonePlayerModel;
+        if (fakeEntity != null) {
+            EntityRenderState extracted = Minecraft.getInstance().getEntityRenderDispatcher().extractEntity(fakeEntity, state.partialTick);
+            if (!needsHumanoid || extracted instanceof HumanoidRenderState) return extracted;
         }
-        collector.submitModel(entityModel, modelState, poseStack, renderType, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        if (needsHumanoid) {
+            HumanoidRenderState humanoid = new HumanoidRenderState();
+            humanoid.ageInTicks = state.ageInTicks;
+            humanoid.walkAnimationPos = state.walkAnimationPos;
+            humanoid.walkAnimationSpeed = state.walkAnimationSpeed;
+            humanoid.boundingBoxWidth = state.boundingBoxWidth;
+            humanoid.boundingBoxHeight = state.boundingBoxHeight;
+            return humanoid;
+        }
+        return state;
     }
 
     @Override

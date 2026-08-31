@@ -22,6 +22,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -53,7 +54,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     protected boolean index;
 
     public BestiaryScreen(BestiaryMenu container, Inventory inv, Component name) {
-        super(container, inv, name);
+        super(container, inv, name, X, Y);
         this.book = container.getBook();
         if (!this.book.isEmpty() && this.book.getItem() == IafItems.BESTIARY.get())
             if (this.book.has(IafDataComponents.BESTIARY_PAGES.get())) {
@@ -77,8 +78,8 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         super.init();
         this.clearWidgets();
         this.indexButtons.clear();
-        int centerX = (this.width - X) / 2;
-        int centerY = (this.height - Y) / 2;
+        int centerX = this.leftPos;
+        int centerY = this.topPos;
         this.previousPage = new ChangePageButton(centerX + 15, centerY + 215, false, 0, (p_214132_1_) -> {
             if ((this.index ? this.indexPages > 0 : this.pageType != null)) {
                 if (this.index) {
@@ -120,6 +121,12 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     }
 
     @Override
+    public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractBackground(context, mouseX, mouseY, delta);
+        context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, this.leftPos, this.topPos, 0, 0, X, Y, 390, 390);
+    }
+
+    @Override
     public void extractRenderState(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float partialTicks) {
         for (Renderable widget : this.renderables)
             if (widget instanceof IndexPageButton button) {
@@ -129,25 +136,18 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         for (int i = 0; i < this.indexButtons.size(); i++)
             this.indexButtons.get(i).active = i < 10 * (this.indexPages + 1) && i >= 10 * (this.indexPages) && this.index;
         super.extractRenderState(context, mouseX, mouseY, partialTicks);
-        int cornerX = (this.width - X) / 2;
-        int cornerY = (this.height - Y) / 2;
+        int cornerX = this.leftPos;
+        int cornerY = this.topPos;
         context.pose().pushMatrix();
         context.pose().translate(cornerX, cornerY);
         if (!this.index) {
             this.drawPerPage(context, this.bookPages);
             int pageLeft = this.bookPages * 2 + 1;
             int pageRight = pageLeft + 1;
-            context.text(this.font, String.valueOf(pageLeft), X / 4, Y - 32, 0X303030, false);
-            context.text(this.font, String.valueOf(pageRight), X * 3 / 4, Y - 32, 0X303030, false);
+            context.text(this.font, String.valueOf(pageLeft), X / 4, Y - 32, 0xFF303030, false);
+            context.text(this.font, String.valueOf(pageRight), X * 3 / 4, Y - 32, 0xFF303030, false);
         }
         context.pose().popMatrix();
-    }
-
-    @Override
-    public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        int cornerX = (this.width - X) / 2;
-        int cornerY = (this.height - Y) / 2;
-        context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, cornerX, cornerY, 0, 0, X, Y, 390, 390);
     }
 
     public void drawPerPage(GuiGraphicsExtractor ms, int bookPages) {
@@ -775,9 +775,9 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
                     ms.pose().translate(0, 5.5F);
                 }
                 if (linenumber <= 19)
-                    ms.text(this.font, line, 15, 20 + linenumber * 10, 0X303030, false);
+                    ms.text(this.font, line, 15, 20 + linenumber * 10, 0xFF303030, false);
                 else
-                    ms.text(this.font, line, 220, (linenumber - 19) * 10, 0X303030, false);
+                    ms.text(this.font, line, 220, (linenumber - 19) * 10, 0xFF303030, false);
                 linenumber++;
                 ms.pose().popMatrix();
             }
@@ -788,7 +788,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
         String s = I18n.get("bestiary." + this.pageType.name());
         float scale = this.font.width(s) <= 100 ? 2 : this.font.width(s) * 0.0125F;
         ms.pose().scale(scale, scale);
-        ms.text(this.font, s, 10, 2, 0x7a756a, false);
+        ms.text(this.font, s, 10, 2, 0xFF7A756A, false);
         ms.pose().popMatrix();
     }
 

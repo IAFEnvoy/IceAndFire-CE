@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -23,12 +24,21 @@ public class LightningRenderer {
     private final Map<Object, BoltOwnerData> boltOwners = new Object2ObjectOpenHashMap<>();
     private Timestamp refreshTimestamp = new Timestamp();
 
+    /**
+     * {@link Minecraft#getInstance()} is null if this class is constructed during
+     * early client load. Always resolve it at render time.
+     */
+    private static ClientLevel clientLevel() {
+        Minecraft minecraft = Minecraft.getInstance();
+        return minecraft == null ? null : minecraft.level;
+    }
+
     public void render(float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn) {
-        Minecraft client = Minecraft.getInstance();
-        if (client == null || client.level == null) return;
+        ClientLevel level = clientLevel();
+        if (level == null) return;
         VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.lightning());
         Matrix4f matrix = matrixStackIn.last().pose();
-        Timestamp timestamp = new Timestamp(client.level.getGameTime(), partialTicks);
+        Timestamp timestamp = new Timestamp(level.getGameTime(), partialTicks);
         boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
         if (refresh) this.refreshTimestamp = timestamp;
         for (Iterator<Map.Entry<Object, BoltOwnerData>> iter = this.boltOwners.entrySet().iterator(); iter.hasNext(); ) {
@@ -47,9 +57,9 @@ public class LightningRenderer {
     }
 
     public void submit(float partialTicks, PoseStack matrixStackIn, SubmitNodeCollector collector, int light) {
-        Minecraft client = Minecraft.getInstance();
-        if (client == null || client.level == null) return;
-        Timestamp timestamp = new Timestamp(client.level.getGameTime(), partialTicks);
+        ClientLevel level = clientLevel();
+        if (level == null) return;
+        Timestamp timestamp = new Timestamp(level.getGameTime(), partialTicks);
         boolean refresh = timestamp.isPassed(this.refreshTimestamp, (1 / REFRESH_TIME));
         if (refresh) this.refreshTimestamp = timestamp;
         collector.submitCustomGeometry(matrixStackIn, RenderTypes.lightning(), (pose, buffer) -> {
@@ -67,12 +77,19 @@ public class LightningRenderer {
         });
     }
 
+    public boolean hasBolts() {
+        for (BoltOwnerData data : this.boltOwners.values()) {
+            if (!data.bolts.isEmpty()) return true;
+        }
+        return false;
+    }
+
     public void update(Object owner, LightningBoltData newBoltData, float partialTicks) {
-        Minecraft client = Minecraft.getInstance();
-        if (client == null || client.level == null) return;
-        BoltOwnerData data = this.boltOwners.computeIfAbsent(owner, o -> new BoltOwnerData());
+        ClientLevel level = clientLevel();
+        if (level == null) return;
+        BoltOwnerData data = this.boltOwners.computeIfAbsent(owner == null ? this : owner, o -> new BoltOwnerData());
         data.lastBolt = newBoltData;
-        Timestamp timestamp = new Timestamp(client.level.getGameTime(), partialTicks);
+        Timestamp timestamp = new Timestamp(level.getGameTime(), partialTicks);
         if ((!data.lastBolt.getSpawnFunction().isConsecutive() || data.bolts.isEmpty()) && timestamp.isPassed(data.lastBoltTimestamp, data.lastBoltDelay))
             data.addBolt(new BoltInstance(newBoltData, timestamp), timestamp);
         data.lastUpdateTimestamp = timestamp;
