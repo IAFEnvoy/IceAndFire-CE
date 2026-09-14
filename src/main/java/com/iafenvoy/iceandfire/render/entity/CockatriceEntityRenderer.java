@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.render.model.CockatriceChickModel;
 import com.iafenvoy.iceandfire.render.model.CockatriceModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -75,6 +77,14 @@ public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, L
     public void extractRenderState(CockatriceEntity entity, LegacyEntityRenderState<CockatriceEntity> state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.entity = entity;
+        state.hasRedOverlay = entity.hurtTime > 0 || entity.deathTime > 0;
+        if (entity.isAlive()) {
+            state.walkAnimationPos = entity.walkAnimation.position(partialTicks);
+            state.walkAnimationSpeed = entity.walkAnimation.speed(partialTicks);
+        } else {
+            state.walkAnimationPos = 0.0F;
+            state.walkAnimationSpeed = 0.0F;
+        }
     }
 
     @Override
@@ -82,13 +92,17 @@ public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, L
         CockatriceEntity entity = state.entity;
         AdvancedEntityModel<CockatriceEntity> model = entity.isBaby() ? BABY_MODEL : ADULT_MODEL;
         poseStack.pushPose();
+        // Match LivingEntityRenderer's model origin before handing rendering to the legacy model.
+        float bodyRot = Mth.rotLerp(state.partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - bodyRot));
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         this.scale(entity, poseStack);
-        model.setupAnim(entity, 0.0F, 0.0F, state.ageInTicks, 0.0F, 0.0F);
+        poseStack.translate(0.0F, -1.501F, 0.0F);
+        model.setupAnim(entity, state.walkAnimationPos, state.walkAnimationSpeed, state.ageInTicks, 0.0F, 0.0F);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity)), (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
-            model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor == 0 ? -1 : state.outlineColor);
+            model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.pack(OverlayTexture.u(0.0F), OverlayTexture.v(state.hasRedOverlay)), state.outlineColor == 0 ? -1 : state.outlineColor);
         });
         poseStack.popPose();
         super.submit(state, poseStack, collector, camera);
