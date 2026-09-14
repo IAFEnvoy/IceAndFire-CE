@@ -58,7 +58,7 @@ public class GorgonEntity extends Monster implements IAnimatedEntity, IVillagerF
         if (attackTarget == null) return false;
         if (attackTarget.getItemBySlot(EquipmentSlot.HEAD).getItem() == IafItems.BLINDFOLD.get() || attackTarget.hasEffect(MobEffects.BLINDNESS))
             return true;
-        return attackTarget.getType().builtInRegistryHolder().is(IafEntityTags.BLINDED);
+        return attackTarget.is(IafEntityTags.BLINDED);
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {

@@ -40,7 +40,6 @@ public final class IafItems {
     public static final DeferredItem<Item> SILVER_INGOT = registerItem("silver_ingot", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> SILVER_NUGGET = registerItem("silver_nugget", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> RAW_SILVER = registerItem("raw_silver", () -> new Item(new Item.Properties()));
-    public static final DeferredItem<Item> COPPER_NUGGET = registerItem("copper_nugget", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> FIRE_STEW = registerItem("fire_stew", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> FROST_STEW = registerItem("frost_stew", () -> new Item(new Item.Properties()));
     public static final DeferredItem<Item> LIGHTNING_STEW = registerItem("lightning_stew", () -> new Item(new Item.Properties()));

@@ -12,7 +12,7 @@
     "iceandfire:armor_copper_metal_boots"
   ],
   "result": {
-    "id": "iceandfire:copper_nugget"
+    "id": "minecraft:copper_nugget"
   },
   "experience": 0.1,
   "cookingtime": 100

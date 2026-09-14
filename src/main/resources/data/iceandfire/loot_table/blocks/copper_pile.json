@@ -22,7 +22,7 @@
               "count": 2
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -41,7 +41,7 @@
               "count": 4
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -60,7 +60,7 @@
               "count": 6
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -79,7 +79,7 @@
               "count": 8
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -98,7 +98,7 @@
               "count": 10
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -117,7 +117,7 @@
               "count": 12
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -136,7 +136,7 @@
               "count": 14
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         },
         {
           "type": "minecraft:item",
@@ -155,7 +155,7 @@
               "count": 16
             }
           ],
-          "name": "iceandfire:copper_nugget"
+          "name": "minecraft:copper_nugget"
         }
       ]
     }

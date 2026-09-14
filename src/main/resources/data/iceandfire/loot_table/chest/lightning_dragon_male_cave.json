@@ -126,7 +126,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:copper_nugget",
+          "name": "minecraft:copper_nugget",
           "functions": [
             {
               "function": "set_count",
