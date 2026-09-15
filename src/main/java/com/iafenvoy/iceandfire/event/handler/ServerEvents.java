@@ -51,6 +51,7 @@ import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityStruckByLightningEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -108,6 +109,15 @@ public final class ServerEvents {
             if (entity.equals(entityIn) || isRidingOrBeingRiddenBy(entity, entityIn))
                 return true;
         return false;
+    }
+
+    @SubscribeEvent
+    public static void onEntityStruckByLightning(EntityStruckByLightningEvent event) {
+        // Lightning summoned by the dragon bone sword carries the UUID of its summoner as a tag.
+        // It lands on the target, but its damage radius also covers the attacker, so skip them.
+        Entity entity = event.getEntity();
+        if (event.getLightning().entityTags().contains(entity.getStringUUID()))
+            event.setCanceled(true);
     }
 
     @SubscribeEvent

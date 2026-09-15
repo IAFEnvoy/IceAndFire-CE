@@ -68,6 +68,7 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     private int animationTick;
     private Animation currentAnimation;
     private final HydraHeadEntity[] headBoxes = new HydraHeadEntity[HEADS * 2];
+    private BodyPartEntity<HydraEntity> bodyEntity;
     private int strikeCooldown = 0;
     private int breathCooldown = 0;
     private int lastHitHead = 0;
@@ -234,6 +235,8 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
             this.headBoxes[i].setPartAngle(angle);
             this.headBoxes[HEADS + i].setPartAngle(angle);
         }
+        if (this.bodyEntity == null)
+            this.bodyEntity = new BodyPartEntity<>(this);
         this.updatePartIds();
         this.multipartLoaded = true;
     }
@@ -250,6 +253,9 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
 
             this.headBoxes[HEADS + i].updatePosition();
         }
+
+        if (this.bodyEntity != null)
+            this.bodyEntity.updatePosition();
 
         if (this.getHeadCount() > 1 && !this.isOnFire())
             if (this.getHealth() < this.getMaxHealth() && this.tickCount % 30 == 0) {
@@ -268,6 +274,8 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
         for (Entity entity : this.headBoxes)
             if (entity != null)
                 entity.remove(RemovalReason.DISCARDED);
+        if (this.bodyEntity != null)
+            this.bodyEntity.remove(RemovalReason.DISCARDED);
         this.multipartLoaded = false;
     }
 
@@ -291,7 +299,11 @@ public class HydraEntity extends Monster implements IAnimatedEntity, IMultipartE
     @Override
     public PartEntity<?> @NotNull [] getParts() {
         if (this.headBoxes[0] == null) return new PartEntity<?>[0];
-        return this.headBoxes;
+        if (this.bodyEntity == null) return this.headBoxes;
+        PartEntity<?>[] parts = new PartEntity<?>[this.headBoxes.length + 1];
+        System.arraycopy(this.headBoxes, 0, parts, 0, this.headBoxes.length);
+        parts[this.headBoxes.length] = this.bodyEntity;
+        return parts;
     }
 
     @Override
