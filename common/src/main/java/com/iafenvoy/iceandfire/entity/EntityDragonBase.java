@@ -1233,7 +1233,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
                     stack.decrement(1);
                 }
                 this.setDeathStage(this.getDeathStage() + 1);
-                player.getInventory().insertStack(new ItemStack(this.getBloodItem(), 1));
+                player.getInventory().offerOrDrop(new ItemStack(this.getBloodItem(), 1));
                 return ActionResult.SUCCESS;
             } else {
                 if (!this.getWorld().isClient && stack.isEmpty()) {
