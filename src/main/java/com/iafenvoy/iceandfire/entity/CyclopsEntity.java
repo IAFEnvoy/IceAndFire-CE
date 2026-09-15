@@ -63,6 +63,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     public static Animation ANIMATION_KICK;
     public static Animation ANIMATION_ROAR;
     public CyclopsEyeEntity eyeEntity;
+    private final BodyPartEntity<CyclopsEntity> bodyEntity;
     private int animationTick;
     private Animation currentAnimation;
 
@@ -75,6 +76,7 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         ANIMATION_KICK = Animation.create(20);
         ANIMATION_ROAR = Animation.create(30);
         this.eyeEntity = new CyclopsEyeEntity(this, 0.2F, 0, 7.4F, 1.2F, 0.6F, 1);
+        this.bodyEntity = new BodyPartEntity<>(this);
         this.setId(this.getId());
     }
 
@@ -309,12 +311,14 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
         }
         if (!this.isRemoved())
             this.eyeEntity.updatePosition();
+        this.bodyEntity.updatePosition();
         this.breakBlock();
     }
 
     private void updatePartIds() {
-        if (this.eyeEntity != null)
-            this.eyeEntity.setId(this.getId() + 1);
+        PartEntity<?>[] parts = this.getParts();
+        for (int i = 0; i < parts.length; i++)
+            parts[i].setId(this.getId() + i + 1);
     }
 
     @Override
@@ -330,7 +334,8 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
 
     @Override
     public PartEntity<?> @NotNull [] getParts() {
-        return this.eyeEntity == null ? new PartEntity<?>[0] : new PartEntity<?>[]{this.eyeEntity};
+        if (this.eyeEntity == null) return new PartEntity<?>[0];
+        return this.bodyEntity == null ? new PartEntity<?>[]{this.eyeEntity} : new PartEntity<?>[]{this.eyeEntity, this.bodyEntity};
     }
 
     @Override
@@ -372,6 +377,9 @@ public class CyclopsEntity extends Monster implements IAnimatedEntity, Blacklist
     public void remove(@NotNull RemovalReason reason) {
         if (this.eyeEntity != null) {
             this.eyeEntity.remove(reason);
+        }
+        if (this.bodyEntity != null) {
+            this.bodyEntity.remove(reason);
         }
         super.remove(reason);
     }
