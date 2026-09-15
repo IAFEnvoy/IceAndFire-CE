@@ -19,7 +19,9 @@ public final class ServerNetworkHandlers {
         ctx.enqueueWork(() -> {
             Player player = ctx.player();
             Entity entity = player.level().getEntity(payload.dragonId());
-            if (ServerEvents.isRidingOrBeingRiddenBy(entity, player)) {
+            // Either the player rides the creature (adult), or the creature rides the player
+            // (baby dragon on the shoulder).
+            if (ServerEvents.isRidingOrBeingRiddenBy(entity, player) || ServerEvents.isRidingOrBeingRiddenBy(player, entity)) {
                 BlockPos pos = payload.pos();
                 /*
                     For some of these entities the `setPos` is handled in `Entity#move`

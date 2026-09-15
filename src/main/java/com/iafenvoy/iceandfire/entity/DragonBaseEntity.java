@@ -1753,7 +1753,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             this.stopRiding();
         } else {
             this.setDeltaMovement(0, 0, 0);
-            this.tick();
+            // Must call super: Entity#rideTick fires EntityTickEvent.Pre/Post. Custom move controllers
+            // (ClientEvents) listen to it to read the sneaking key, so skipping it leaves a dragon that
+            // is a passenger of the player (baby on the shoulder) unable to dismount.
+            super.rideTick();
             if (this.isPassenger()) {
                 this.updateRiding(entity);
             }
