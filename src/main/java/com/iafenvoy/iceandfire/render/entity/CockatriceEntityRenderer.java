@@ -77,6 +77,20 @@ public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, L
     public void extractRenderState(CockatriceEntity entity, LegacyEntityRenderState<CockatriceEntity> state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.entity = entity;
+        // EntityRenderer only fills the base render state, while bodyRot/yRot/xRot/walk animation/hasRedOverlay
+        // are normally provided by LivingEntityRenderer#extractRenderState, so fill them here.
+        float headRot = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
+        state.bodyRot = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
+        state.yRot = Mth.wrapDegrees(headRot - state.bodyRot);
+        state.xRot = entity.getXRot(partialTicks);
+        state.hasRedOverlay = entity.hurtTime > 0 || entity.deathTime > 0;
+        if (entity.isAlive()) {
+            state.walkAnimationPos = entity.walkAnimation.position(partialTicks);
+            state.walkAnimationSpeed = entity.walkAnimation.speed(partialTicks);
+        } else {
+            state.walkAnimationPos = 0.0F;
+            state.walkAnimationSpeed = 0.0F;
+        }
     }
 
     @Override
