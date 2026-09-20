@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.world.structure;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.HomePosition;
 import com.iafenvoy.iceandfire.item.block.PileBlock;
-import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.iafenvoy.iceandfire.world.DangerousGeneration;
 import com.iafenvoy.uranus.util.RandomHelper;
 import net.minecraft.core.BlockPos;
@@ -181,7 +180,9 @@ public abstract class DragonRoostStructure extends Structure implements Dangerou
                         continue;
                     }
                     BlockState b = worldIn.getBlockState(position.below());
-                    if (!b.is(IafBlockTags.GRASSES) && !b.is(Blocks.DIRT) && !b.is(Blocks.STONE)) {
+                    // Grass block, dirt and stone count as ground. The grasses tag holds the grass plants, which
+                    // made the boulder stop one block too high and sit on top of the plant.
+                    if (!b.is(Blocks.GRASS_BLOCK) && !b.is(Blocks.DIRT) && !b.is(Blocks.STONE)) {
                         position = position.below();
                         continue;
                     }
