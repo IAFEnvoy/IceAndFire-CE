@@ -2704,6 +2704,21 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
         return super.canTarget(target) && DragonUtils.isAlive(target);
     }
 
+    /**
+     * Every multipart hitbox of this dragon, in the order they are created by {@link #updateScale(float)}.
+     * The dragon body itself is only a small box in the middle of the model, so anything that measures a distance
+     * to the dragon (interaction range, screen validity) has to look at the parts as well.
+     */
+    public EntityDragonPart[] getParts() {
+        if (this.headPart == null) return new EntityDragonPart[0];
+        return new EntityDragonPart[]{
+                this.headPart, this.neckPart,
+                this.rightWingUpperPart, this.rightWingLowerPart,
+                this.leftWingUpperPart, this.leftWingLowerPart,
+                this.tail1Part, this.tail2Part, this.tail3Part, this.tail4Part
+        };
+    }
+
     public boolean isPart(Entity entityHit) {
         return this.headPart != null && this.headPart.isPartOf(entityHit) || this.neckPart != null && this.neckPart.isPartOf(entityHit) ||
                 this.leftWingLowerPart != null && this.leftWingLowerPart.isPartOf(entityHit) || this.rightWingLowerPart != null && this.rightWingLowerPart.isPartOf(entityHit) ||

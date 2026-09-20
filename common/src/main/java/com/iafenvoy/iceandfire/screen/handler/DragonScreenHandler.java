@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.screen.handler;
 
 import com.iafenvoy.iceandfire.data.DragonArmorPart;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
+import com.iafenvoy.iceandfire.entity.EntityDragonPart;
 import com.iafenvoy.iceandfire.registry.IafScreenHandlers;
 import com.iafenvoy.iceandfire.screen.slot.BannerSlot;
 import com.iafenvoy.iceandfire.screen.slot.DragonArmorSlot;
@@ -46,7 +47,19 @@ public class DragonScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity playerIn) {
         Entity entity = playerIn.getWorld().getEntityById(this.getDragonId());
-        return entity instanceof EntityDragonBase dragon && !dragon.hasInventoryChanged(this.dragonInventory) && this.dragonInventory.canPlayerUse(playerIn) && dragon.isAlive() && dragon.distanceTo(playerIn) < 8.0F;
+        return entity instanceof EntityDragonBase dragon && !dragon.hasInventoryChanged(this.dragonInventory) && this.dragonInventory.canPlayerUse(playerIn) && dragon.isAlive() && isWithinDragonRange(dragon, playerIn);
+    }
+
+    /**
+     * The dragon is a multipart entity: the player opens this screen by interacting with its head or tail, which can
+     * be more than 8 blocks away from the dragon's own position, so the parts have to be checked as well. Otherwise
+     * the screen is closed again on the very next tick and nothing can be equipped.
+     */
+    private static boolean isWithinDragonRange(EntityDragonBase dragon, PlayerEntity player) {
+        if (dragon.squaredDistanceTo(player) < 64.0D) return true;
+        for (EntityDragonPart part : dragon.getParts())
+            if (part != null && !part.isRemoved() && part.squaredDistanceTo(player) < 64.0D) return true;
+        return false;
     }
 
     @Override
