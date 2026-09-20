@@ -168,7 +168,9 @@ public abstract class DragonRoostStructure extends Structure {
                         continue;
                     }
                     Block b = worldIn.getBlockState(position.down()).getBlock();
-                    if (b != Blocks.GRASS && b != Blocks.DIRT && b != Blocks.STONE) {
+                    // Grass block, dirt and stone count as ground. Blocks.GRASS is the short grass plant since 1.13,
+                    // which made the boulder stop one block too high and sit on top of the plant.
+                    if (b != Blocks.GRASS_BLOCK && b != Blocks.DIRT && b != Blocks.STONE) {
                         position = position.down();
                         continue;
                     }
