@@ -78,6 +78,12 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
     public void extractRenderState(T entity, LegacyEntityRenderState<T> state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.entity = entity;
+        // EntityRenderer only fills the base render state, while these fields are normally provided by
+        // LivingEntityRenderer#extractRenderState, so fill them here.
+        float headRot = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
+        state.bodyRot = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
+        state.yRot = Mth.wrapDegrees(headRot - state.bodyRot);
+        state.xRot = entity.getXRot(partialTicks);
         state.hasRedOverlay = entity.hurtTime > 0 || entity.deathTime > 0;
         if (entity.isAlive()) {
             state.walkAnimationPos = entity.walkAnimation.position(partialTicks);
@@ -96,12 +102,11 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
             return;
         poseStack.pushPose();
         // Match LivingEntityRenderer's model origin before handing rendering to the legacy model.
-        float bodyRot = Mth.rotLerp(state.partialTick, entity.yBodyRotO, entity.yBodyRot);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - bodyRot));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - state.bodyRot));
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         this.scale(entity, poseStack, state.partialTick);
         poseStack.translate(0.0F, -1.501F, 0.0F);
-        this.model.setupAnim(entity, state.walkAnimationPos, state.walkAnimationSpeed, state.ageInTicks, 0.0F, 0.0F);
+        this.model.setupAnim(entity, state.walkAnimationPos, state.walkAnimationSpeed, state.ageInTicks, state.yRot, state.xRot);
         ModelPose modelPose = ModelPose.capture(this.model);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity), false), (pose, buffer) -> {
             modelPose.apply();
