@@ -36,7 +36,11 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity, Legac
     private final TrollModel trollModel;
     private final AmphithereModel amphithereModel;
     private final HydraHeadModel hydraModel;
-    private final TabulaModel<SeaSerpentEntity> seaSerpentModel;
+    /**
+     * Resolved lazily, because the tabula model is provided by Uranus from a client resource reload which has not
+     * run yet when the entity renderers are created. Reading it in the constructor always yields null.
+     */
+    private TabulaModel<SeaSerpentEntity> seaSerpentModel;
 
     public MobSkullEntityRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -46,8 +50,13 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity, Legac
         this.stymphalianBirdModel = new StymphalianBirdModel();
         this.trollModel = new TrollModel();
         this.amphithereModel = new AmphithereModel();
-        this.seaSerpentModel = TabulaModelHandlerHelper.getModel(IafRenderers.SEA_SERPENT, SeaSerpentTabulaModelAnimator::new);
         this.hydraModel = new HydraHeadModel(0);
+    }
+
+    private TabulaModel<SeaSerpentEntity> getSeaSerpentModel() {
+        if (this.seaSerpentModel == null)
+            this.seaSerpentModel = TabulaModelHandlerHelper.getModel(IafRenderers.SEA_SERPENT, SeaSerpentTabulaModelAnimator::new);
+        return this.seaSerpentModel;
     }
 
     private static void setRotationAngles(BasicModelPart cube, float rotX) {
@@ -129,11 +138,14 @@ public class MobSkullEntityRenderer extends EntityRenderer<MobSkullEntity, Legac
                 this.amphithereModel.Head.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
             case SEASERPENT -> {
+                TabulaModel<SeaSerpentEntity> model = this.getSeaSerpentModel();
+                // The model can still be missing (e.g. it failed to load), skip rendering instead of crashing.
+                if (model == null) break;
                 matrixStackIn.translate(0, -0.35F, 0.8F);
                 matrixStackIn.scale(2.5F, 2.5F, 2.5F);
-                this.seaSerpentModel.resetToDefaultPose();
-                setRotationAngles(this.seaSerpentModel.getCube("Head"), onWall ? (float) Math.toRadians(50F) : 0F);
-                this.seaSerpentModel.getCube("Head").render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
+                model.resetToDefaultPose();
+                setRotationAngles(model.getCube("Head"), onWall ? (float) Math.toRadians(50F) : 0F);
+                model.getCube("Head").render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, -1);
             }
             case HYDRA -> {
                 matrixStackIn.translate(0, -0.2F, -0.1F);
