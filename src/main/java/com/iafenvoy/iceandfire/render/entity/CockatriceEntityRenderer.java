@@ -2,6 +2,8 @@ package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
+import com.iafenvoy.iceandfire.entity.util.IafEntityUtil;
+import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
 import com.iafenvoy.iceandfire.render.model.CockatriceChickModel;
 import com.iafenvoy.iceandfire.render.model.CockatriceModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
@@ -16,6 +18,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -110,6 +113,10 @@ public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, L
             model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.pack(0, state.hasRedOverlay), state.outlineColor == 0 ? -1 : state.outlineColor);
         });
         poseStack.popPose();
+        LivingEntity targetedEntity = entity.getTargetedEntity();
+        boolean blindness = entity.hasEffect(MobEffects.BLINDNESS) || targetedEntity != null && targetedEntity.hasEffect(MobEffects.BLINDNESS);
+        if (!blindness && targetedEntity != null && IafEntityUtil.isEntityLookingAt(entity, targetedEntity, CockatriceEntity.VIEW_RADIUS) && IafEntityUtil.isEntityLookingAt(targetedEntity, entity, CockatriceEntity.VIEW_RADIUS))
+            CockatriceBeamRenderer.submit(entity, targetedEntity, poseStack, collector, state.partialTick);
         super.submit(state, poseStack, collector, camera);
     }
 }

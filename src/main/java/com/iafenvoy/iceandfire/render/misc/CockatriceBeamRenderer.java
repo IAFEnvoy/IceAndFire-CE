@@ -5,7 +5,7 @@ import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -22,7 +22,18 @@ public class CockatriceBeamRenderer {
         consumer.addVertex(matrix4f, x, y, z).setColor(red, green, blue, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(entry, 0.0F, 1.0F, 0.0F);
     }
 
-    public static void render(Entity entityIn, Entity targetEntity, PoseStack matrixStackIn, MultiBufferSource bufferIn, float partialTicks) {
+    /**
+     * Queues the petrification beam. The pose stack must be in the entity origin frame (no model transform applied).
+     */
+    public static void submit(CockatriceEntity entityIn, Entity targetEntity, PoseStack poseStack, SubmitNodeCollector collector, float partialTicks) {
+        collector.submitCustomGeometry(poseStack, TEXTURE_BEAM, (pose, buffer) -> {
+            PoseStack beamStack = new PoseStack();
+            beamStack.last().set(pose);
+            render(entityIn, targetEntity, beamStack, buffer, partialTicks);
+        });
+    }
+
+    public static void render(Entity entityIn, Entity targetEntity, PoseStack matrixStackIn, VertexConsumer buffer, float partialTicks) {
         float f = 1;
         if (entityIn instanceof CockatriceEntity cockatrice)
             f = cockatrice.getAttackAnimationScale(partialTicks);
@@ -64,7 +75,6 @@ public class CockatriceBeamRenderer {
         float f26 = Mth.sin(f7 + ((float) Math.PI * 1.5F)) * 0.2F;
         float f29 = -1.0F + f2;
         float f30 = f4 * 2.5F + f29;
-        VertexConsumer buffer = bufferIn.getBuffer(TEXTURE_BEAM);
         PoseStack.Pose entry = matrixStackIn.last();
         Matrix4f matrix4f = entry.pose();
         vertex(buffer, matrix4f, entry, f19, f4, f20, j, k, l, 0.4999F, f30);
