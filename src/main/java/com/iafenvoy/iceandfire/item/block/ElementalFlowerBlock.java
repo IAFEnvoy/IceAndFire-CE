@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.item.block;
 
 import com.iafenvoy.iceandfire.registry.IafBlocks;
-import com.iafenvoy.iceandfire.registry.tag.IafBlockTags;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -41,7 +40,9 @@ public class ElementalFlowerBlock extends BushBlock {
         if (this == IafBlocks.FIRE_LILY.get())
             return state.is(BlockTags.SAND) || state.is(Blocks.NETHERRACK);
         else if (this == IafBlocks.LIGHTNING_LILY.get())
-            return state.is(BlockTags.DIRT) || state.is(IafBlockTags.GRASSES);
+            // #minecraft:dirt covers the grass block, dirt, podzol, moss and mud variants. The grasses tag holds the
+            // grass plants (short_grass, fern, ...), so using it here let the lily be placed on top of a grass plant.
+            return state.is(BlockTags.DIRT);
         else
             return state.is(BlockTags.ICE) || state.is(BlockTags.SNOW) || state.is(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON);
     }
