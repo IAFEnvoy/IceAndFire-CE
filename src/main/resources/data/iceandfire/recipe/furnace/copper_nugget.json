@@ -1,15 +1,15 @@
 {
   "type": "minecraft:smelting",
   "ingredient": [
-    "iceandfire:copper_pickaxe",
-    "iceandfire:copper_shovel",
-    "iceandfire:copper_axe",
-    "iceandfire:copper_hoe",
-    "iceandfire:copper_sword",
-    "iceandfire:armor_copper_metal_helmet",
-    "iceandfire:armor_copper_metal_chestplate",
-    "iceandfire:armor_copper_metal_leggings",
-    "iceandfire:armor_copper_metal_boots"
+    "minecraft:copper_pickaxe",
+    "minecraft:copper_shovel",
+    "minecraft:copper_axe",
+    "minecraft:copper_hoe",
+    "minecraft:copper_sword",
+    "minecraft:copper_helmet",
+    "minecraft:copper_chestplate",
+    "minecraft:copper_leggings",
+    "minecraft:copper_boots"
   ],
   "result": {
     "id": "minecraft:copper_nugget"

@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.Block;
 
 public final class IafTiers {
     public static final ToolMaterial SILVER_TOOL_MATERIAL = material("silver", 460, 11.0F, 1.0F, 18, BlockTags.INCORRECT_FOR_IRON_TOOL);
-    public static final ToolMaterial COPPER_TOOL_MATERIAL = material("copper", 300, 3.0F, 0.0F, 10, BlockTags.INCORRECT_FOR_IRON_TOOL);
     public static final ToolMaterial DRAGONBONE_TOOL_MATERIAL = material("dragonbone", 1660, 10.0F, 4.0F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL);
     public static final ToolMaterial BLOODED_DRAGONBONE_TOOL_MATERIAL = material("blooded_dragonbone", 2000, 10.0F, 5.5F, 22, BlockTags.INCORRECT_FOR_IRON_TOOL);
     public static final ToolMaterial TROLL_WEAPON_TOOL_MATERIAL = material("troll_weapon", 300, 10.0F, 1.0F, 1, BlockTags.INCORRECT_FOR_WOODEN_TOOL);

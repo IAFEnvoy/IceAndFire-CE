@@ -169,7 +169,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:copper_sword",
+          "name": "minecraft:copper_sword",
           "functions": [
             {
               "function": "set_count",
@@ -183,7 +183,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:armor_copper_metal_helmet",
+          "name": "minecraft:copper_helmet",
           "functions": [
             {
               "function": "set_count",
@@ -197,7 +197,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:armor_copper_metal_chestplate",
+          "name": "minecraft:copper_chestplate",
           "functions": [
             {
               "function": "set_count",
@@ -211,7 +211,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:armor_copper_metal_leggings",
+          "name": "minecraft:copper_leggings",
           "functions": [
             {
               "function": "set_count",
@@ -225,7 +225,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:armor_copper_metal_boots",
+          "name": "minecraft:copper_boots",
           "functions": [
             {
               "function": "set_count",

@@ -112,7 +112,6 @@ public final class IafRenderers {
     }
 
     public static void registerArmorRenderers() {
-        IArmorRendererBase.register(new BasicArmorRenderer(inner -> CopperArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.COPPER_HELMET.get(), IafItems.COPPER_CHESTPLATE.get(), IafItems.COPPER_LEGGINGS.get(), IafItems.COPPER_BOOTS.get());
         IArmorRendererBase.register(new BasicArmorRenderer(inner -> DeathWormArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.DEATHWORM_WHITE_HELMET.get(), IafItems.DEATHWORM_WHITE_CHESTPLATE.get(), IafItems.DEATHWORM_WHITE_LEGGINGS.get(), IafItems.DEATHWORM_WHITE_BOOTS.get());
         IArmorRendererBase.register(new BasicArmorRenderer(inner -> DeathWormArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.DEATHWORM_YELLOW_HELMET.get(), IafItems.DEATHWORM_YELLOW_CHESTPLATE.get(), IafItems.DEATHWORM_YELLOW_LEGGINGS.get(), IafItems.DEATHWORM_YELLOW_BOOTS.get());
         IArmorRendererBase.register(new BasicArmorRenderer(inner -> DeathWormArmorModel.createMesh(ArmorMeshParts.deformation(inner), 0.0F)), IafItems.DEATHWORM_RED_HELMET.get(), IafItems.DEATHWORM_RED_CHESTPLATE.get(), IafItems.DEATHWORM_RED_LEGGINGS.get(), IafItems.DEATHWORM_RED_BOOTS.get());

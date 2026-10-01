@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public final class IafArmorMaterials {
-    public static final Holder<ArmorMaterial> COPPER = register("copper", new int[]{1, 3, 4, 2}, 15, SoundEvents.ARMOR_EQUIP_GOLD, 0, new MemorizeSupplier<>(() -> Ingredient.of(Items.COPPER_INGOT)));
     public static final Holder<ArmorMaterial> SILVER = register("silver", new int[]{1, 4, 5, 2}, 20, SoundEvents.ARMOR_EQUIP_CHAIN, 0, new MemorizeSupplier<>(() -> Ingredient.of(Items.IRON_INGOT)));
     public static final Holder<ArmorMaterial> BLINDFOLD = register("blindfold", new int[]{1, 1, 1, 1}, 10, SoundEvents.ARMOR_EQUIP_LEATHER, 0, new MemorizeSupplier<>(() -> Ingredient.of(Items.STRING)));
     public static final Holder<ArmorMaterial> SHEEP = register("sheep", new int[]{1, 3, 2, 1}, 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0, new MemorizeSupplier<>(() -> Ingredient.of(Blocks.WHITE_WOOL)));

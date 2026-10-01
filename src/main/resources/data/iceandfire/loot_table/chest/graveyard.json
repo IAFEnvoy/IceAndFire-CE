@@ -263,7 +263,7 @@
         },
         {
           "type": "item",
-          "name": "iceandfire:copper_sword",
+          "name": "minecraft:copper_sword",
           "functions": [
             {
               "function": "set_count",

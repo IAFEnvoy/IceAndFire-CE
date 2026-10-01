@@ -236,10 +236,6 @@ public final class IafItems {
     public static final DeferredItem<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.CHESTPLATE).durability(240)));
     public static final DeferredItem<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.LEGGINGS).durability(225)));
     public static final DeferredItem<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.BOOTS).durability(195)));
-    public static final DeferredItem<Item> COPPER_HELMET = registerArmor("armor_copper_metal_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.HELMET).durability(111)));
-    public static final DeferredItem<Item> COPPER_CHESTPLATE = registerArmor("armor_copper_metal_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.CHESTPLATE).durability(161)));
-    public static final DeferredItem<Item> COPPER_LEGGINGS = registerArmor("armor_copper_metal_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.LEGGINGS).durability(151)));
-    public static final DeferredItem<Item> COPPER_BOOTS = registerArmor("armor_copper_metal_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.COPPER.value(), ArmorType.BOOTS).durability(131)));
     public static final DeferredItem<Item> SHEEP_HELMET = registerArmor("sheep_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.HELMET).durability(55)));
     public static final DeferredItem<Item> SHEEP_CHESTPLATE = registerArmor("sheep_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.CHESTPLATE).durability(80)));
     public static final DeferredItem<Item> SHEEP_LEGGINGS = registerArmor("sheep_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.LEGGINGS).durability(75)));
@@ -275,11 +271,6 @@ public final class IafItems {
     public static final DeferredItem<Item> SILVER_PICKAXE = registerToolOrWeapon("silver_pickaxe", () -> new ActivePostHitPickaxeItem(IafTiers.SILVER_TOOL_MATERIAL, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
     public static final DeferredItem<Item> SILVER_AXE = registerToolOrWeapon("silver_axe", () -> new ActivePostHitAxeItem(IafTiers.SILVER_TOOL_MATERIAL, 6.0F, -3.0F, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
     public static final DeferredItem<Item> SILVER_HOE = registerToolOrWeapon("silver_hoe", () -> new ActivePostHitHoeItem(IafTiers.SILVER_TOOL_MATERIAL, 0.0F, -3.0F, new Item.Properties(), BuiltinAbilities.UNDEAD_DAMAGE_BONUS));
-    public static final DeferredItem<Item> COPPER_SWORD = registerToolOrWeapon("copper_sword", () -> new Item(new Item.Properties().sword(IafTiers.COPPER_TOOL_MATERIAL, 3.0F, -2.4F)));
-    public static final DeferredItem<Item> COPPER_SHOVEL = registerToolOrWeapon("copper_shovel", () -> new ShovelItem(IafTiers.COPPER_TOOL_MATERIAL, 1.5F, -2.4F, new Item.Properties()));
-    public static final DeferredItem<Item> COPPER_PICKAXE = registerToolOrWeapon("copper_pickaxe", () -> new Item(new Item.Properties().pickaxe(IafTiers.COPPER_TOOL_MATERIAL, 1.0F, -2.8F)));
-    public static final DeferredItem<Item> COPPER_AXE = registerToolOrWeapon("copper_axe", () -> new AxeItem(IafTiers.COPPER_TOOL_MATERIAL, 6.0F, -3.0F, new Item.Properties()));
-    public static final DeferredItem<Item> COPPER_HOE = registerToolOrWeapon("copper_hoe", () -> new HoeItem(IafTiers.COPPER_TOOL_MATERIAL, 0.0F, -1.0F, new Item.Properties()));
     public static final DeferredItem<Item> FISHING_SPEAR = registerToolOrWeapon("fishing_spear", () -> new Item(new Item.Properties().durability(64)));
     public static final DeferredItem<Item> DRAGONBONE_SWORD = registerToolOrWeapon("dragonbone_sword", () -> new Item(new Item.Properties().sword(IafTiers.DRAGONBONE_TOOL_MATERIAL, 3.0F, -2.4F)));
     public static final DeferredItem<Item> DRAGONBONE_SHOVEL = registerToolOrWeapon("dragonbone_shovel", () -> new ShovelItem(IafTiers.DRAGONBONE_TOOL_MATERIAL, 1.5F, -2.8F, new Item.Properties()));
