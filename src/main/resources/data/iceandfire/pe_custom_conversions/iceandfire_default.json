@@ -3,28 +3,53 @@
     "before": [
       {
         "type": "projecte:item",
-        "emc_value": 156,
-        "tag": "c:bones/dragon"
+        "emc_value": 288,
+        "id": "iceandfire:dragonbone"
       },
       {
         "type": "projecte:item",
-        "emc_value": 156,
+        "emc_value": 288,
         "tag": "c:bones/wither"
       },
       {
         "type": "projecte:item",
-        "emc_value": 262144,
-        "tag": "c:heart"
-      },
-      {
-        "type": "projecte:item",
-        "emc_value": 512,
-        "tag": "c:scales/dragon"
+        "emc_value": 256,
+        "id": "iceandfire:troll_leather_forest"
       },
       {
         "type": "projecte:item",
         "emc_value": 256,
-        "tag": "c:scales/sea_serpent"
+        "id": "iceandfire:troll_leather_frost"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 256,
+        "id": "iceandfire:troll_leather_mountain"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 24576,
+        "id": "iceandfire:fire_dragon_heart"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 24576,
+        "id": "iceandfire:ice_dragon_heart"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 24576,
+        "id": "iceandfire:lightning_dragon_heart"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 512,
+        "tag": "iceandfire:scales/dragon"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 256,
+        "tag": "iceandfire:scales/sea_serpent"
       },
       {
         "type": "projecte:item",
@@ -38,18 +63,143 @@
       },
       {
         "type": "projecte:item",
-        "emc_value": 96,
+        "emc_value": 40960,
         "id": "iceandfire:cyclops_eye"
       },
       {
         "type": "projecte:item",
-        "emc_value": 144,
-        "id": "iceandfire:dread_shard"
+        "emc_value": 640,
+        "id": "iceandfire:ectoplasm"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 16384,
+        "id": "iceandfire:cockatrice_eye"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 2560,
+        "id": "iceandfire:ghost_ingot"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 512,
+        "id": "iceandfire:gold_pile"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 1024,
+        "id": "iceandfire:deathworm_tounge"
       },
       {
         "type": "projecte:item",
         "emc_value": 256,
+        "id": "iceandfire:amphithere_feather"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 128,
+        "id": "iceandfire:silver_pile"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 16384,
+        "id": "iceandfire:sapphire_gem"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 256,
+        "id": "iceandfire:lightning_dragon_flesh"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 256,
+        "id": "iceandfire:fire_dragon_flesh"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 24576,
+        "id": "iceandfire:dragonsteel_ice_ingot"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 24576,
+        "id": "iceandfire:dragonsteel_lightning_ingot"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 24576,
+        "id": "iceandfire:dragonsteel_fire_ingot"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 256,
+        "id": "iceandfire:ice_dragon_flesh"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 64,
+        "id": "iceandfire:fire_lily"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 64,
+        "id": "iceandfire:frost_lily"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 64,
+        "id": "iceandfire:lightning_lily"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 256,
+        "id": "iceandfire:dread_shard"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 128,
+        "id": "iceandfire:stymphalian_bird_feather"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 512,
+        "id": "iceandfire:troll_tusk"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 4096,
+        "id": "iceandfire:hippogryph_talon"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 512,
         "id": "iceandfire:fire_dragon_blood"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 2048,
+        "id": "iceandfire:hydra_fang"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 40960,
+        "id": "iceandfire:hydra_heart"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 2048,
+        "id": "iceandfire:deathworm_egg"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 64,
+        "id": "iceandfire:manuscript"
+      },
+      {
+        "type": "projecte:item",
+        "emc_value": 2048,
+        "id": "iceandfire:rotten_egg"
       },
       {
         "type": "projecte:item",
@@ -63,22 +213,22 @@
       },
       {
         "type": "projecte:item",
-        "emc_value": 256,
+        "emc_value": 512,
         "id": "iceandfire:ice_dragon_blood"
       },
       {
         "type": "projecte:item",
-        "emc_value": 256,
+        "emc_value": 512,
         "id": "iceandfire:lightning_dragon_blood"
       },
       {
         "type": "projecte:item",
-        "emc_value": 1,
+        "emc_value": 128,
         "id": "iceandfire:pixie_dust"
       },
       {
         "type": "projecte:item",
-        "emc_value": 1,
+        "emc_value": 8192,
         "id": "iceandfire:pixie_wings"
       },
       {
@@ -88,7 +238,7 @@
       },
       {
         "type": "projecte:item",
-        "emc_value": 768,
+        "emc_value": 25600,
         "id": "iceandfire:siren_tear"
       }
     ]
