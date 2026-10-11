@@ -218,7 +218,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
     public static class LichConfig extends AutoInitConfigCategoryBase {
         public final BooleanEntry spawn = BooleanEntry.builder("config.iceandfire.lich.spawn", true).key("spawn").build();
         public final IntegerEntry spawnWeight = IntegerEntry.builder("config.iceandfire.lich.spawnWeight", 4).range(0, 20).key("spawnWeight").build();
-        public final DoubleEntry spawnChance = DoubleEntry.builder("config.iceandfire.lich.spawnChance", 1.0 / 30).range(0, 1).key("spawnChance").build();
+        public final DoubleEntry spawnChance = DoubleEntry.builder("config.iceandfire.lich.spawnChance", 1.0 / 10).range(0, 1).key("spawnChance").build();
 
         public LichConfig() {
             super("lich", "config.iceandfire.category.lich");
