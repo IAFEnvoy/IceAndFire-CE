@@ -1,6 +1,6 @@
 {
   "type": "iceandfire:lightning_dragon_cave",
-  "biomes": "#iceandfire:structure_gen/lightning",
+  "biomes": "#iceandfire:structure_gen/lightning_cave",
   "spawn_overrides": {},
   "step": "underground_structures"
 }

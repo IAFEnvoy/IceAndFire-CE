@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     "minecraft:jagged_peaks",
-    "minecraft:frozen_peaks"
+    "minecraft:frozen_peaks",
+    {
+      "id": "#c:is_icy",
+      "required": false
+    }
   ]
 }

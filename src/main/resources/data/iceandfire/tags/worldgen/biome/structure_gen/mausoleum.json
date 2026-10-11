@@ -7,6 +7,14 @@
     "minecraft:snowy_slopes",
     "minecraft:jagged_peaks",
     "minecraft:frozen_peaks",
-    "minecraft:ice_spikes"
+    "minecraft:ice_spikes",
+    {
+      "id": "#c:is_cold",
+      "required": false
+    },
+    {
+      "id": "#c:is_snowy",
+      "required": false
+    }
   ]
 }
