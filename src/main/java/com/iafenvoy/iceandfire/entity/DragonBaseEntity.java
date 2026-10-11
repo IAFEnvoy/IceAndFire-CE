@@ -79,6 +79,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -1687,7 +1688,39 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 this.breakBlocks(true);
                 this.resetStuck();
             }
+            if (IafCommonConfig.INSTANCE.dragon.destroyBoats.getValue()) {
+                this.destroyBoats();
+            }
         }
+    }
+
+    /**
+     * A vanilla boat picks up any entity that touches it, which would leave a dragon stuck inside one.
+     * Break the boat instead, both the one the dragon ended up in and the ones overlapping it.
+     */
+    private void destroyBoats() {
+        if (this.isPassenger() && this.getRootVehicle() instanceof Boat boat) {
+            this.destroyBoat(boat);
+            this.stopRiding();
+        }
+        for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(0.5D), entity -> entity instanceof Boat)) {
+            if (entity instanceof Boat boat) {
+                this.destroyBoat(boat);
+            }
+        }
+    }
+
+    private void destroyBoat(Boat boat) {
+        if (boat.isRemoved()) return;
+        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+            for (int i = 0; i < 3; i++) {
+                boat.spawnAtLocation(new ItemStack(boat.getVariant().getPlanks().asItem()), 0.0F);
+            }
+            for (int i = 0; i < 2; i++) {
+                boat.spawnAtLocation(new ItemStack(Items.STICK));
+            }
+        }
+        boat.remove(RemovalReason.KILLED);
     }
 
 

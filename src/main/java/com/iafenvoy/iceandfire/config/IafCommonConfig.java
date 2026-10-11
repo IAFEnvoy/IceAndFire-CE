@@ -64,6 +64,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final BooleanEntry canDespawn = BooleanEntry.builder("config.iceandfire.dragon.canDespawn", true).key("canDespawn").build();
         public final BooleanEntry sleep = BooleanEntry.builder("config.iceandfire.dragon.sleep", true).key("sleep").build();
         public final BooleanEntry digWhenStuck = BooleanEntry.builder("config.iceandfire.dragon.digWhenStuck", true).key("digWhenStuck").build();
+        public final BooleanEntry destroyBoats = BooleanEntry.builder("config.iceandfire.dragon.destroyBoats", true).key("destroyBoats").build();
         public final IntegerEntry breakBlockCooldown = IntegerEntry.builder("config.iceandfire.dragon.breakBlockCooldown", 5).min(0).key("breakBlockCooldown").build();
         public final IntegerEntry targetSearchLength = IntegerEntry.builder("config.iceandfire.dragon.targetSearchLength", 128).range(0, 1024).key("targetSearchLength").build();
         public final IntegerEntry wanderFromHomeDistance = IntegerEntry.builder("config.iceandfire.dragon.wanderFromHomeDistance", 40).range(0, 1024).key("wanderFromHomeDistance").build();
