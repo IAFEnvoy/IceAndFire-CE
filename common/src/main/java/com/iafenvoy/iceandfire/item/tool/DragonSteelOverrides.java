@@ -100,7 +100,8 @@ public interface DragonSteelOverrides<T extends ToolItem> {
                     Pair<MobEntity, Double> pair = bfsQueue.poll();
                     MobEntity mobEntity = pair.getLeft();
                     double damage = pair.getRight();
-                    mobEntity.damage(world.getDamageSources().mobAttack(target), (float) damage);
+                    if (mobEntity != target)//Don't hit the source entity again
+                        mobEntity.damage(world.getDamageSources().mobAttack(attacker), (float) damage);
                     attacked.add(mobEntity);
                     //Search for more targets
                     List<MobEntity> targets = world.getNonSpectatingEntities(MobEntity.class, new Box(
