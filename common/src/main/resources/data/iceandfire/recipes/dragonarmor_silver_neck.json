@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "c:storage_blocks/silver"
+      "tag": "iceandfire:compat/storage_blocks/silver"
     }
   },
   "pattern": [

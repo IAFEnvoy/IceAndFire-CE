@@ -3,10 +3,6 @@
   "values": [
     "iceandfire:dragonsteel_fire_sword",
     "iceandfire:dragonsteel_ice_sword",
-    "iceandfire:dragonsteel_lightning_sword",
-    {
-      "id": "#minecraft:swords",
-      "required": false
-    }
+    "iceandfire:dragonsteel_lightning_sword"
   ]
 }

@@ -6,7 +6,7 @@
       "item": "iceandfire:dragonbone"
     },
     "I": {
-      "tag": "c:ingots/iron"
+      "tag": "iceandfire:compat/ingots/iron"
     }
   },
   "pattern": [

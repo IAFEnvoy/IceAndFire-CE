@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:nuggets/silver",
+      "required": false
+    },
+    {
+      "id": "#forge:nuggets/silver",
+      "required": false
+    }
+  ]
+}

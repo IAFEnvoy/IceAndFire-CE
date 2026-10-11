@@ -3,10 +3,6 @@
   "values": [
     "iceandfire:dragonsteel_fire_pickaxe",
     "iceandfire:dragonsteel_ice_pickaxe",
-    "iceandfire:dragonsteel_lightning_pickaxe",
-    {
-      "id": "#minecraft:pickaxes",
-      "required": false
-    }
+    "iceandfire:dragonsteel_lightning_pickaxe"
   ]
 }

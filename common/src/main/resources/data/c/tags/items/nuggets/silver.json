@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "iceandfire:silver_nugget",
-    {
-      "id": "#forge:nuggets/silver",
-      "required": false
-    }
+    "iceandfire:silver_nugget"
   ]
 }

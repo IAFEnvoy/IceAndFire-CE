@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:wheat_seeds",
-    {
-      "id": "#forge:seeds/wheat",
-      "required": false
-    }
+    "minecraft:wheat_seeds"
   ]
 }

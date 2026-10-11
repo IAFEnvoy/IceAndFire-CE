@@ -12,7 +12,7 @@
       "item": "iceandfire:pixie_dust"
     },
     {
-      "tag": "c:milks"
+      "tag": "iceandfire:compat/milks"
     }
   ],
   "result": {

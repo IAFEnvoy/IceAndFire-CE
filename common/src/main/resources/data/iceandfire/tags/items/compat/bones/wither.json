@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:bones/wither",
+      "required": false
+    },
+    {
+      "id": "#forge:bones/wither",
+      "required": false
+    }
+  ]
+}

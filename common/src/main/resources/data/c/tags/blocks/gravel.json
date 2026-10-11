@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:gravel",
-    {
-      "id": "#forge:gravel",
-      "required": false
-    }
+    "minecraft:gravel"
   ]
 }

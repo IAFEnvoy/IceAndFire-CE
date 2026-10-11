@@ -3,10 +3,6 @@
   "values": [
     "#c:ender_chests",
     "#c:trapped_chests",
-    "#c:wooden_chests",
-    {
-      "id": "#forge:chests",
-      "required": false
-    }
+    "#c:wooden_chests"
   ]
 }

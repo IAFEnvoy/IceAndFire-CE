@@ -3,10 +3,10 @@
   "category": "misc",
   "ingredients": [
     {
-      "tag": "c:nuggets/copper"
+      "tag": "iceandfire:compat/nuggets/copper"
     },
     {
-      "tag": "c:nuggets/copper"
+      "tag": "iceandfire:compat/nuggets/copper"
     }
   ],
   "result": {

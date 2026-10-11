@@ -6,7 +6,7 @@
       "item": "iceandfire:dread_shard"
     },
     "S": {
-      "tag": "c:stones"
+      "tag": "iceandfire:compat/stones"
     }
   },
   "pattern": [

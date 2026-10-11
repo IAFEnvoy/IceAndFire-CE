@@ -3,10 +3,6 @@
   "values": [
     "iceandfire:dragonsteel_fire_shovel",
     "iceandfire:dragonsteel_ice_shovel",
-    "iceandfire:dragonsteel_lightning_shovel",
-    {
-      "id": "#minecraft:shovels",
-      "required": false
-    }
+    "iceandfire:dragonsteel_lightning_shovel"
   ]
 }

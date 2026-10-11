@@ -6,7 +6,7 @@
       "item": "iceandfire:dragonforge_lightning_brick"
     },
     "I": {
-      "tag": "c:ingots/iron"
+      "tag": "iceandfire:compat/ingots/iron"
     }
   },
   "pattern": [

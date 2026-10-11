@@ -15,6 +15,10 @@
     {
       "required": false,
       "id": "#c:climate_hot"
+    },
+    {
+      "required": false,
+      "id": "#forge:is_hot"
     }
   ]
 }

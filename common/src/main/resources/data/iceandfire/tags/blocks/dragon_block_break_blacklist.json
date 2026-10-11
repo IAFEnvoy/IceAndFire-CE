@@ -1,6 +1,6 @@
 {
   "values": [
-    "#c:chests",
+    "#iceandfire:compat/chests",
     "minecraft:beacon",
     "minecraft:spawner"
   ]

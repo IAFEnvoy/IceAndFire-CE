@@ -13,7 +13,7 @@
       "item": "minecraft:stick"
     },
     "I": {
-      "tag": "c:ingots/iron"
+      "tag": "iceandfire:compat/ingots/iron"
     },
     "F": {
       "item": "minecraft:feather"

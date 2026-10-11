@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "#": {
-      "tag": "c:ingots/silver"
+      "tag": "iceandfire:compat/ingots/silver"
     }
   },
   "pattern": [

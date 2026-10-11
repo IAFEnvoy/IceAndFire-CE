@@ -2,7 +2,7 @@
   "values": {
     "before": {
       "iceandfire:dragonbone": 288,
-      "#c:bones/wither": 288,
+      "#iceandfire:compat/bones/wither": 288,
       "iceandfire:troll_leather_forest": 256,
       "iceandfire:troll_leather_frost": 256,
       "iceandfire:troll_leather_mountain": 256,

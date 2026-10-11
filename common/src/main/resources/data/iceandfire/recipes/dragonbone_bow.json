@@ -9,7 +9,7 @@
       "item": "minecraft:string"
     },
     "W": {
-      "tag": "c:bones/wither"
+      "tag": "iceandfire:compat/bones/wither"
     }
   },
   "pattern": [

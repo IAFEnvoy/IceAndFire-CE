@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "H": {
-      "tag": "c:bones/wither"
+      "tag": "iceandfire:compat/bones/wither"
     },
     "M": {
       "item": "iceandfire:dragonsteel_ice_ingot"

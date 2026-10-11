@@ -3,10 +3,6 @@
   "values": [
     "iceandfire:dragonsteel_fire_axe",
     "iceandfire:dragonsteel_ice_axe",
-    "iceandfire:dragonsteel_lightning_axe",
-    {
-      "id": "#minecraft:axes",
-      "required": false
-    }
+    "iceandfire:dragonsteel_lightning_axe"
   ]
 }

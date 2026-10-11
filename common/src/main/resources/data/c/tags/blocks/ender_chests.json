@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:ender_chest",
-    {
-      "id": "#forge:chests/ender",
-      "required": false
-    }
+    "minecraft:ender_chest"
   ]
 }

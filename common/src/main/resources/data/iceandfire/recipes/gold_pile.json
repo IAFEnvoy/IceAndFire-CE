@@ -3,10 +3,10 @@
   "category": "misc",
   "ingredients": [
     {
-      "tag": "c:nuggets/gold"
+      "tag": "iceandfire:compat/nuggets/gold"
     },
     {
-      "tag": "c:nuggets/gold"
+      "tag": "iceandfire:compat/nuggets/gold"
     }
   ],
   "result": {

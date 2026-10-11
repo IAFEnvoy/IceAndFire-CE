@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:stone",
-    {
-      "id": "#forge:stone",
-      "required": false
-    }
+    "minecraft:stone"
   ]
 }

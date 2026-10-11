@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:nuggets/gold",
+      "required": false
+    },
+    {
+      "id": "#forge:nuggets/gold",
+      "required": false
+    }
+  ]
+}

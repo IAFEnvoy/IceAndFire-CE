@@ -31,10 +31,6 @@
     "iceandfire:tide_green_boots",
     "iceandfire:tide_purple_boots",
     "iceandfire:tide_red_boots",
-    "iceandfire:tide_teal_boots",
-    {
-      "id": "#forge:armors/boots",
-      "required": false
-    }
+    "iceandfire:tide_teal_boots"
   ]
 }

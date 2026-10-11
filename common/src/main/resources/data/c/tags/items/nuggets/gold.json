@@ -1,10 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:gold_nugget",
-    {
-      "id": "#forge:nuggets/gold",
-      "required": false
-    }
+    "minecraft:gold_nugget"
   ]
 }
