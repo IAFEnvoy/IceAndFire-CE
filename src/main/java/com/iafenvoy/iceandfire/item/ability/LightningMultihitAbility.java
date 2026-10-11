@@ -2,13 +2,15 @@ package com.iafenvoy.iceandfire.item.ability;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.network.payload.LightningBoltS2CPayload;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -27,7 +29,7 @@ public class LightningMultihitAbility implements PostHitAbility {
                 List<Tuple<Vec3, Vec3>> lightnings = new LinkedList<>();
                 //Cache for BFS
                 Queue<Tuple<Mob, Double>> bfsQueue = new LinkedList<>();
-                bfsQueue.add(new Tuple<>(mob, (double) EnchantmentHelper.modifyDamage(world, stack, target, world.damageSources.mobAttack(attacker), 1)));
+                bfsQueue.add(new Tuple<>(mob, getStackAttackDamage(stack)));
                 List<Mob> attacked = new LinkedList<>();
                 while (!bfsQueue.isEmpty()) {
                     Tuple<Mob, Double> pair = bfsQueue.poll();
@@ -56,5 +58,20 @@ public class LightningMultihitAbility implements PostHitAbility {
                     PacketDistributor.sendToPlayer(player, new LightningBoltS2CPayload(lightnings));
             }
         }
+    }
+
+    /**
+     * Base damage of the chain, taken from the weapon that started it, so the first link deals the same damage the
+     * 1.20.1 implementation did (the stack's attack damage modifier, e.g. dragonSteelBaseDamage - 1) instead of a
+     * flat 1. Every following link is scaled down by dragonLightningDamageReduction.
+     */
+    private static double getStackAttackDamage(ItemStack stack) {
+        final ItemAttributeModifiers modifiers = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+        if (modifiers == null) return 1.0D;
+        double damage = 0.0D;
+        for (ItemAttributeModifiers.Entry modifier : modifiers.modifiers())
+            if (modifier.attribute().equals(Attributes.ATTACK_DAMAGE))
+                damage += modifier.modifier().amount();
+        return damage > 0.0D ? damage : 1.0D;
     }
 }
