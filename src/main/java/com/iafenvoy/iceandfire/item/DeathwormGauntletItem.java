@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.item;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.registry.IafDataComponents;
 import com.iafenvoy.iceandfire.registry.IafSounds;
@@ -58,17 +59,29 @@ public class DeathwormGauntletItem extends Item {
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level world, @NotNull LivingEntity user) {
         if (user instanceof Player player) {
-            Vec3 Vector3d = player.getViewVector(1.0F).normalize();
-            double range = 5;
+            double range = IafCommonConfig.INSTANCE.tools.deathwormGauntletRange.getValue();
+            double knockbackMin = IafCommonConfig.INSTANCE.tools.deathwormGauntletKnockbackMin.getValue();
+            double knockbackMax = IafCommonConfig.INSTANCE.tools.deathwormGauntletKnockbackMax.getValue();
+            boolean rayTargeting = IafCommonConfig.INSTANCE.tools.deathwormGauntletRayTargeting.getValue();
+            Vec3 lookVec = player.getViewVector(1.0F).normalize();
+            Vec3 eyePos = rayTargeting ? player.getEyePosition(1.0F) : null;
+            Vec3 rayEnd = rayTargeting ? eyePos.add(lookVec.scale(range)) : null;
             for (LivingEntity livingEntity : world.getEntitiesOfClass(LivingEntity.class, new AABB(player.getX() - range, player.getY() - range, player.getZ() - range, player.getX() + range, player.getY() + range, player.getZ() + range), livingEntity -> livingEntity != player)) {
-                Vec3 delta = new Vec3(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ());
-                double d0 = delta.length();
-                delta = delta.normalize();
-                double d1 = Vector3d.dot(delta);
-                boolean canSee = d1 > 1.0D - 0.5D / d0 && player.hasLineOfSight(livingEntity);
+                boolean canSee;
+                if (rayTargeting) {
+                    canSee = livingEntity.getBoundingBox().clip(eyePos, rayEnd).isPresent() && player.hasLineOfSight(livingEntity);
+                } else {
+                    Vec3 delta = new Vec3(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ());
+                    double d0 = delta.length();
+                    delta = delta.normalize();
+                    double d1 = lookVec.dot(delta);
+                    canSee = d1 > 1.0D - 0.5D / d0 && player.hasLineOfSight(livingEntity);
+                }
                 if (canSee) {
                     livingEntity.hurt(world.damageSources.playerAttack(player), 3F);
-                    livingEntity.knockback(0.5F, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
+                    double distance = new Vec3(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ()).length();
+                    float knockbackStrength = (float) (knockbackMin + (knockbackMax - knockbackMin) * Math.min(1.0D, distance / range));
+                    livingEntity.knockback(knockbackStrength, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
                 }
             }
             player.getCooldowns().addCooldown(this, 20);

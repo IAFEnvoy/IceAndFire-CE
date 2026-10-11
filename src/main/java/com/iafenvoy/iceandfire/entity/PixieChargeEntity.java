@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.entity;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.core.particles.ParticleOptions;
@@ -77,8 +78,9 @@ public class PixieChargeEntity extends Fireball {
                 if (shootingEntity.equals(entity)) flag = true;
                 else {
                     if (entity instanceof LivingEntity living) {
-                        living.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 100, 0));
-                        living.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 0));
+                        int duration = IafCommonConfig.INSTANCE.tools.pixieChargeEffectDuration.getValue();
+                        living.addEffect(new MobEffectInstance(MobEffects.LEVITATION, duration, 0));
+                        living.addEffect(new MobEffectInstance(MobEffects.GLOWING, duration, 0));
                         entity.hurt(this.level().damageSources().indirectMagic(shootingEntity, null), 5.0F);
                     }
                     if (this.level().isClientSide)

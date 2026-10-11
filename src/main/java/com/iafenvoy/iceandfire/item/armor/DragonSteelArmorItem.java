@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.item.armor;
 
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
+import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -14,18 +15,19 @@ import java.util.List;
 
 public class DragonSteelArmorItem extends ArmorItem {
     public DragonSteelArmorItem(Holder<ArmorMaterial> material, Type slot) {
-        super(material, slot, new Properties().durability(switch (slot) {
+        super(material, slot, IafItems.cosmeticArmorProperties(new Properties().durability(switch (slot) {
             case HELMET -> IafCommonConfig.INSTANCE.armors.dragonsteelHelmetDurability.getValue();
             case CHESTPLATE -> IafCommonConfig.INSTANCE.armors.dragonsteelChestplateDurability.getValue();
             case LEGGINGS -> IafCommonConfig.INSTANCE.armors.dragonsteelLeggingsDurability.getValue();
             case BOOTS -> IafCommonConfig.INSTANCE.armors.dragonsteelBootsDurability.getValue();
             case BODY -> 0;
-        }));
+        })));
     }
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, tooltip, type);
-        tooltip.add(Component.translatable("item.dragonscales_armor.desc").withStyle(ChatFormatting.GRAY));
+        if (IafCommonConfig.INSTANCE.armors.dragonSteelBreathReduction.getValue())
+            tooltip.add(Component.translatable("item.dragonscales_armor.desc").withStyle(ChatFormatting.GRAY));
     }
 }

@@ -1,12 +1,16 @@
 package com.iafenvoy.iceandfire.render.entity;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
+import com.iafenvoy.iceandfire.render.entity.layer.AmphithereRiderLayer;
 import com.iafenvoy.iceandfire.render.model.AmphithereModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 public class AmphithereEntityRenderer extends MobRenderer<AmphithereEntity, AmphithereModel> {
@@ -23,11 +27,15 @@ public class AmphithereEntityRenderer extends MobRenderer<AmphithereEntity, Amph
 
     public AmphithereEntityRenderer(EntityRendererProvider.Context context) {
         super(context, new AmphithereModel(), 1.6F);
+        this.addLayer(new AmphithereRiderLayer(this));
     }
 
     @Override
     protected void scale(@NotNull AmphithereEntity entity, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(2.0F, 2.0F, 2.0F);
+        //Flight rework: the body tilts with its pitch while airborne, so the model has to be rotated along with it
+        if (IafCommonConfig.INSTANCE.amphithere.flightRework.getValue() && entity.isFlying() && !entity.isInWater() && !entity.isInLava())
+            matrixStackIn.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTickTime, entity.xRotO, entity.getXRot())));
     }
 
     @Override

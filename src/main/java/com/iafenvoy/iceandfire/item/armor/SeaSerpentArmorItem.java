@@ -1,7 +1,9 @@
 package com.iafenvoy.iceandfire.item.armor;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
+import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -24,13 +26,13 @@ public class SeaSerpentArmorItem extends ArmorItem {
     public final SeaSerpentType armorType;
 
     public SeaSerpentArmorItem(SeaSerpentType armorType, Holder<ArmorMaterial> material, Type slot) {
-        super(material, slot, new Properties().durability(switch (slot) {
+        super(material, slot, IafItems.cosmeticArmorProperties(new Properties().durability(switch (slot) {
             case HELMET -> 330;
             case CHESTPLATE -> 480;
             case LEGGINGS -> 450;
             case BOOTS -> 390;
             case BODY -> 0;
-        }));
+        })));
         this.armorType = armorType;
     }
 
@@ -48,7 +50,7 @@ public class SeaSerpentArmorItem extends ArmorItem {
             int legMod = player.getItemBySlot(EquipmentSlot.LEGS).getItem() instanceof SeaSerpentArmorItem ? 1 : 0;
             int footMod = player.getItemBySlot(EquipmentSlot.FEET).getItem() instanceof SeaSerpentArmorItem ? 1 : 0;
             int modifier = headMod + chestMod + legMod + footMod - 1;
-            if (modifier >= 0) {
+            if (modifier >= 0 && IafCommonConfig.INSTANCE.armors.tideGuardianEffects.getValue()) {
                 player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 50, 0, false, false));
                 if (player.isInWaterOrRain())
                     player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 50, modifier, false, false));
@@ -60,7 +62,9 @@ public class SeaSerpentArmorItem extends ArmorItem {
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, tooltip, type);
         tooltip.add(Component.translatable("sea_serpent." + this.armorType.getName()).withStyle(this.armorType.getColor()));
-        tooltip.add(Component.translatable("item.iceandfire.sea_serpent_armor.desc_0").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("item.iceandfire.sea_serpent_armor.desc_1").withStyle(ChatFormatting.GRAY));
+        if (IafCommonConfig.INSTANCE.armors.tideGuardianEffects.getValue()) {
+            tooltip.add(Component.translatable("item.iceandfire.sea_serpent_armor.desc_0").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("item.iceandfire.sea_serpent_armor.desc_1").withStyle(ChatFormatting.GRAY));
+        }
     }
 }

@@ -392,7 +392,7 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     private float getAncientModifier() {
-        return this.isAncient() ? 1.5F : 1.0F;
+        return this.isAncient() ? IafCommonConfig.INSTANCE.seaSerpent.ancientModifier.getValue().floatValue() : IafCommonConfig.INSTANCE.seaSerpent.normalModifier.getValue().floatValue();
     }
 
     public float getSeaSerpentScale() {

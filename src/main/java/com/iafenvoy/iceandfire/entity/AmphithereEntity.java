@@ -58,7 +58,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 @SuppressWarnings("ALL")
-public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnimatedEntity, IFlapable, IDragonFlute, IFlyingMount, IHasCustomizableAttributes, ICustomMoveController {
+public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnimatedEntity, IFlapable, IDragonFlute, IFlyingMount, IHasCustomizableAttributes, ICustomMoveController, IFlightStamina {
     public static final Animation ANIMATION_BITE = Animation.create(15);
     public static final Animation ANIMATION_BITE_RIDER = Animation.create(15);
     public static final Animation ANIMATION_WING_BLAST = Animation.create(30);
@@ -69,6 +69,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     private static final EntityDataAccessor<Integer> FLAP_TICKS = SynchedEntityData.defineId(AmphithereEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Byte> CONTROL_STATE = SynchedEntityData.defineId(AmphithereEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Integer> COMMAND = SynchedEntityData.defineId(AmphithereEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> FLIGHT_STAMINA = SynchedEntityData.defineId(AmphithereEntity.class, EntityDataSerializers.FLOAT);
     public float flapProgress;
     public float groundProgress = 0;
     public float sitProgress = 0;
@@ -94,6 +95,10 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     private int ticksStill = 0;
     private int ridingTime = 0;
     private boolean isSitting;
+    /**
+     * Gliding state of the flight rework. Not synched: it is derived from the synched stamina on both sides.
+     */
+    private boolean gliding;
     /*
           0 = ground/walking
           1 = ai flight
@@ -115,10 +120,49 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         BlockPos pos = new BlockPos(x, entity.getBlockY(), z);
         for (int yDown = 0; yDown < 6 + rand.nextInt(6); yDown++) {
             if (!world.isEmptyBlock(pos.below(yDown))) {
-                return pos.above(yDown);
+                BlockPos ground = pos.above(yDown);
+                //Flight rework: never target the fluid surface itself when the amphithere is swimming, it would stall there
+                if (IafCommonConfig.INSTANCE.amphithere.flightRework.getValue() && (entity.isInWater() || entity.isInLava()))
+                    return ground.above(10);
+                return ground;
             }
         }
         return pos;
+    }
+
+    /**
+     * Flight rework: the AI picks its wander/orbit/escape targets from a random ring around the amphithere instead of
+     * a point a few blocks away, which makes the flight path look like actual soaring.
+     */
+    private static BlockPos getAerialWanderTarget(Entity entity, Level world, RandomSource rand) {
+        float angle = rand.nextFloat() * ((float) Math.PI * 2F);
+        float minDistance = (float) IafCommonConfig.INSTANCE.amphithere.wanderMinDistance.getValue().doubleValue();
+        float maxDistance = (float) IafCommonConfig.INSTANCE.amphithere.wanderMaxDistance.getValue().doubleValue();
+        float distance = minDistance + rand.nextFloat() * (maxDistance - minDistance);
+        int offsetX = Math.round(Mth.sin(angle) * distance);
+        int offsetZ = Math.round(Mth.cos(angle) * distance);
+        return getPositionRelativetoGround(entity, world, entity.getBlockX() + offsetX, entity.getBlockZ() + offsetZ, rand);
+    }
+
+    /**
+     * Flight rework: the same random ring as {@link #getAerialWanderTarget}, lifted by a random altitude so the
+     * amphithere wanders within a band of air rather than hugging the ground.
+     */
+    private static BlockPos getAerialWanderTargetWithAltitude(Entity entity, Level world, RandomSource rand) {
+        int minAltitude = IafCommonConfig.INSTANCE.amphithere.wanderMinAltitude.getValue();
+        int maxAltitude = IafCommonConfig.INSTANCE.amphithere.wanderMaxAltitude.getValue();
+        int altitude = minAltitude + rand.nextInt(maxAltitude - minAltitude + 1);
+        return getAerialWanderTarget(entity, world, rand).above(altitude);
+    }
+
+    /**
+     * Flight rework: entry point used by the flight AI goals so every target they ask for respects the widened wander
+     * range. Falls back to the vanilla target when the rework is disabled, keeping the original spread of each caller.
+     */
+    private BlockPos pickFlightTarget(int vanillaSpread) {
+        if (!this.isFlightStaminaEnabled())
+            return getPositionRelativetoGround(this, this.level(), this.getBlockX() + this.random.nextInt(vanillaSpread) - vanillaSpread / 2, this.getBlockZ() + this.random.nextInt(vanillaSpread) - vanillaSpread / 2, this.random);
+        return getAerialWanderTargetWithAltitude(this, this.level(), this.random);
     }
 
     public static boolean canAmphithereSpawnOn(EntityType<AmphithereEntity> parrotIn, ServerLevelAccessor worldIn, MobSpawnType reason, BlockPos p_223317_3_, RandomSource random) {
@@ -312,6 +356,15 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         double extraX = radius * Mth.sin((float) (Math.PI + angle));
         double extraZ = radius * Mth.cos(angle);
         passenger.setPos(this.getX() + extraX, this.getY() + 0.7F - scaled_ground * 0.14F + pitch_forward, this.getZ() + extraZ);
+        //Flight rework: while flying the seat follows the body pitch so the rider does not slide off the saddle
+        if (this.isFlightStaminaEnabled() && this.hasPassenger(passenger) && this.isFlying()) {
+            float flightPitch = (this.getXRot() / 45F) * 0.45F;
+            float flightRadius = (this.isTame() ? 0.5F : 0.3F) - scaled_ground * 0.5F + flightPitch;
+            float flightAngle = (0.01745329251F * this.yBodyRot);
+            passenger.setPos(this.getX() + flightRadius * Mth.sin((float) (Math.PI + flightAngle)),
+                    this.getY() + 0.7F - scaled_ground * 0.14F + flightPitch,
+                    this.getZ() + flightRadius * Mth.cos(flightAngle));
+        }
     }
 
     @Override
@@ -378,14 +431,14 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             this.ticksStill++;
         else
             this.ticksStill = 0;
-        if (!this.isFlying() && !this.isBaby() && ((this.onGround() && this.random.nextInt(200) == 0 && this.flightCooldown == 0 && this.getPassengers().isEmpty() && !this.isNoAi() && this.canMove()) || this.getY() < -1)) {
+        if (!this.isFlying() && !this.isBaby() && ((this.onGround() && this.random.nextInt(200) == 0 && this.flightCooldown == 0 && this.getPassengers().isEmpty() && !this.isNoAi() && this.canMove() && this.canTakeOffFromGroundUnprompted()) || this.getY() < -1)) {
             this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + 0.5D, this.getDeltaMovement().z);
             this.setFlying(true);
         }
         if (this.getControllingPassenger() != null && this.isFlying() && !this.onGround()) {
             if (this.getControllingPassenger().getXRot() > 25 && this.getDeltaMovement().y > -1.0F)
                 this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y - 0.1D, this.getDeltaMovement().z);
-            if (this.getControllingPassenger().getXRot() < -25 && this.getDeltaMovement().y < 1.0F)
+            if (this.getControllingPassenger().getXRot() < -25 && this.canClimbOnRiderInput())
                 this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + 0.1D, this.getDeltaMovement().z);
         }
         if (notGrounded && this.groundProgress > 0.0F)
@@ -442,7 +495,58 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             this.changedFlightBehavior = false;
         if (!flapping && (this.getDeltaMovement().y > 0.15F || this.getDeltaMovement().y > 0 && this.tickCount % 200 == 0) && this.isOverAir())
             this.flapWings();
+        if (this.isFlightStaminaEnabled()) {
+            this.autoTakeoffFromGround();
+            this.autoTakeoffWithUntamedRider();
+        }
         AnimationHandler.INSTANCE.updateAnimations(this);
+    }
+
+    /**
+     * Flight rework: with the stamina system in place a wild amphithere only takes off when it can actually stay in
+     * the air, so its spontaneous takeoffs are gated on a full stamina bar.
+     */
+    private boolean canTakeOffFromGroundUnprompted() {
+        return !this.isFlightStaminaEnabled() || this.getFlightStamina() >= this.getMaxFlightStamina();
+    }
+
+    /**
+     * Flight rework: replacing the original climb branch of {@link #aiStep()} - climbing needs a full stamina bar and
+     * is refused while the amphithere is sitting in a fluid or pointing too far up (which would look like a takeoff
+     * instead of a climb).
+     */
+    private boolean canClimbOnRiderInput() {
+        if (!this.isFlightStaminaEnabled()) return true;
+        return !this.isTouchingFluid()
+                && this.getFlightStamina() >= this.getMaxFlightStamina()
+                && this.getXRot() <= (float) IafCommonConfig.INSTANCE.amphithere.ignoreTakeoffInputPitchDegrees.getValue().doubleValue();
+    }
+
+    /**
+     * Flight rework: a grounded amphithere with a full stamina bar occasionally jumps back into the air on its own,
+     * with a stronger burst when it is sitting in water or lava.
+     */
+    private void autoTakeoffFromGround() {
+        if (this.level().isClientSide || this.isFlying() || this.isBaby()) return;
+        if (!this.getPassengers().isEmpty() || this.isNoAi() || !this.canMove()) return;
+        if (this.getFlightStamina() < this.getMaxFlightStamina()) return;
+        if (this.random.nextInt(200) != 0) return;
+        double burst = this.isTouchingFluid() ? 1.2D : 0.5D;
+        this.setDeltaMovement(this.getDeltaMovement().x, this.getDeltaMovement().y + burst, this.getDeltaMovement().z);
+        this.setFlying(true);
+    }
+
+    /**
+     * Flight rework: an untamed amphithere carrying a rider immediately takes off instead of walking around with the
+     * player on its back.
+     */
+    private void autoTakeoffWithUntamedRider() {
+        if (this.level().isClientSide || this.isFlying() || this.isBaby()) return;
+        if (this.isTame() || this.getUntamedRider() == null) return;
+        if (this.isTouchingFluid()) return;
+        if (this.getFlightStamina() < this.getMaxFlightStamina()) return;
+        this.setDeltaMovement(this.getDeltaMovement().add(0, 0.5D, 0));
+        this.setFlying(true);
     }
 
     @Override
@@ -526,6 +630,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         builder.define(FLAP_TICKS, 0);
         builder.define(CONTROL_STATE, (byte) 0);
         builder.define(COMMAND, 0);
+        builder.define(FLIGHT_STAMINA, (float) IafCommonConfig.INSTANCE.amphithere.maxStamina.getValue().doubleValue());
     }
 
     @Override
@@ -639,6 +744,23 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             this.setTarget(null);
         if (target != null && this.onGround() && this.isFlying() && this.ticksFlying > 40)
             this.setFlying(false);
+        if (this.isFlightStaminaEnabled()) {
+            this.flightReworkTick();
+        }
+    }
+
+    /**
+     * Flight rework: dunking the amphithere forces the rider off (it cannot fly out of a fluid while carrying
+     * someone) and its stamina refills while it is not airborne, which is what allows it to take off again.
+     */
+    private void flightReworkTick() {
+        if (!this.level().isClientSide && this.isTouchingFluid() && !this.getPassengers().isEmpty())
+            this.ejectPassengers();
+        if (!this.isControlledByLocalInstance()) return;
+        if (this.isFlying() && !this.isTouchingFluid()) return;
+        float regenerated = Math.min(this.getMaxFlightStamina(), this.getFlightStamina() + (float) IafCommonConfig.INSTANCE.amphithere.staminaRegenGrounded.getValue().doubleValue());
+        this.setFlightStamina(regenerated);
+        this.updateGliding(regenerated);
     }
 
     @Override
@@ -670,6 +792,55 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         this.entityData.set(FLYING, flying);
         if (!this.level().isClientSide)
             this.isFlying = flying;
+    }
+
+    @Override
+    public float getFlightStamina() {
+        return this.isFlightStaminaEnabled() ? this.entityData.get(FLIGHT_STAMINA) : this.getMaxFlightStamina();
+    }
+
+    @Override
+    public void setFlightStamina(float stamina) {
+        this.entityData.set(FLIGHT_STAMINA, Mth.clamp(stamina, 0F, this.getMaxFlightStamina()));
+    }
+
+    @Override
+    public float getMaxFlightStamina() {
+        return (float) IafCommonConfig.INSTANCE.amphithere.maxStamina.getValue().doubleValue();
+    }
+
+    @Override
+    public boolean isGliding() {
+        return this.gliding;
+    }
+
+    @Override
+    public void setGliding(boolean gliding) {
+        this.gliding = gliding;
+    }
+
+    @Override
+    public boolean isFlightStaminaEnabled() {
+        return IafCommonConfig.INSTANCE.amphithere.flightRework.getValue();
+    }
+
+    private static float getStaminaRefundPerFallUnit() {
+        double constantSpeed = IafCommonConfig.INSTANCE.amphithere.constantFlightSpeed.getValue();
+        if (constantSpeed <= 0D) return 0F;
+        return (float) (IafCommonConfig.INSTANCE.amphithere.staminaDrainIdlePerTick.getValue().doubleValue() / constantSpeed);
+    }
+
+    private boolean isTouchingFluid() {
+        return this.isInWater() || this.isInLava() || !this.level().getFluidState(this.blockPosition()).isEmpty();
+    }
+
+    /**
+     * Once the stamina is depleted the amphithere can no longer hold altitude and is forced into a glide until it has
+     * recovered a little of it again.
+     */
+    private boolean updateGliding(float stamina) {
+        this.gliding = this.gliding ? stamina < this.getMaxFlightStamina() : stamina <= (float) IafCommonConfig.INSTANCE.amphithere.glideEnterStamina.getValue().doubleValue();
+        return this.gliding;
     }
 
     public int getVariant() {
@@ -839,7 +1010,50 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
                 this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
             } else super.travel(travelVector);
         } else super.travel(travelVector);
+        if (this.isFlightStaminaEnabled()) this.flightReworkTravel();
+    }
 
+    /**
+     * Flight rework: while airborne the amphithere ignores its movement input completely and flies at a constant speed
+     * along a direction derived from its own rotation, so stamina is the only thing that limits the flight. The
+     * stamina is drained while airborne and refunded while descending, and running out of it forces a glide.
+     */
+    private void flightReworkTravel() {
+        if (!this.isControlledByLocalInstance()) return;
+        if (this.isTouchingFluid()) {
+            if (this.isFlying()) {
+                this.setFlying(false);
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.2D));
+            }
+            return;
+        }
+        if (!this.isFlying()) return;
+        if (this.isGliding() && this.onGround()) {
+            this.setFlying(false);
+            return;
+        }
+        Vec3 raw = this.getDeltaMovement();
+        float maxStamina = this.getMaxFlightStamina();
+        float vertical = (float) raw.y;
+        float stamina = this.getFlightStamina() - (float) IafCommonConfig.INSTANCE.amphithere.staminaDrainIdlePerTick.getValue().doubleValue();
+        if (vertical > 0F)
+            stamina -= vertical * (float) IafCommonConfig.INSTANCE.amphithere.staminaDrainPerClimbUnit.getValue().doubleValue();
+        else if (vertical < 0F)
+            stamina += -vertical * getStaminaRefundPerFallUnit();
+        stamina = Mth.clamp(stamina, 0F, maxStamina);
+        boolean gliding = this.updateGliding(stamina);
+        this.setFlightStamina(stamina);
+        Vec3 direction;
+        if (gliding || this.isGoingDown())
+            direction = Vec3.directionFromRotation((float) IafCommonConfig.INSTANCE.amphithere.forcedGlideAngleDegrees.getValue().doubleValue(), this.getYRot());
+        else if (this.isGoingUp())
+            direction = Vec3.directionFromRotation(-(float) IafCommonConfig.INSTANCE.amphithere.forcedClimbAngleDegrees.getValue().doubleValue(), this.getYRot());
+        else
+            direction = Vec3.directionFromRotation(this.getXRot(), this.getYRot());
+        Vec3 result = direction.normalize().scale((double) IafCommonConfig.INSTANCE.amphithere.constantFlightSpeed.getValue());
+        this.setDeltaMovement(result);
+        double horizontalMag = Math.sqrt(result.x * result.x + result.z * result.z);
+        this.setXRot((float) -Math.toDegrees(Math.atan2(result.y, horizontalMag)));
     }
 
     @Override
@@ -853,12 +1067,17 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             float vertical = this.isGoingUp() ? 0.2F : this.isGoingDown() ? -0.2F : 0F;
             if (!this.isFlying() && !this.isHovering())
                 vertical = (float) travelVector.y;
-            this.setDeltaMovement(vec3.add(0, vertical, 0));
+            //Flight rework: while flying or touching a fluid the vertical throttle of the mount is ignored, its altitude
+            //is then driven by the rider's pitch through the flight vector filter instead.
+            if (!(this.isFlightStaminaEnabled() && (this.isFlying() || this.isTouchingFluid())))
+                this.setDeltaMovement(vec3.add(0, vertical, 0));
         }
     }
 
     @Override
     protected Vec3 getRiddenInput(Player player, Vec3 travelVector) {
+        //Flight rework: the flight vector filter replaces the movement input entirely while airborne
+        if (this.isFlightStaminaEnabled() && this.isFlying()) return Vec3.ZERO;
         float f = player.xxa * 0.5F;
         float f1 = player.zza;
         if (f1 <= 0.0F) f1 *= 0.25F;
@@ -910,6 +1129,9 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
     }
 
     private boolean isOverAir() {
+        //Flight rework: standing on the ground never counts as being over air, otherwise the amphithere would keep
+        //flapping while resting on top of the terrain
+        if (this.isFlightStaminaEnabled() && this.onGround()) return false;
         return this.level().isEmptyBlock(this.blockPosition().below());
     }
 
@@ -952,7 +1174,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             if (AmphithereEntity.this.flightBehavior != FlightBehavior.WANDER || !AmphithereEntity.this.canMove())
                 return false;
             if (AmphithereEntity.this.isFlying()) {
-                this.target = AmphithereEntity.getPositionRelativetoGround(AmphithereEntity.this, AmphithereEntity.this.level(), AmphithereEntity.this.getBlockX() + AmphithereEntity.this.random.nextInt(30) - 15, AmphithereEntity.this.getBlockZ() + AmphithereEntity.this.random.nextInt(30) - 15, AmphithereEntity.this.random);
+                this.target = AmphithereEntity.this.pickFlightTarget(30);
                 AmphithereEntity.this.orbitPos = null;
                 return (!AmphithereEntity.this.getMoveControl().hasWanted() || AmphithereEntity.this.ticksStill >= 50);
             } else return false;
@@ -970,7 +1192,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
         @Override
         public void tick() {
             if (!this.isDirectPathBetweenPoints(AmphithereEntity.this))
-                this.target = AmphithereEntity.getPositionRelativetoGround(AmphithereEntity.this, AmphithereEntity.this.level(), AmphithereEntity.this.getBlockX() + AmphithereEntity.this.random.nextInt(30) - 15, AmphithereEntity.this.getBlockZ() + AmphithereEntity.this.random.nextInt(30) - 15, AmphithereEntity.this.random);
+                this.target = AmphithereEntity.this.pickFlightTarget(30);
             if (AmphithereEntity.this.level().isEmptyBlock(this.target)) {
                 AmphithereEntity.this.moveControl.setWantedPosition(this.target.getX() + 0.5D, this.target.getY() + 0.5D, this.target.getZ() + 0.5D, 0.25D);
                 if (AmphithereEntity.this.getTarget() == null)
@@ -995,7 +1217,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             if (AmphithereEntity.this.flightBehavior != FlightBehavior.CIRCLE || !AmphithereEntity.this.canMove())
                 return false;
             if (AmphithereEntity.this.isFlying()) {
-                AmphithereEntity.this.orbitPos = AmphithereEntity.getPositionRelativetoGround(AmphithereEntity.this, AmphithereEntity.this.level(), AmphithereEntity.this.getBlockX() + AmphithereEntity.this.random.nextInt(30) - 15, AmphithereEntity.this.getBlockZ() + AmphithereEntity.this.random.nextInt(30) - 15, AmphithereEntity.this.random);
+                AmphithereEntity.this.orbitPos = AmphithereEntity.this.pickFlightTarget(30);
                 this.target = AmphithereEntity.getPositionInOrbit(AmphithereEntity.this, AmphithereEntity.this.level(), AmphithereEntity.this.orbitPos, AmphithereEntity.this.random);
                 return true;
             } else return false;
@@ -1041,7 +1263,7 @@ public class AmphithereEntity extends TamableAnimal implements ISyncMount, IAnim
             if (AmphithereEntity.this.horizontalCollision) {
                 AmphithereEntity.this.setYRot(AmphithereEntity.this.getYRot() + 180.0F);
                 this.speedModifier = 0.1F;
-                BlockPos target = AmphithereEntity.getPositionRelativetoGround(AmphithereEntity.this, AmphithereEntity.this.level(), AmphithereEntity.this.getBlockX() + AmphithereEntity.this.random.nextInt(15) - 7, AmphithereEntity.this.getBlockZ() + AmphithereEntity.this.random.nextInt(15) - 7, AmphithereEntity.this.random);
+                BlockPos target = AmphithereEntity.this.pickFlightTarget(15);
                 this.wantedX = target.getX();
                 this.wantedY = target.getY();
                 this.wantedZ = target.getZ();

@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.item;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.PixieChargeEntity;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
@@ -55,7 +56,7 @@ public class PixieWandItem extends Item {
             }
             user.playSound(IafSounds.PIXIE_WAND.get(), 1F, 0.75F + 0.5F * user.getRandom().nextFloat());
             itemstack.hurtAndBreak(1, user, LivingEntity.getSlotForHand(user.getUsedItemHand()));
-            user.getCooldowns().addCooldown(this, 5);
+            user.getCooldowns().addCooldown(this, IafCommonConfig.INSTANCE.tools.pixieWandCooldown.getValue());
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, itemStackIn);
     }

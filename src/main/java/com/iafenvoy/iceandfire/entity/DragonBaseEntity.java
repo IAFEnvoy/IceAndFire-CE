@@ -88,6 +88,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -106,7 +107,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public abstract class DragonBaseEntity extends TamableAnimal implements MenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener {
+public abstract class DragonBaseEntity extends TamableAnimal implements MenuProvider, IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener, IFlightStamina {
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
     private static final ResourceLocation ARMOR_MODIFIER = ResourceLocation.fromNamespaceAndPath(IceAndFire.MOD_ID, "armor_modifier");
     private static final EntityDataAccessor<Integer> HUNGER = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.INT);
@@ -126,6 +127,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     private static final EntityDataAccessor<Float> DRAGON_PITCH = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> CRYSTAL_BOUND = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<String> CUSTOM_POSE = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Float> FLIGHT_STAMINA = SynchedEntityData.defineId(DragonBaseEntity.class, EntityDataSerializers.FLOAT);
     public static Animation ANIMATION_FIRECHARGE;
     public static Animation ANIMATION_EAT;
     public static Animation ANIMATION_SPEAK;
@@ -234,6 +236,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     private DragonPartEntity tail4Part;
     private boolean isOverAir;
     private int brushedTime;
+    /**
+     * Gliding state of the flight stamina system. Not synched: it is derived from the synched stamina on both sides.
+     * <p>
+     * This is NOT {@link #gliding}: that one is the native mouse-pitch glide of a sprinting rider, this one means the
+     * dragon is out of stamina and can only lose altitude.
+     */
+    private boolean staminaGliding;
 
     public DragonBaseEntity(EntityType<? extends DragonBaseEntity> t, Level world, DragonType type, double minimumDamage, double maximumDamage, double minimumHealth, double maximumHealth, double minimumSpeed, double maximumSpeed) {
         super(t, world);
@@ -264,6 +273,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         this.lastScale = 0;//Ensure scale will be updated so that multipart can generate correctly
         this.updateScale(this.getRenderSize() / 3);
         this.setId(this.getId());
+        if (IafCommonConfig.INSTANCE.dragon.avoidWaterPathfinding.getValue())
+            this.setPathfindingMalus(PathType.WATER, 8.0F);
     }
 
     public static AttributeSupplier.Builder bakeAttributes() {
@@ -641,6 +652,45 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         builder.define(DRAGON_PITCH, 0F);
         builder.define(CRYSTAL_BOUND, false);
         builder.define(CUSTOM_POSE, "");
+        // NOTE: the entity data cannot be read yet while it is being defined, so this must not call getMaxFlightStamina()
+        builder.define(FLIGHT_STAMINA, (float) IafCommonConfig.INSTANCE.dragon.staminaPerStage.getValue().doubleValue());
+    }
+
+    @Override
+    public float getFlightStamina() {
+        return this.isFlightStaminaEnabled() ? this.entityData.get(FLIGHT_STAMINA) : this.getMaxFlightStamina();
+    }
+
+    @Override
+    public void setFlightStamina(float stamina) {
+        this.entityData.set(FLIGHT_STAMINA, Mth.clamp(stamina, 0F, this.getMaxFlightStamina()));
+    }
+
+    public float getMaxFlightStamina() {
+        return this.getDragonStage() * (float) IafCommonConfig.INSTANCE.dragon.staminaPerStage.getValue().doubleValue();
+    }
+
+    @Override
+    public boolean isGliding() {
+        return this.staminaGliding;
+    }
+
+    @Override
+    public void setGliding(boolean gliding) {
+        this.staminaGliding = gliding;
+    }
+
+    @Override
+    public boolean isFlightStaminaEnabled() {
+        return IafCommonConfig.INSTANCE.dragon.flightStamina.getValue();
+    }
+
+    /**
+     * Once the stamina is depleted the dragon can no longer hold altitude and is forced into a glide until it has
+     * recovered some of it again.
+     */
+    private void updateGliding(float stamina) {
+        this.staminaGliding = this.staminaGliding ? stamina < this.getMaxFlightStamina() : stamina <= 0F;
     }
 
     @Override
@@ -1363,6 +1413,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public void breakBlock(final BlockPos position) {
+        if (this.getDragonStage() <= IafCommonConfig.INSTANCE.dragon.minStageToBreakBlocks.getValue())
+            return;
         if (NeoForge.EVENT_BUS.post(new GriefBreakBlockEvent(this, position.getX(), position.getY(), position.getZ())).isCanceled())
             return;
 
@@ -1472,7 +1524,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public boolean doesWantToLand() {
-        return this.flyTicks > 6000 || this.isGoingDown() || this.flyTicks > 40 && this.flyProgress == 0 || this.isChained() && this.flyTicks > 100;
+        return this.flyTicks > 6000 || this.isGoingDown() || this.isFlightStaminaEnabled() && this.isGliding() || this.flyTicks > 40 && this.flyProgress == 0 || this.isChained() && this.flyTicks > 100;
     }
 
     public abstract String getVariantName(int variant);
@@ -1692,6 +1744,26 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 this.destroyBoats();
             }
         }
+        this.updateFlightStaminaState();
+    }
+
+    /**
+     * Flight stamina rework: a dragon that ran out of stamina is forced down as soon as it touches the ground, and it
+     * recovers stamina while it is not holding itself in the air.
+     */
+    private void updateFlightStaminaState() {
+        if (!this.isFlightStaminaEnabled()) return;
+
+        if (this.isGliding() && this.onGround()) {
+            this.setFlying(false);
+            this.setHovering(false);
+        }
+        if (!this.isControlledByLocalInstance()) return;
+        if ((this.isFlying() || this.isHovering()) && !this.isInWater() && !this.isInLava()) return;
+
+        float stamina = Math.min(this.getMaxFlightStamina(), this.getFlightStamina() + (float) IafCommonConfig.INSTANCE.dragon.staminaRegenGrounded.getValue().doubleValue());
+        this.setFlightStamina(stamina);
+        this.updateGliding(stamina);
     }
 
     /**
@@ -1941,6 +2013,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public void travel(@NotNull Vec3 pTravelVector) {
+        boolean staminaBookkeeping = this.isFlightStaminaEnabled();
         if (this.getAnimation() == ANIMATION_SHAKEPREY || !this.canMove() && !this.isVehicle() || this.isOrderedToSit()) {
             if (this.getNavigation().getPath() != null) {
                 this.getNavigation().stop();
@@ -1989,7 +2062,10 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     forward *= rider.zza > 0 ? 1.0f : 0.5f;
                     // Slower on going sideways
                     strafing *= 0.4f;
-                    if (this.isGoingUp() && !this.isGoingDown())
+                    // Flight stamina: a tired dragon cannot climb, it can only lose altitude
+                    if (this.isFlightStaminaEnabled() && this.isGliding())
+                        vertical = -1f;
+                    else if (this.isGoingUp() && !this.isGoingDown())
                         vertical = 1f;
                     else if (this.isGoingDown() && !this.isGoingUp())
                         vertical = -1f;
@@ -2069,7 +2145,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 // Vanilla in water behavior includes float on water and moving very slow
                 // in lava behavior includes moving slow and sink
                 super.travel(pTravelVector.add(strafing, vertical, forward));
-
+                staminaBookkeeping = false;
             }
             // Walking control
             else {
@@ -2103,6 +2179,28 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
         else {
             super.travel(pTravelVector);
         }
+        if (staminaBookkeeping) this.drainFlightStamina();
+    }
+
+    /**
+     * Flight stamina bookkeeping: any tick spent airborne costs stamina, climbing costs extra and falling refunds a
+     * little of it back (capped at the idle cost so gliding down can never outrun the drain).
+     */
+    private void drainFlightStamina() {
+        if (!this.isControlledByLocalInstance()) return;
+        if (this.onGround() || this.isInWater() || this.isInLava()) return;
+
+        float vertical = (float) this.getDeltaMovement().y;
+        float stamina = this.getFlightStamina() - (float) IafCommonConfig.INSTANCE.dragon.staminaDrainIdlePerTick.getValue().doubleValue();
+        if (vertical > 0F) {
+            stamina -= vertical * (float) IafCommonConfig.INSTANCE.dragon.staminaDrainPerClimbUnit.getValue().doubleValue();
+        } else if (vertical < 0F) {
+            float refund = -vertical * (float) IafCommonConfig.INSTANCE.dragon.staminaRefundPerFallUnit.getValue().doubleValue();
+            stamina += Math.min(refund, (float) IafCommonConfig.INSTANCE.dragon.staminaDrainIdlePerTick.getValue().doubleValue());
+        }
+        stamina = Mth.clamp(stamina, 0F, this.getMaxFlightStamina());
+        this.updateGliding(stamina);
+        this.setFlightStamina(stamina);
     }
 
     /**
@@ -2200,7 +2298,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     this.setFlying(false);
                 }
                 // Dragon landing
-                if (!this.isOverAir() && this.isGoingDown() && !this.isInWater()) {
+                if (!this.isOverAir() && (this.isGoingDown() || this.isFlightStaminaEnabled() && this.isGliding()) && !this.isInWater()) {
                     this.setFlying(false);
                     this.setHovering(false);
                 }
