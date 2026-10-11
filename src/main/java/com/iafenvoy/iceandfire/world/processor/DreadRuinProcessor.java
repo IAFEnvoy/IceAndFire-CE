@@ -66,6 +66,8 @@ public class DreadRuinProcessor extends StructureProcessor {
         else if (rand < 0.5D) return IafEntities.DREAD_GHOUL.get();
         else if (rand < 0.7D) return IafEntities.DREAD_BEAST.get();
         else if (rand < 0.85D) return IafEntities.DREAD_SCUTTLER.get();
-        return IafEntities.DREAD_KNIGHT.get();
+        else if (rand < 0.95D) return IafEntities.DREAD_KNIGHT.get();
+        // A mausoleum spawner has a small chance to hold the lich itself.
+        return IafEntities.DREAD_LICH.get();
     }
 }
