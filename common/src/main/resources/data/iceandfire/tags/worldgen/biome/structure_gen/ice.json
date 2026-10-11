@@ -20,6 +20,14 @@
     {
       "required": false,
       "id": "#forge:is_cold"
+    },
+    {
+      "id": "#c:snowy",
+      "required": false
+    },
+    {
+      "id": "#forge:is_snowy",
+      "required": false
     }
   ]
 }

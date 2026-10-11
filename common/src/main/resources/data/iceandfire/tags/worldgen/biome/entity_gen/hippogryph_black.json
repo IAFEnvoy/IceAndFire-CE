@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "minecraft:badlands"
+    "minecraft:badlands",
+    {
+      "id": "#c:badlands",
+      "required": false
+    }
   ]
 }

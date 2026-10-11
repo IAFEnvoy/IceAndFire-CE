@@ -9,6 +9,14 @@
     "minecraft:meadow",
     "minecraft:grove",
     "minecraft:snowy_slopes",
-    "#minecraft:is_hill"
+    "#minecraft:is_hill",
+    {
+      "id": "#c:mountain",
+      "required": false
+    },
+    {
+      "id": "#forge:is_mountain",
+      "required": false
+    }
   ]
 }

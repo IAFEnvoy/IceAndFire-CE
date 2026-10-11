@@ -17,6 +17,14 @@
     "minecraft:beach",
     "minecraft:bamboo_jungle",
     "minecraft:lush_caves",
-    "minecraft:mangrove_swamp"
+    "minecraft:mangrove_swamp",
+    {
+      "id": "#c:snowy",
+      "required": false
+    },
+    {
+      "id": "#forge:is_snowy",
+      "required": false
+    }
   ]
 }

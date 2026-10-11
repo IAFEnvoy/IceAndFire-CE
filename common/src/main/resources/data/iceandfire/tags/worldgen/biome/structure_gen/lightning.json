@@ -5,6 +5,26 @@
     "minecraft:mangrove_swamp",
     "#minecraft:is_jungle",
     "#minecraft:is_badlands",
-    "#minecraft:is_savanna"
+    "#minecraft:is_savanna",
+    {
+      "id": "#c:swamp",
+      "required": false
+    },
+    {
+      "id": "#forge:is_swamp",
+      "required": false
+    },
+    {
+      "id": "#c:jungle",
+      "required": false
+    },
+    {
+      "id": "#c:badlands",
+      "required": false
+    },
+    {
+      "id": "#c:savanna",
+      "required": false
+    }
   ]
 }

@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     "minecraft:windswept_forest",
-    "minecraft:windswept_hills"
+    "minecraft:windswept_hills",
+    {
+      "id": "#c:windswept",
+      "required": false
+    }
   ]
 }
