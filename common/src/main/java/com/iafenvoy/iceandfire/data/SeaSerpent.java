@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.data;
 
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.item.ItemSeaSerpentScales;
 import com.iafenvoy.iceandfire.item.armor.IafArmorMaterial;
 import com.iafenvoy.iceandfire.item.armor.ItemSeaSerpentArmor;
@@ -61,7 +62,7 @@ public class SeaSerpent {
 
     public static void initArmors() {
         for (SeaSerpent color : SeaSerpent.values()) {
-            color.armorMaterial = new IafArmorMaterial(IdUtil.build(IceAndFire.MOD_ID, "sea_serpent_scales_") + color.name, 30, new int[]{4, 8, 7, 4}, 25, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 2.5F);
+            color.armorMaterial = new IafArmorMaterial(IdUtil.build(IceAndFire.MOD_ID, "sea_serpent_scales_") + color.name, 30, protection(IafCommonConfig.INSTANCE.armors.tideGuardianProtection.getValue(), new int[]{4, 8, 7, 4}), 25, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, IafCommonConfig.INSTANCE.armors.tideGuardianToughness.getValue().floatValue(), true);
             color.scaleBlock = IafBlocks.register("sea_serpent_scale_block_" + color.name, () -> new BlockSeaSerpentScales(color.name, color.color));
             color.scale = IafItems.register("sea_serpent_scales_" + color.name, () -> new ItemSeaSerpentScales(color.name, color.color));
             color.helmet = IafItems.register("tide_" + color.name + "_helmet", () -> new ItemSeaSerpentArmor(color, color.armorMaterial, ArmorItem.Type.HELMET));
@@ -73,5 +74,10 @@ public class SeaSerpent {
 
     public static SeaSerpent getByName(String name) {
         return BY_NAME.getOrDefault(name, BLUE);
+    }
+
+    private static int[] protection(List<Integer> configured, int[] fallback) {
+        if (configured == null || configured.size() < 4) return fallback;
+        return new int[]{configured.get(0), configured.get(1), configured.get(2), configured.get(3)};
     }
 }

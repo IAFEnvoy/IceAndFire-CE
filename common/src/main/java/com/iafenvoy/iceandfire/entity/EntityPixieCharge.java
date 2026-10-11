@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.entity;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import net.minecraft.entity.Entity;
@@ -103,8 +104,9 @@ public class EntityPixieCharge extends AbstractFireballEntity {
                 if (shootingEntity != null && shootingEntity.equals(entity)) flag = true;
                 else {
                     if (entity instanceof LivingEntity living) {
-                        living.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 100, 0));
-                        living.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 100, 0));
+                        int duration = IafCommonConfig.INSTANCE.tools.pixieChargeEffectDuration.getValue();
+                        living.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, duration, 0));
+                        living.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, duration, 0));
                         entity.damage(this.getWorld().getDamageSources().indirectMagic(shootingEntity, null), 5.0F);
                     }
                     if (this.getWorld().isClient)

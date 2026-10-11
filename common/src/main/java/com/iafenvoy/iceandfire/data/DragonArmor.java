@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.data;
 
 import com.google.common.collect.ImmutableList;
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.item.armor.IafArmorMaterial;
 import com.iafenvoy.iceandfire.item.armor.ItemScaleArmor;
 import com.iafenvoy.iceandfire.registry.IafItems;
@@ -46,7 +47,7 @@ public class DragonArmor {
     public static void initArmors() {
         for (int i = 0; i < ARMORS.size(); i++) {
             DragonArmor value = ARMORS.get(i);
-            value.armorMaterial = new IafArmorMaterial(IdUtil.build(IceAndFire.MOD_ID, "armor_dragon_scales" + (i + 1)), 36, new int[]{5, 7, 9, 5}, 15, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 2);
+            value.armorMaterial = new IafArmorMaterial(IdUtil.build(IceAndFire.MOD_ID, "armor_dragon_scales" + (i + 1)), 36, protection(IafCommonConfig.INSTANCE.armors.dragonScaleProtection.getValue(), new int[]{5, 7, 9, 5}), 15, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, IafCommonConfig.INSTANCE.armors.dragonScaleToughness.getValue().floatValue(), true);
             String sub = "armor_" + value.color.name().toLowerCase(Locale.ROOT);
 
             value.helmet = IafItems.register(sub + "_helmet", () -> new ItemScaleArmor(value.color, value, value.armorMaterial, ArmorItem.Type.HELMET));
@@ -58,6 +59,11 @@ public class DragonArmor {
 
     public static List<DragonArmor> values() {
         return ImmutableList.copyOf(ARMORS);
+    }
+
+    private static int[] protection(List<Integer> configured, int[] fallback) {
+        if (configured == null || configured.size() < 4) return fallback;
+        return new int[]{configured.get(0), configured.get(1), configured.get(2), configured.get(3)};
     }
 
     public Item getScaleItem() {

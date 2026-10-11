@@ -6,7 +6,7 @@ import net.minecraft.sound.SoundEvent;
 
 public class DragonSteelArmorMaterial extends IafArmorMaterial {
     public DragonSteelArmorMaterial(String name, int durability, int[] damageReduction, int encantability, SoundEvent sound, float toughness) {
-        super(name, durability, damageReduction, encantability, sound, toughness);
+        super(name, durability, damageReduction, encantability, sound, toughness, true);
     }
 
     @Override
@@ -22,6 +22,7 @@ public class DragonSteelArmorMaterial extends IafArmorMaterial {
 
     @Override
     public int getDurability(ArmorItem.Type slotIn) {
+        if (this.isCosmeticUnbreakable()) return 0;
         return (int) (MAX_DAMAGE_ARRAY[slotIn.getEquipmentSlot().getEntitySlotId()] * 0.02D * IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurabilityEquipment.getValue());
     }
 }

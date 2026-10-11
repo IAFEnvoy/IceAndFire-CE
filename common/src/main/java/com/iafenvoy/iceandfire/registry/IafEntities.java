@@ -4,6 +4,8 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.*;
 import com.iafenvoy.iceandfire.registry.tag.IafBiomeTags;
+import com.iafenvoy.iceandfire.world.siren.SirenMorningDespawn;
+import com.iafenvoy.iceandfire.world.siren.SirenSpawnPredicate;
 import dev.architectury.registry.level.biome.BiomeModifications;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
@@ -14,6 +16,7 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.SpawnSettings;
 
@@ -93,6 +96,7 @@ public final class IafEntities {
     public static void init() {
         addSpawners();
         commonSetup();
+        SirenMorningDespawn.init();
     }
 
     public static void bakeAttributes() {
@@ -138,6 +142,7 @@ public final class IafEntities {
         SpawnRestriction.register(DREAD_GHOUL.get(), SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
         SpawnRestriction.register(DREAD_SCUTTLER.get(), SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
         SpawnRestriction.register(DREAD_HORSE.get(), SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MobEntity::canMobSpawn);
+        SpawnRestriction.register(SIREN.get(), SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, SirenSpawnPredicate::canSirenSpawn);
     }
 
     public static void addSpawners() {
@@ -151,5 +156,10 @@ public final class IafEntities {
             BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.AMPHITHERE), (context, mutable) -> mutable.getSpawnProperties().addSpawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(IafEntities.AMPHITHERE.get(), IafCommonConfig.INSTANCE.amphithere.spawnWeight.getValue(), 1, 3)));
         if (IafCommonConfig.INSTANCE.troll.spawn.getValue())
             BiomeModifications.addProperties(context -> context.hasTag(IafBiomeTags.TROLL), (context, mutable) -> mutable.getSpawnProperties().addSpawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(IafEntities.TROLL.get(), IafCommonConfig.INSTANCE.troll.spawnWeight.getValue(), 1, 3)));
+        if (IafCommonConfig.INSTANCE.siren.beachSpawns.getValue() && IafCommonConfig.INSTANCE.siren.beachSpawnWeight.getValue() > 0) {
+            final int sirenMin = Math.max(1, IafCommonConfig.INSTANCE.siren.beachMinGroupSize.getValue());
+            final int sirenMax = Math.max(sirenMin, IafCommonConfig.INSTANCE.siren.beachMaxGroupSize.getValue());
+            BiomeModifications.addProperties(context -> context.hasTag(BiomeTags.IS_BEACH), (context, mutable) -> mutable.getSpawnProperties().addSpawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(IafEntities.SIREN.get(), IafCommonConfig.INSTANCE.siren.beachSpawnWeight.getValue(), sirenMin, sirenMax)));
+        }
     }
 }

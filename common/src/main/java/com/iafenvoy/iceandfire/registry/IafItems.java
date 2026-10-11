@@ -28,6 +28,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundEvents;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
@@ -37,17 +38,17 @@ import static com.iafenvoy.iceandfire.item.tool.DragonSteelToolMaterial.createMa
 public final class IafItems {
     public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(IceAndFire.MOD_ID, RegistryKeys.ITEM);
 
-    public static final CustomArmorMaterial SILVER_ARMOR_MATERIAL = new IafArmorMaterial("silver", 15, new int[]{1, 4, 5, 2}, 20, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 0);
-    public static final CustomArmorMaterial COPPER_ARMOR_MATERIAL = new IafArmorMaterial("copper", 10, new int[]{1, 3, 4, 2}, 15, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0);
+    public static final CustomArmorMaterial SILVER_ARMOR_MATERIAL = new IafArmorMaterial("silver", 15, protection(IafCommonConfig.INSTANCE.armors.silverProtection.getValue(), new int[]{1, 4, 5, 2}), 20, SoundEvents.ITEM_ARMOR_EQUIP_CHAIN, 0, true);
+    public static final CustomArmorMaterial COPPER_ARMOR_MATERIAL = new IafArmorMaterial("copper", 10, protection(IafCommonConfig.INSTANCE.armors.copperProtection.getValue(), new int[]{1, 3, 4, 2}), 15, SoundEvents.ITEM_ARMOR_EQUIP_GOLD, 0, true);
     public static final CustomArmorMaterial BLINDFOLD_ARMOR_MATERIAL = new IafArmorMaterial("blindfold", 5, new int[]{1, 1, 1, 1}, 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0);
     public static final CustomArmorMaterial SHEEP_ARMOR_MATERIAL = new IafArmorMaterial("sheep", 5, new int[]{1, 3, 2, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0);
     public static final CustomArmorMaterial EARPLUGS_ARMOR_MATERIAL = new IafArmorMaterial("earplugs", 5, new int[]{1, 1, 1, 1}, 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0);
-    public static final CustomArmorMaterial DEATHWORM_0_ARMOR_MATERIAL = new IafArmorMaterial("yellow_seathworm", 15, new int[]{2, 5, 7, 3}, 5, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5F);
-    public static final CustomArmorMaterial DEATHWORM_1_ARMOR_MATERIAL = new IafArmorMaterial("white_seathworm", 15, new int[]{2, 5, 7, 3}, 5, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5F);
-    public static final CustomArmorMaterial DEATHWORM_2_ARMOR_MATERIAL = new IafArmorMaterial("red_deathworm", 15, new int[]{2, 5, 7, 3}, 5, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1.5F);
-    public static final CustomArmorMaterial TROLL_MOUNTAIN_ARMOR_MATERIAL = new IafArmorMaterial("mountain_troll", 20, new int[]{2, 5, 7, 3}, 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1F);
-    public static final CustomArmorMaterial TROLL_FOREST_ARMOR_MATERIAL = new IafArmorMaterial("forest_troll", 20, new int[]{2, 5, 7, 3}, 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1F);
-    public static final CustomArmorMaterial TROLL_FROST_ARMOR_MATERIAL = new IafArmorMaterial("frost_troll", 20, new int[]{2, 5, 7, 3}, 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1F);
+    public static final CustomArmorMaterial DEATHWORM_0_ARMOR_MATERIAL = new IafArmorMaterial("yellow_seathworm", 15, protection(IafCommonConfig.INSTANCE.armors.deathwormProtection.getValue(), new int[]{2, 5, 7, 3}), 5, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.deathwormToughness.getValue().floatValue(), true);
+    public static final CustomArmorMaterial DEATHWORM_1_ARMOR_MATERIAL = new IafArmorMaterial("white_seathworm", 15, protection(IafCommonConfig.INSTANCE.armors.deathwormProtection.getValue(), new int[]{2, 5, 7, 3}), 5, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.deathwormToughness.getValue().floatValue(), true);
+    public static final CustomArmorMaterial DEATHWORM_2_ARMOR_MATERIAL = new IafArmorMaterial("red_deathworm", 15, protection(IafCommonConfig.INSTANCE.armors.deathwormProtection.getValue(), new int[]{2, 5, 7, 3}), 5, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.deathwormToughness.getValue().floatValue(), true);
+    public static final CustomArmorMaterial TROLL_MOUNTAIN_ARMOR_MATERIAL = new IafArmorMaterial("mountain_troll", 20, protection(IafCommonConfig.INSTANCE.armors.trollProtection.getValue(), new int[]{2, 5, 7, 3}), 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.trollToughness.getValue().floatValue(), true);
+    public static final CustomArmorMaterial TROLL_FOREST_ARMOR_MATERIAL = new IafArmorMaterial("forest_troll", 20, protection(IafCommonConfig.INSTANCE.armors.trollProtection.getValue(), new int[]{2, 5, 7, 3}), 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.trollToughness.getValue().floatValue(), true);
+    public static final CustomArmorMaterial TROLL_FROST_ARMOR_MATERIAL = new IafArmorMaterial("frost_troll", 20, protection(IafCommonConfig.INSTANCE.armors.trollProtection.getValue(), new int[]{2, 5, 7, 3}), 10, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, IafCommonConfig.INSTANCE.armors.trollToughness.getValue().floatValue(), true);
     public static final CustomArmorMaterial DRAGONSTEEL_FIRE_ARMOR_MATERIAL = new DragonSteelArmorMaterial("dragonsteel_fire", (int) (0.02D * IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurabilityEquipment.getValue()), new int[]{IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 6, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 3, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 5}, 30, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmorToughness.getValue().floatValue());
     public static final CustomArmorMaterial DRAGONSTEEL_ICE_ARMOR_MATERIAL = new DragonSteelArmorMaterial("dragonsteel_ice", (int) (0.02D * IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurabilityEquipment.getValue()), new int[]{IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 6, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 3, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 5}, 30, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmorToughness.getValue().floatValue());
     public static final CustomArmorMaterial DRAGONSTEEL_LIGHTNING_ARMOR_MATERIAL = new DragonSteelArmorMaterial("dragonsteel_lightning", (int) (0.02D * IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurabilityEquipment.getValue()), new int[]{IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 6, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 3, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue(), IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmor.getValue() - 5}, 30, SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND, IafCommonConfig.INSTANCE.armors.dragonSteelBaseArmorToughness.getValue().floatValue());
@@ -362,6 +363,11 @@ public final class IafItems {
 
     public static RegistrySupplier<ItemDragonArmor> buildDragonArmor(DragonArmorPart type, DragonArmorMaterial material) {
         return register(String.format(Locale.ROOT, "dragonarmor_%s_%s", material.getId(), type.getId()), () -> new ItemDragonArmor(material, type));
+    }
+
+    private static int[] protection(List<Integer> configured, int[] fallback) {
+        if (configured == null || configured.size() < 4) return fallback;
+        return new int[]{configured.get(0), configured.get(1), configured.get(2), configured.get(3)};
     }
 
     public static <T extends Item> RegistrySupplier<T> register(String name, Supplier<T> item) {

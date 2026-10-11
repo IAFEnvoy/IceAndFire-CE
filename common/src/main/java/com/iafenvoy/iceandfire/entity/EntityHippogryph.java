@@ -62,7 +62,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.Nullable;
 
-public class EntityHippogryph extends TameableEntity implements NamedScreenHandlerFactory, ISyncMount, IAnimatedEntity, IDragonFlute, IVillagerFear, IAnimalFear, IDropArmor, IFlyingMount, ICustomMoveController, IHasCustomizableAttributes {
+public class EntityHippogryph extends TameableEntity implements NamedScreenHandlerFactory, ISyncMount, IAnimatedEntity, IDragonFlute, IVillagerFear, IAnimalFear, IDropArmor, IFlyingMount, ICustomMoveController, IHasCustomizableAttributes, IFlightStamina {
     private static final int FLIGHT_CHANCE_PER_TICK = 1200;
     private static final TrackedData<String> VARIANT = DataTracker.registerData(EntityHippogryph.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Boolean> SADDLE = DataTracker.registerData(EntityHippogryph.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -72,6 +72,7 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
     private static final TrackedData<Boolean> FLYING = DataTracker.registerData(EntityHippogryph.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Byte> CONTROL_STATE = DataTracker.registerData(EntityHippogryph.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Integer> COMMAND = DataTracker.registerData(EntityHippogryph.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Float> FLIGHT_STAMINA = DataTracker.registerData(EntityHippogryph.class, TrackedDataHandlerRegistry.FLOAT);
     public static Animation ANIMATION_EAT;
     public static Animation ANIMATION_SPEAK;
     public static Animation ANIMATION_SCRATCH;
@@ -96,6 +97,10 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
     private int hoverTicks;
     private boolean hasChestVarChanged = false;
     private boolean isOverAir;
+    /**
+     * Gliding state of the flight stamina system. Not synched: it is derived from the synched stamina on both sides.
+     */
+    private boolean gliding;
 
     public EntityHippogryph(EntityType<? extends TameableEntity> type, World worldIn) {
         super(type, worldIn);
@@ -173,6 +178,8 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         this.dataTracker.startTracking(FLYING, Boolean.FALSE);
         this.dataTracker.startTracking(CONTROL_STATE, (byte) 0);
         this.dataTracker.startTracking(COMMAND, 0);
+        // NOTE: the entity data cannot be read yet while it is being defined, so this must not call getMaxFlightStamina()
+        this.dataTracker.startTracking(FLIGHT_STAMINA, (float) IafCommonConfig.INSTANCE.hippogryphs.maxStamina.getValue().doubleValue());
     }
 
     @Override
@@ -551,6 +558,44 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         }
     }
 
+    @Override
+    public float getFlightStamina() {
+        return this.isFlightStaminaEnabled() ? this.dataTracker.get(FLIGHT_STAMINA) : this.getMaxFlightStamina();
+    }
+
+    @Override
+    public void setFlightStamina(float stamina) {
+        this.dataTracker.set(FLIGHT_STAMINA, MathHelper.clamp(stamina, 0F, this.getMaxFlightStamina()));
+    }
+
+    @Override
+    public float getMaxFlightStamina() {
+        return (float) IafCommonConfig.INSTANCE.hippogryphs.maxStamina.getValue().doubleValue();
+    }
+
+    @Override
+    public boolean isGliding() {
+        return this.gliding;
+    }
+
+    @Override
+    public void setGliding(boolean gliding) {
+        this.gliding = gliding;
+    }
+
+    @Override
+    public boolean isFlightStaminaEnabled() {
+        return IafCommonConfig.INSTANCE.hippogryphs.flightStamina.getValue();
+    }
+
+    /**
+     * Once the stamina is depleted the hippogryph can no longer hold altitude and is forced into a glide until it has
+     * recovered some of it again.
+     */
+    private void updateGliding(float stamina) {
+        this.gliding = this.gliding ? stamina < this.getMaxFlightStamina() : stamina <= 0F;
+    }
+
     /**
      * Armor tier stored in the entity data: 0 = none, 1 = iron, 2 = gold, 3 = diamond, 4 = netherite.
      * <p>
@@ -680,6 +725,48 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         } else {
             super.travel(pTravelVector);
         }
+        if (this.isFlightStaminaEnabled()) {
+            this.updateFlightStamina();
+            this.normalizeFlightMovement();
+        }
+    }
+
+    /**
+     * Flight stamina bookkeeping: any tick spent airborne costs stamina, climbing costs extra and falling refunds a
+     * little of it back (capped at the idle cost so gliding down can never outrun the drain).
+     */
+    private void updateFlightStamina() {
+        if (!this.isLogicalSideForUpdatingMovement()) return;
+        if (this.isOnGround() || this.isTouchingWater() || this.isInLava()) return;
+
+        float vertical = (float) this.getVelocity().y;
+        float stamina = this.getFlightStamina() - (float) IafCommonConfig.INSTANCE.hippogryphs.staminaDrainIdlePerTick.getValue().doubleValue();
+        if (vertical > 0F) {
+            stamina -= vertical * (float) IafCommonConfig.INSTANCE.hippogryphs.staminaDrainPerClimbUnit.getValue().doubleValue();
+        } else if (vertical < 0F) {
+            float refund = -vertical * (float) IafCommonConfig.INSTANCE.hippogryphs.staminaRefundPerFallUnit.getValue().doubleValue();
+            stamina += Math.min(refund, (float) IafCommonConfig.INSTANCE.hippogryphs.staminaDrainIdlePerTick.getValue().doubleValue());
+        }
+        stamina = MathHelper.clamp(stamina, 0F, this.getMaxFlightStamina());
+        this.updateGliding(stamina);
+        this.setFlightStamina(stamina);
+    }
+
+    /**
+     * Flight stamina rework: while airborne, neither axis may dominate the movement vector, which keeps diving from
+     * turning into a nosedive and climbing from stalling the hippogryph.
+     */
+    private void normalizeFlightMovement() {
+        if (!this.isLogicalSideForUpdatingMovement()) return;
+        if (!this.isFlying() && !this.isHovering()) return;
+        Vec3d motion = this.getVelocity();
+        double horizontalMag = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
+        double verticalMag = Math.abs(motion.y);
+        double targetMag = Math.max(horizontalMag, verticalMag);
+        double actualMag = motion.length();
+        if (actualMag > targetMag && actualMag > 1.0E-5) {
+            this.setVelocity(motion.multiply(targetMag / actualMag));
+        }
     }
 
     @Override
@@ -693,6 +780,10 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
             float vertical = this.isGoingUp() ? 0.2F : this.isGoingDown() ? -0.2F : 0F;
             if (!this.isFlying() && !this.isHovering()) {
                 vertical = (float) travelVector.y;
+            }
+            // Flight stamina rework: an exhausted hippogryph loses altitude even while the rider holds spacebar
+            if (this.isGliding() && (this.isFlying() || this.isHovering())) {
+                vertical = -0.2F;
             }
             this.setVelocity(vec3.add(0, vertical, 0));
         }
@@ -881,7 +972,7 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
             this.setHovering(false);
             this.setFlying(false);
         }
-        if ((!this.getWorld().isClient && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isSitting() && !this.isFlying() && this.getPassengerList().isEmpty() && !this.isBaby() && !this.isHovering() && !this.isSitting() && this.canMove() && !this.isOverAir() || this.getY() < -1)) {
+        if ((!this.getWorld().isClient && !this.isFlightStaminaEnabled() && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isSitting() && !this.isFlying() && this.getPassengerList().isEmpty() && !this.isBaby() && !this.isHovering() && !this.isSitting() && this.canMove() && !this.isOverAir() || this.getY() < -1)) {
             this.setHovering(true);
             this.hoverTicks = 0;
             this.flyTicks = 0;
@@ -889,10 +980,37 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         if (this.getTarget() != null && !this.getPassengerList().isEmpty() && this.getOwner() != null && this.getPassengerList().contains(this.getOwner())) {
             this.setTarget(null);
         }
+        this.updateFlightStaminaState();
+    }
+
+    /**
+     * Flight stamina rework: an exhausted hippogryph cannot hold altitude, so it is forced down as soon as it touches
+     * the ground, and it recovers stamina while it is not airborne.
+     */
+    private void updateFlightStaminaState() {
+        if (!this.isFlightStaminaEnabled()) return;
+
+        // An exhausted hippogryph glides down for good once it is on the ground. A launch the rider is already holding
+        // out (the same condition the takeoff in tick() uses) must not be cancelled by this, otherwise a rested
+        // hippogryph could never take off from a standing start.
+        if (this.isOnGround() && this.isGliding() && !this.isHoldingTakeoff()) {
+            this.setFlying(false);
+            this.setHovering(false);
+        }
+        if (!this.isLogicalSideForUpdatingMovement()) return;
+        if (this.isFlying() || this.isHovering()) return;
+
+        float stamina = Math.min(this.getMaxFlightStamina(), this.getFlightStamina() + (float) IafCommonConfig.INSTANCE.hippogryphs.staminaRegenGrounded.getValue().doubleValue());
+        this.setFlightStamina(stamina);
+        this.updateGliding(stamina);
+    }
+
+    private boolean isHoldingTakeoff() {
+        return this.isGoingUp() && this.spacebarTicks > 10 && this.getOwner() != null && this.getPassengerList().contains(this.getOwner());
     }
 
     public boolean doesWantToLand() {
-        return (this.flyTicks > 200 || this.flyTicks > 40 && this.flyProgress == 0) && !this.hasPassengers();
+        return ((this.flyTicks > 200 || this.flyTicks > 40 && this.flyProgress == 0) || this.isFlightStaminaEnabled() && this.isGliding()) && !this.hasPassengers();
     }
 
     @Override

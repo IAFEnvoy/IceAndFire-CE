@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.item;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import net.minecraft.client.item.TooltipContext;
@@ -54,17 +55,29 @@ public class ItemDeathwormGauntlet extends Item {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         if (user instanceof PlayerEntity player) {
-            Vec3d Vector3d = player.getRotationVec(1.0F).normalize();
-            double range = 5;
+            double range = IafCommonConfig.INSTANCE.tools.deathwormGauntletRange.getValue();
+            double knockbackMin = IafCommonConfig.INSTANCE.tools.deathwormGauntletKnockbackMin.getValue();
+            double knockbackMax = IafCommonConfig.INSTANCE.tools.deathwormGauntletKnockbackMax.getValue();
+            boolean rayTargeting = IafCommonConfig.INSTANCE.tools.deathwormGauntletRayTargeting.getValue();
+            Vec3d lookVec = player.getRotationVec(1.0F).normalize();
+            Vec3d eyePos = rayTargeting ? player.getEyePos() : null;
+            Vec3d rayEnd = rayTargeting ? eyePos.add(lookVec.multiply(range)) : null;
             for (LivingEntity livingEntity : world.getEntitiesByClass(LivingEntity.class, new Box(player.getX() - range, player.getY() - range, player.getZ() - range, player.getX() + range, player.getY() + range, player.getZ() + range), livingEntity -> livingEntity != player)) {
-                Vec3d delta = new Vec3d(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ());
-                double d0 = delta.length();
-                delta = delta.normalize();
-                double d1 = Vector3d.dotProduct(delta);
-                boolean canSee = d1 > 1.0D - 0.5D / d0 && player.canSee(livingEntity);
+                boolean canSee;
+                if (rayTargeting) {
+                    canSee = livingEntity.getBoundingBox().raycast(eyePos, rayEnd).isPresent() && player.canSee(livingEntity);
+                } else {
+                    Vec3d delta = new Vec3d(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ());
+                    double d0 = delta.length();
+                    delta = delta.normalize();
+                    double d1 = lookVec.dotProduct(delta);
+                    canSee = d1 > 1.0D - 0.5D / d0 && player.canSee(livingEntity);
+                }
                 if (canSee) {
                     livingEntity.damage(world.damageSources.playerAttack(player), 3F);
-                    livingEntity.takeKnockback(0.5F, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
+                    double distance = new Vec3d(livingEntity.getX() - player.getX(), livingEntity.getY() - player.getY(), livingEntity.getZ() - player.getZ()).length();
+                    float knockbackStrength = (float) (knockbackMin + (knockbackMax - knockbackMin) * Math.min(1.0D, distance / range));
+                    livingEntity.takeKnockback(knockbackStrength, livingEntity.getX() - player.getX(), livingEntity.getZ() - player.getZ());
                 }
             }
             player.getItemCooldownManager().set(this, 20);

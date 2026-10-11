@@ -120,7 +120,7 @@ public class ServerEvents {
     }
 
     public static float onEntityDamage(LivingEntity entity, DamageSource source, float amount) {
-        if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
+        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && IafCommonConfig.INSTANCE.armors.trollProjectileReduction.getValue()) {
             float multi = 1;
             if (entity.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof ItemTrollArmor)
                 multi -= 0.1f;
@@ -134,17 +134,19 @@ public class ServerEvents {
         }
         if (source.isOf(IafDamageTypes.DRAGON_FIRE_TYPE) || source.isOf(IafDamageTypes.DRAGON_ICE_TYPE) || source.isOf(IafDamageTypes.DRAGON_LIGHTNING_TYPE)) {
             float multi = 1;
-            if (entity.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof ItemScaleArmor ||
-                    entity.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof ItemDragonSteelArmor)
+            boolean scaleReduction = IafCommonConfig.INSTANCE.armors.dragonScaleBreathReduction.getValue();
+            boolean steelReduction = IafCommonConfig.INSTANCE.armors.dragonSteelBreathReduction.getValue();
+            if ((entity.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof ItemScaleArmor && scaleReduction) ||
+                    (entity.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof ItemDragonSteelArmor && steelReduction))
                 multi -= 0.1f;
-            if (entity.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ItemScaleArmor ||
-                    entity.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ItemDragonSteelArmor)
+            if ((entity.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ItemScaleArmor && scaleReduction) ||
+                    (entity.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof ItemDragonSteelArmor && steelReduction))
                 multi -= 0.3f;
-            if (entity.getEquippedStack(EquipmentSlot.LEGS).getItem() instanceof ItemScaleArmor ||
-                    entity.getEquippedStack(EquipmentSlot.LEGS).getItem() instanceof ItemDragonSteelArmor)
+            if ((entity.getEquippedStack(EquipmentSlot.LEGS).getItem() instanceof ItemScaleArmor && scaleReduction) ||
+                    (entity.getEquippedStack(EquipmentSlot.LEGS).getItem() instanceof ItemDragonSteelArmor && steelReduction))
                 multi -= 0.2f;
-            if (entity.getEquippedStack(EquipmentSlot.FEET).getItem() instanceof ItemScaleArmor ||
-                    entity.getEquippedStack(EquipmentSlot.FEET).getItem() instanceof ItemDragonSteelArmor)
+            if ((entity.getEquippedStack(EquipmentSlot.FEET).getItem() instanceof ItemScaleArmor && scaleReduction) ||
+                    (entity.getEquippedStack(EquipmentSlot.FEET).getItem() instanceof ItemDragonSteelArmor && steelReduction))
                 multi -= 0.1f;
             amount *= multi;
         }

@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.item;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.entity.EntityPixieCharge;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
@@ -53,7 +54,7 @@ public class ItemPixieWand extends Item {
                 worldIn.spawnEntity(charge);
             playerIn.playSound(IafSounds.PIXIE_WAND.get(), 1F, 0.75F + 0.5F * playerIn.getRandom().nextFloat());
             itemstack.damage(1, playerIn, (player) -> player.sendToolBreakStatus(playerIn.getActiveHand()));
-            playerIn.getItemCooldownManager().set(this, 5);
+            playerIn.getItemCooldownManager().set(this, IafCommonConfig.INSTANCE.tools.pixieWandCooldown.getValue());
         }
         return new TypedActionResult<>(ActionResult.PASS, itemStackIn);
     }

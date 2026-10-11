@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.item.armor;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -60,7 +61,8 @@ public class ItemDragonSteelArmor extends ArmorItem implements IProtectAgainstDr
 
     @Override
     public void appendTooltip(ItemStack stack, World worldIn, List<Text> tooltip, TooltipContext flagIn) {
-        tooltip.add(Text.translatable("item.dragonscales_armor.desc").formatted(Formatting.GRAY));
+        if (IafCommonConfig.INSTANCE.armors.dragonSteelBreathReduction.getValue())
+            tooltip.add(Text.translatable("item.dragonscales_armor.desc").formatted(Formatting.GRAY));
     }
 
     @Override

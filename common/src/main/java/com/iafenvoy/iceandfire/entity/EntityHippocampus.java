@@ -523,6 +523,18 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
     }
 
     @Override
+    public void onBubbleColumnSurfaceCollision(boolean drag) {
+        if (!IafCommonConfig.INSTANCE.hippocampus.bubbleColumnImmunity.getValue())
+            super.onBubbleColumnSurfaceCollision(drag);
+    }
+
+    @Override
+    public void onBubbleColumnCollision(boolean drag) {
+        if (!IafCommonConfig.INSTANCE.hippocampus.bubbleColumnImmunity.getValue())
+            super.onBubbleColumnCollision(drag);
+    }
+
+    @Override
     public boolean isBreedingItem(ItemStack stack) {
         return stack.isIn(IafItemTags.BREED_HIPPOCAMPUS);
     }

@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.item.armor;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.DragonArmor;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.uranus.object.item.CustomArmorMaterial;
@@ -36,6 +37,7 @@ public class ItemScaleArmor extends ArmorItem implements IProtectAgainstDragonIt
     @Override
     public void appendTooltip(ItemStack stack, World worldIn, List<Text> tooltip, TooltipContext flagIn) {
         tooltip.add(Text.translatable("dragon." + this.eggType.name().toLowerCase(Locale.ROOT)).formatted(this.eggType.color()));
-        tooltip.add(Text.translatable("item.dragonscales_armor.desc").formatted(Formatting.GRAY));
+        if (IafCommonConfig.INSTANCE.armors.dragonScaleBreathReduction.getValue())
+            tooltip.add(Text.translatable("item.dragonscales_armor.desc").formatted(Formatting.GRAY));
     }
 }

@@ -32,6 +32,7 @@ public class IceAndFireClient {
         PortalRenderTick.init();
 
         InteractionEvent.INTERACT_ENTITY.register(ClientEvents::onEntityInteract);
+        ClientEvents.registerFlightStaminaOverlay();
 
         ClientNetworkHelper.registerReceivers();
     }

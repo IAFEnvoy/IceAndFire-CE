@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.event;
 
 import com.iafenvoy.iceandfire.StaticVariables;
+import com.iafenvoy.iceandfire.client.FlightStaminaOverlay;
 import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
@@ -14,6 +15,7 @@ import com.iafenvoy.iceandfire.render.block.RenderFrozenState;
 import com.iafenvoy.iceandfire.render.entity.RenderChain;
 import com.iafenvoy.uranus.network.PacketBufferUtils;
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.networking.NetworkManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -39,6 +41,14 @@ public class ClientEvents {
     private static final Identifier SIREN_SHADER = Identifier.of("iceandfire", "shaders/post/siren.json");
     public static int currentView = 0;
     public static final CopyOnWriteArrayList<Pair<Vec3d, Vec3d>> LIGHTNINGS = new CopyOnWriteArrayList<>();
+
+    /*
+     * Flight rework: registers the shared flight stamina bar. Called from IceAndFireClient.process() so the listener is
+     * in place before the first HUD frame (the bar itself only draws for mounts that have the stamina system enabled).
+     */
+    public static void registerFlightStaminaOverlay() {
+        ClientGuiEvent.RENDER_HUD.register(new FlightStaminaOverlay());
+    }
 
     public static void onCameraSetup(Camera camera) {
         PlayerEntity player = MinecraftClient.getInstance().player;

@@ -1,6 +1,9 @@
 package com.iafenvoy.iceandfire.mixin;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
+import com.iafenvoy.iceandfire.entity.EntityAmphithere;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
+import com.iafenvoy.iceandfire.render.entity.layer.LayerAmphithereRider;
 import com.iafenvoy.iceandfire.render.entity.layer.LayerDragonRider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -22,5 +25,12 @@ public class PlayerEntityRendererMixin {
             ci.cancel();
         if (abstractClientPlayerEntity instanceof OtherClientPlayerEntity && abstractClientPlayerEntity.getVehicle() instanceof EntityDragonBase && !LayerDragonRider.renderingRiders.contains(abstractClientPlayerEntity))
             ci.cancel();
+        //Flight rework: same handling for the amphithere rider, which LayerAmphithereRider draws as part of its mount
+        if (IafCommonConfig.INSTANCE.amphithere.flightRework.getValue() && abstractClientPlayerEntity.getVehicle() instanceof EntityAmphithere) {
+            if (abstractClientPlayerEntity instanceof ClientPlayerEntity && (MinecraftClient.getInstance().options.getPerspective().isFirstPerson() || !LayerAmphithereRider.renderingRiders.contains(abstractClientPlayerEntity)))
+                ci.cancel();
+            if (abstractClientPlayerEntity instanceof OtherClientPlayerEntity && !LayerAmphithereRider.renderingRiders.contains(abstractClientPlayerEntity))
+                ci.cancel();
+        }
     }
 }

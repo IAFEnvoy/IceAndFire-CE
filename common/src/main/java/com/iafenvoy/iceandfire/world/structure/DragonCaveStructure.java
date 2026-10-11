@@ -56,7 +56,7 @@ public abstract class DragonCaveStructure extends Structure {
     }
 
     private void addPieces(StructurePiecesCollector collector, BlockPos pos, Context context, boolean male) {
-        int y = context.world().getBottomY() + 40 + context.random().nextInt(30);
+        int y = context.world().getBottomY() + 40 + context.random().nextInt(30) + IafCommonConfig.INSTANCE.worldGen.dragonCaveYOffset.getValue();
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)
