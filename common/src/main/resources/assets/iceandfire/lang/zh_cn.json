@@ -611,6 +611,7 @@
   "config.iceandfire.dragon.canHealFromBiting": "撕咬时回血",
   "config.iceandfire.dragon.chunkLoadSummonCrystal": "强加载已绑定唤龙晶石的龙所在区块",
   "config.iceandfire.dragon.digWhenStuck": "卡住时挖掘",
+  "config.iceandfire.dragon.destroyBoats": "破坏船只",
   "config.iceandfire.dragon.dragonFlightSpeedMod": "飞行速度倍率",
   "config.iceandfire.dragon.eggBornTime": "龙蛋孵化时间",
   "config.iceandfire.dragon.explosiveBreath": "龙息爆炸",
