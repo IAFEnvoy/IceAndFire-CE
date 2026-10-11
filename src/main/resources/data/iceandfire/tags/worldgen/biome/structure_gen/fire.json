@@ -14,7 +14,7 @@
     "minecraft:sunflower_plains",
     {
       "required": false,
-      "id": "#c:climate_hot"
+      "id": "#c:is_hot"
     }
   ]
 }

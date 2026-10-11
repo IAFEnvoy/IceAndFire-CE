@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "minecraft:savanna_plateau"
+    "minecraft:savanna_plateau",
+    {
+      "id": "#c:is_savanna",
+      "required": false
+    }
   ]
 }

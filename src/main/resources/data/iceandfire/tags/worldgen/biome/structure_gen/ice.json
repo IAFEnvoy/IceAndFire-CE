@@ -15,7 +15,11 @@
     "minecraft:ice_spikes",
     {
       "required": false,
-      "id": "#c:climate_cold"
+      "id": "#c:is_cold"
+    },
+    {
+      "id": "#c:is_snowy",
+      "required": false
     }
   ]
 }

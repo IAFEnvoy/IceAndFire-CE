@@ -12,6 +12,14 @@
     "minecraft:forest",
     "minecraft:dark_forest",
     "#minecraft:is_forest",
-    "#minecraft:is_jungle"
+    "#minecraft:is_jungle",
+    {
+      "id": "#c:is_forest",
+      "required": false
+    },
+    {
+      "id": "#c:is_jungle",
+      "required": false
+    }
   ]
 }
