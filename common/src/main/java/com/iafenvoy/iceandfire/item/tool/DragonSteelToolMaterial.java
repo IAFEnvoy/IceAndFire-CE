@@ -7,6 +7,8 @@ import net.minecraft.item.ToolMaterial;
 
 public class DragonSteelToolMaterial {
     public static ToolMaterial createMaterialWithRepairItem(ItemConvertible ingredient) {
-        return ToolMaterialUtil.of(IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), 4F, 10F, 21, 10, ingredient);
+        // ToolMaterialUtil.of(uses, speed, attackDamageBonus, harvestLevel, enchantmentLevel, repairIngredients)
+        // harvestLevel 5 is one step above netherite (4), as in the original mod
+        return ToolMaterialUtil.of(IafCommonConfig.INSTANCE.armors.dragonSteelBaseDurability.getValue(), 4F, 10F, 5, 10, ingredient);
     }
 }

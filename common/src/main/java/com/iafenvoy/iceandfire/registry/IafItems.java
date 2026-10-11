@@ -286,7 +286,8 @@ public final class IafItems {
     public static final RegistrySupplier<Item> DREAD_SWORD = register("dread_sword", () -> new ItemModSword(DREAD_SWORD_TOOL_MATERIAL));
     public static final RegistrySupplier<Item> DREAD_KNIGHT_SWORD = register("dread_knight_sword", () -> new ItemModSword(DREAD_KNIGHT_TOOL_MATERIAL));
     public static final RegistrySupplier<Item> LICH_STAFF = register("lich_staff", ItemLichStaff::new);
-    public static final RegistrySupplier<Item> DREAD_QUEEN_SWORD = register("dread_queen_sword", () -> new ItemModSword(ToolMaterialUtil.of(4000, 4F, 10F, 21, 10, Items.AIR)));
+    // ToolMaterialUtil.of(uses, speed, attackDamageBonus, harvestLevel, enchantmentLevel, repairIngredients)
+    public static final RegistrySupplier<Item> DREAD_QUEEN_SWORD = register("dread_queen_sword", () -> new ItemModSword(ToolMaterialUtil.of(4000, 4F, 10F, 0, 10, Items.AIR)));
     public static final RegistrySupplier<Item> DREAD_QUEEN_STAFF = register("dread_queen_staff", ItemDreadQueenStaff::new);
     public static final RegistrySupplier<Item> DREAD_SHARD = register("dread_shard", () -> new ItemGeneric(0));
     public static final RegistrySupplier<Item> DREAD_KEY = register("dread_key", () -> new ItemGeneric(0));
