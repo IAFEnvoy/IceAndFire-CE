@@ -1,6 +1,13 @@
 {
   "values": [
-    "#c:bosses",
+    {
+      "id": "#c:bosses",
+      "required": false
+    },
+    {
+      "id": "#forge:bosses",
+      "required": false
+    },
     "minecraft:warden"
   ]
 }
