@@ -7,6 +7,7 @@ import com.iafenvoy.iceandfire.data.IafSkullType;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
 import com.iafenvoy.iceandfire.data.TrollType;
 import com.iafenvoy.iceandfire.registry.*;
+import com.iafenvoy.iceandfire.world.siren.SirenSpawnBiomeModifier;
 import com.iafenvoy.integration.IntegrationExecutor;
 import com.iafenvoy.jupiter.ConfigManager;
 import com.iafenvoy.jupiter.ServerConfigManager;
@@ -77,6 +78,7 @@ public final class IceAndFire {
         IafPotions.REGISTRY.register(bus);
         IafStructurePieces.REGISTRY.register(bus);
         IafStructureTypes.REGISTRY.register(bus);
+        SirenSpawnBiomeModifier.REGISTRY.register(bus);
         //Trade
         IafTrades.POI_REGISTRY.register(bus);
         IafTrades.PROFESSION_REGISTRY.register(bus);

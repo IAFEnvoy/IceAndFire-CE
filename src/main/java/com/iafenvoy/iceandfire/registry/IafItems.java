@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.registry;
 
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.compat.delight.DelightFoodItem;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.DragonArmorMaterial;
 import com.iafenvoy.iceandfire.data.DragonArmorPart;
 import com.iafenvoy.iceandfire.item.*;
@@ -13,6 +14,7 @@ import com.iafenvoy.iceandfire.item.tool.*;
 import com.iafenvoy.iceandfire.registry.tag.IafBannerPatternTags;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Unit;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -232,26 +234,26 @@ public final class IafItems {
     public static final DeferredItem<Item> DRAGON_DEBUG_STICK = register("dragon_debug_stick", () -> new GenericItem(1));
 
     //Armors
-    public static final DeferredItem<Item> SILVER_HELMET = registerArmor("armor_silver_metal_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.HELMET).durability(165)));
-    public static final DeferredItem<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.CHESTPLATE).durability(240)));
-    public static final DeferredItem<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.LEGGINGS).durability(225)));
-    public static final DeferredItem<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.BOOTS).durability(195)));
+    public static final DeferredItem<Item> SILVER_HELMET = registerArmor("armor_silver_metal_helmet", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.HELMET).durability(165))));
+    public static final DeferredItem<Item> SILVER_CHESTPLATE = registerArmor("armor_silver_metal_chestplate", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.CHESTPLATE).durability(240))));
+    public static final DeferredItem<Item> SILVER_LEGGINGS = registerArmor("armor_silver_metal_leggings", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.LEGGINGS).durability(225))));
+    public static final DeferredItem<Item> SILVER_BOOTS = registerArmor("armor_silver_metal_boots", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.SILVER.value(), ArmorType.BOOTS).durability(195))));
     public static final DeferredItem<Item> SHEEP_HELMET = registerArmor("sheep_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.HELMET).durability(55)));
     public static final DeferredItem<Item> SHEEP_CHESTPLATE = registerArmor("sheep_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.CHESTPLATE).durability(80)));
     public static final DeferredItem<Item> SHEEP_LEGGINGS = registerArmor("sheep_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.LEGGINGS).durability(75)));
     public static final DeferredItem<Item> SHEEP_BOOTS = registerArmor("sheep_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.SHEEP.value(), ArmorType.BOOTS).durability(65)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_HELMET = registerArmor("deathworm_yellow_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.HELMET).durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_CHESTPLATE = registerArmor("deathworm_yellow_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.CHESTPLATE).durability(240)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_LEGGINGS = registerArmor("deathworm_yellow_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.LEGGINGS).durability(225)));
-    public static final DeferredItem<Item> DEATHWORM_YELLOW_BOOTS = registerArmor("deathworm_yellow_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.BOOTS).durability(195)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_HELMET = registerArmor("deathworm_white_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.HELMET).durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_CHESTPLATE = registerArmor("deathworm_white_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.CHESTPLATE).durability(240)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_LEGGINGS = registerArmor("deathworm_white_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.LEGGINGS).durability(225)));
-    public static final DeferredItem<Item> DEATHWORM_WHITE_BOOTS = registerArmor("deathworm_white_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.BOOTS).durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_RED_HELMET = registerArmor("deathworm_red_helmet", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.HELMET).durability(165)));
-    public static final DeferredItem<Item> DEATHWORM_RED_CHESTPLATE = registerArmor("deathworm_red_chestplate", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.CHESTPLATE).durability(240)));
-    public static final DeferredItem<Item> DEATHWORM_RED_LEGGINGS = registerArmor("deathworm_red_leggings", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.LEGGINGS).durability(225)));
-    public static final DeferredItem<Item> DEATHWORM_RED_BOOTS = registerArmor("deathworm_red_boots", () -> new Item(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.BOOTS).durability(165)));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_HELMET = registerArmor("deathworm_yellow_helmet", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.HELMET).durability(165))));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_CHESTPLATE = registerArmor("deathworm_yellow_chestplate", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.CHESTPLATE).durability(240))));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_LEGGINGS = registerArmor("deathworm_yellow_leggings", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.LEGGINGS).durability(225))));
+    public static final DeferredItem<Item> DEATHWORM_YELLOW_BOOTS = registerArmor("deathworm_yellow_boots", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_YELLOW.value(), ArmorType.BOOTS).durability(195))));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_HELMET = registerArmor("deathworm_white_helmet", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.HELMET).durability(165))));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_CHESTPLATE = registerArmor("deathworm_white_chestplate", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.CHESTPLATE).durability(240))));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_LEGGINGS = registerArmor("deathworm_white_leggings", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.LEGGINGS).durability(225))));
+    public static final DeferredItem<Item> DEATHWORM_WHITE_BOOTS = registerArmor("deathworm_white_boots", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_WHITE.value(), ArmorType.BOOTS).durability(165))));
+    public static final DeferredItem<Item> DEATHWORM_RED_HELMET = registerArmor("deathworm_red_helmet", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.HELMET).durability(165))));
+    public static final DeferredItem<Item> DEATHWORM_RED_CHESTPLATE = registerArmor("deathworm_red_chestplate", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.CHESTPLATE).durability(240))));
+    public static final DeferredItem<Item> DEATHWORM_RED_LEGGINGS = registerArmor("deathworm_red_leggings", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.LEGGINGS).durability(225))));
+    public static final DeferredItem<Item> DEATHWORM_RED_BOOTS = registerArmor("deathworm_red_boots", () -> new Item(cosmeticArmorProperties(new Item.Properties().humanoidArmor(IafArmorMaterials.DEATHWORM_RED.value(), ArmorType.BOOTS).durability(165))));
     public static final DeferredItem<Item> DRAGONSTEEL_FIRE_HELMET = registerArmor("dragonsteel_fire_helmet", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.HELMET));
     public static final DeferredItem<Item> DRAGONSTEEL_FIRE_CHESTPLATE = registerArmor("dragonsteel_fire_chestplate", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.CHESTPLATE));
     public static final DeferredItem<Item> DRAGONSTEEL_FIRE_LEGGINGS = registerArmor("dragonsteel_fire_leggings", () -> new DragonSteelArmorItem(IafArmorMaterials.DRAGONSTEEL_FIRE, ArmorType.LEGGINGS));
@@ -371,6 +373,11 @@ public final class IafItems {
         DeferredItem<T> r = register(name, item);
         IafCreativeModeTabs.ARMORS_LIST.add(r);
         return r;
+    }
+
+    public static Item.Properties cosmeticArmorProperties(Item.Properties properties) {
+        if (!IafCommonConfig.INSTANCE.armors.cosmeticArmorUnbreakable.getValue()) return properties;
+        return properties.durability(1).component(DataComponents.UNBREAKABLE, Unit.INSTANCE);
     }
 
     static <T extends Item> DeferredItem<T> register(String name, Supplier<T> item) {

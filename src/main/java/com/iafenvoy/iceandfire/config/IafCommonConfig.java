@@ -5,8 +5,11 @@ import com.iafenvoy.jupiter.config.container.AutoInitConfigContainer;
 import com.iafenvoy.jupiter.config.entry.BooleanEntry;
 import com.iafenvoy.jupiter.config.entry.DoubleEntry;
 import com.iafenvoy.jupiter.config.entry.IntegerEntry;
+import com.iafenvoy.jupiter.config.entry.ListIntegerEntry;
 import com.iafenvoy.jupiter.config.entry.SeparatorEntry;
 import net.minecraft.resources.Identifier;
+
+import java.util.List;
 
 public class IafCommonConfig extends AutoInitConfigContainer {
     public static final IafCommonConfig INSTANCE = new IafCommonConfig();
@@ -83,6 +86,16 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final BooleanEntry lootSkull = BooleanEntry.builder("config.iceandfire.dragon.loot.skull", true).key("loot.skull").build();
         public final BooleanEntry lootHeart = BooleanEntry.builder("config.iceandfire.dragon.loot.heart", true).key("loot.heart").build();
         public final BooleanEntry lootBlood = BooleanEntry.builder("config.iceandfire.dragon.loot.blood", true).key("loot.blood").build();
+        public final SeparatorEntry s4 = SeparatorEntry.builder().build();
+        public final IntegerEntry minStageToBreakBlocks = IntegerEntry.builder("config.iceandfire.dragon.minStageToBreakBlocks", 0).range(0, 5).key("minStageToBreakBlocks").build();
+        public final BooleanEntry avoidWaterPathfinding = BooleanEntry.builder("config.iceandfire.dragon.avoidWaterPathfinding", false).key("avoidWaterPathfinding").build();
+        public final SeparatorEntry s5 = SeparatorEntry.builder().build();
+        public final BooleanEntry flightStamina = BooleanEntry.builder("config.iceandfire.dragon.flightStamina", false).key("flightStamina").build();
+        public final DoubleEntry staminaPerStage = DoubleEntry.builder("config.iceandfire.dragon.staminaPerStage", 100).min(1).key("staminaPerStage").build();
+        public final DoubleEntry staminaDrainIdlePerTick = DoubleEntry.builder("config.iceandfire.dragon.staminaDrainIdlePerTick", 0.25).min(0).key("staminaDrainIdlePerTick").build();
+        public final DoubleEntry staminaDrainPerClimbUnit = DoubleEntry.builder("config.iceandfire.dragon.staminaDrainPerClimbUnit", 2).min(0).key("staminaDrainPerClimbUnit").build();
+        public final DoubleEntry staminaRefundPerFallUnit = DoubleEntry.builder("config.iceandfire.dragon.staminaRefundPerFallUnit", 1).min(0).key("staminaRefundPerFallUnit").build();
+        public final DoubleEntry staminaRegenGrounded = DoubleEntry.builder("config.iceandfire.dragon.staminaRegenGrounded", 4).min(0).key("staminaRegenGrounded").build();
 
         public DragonConfig() {
             super("dragon", "config.iceandfire.category.dragon");
@@ -93,6 +106,13 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final BooleanEntry spawn = BooleanEntry.builder("config.iceandfire.hippogryphs.spawn", true).key("spawn").build();
         public final IntegerEntry spawnWeight = IntegerEntry.builder("config.iceandfire.hippogryphs.spawnWeight", 2).range(0, 20).key("spawnWeight").build();
         public final DoubleEntry fightSpeedMod = DoubleEntry.builder("config.iceandfire.hippogryphs.fightSpeedMod", 1).range(0.0001, 50).key("fightSpeedMod").build();
+        public final SeparatorEntry s1 = SeparatorEntry.builder().build();
+        public final BooleanEntry flightStamina = BooleanEntry.builder("config.iceandfire.hippogryphs.flightStamina", false).key("flightStamina").build();
+        public final DoubleEntry maxStamina = DoubleEntry.builder("config.iceandfire.hippogryphs.maxStamina", 200).min(1).key("maxStamina").build();
+        public final DoubleEntry staminaDrainIdlePerTick = DoubleEntry.builder("config.iceandfire.hippogryphs.staminaDrainIdlePerTick", 0.25).min(0).key("staminaDrainIdlePerTick").build();
+        public final DoubleEntry staminaDrainPerClimbUnit = DoubleEntry.builder("config.iceandfire.hippogryphs.staminaDrainPerClimbUnit", 2).min(0).key("staminaDrainPerClimbUnit").build();
+        public final DoubleEntry staminaRefundPerFallUnit = DoubleEntry.builder("config.iceandfire.hippogryphs.staminaRefundPerFallUnit", 1).min(0).key("staminaRefundPerFallUnit").build();
+        public final DoubleEntry staminaRegenGrounded = DoubleEntry.builder("config.iceandfire.hippogryphs.staminaRegenGrounded", 4).min(0).key("staminaRegenGrounded").build();
 
         public HippogryphsConfig() {
             super("hippogryphs", "config.iceandfire.category.hippogryphs");
@@ -126,6 +146,13 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry maxHealth = DoubleEntry.builder("config.iceandfire.siren.maxHealth", 50).min(1).key("maxHealth").build();
         public final IntegerEntry maxSingTime = IntegerEntry.builder("config.iceandfire.siren.maxSingTime", 12000).min(0).key("maxSingTime").build();
         public final IntegerEntry timeBetweenSongs = IntegerEntry.builder("config.iceandfire.siren.timeBetweenSongs", 2000).min(0).key("timeBetweenSongs").build();
+        public final SeparatorEntry s1 = SeparatorEntry.builder().build();
+        public final BooleanEntry beachSpawns = BooleanEntry.builder("config.iceandfire.siren.beachSpawns", false).key("beachSpawns").build();
+        public final IntegerEntry beachSpawnWeight = IntegerEntry.builder("config.iceandfire.siren.beachSpawnWeight", 10).range(0, 100).key("beachSpawnWeight").build();
+        public final IntegerEntry beachMinGroupSize = IntegerEntry.builder("config.iceandfire.siren.beachMinGroupSize", 1).range(1, 10).key("beachMinGroupSize").build();
+        public final IntegerEntry beachMaxGroupSize = IntegerEntry.builder("config.iceandfire.siren.beachMaxGroupSize", 1).range(1, 10).key("beachMaxGroupSize").build();
+        public final DoubleEntry beachMinPlayerDistance = DoubleEntry.builder("config.iceandfire.siren.beachMinPlayerDistance", 48).min(0).key("beachMinPlayerDistance").build();
+        public final BooleanEntry despawnAtMorning = BooleanEntry.builder("config.iceandfire.siren.despawnAtMorning", true).key("despawnAtMorning").build();
 
         public SirenConfig() {
             super("siren", "config.iceandfire.category.siren");
@@ -199,6 +226,21 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry flightSpeed = DoubleEntry.builder("config.iceandfire.amphithere.flightSpeed", 1.75).range(0, 20).key("flightSpeed").build();
         public final DoubleEntry maxHealth = DoubleEntry.builder("config.iceandfire.amphithere.maxHealth", 50).min(1).key("maxHealth").build();
         public final DoubleEntry attackDamage = DoubleEntry.builder("config.iceandfire.amphithere.attackDamage", 7).min(0).key("attackDamage").build();
+        public final SeparatorEntry s1 = SeparatorEntry.builder().build();
+        public final BooleanEntry flightRework = BooleanEntry.builder("config.iceandfire.amphithere.flightRework", false).key("flightRework").build();
+        public final DoubleEntry constantFlightSpeed = DoubleEntry.builder("config.iceandfire.amphithere.constantFlightSpeed", 0.8).min(0).key("constantFlightSpeed").build();
+        public final DoubleEntry maxStamina = DoubleEntry.builder("config.iceandfire.amphithere.maxStamina", 200).min(1).key("maxStamina").build();
+        public final DoubleEntry staminaDrainIdlePerTick = DoubleEntry.builder("config.iceandfire.amphithere.staminaDrainIdlePerTick", 0.25).min(0).key("staminaDrainIdlePerTick").build();
+        public final DoubleEntry staminaDrainPerClimbUnit = DoubleEntry.builder("config.iceandfire.amphithere.staminaDrainPerClimbUnit", 2).min(0).key("staminaDrainPerClimbUnit").build();
+        public final DoubleEntry staminaRegenGrounded = DoubleEntry.builder("config.iceandfire.amphithere.staminaRegenGrounded", 4).min(0).key("staminaRegenGrounded").build();
+        public final DoubleEntry glideEnterStamina = DoubleEntry.builder("config.iceandfire.amphithere.glideEnterStamina", 0).min(0).key("glideEnterStamina").build();
+        public final DoubleEntry forcedGlideAngleDegrees = DoubleEntry.builder("config.iceandfire.amphithere.forcedGlideAngleDegrees", 30).range(0, 90).key("forcedGlideAngleDegrees").build();
+        public final DoubleEntry forcedClimbAngleDegrees = DoubleEntry.builder("config.iceandfire.amphithere.forcedClimbAngleDegrees", 45).range(0, 90).key("forcedClimbAngleDegrees").build();
+        public final DoubleEntry ignoreTakeoffInputPitchDegrees = DoubleEntry.builder("config.iceandfire.amphithere.ignoreTakeoffInputPitchDegrees", 20).range(-90, 90).key("ignoreTakeoffInputPitchDegrees").build();
+        public final DoubleEntry wanderMinDistance = DoubleEntry.builder("config.iceandfire.amphithere.wanderMinDistance", 15).min(0).key("wanderMinDistance").build();
+        public final DoubleEntry wanderMaxDistance = DoubleEntry.builder("config.iceandfire.amphithere.wanderMaxDistance", 30).min(0).key("wanderMaxDistance").build();
+        public final IntegerEntry wanderMinAltitude = IntegerEntry.builder("config.iceandfire.amphithere.wanderMinAltitude", 8).range(0, 256).key("wanderMinAltitude").build();
+        public final IntegerEntry wanderMaxAltitude = IntegerEntry.builder("config.iceandfire.amphithere.wanderMaxAltitude", 20).range(0, 256).key("wanderMaxAltitude").build();
 
         public AmphithereConfig() {
             super("amphithere", "config.iceandfire.category.amphithere");
@@ -210,6 +252,9 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final BooleanEntry griefing = BooleanEntry.builder("config.iceandfire.seaSerpent.griefing", true).key("griefing").build();
         public final DoubleEntry baseHealth = DoubleEntry.builder("config.iceandfire.seaSerpent.baseHealth", 20).min(0).key("baseHealth").build();
         public final DoubleEntry attackDamage = DoubleEntry.builder("config.iceandfire.seaSerpent.attackDamage", 4).min(0).key("attackDamage").build();
+        public final SeparatorEntry s1 = SeparatorEntry.builder().build();
+        public final DoubleEntry normalModifier = DoubleEntry.builder("config.iceandfire.seaSerpent.normalModifier", 1).range(0, 10).key("normalModifier").build();
+        public final DoubleEntry ancientModifier = DoubleEntry.builder("config.iceandfire.seaSerpent.ancientModifier", 1.5).range(0, 10).key("ancientModifier").build();
 
         public SeaSerpentConfig() {
             super("seaSerpent", "config.iceandfire.category.seaSerpent");
@@ -237,6 +282,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
     public static class HippocampusConfig extends AutoInitConfigCategoryBase {
         public final DoubleEntry spawnChance = DoubleEntry.builder("config.iceandfire.hippocampus.spawnChance", 1.0 / 40).range(0, 1).key("spawnChance").build();
         public final DoubleEntry swimSpeedMod = DoubleEntry.builder("config.iceandfire.hippocampus.swimSpeedMod", 1).range(0.0001, 10).key("swimSpeedMod").build();
+        public final BooleanEntry bubbleColumnImmunity = BooleanEntry.builder("config.iceandfire.hippocampus.bubbleColumnImmunity", false).key("bubbleColumnImmunity").build();
 
         public HippocampusConfig() {
             super("hippocampus", "config.iceandfire.category.hippocampus");
@@ -268,6 +314,15 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry dragonLightningSearchRange = DoubleEntry.builder("config.iceandfire.tools.dragonLightningSearchRange", 10).range(0, 128).key("dragonLightningSearchRange").build();
         public final DoubleEntry dragonLightningDamageReduction = DoubleEntry.builder("config.iceandfire.tools.dragonLightningDamageReduction", 0.5).range(0, 1).key("dragonLightningDamageReduction").build();
         public final IntegerEntry dragonLightningMaxSearchCount = IntegerEntry.builder("config.iceandfire.tools.dragonLightningMaxSearchCount", 10).range(0, 1024).key("dragonLightningMaxSearchCount").build();
+        public final SeparatorEntry s2 = SeparatorEntry.builder().build();
+        public final IntegerEntry pixieWandCooldown = IntegerEntry.builder("config.iceandfire.tools.pixieWandCooldown", 5).min(0).key("pixieWandCooldown").build();
+        public final IntegerEntry pixieChargeEffectDuration = IntegerEntry.builder("config.iceandfire.tools.pixieChargeEffectDuration", 100).min(0).key("pixieChargeEffectDuration").build();
+        public final IntegerEntry hydraHeartRegenDuration = IntegerEntry.builder("config.iceandfire.tools.hydraHeartRegenDuration", 900).min(0).key("hydraHeartRegenDuration").build();
+        public final BooleanEntry hydraHeartNerfedBrackets = BooleanEntry.builder("config.iceandfire.tools.hydraHeartNerfedBrackets", false).key("hydraHeartNerfedBrackets").build();
+        public final DoubleEntry deathwormGauntletRange = DoubleEntry.builder("config.iceandfire.tools.deathwormGauntletRange", 5).min(0).key("deathwormGauntletRange").build();
+        public final DoubleEntry deathwormGauntletKnockbackMin = DoubleEntry.builder("config.iceandfire.tools.deathwormGauntletKnockbackMin", 0.5).min(0).key("deathwormGauntletKnockbackMin").build();
+        public final DoubleEntry deathwormGauntletKnockbackMax = DoubleEntry.builder("config.iceandfire.tools.deathwormGauntletKnockbackMax", 0.5).min(0).key("deathwormGauntletKnockbackMax").build();
+        public final BooleanEntry deathwormGauntletRayTargeting = BooleanEntry.builder("config.iceandfire.tools.deathwormGauntletRayTargeting", false).key("deathwormGauntletRayTargeting").build();
 
         public ToolsConfig() {
             super("tools", "config.iceandfire.category.tools");
@@ -289,6 +344,22 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final IntegerEntry dragonsteelBootsDurability = IntegerEntry.builder("config.iceandfire.armors.dragonsteelBootsDurability", 2080).min(0).key("dragonsteelBootsDurability").build();
         public final IntegerEntry dragonsteelArmorEnchantability = IntegerEntry.builder("config.iceandfire.armors.dragonsteelArmorEnchantability", 30).min(0).key("dragonsteelArmorEnchantability").build();
         public final DoubleEntry dragonsteelArmorKnockbackResistance = DoubleEntry.builder("config.iceandfire.armors.dragonsteelArmorKnockbackResistance", 0.1).range(0, 0.25).key("dragonsteelArmorKnockbackResistance").build();
+        public final SeparatorEntry s1 = SeparatorEntry.builder().build();
+        public final BooleanEntry dragonScaleBreathReduction = BooleanEntry.builder("config.iceandfire.armors.dragonScaleBreathReduction", true).key("dragonScaleBreathReduction").build();
+        public final BooleanEntry dragonSteelBreathReduction = BooleanEntry.builder("config.iceandfire.armors.dragonSteelBreathReduction", true).key("dragonSteelBreathReduction").build();
+        public final BooleanEntry trollProjectileReduction = BooleanEntry.builder("config.iceandfire.armors.trollProjectileReduction", true).key("trollProjectileReduction").build();
+        public final BooleanEntry tideGuardianEffects = BooleanEntry.builder("config.iceandfire.armors.tideGuardianEffects", true).key("tideGuardianEffects").build();
+        public final BooleanEntry cosmeticArmorUnbreakable = BooleanEntry.builder("config.iceandfire.armors.cosmeticArmorUnbreakable", false).key("cosmeticArmorUnbreakable").build();
+        public final SeparatorEntry s2 = SeparatorEntry.builder().build();
+        public final ListIntegerEntry dragonScaleProtection = ListIntegerEntry.builder("config.iceandfire.armors.dragonScaleProtection", List.of(5, 7, 9, 5)).key("dragonScaleProtection").build();
+        public final ListIntegerEntry trollProtection = ListIntegerEntry.builder("config.iceandfire.armors.trollProtection", List.of(2, 5, 7, 3)).key("trollProtection").build();
+        public final ListIntegerEntry silverProtection = ListIntegerEntry.builder("config.iceandfire.armors.silverProtection", List.of(1, 4, 5, 2)).key("silverProtection").build();
+        public final ListIntegerEntry deathwormProtection = ListIntegerEntry.builder("config.iceandfire.armors.deathwormProtection", List.of(2, 5, 7, 3)).key("deathwormProtection").build();
+        public final ListIntegerEntry tideGuardianProtection = ListIntegerEntry.builder("config.iceandfire.armors.tideGuardianProtection", List.of(4, 7, 8, 4)).key("tideGuardianProtection").build();
+        public final DoubleEntry dragonScaleToughness = DoubleEntry.builder("config.iceandfire.armors.dragonScaleToughness", 2).min(0).key("dragonScaleToughness").build();
+        public final DoubleEntry trollToughness = DoubleEntry.builder("config.iceandfire.armors.trollToughness", 1).min(0).key("trollToughness").build();
+        public final DoubleEntry deathwormToughness = DoubleEntry.builder("config.iceandfire.armors.deathwormToughness", 1.5).min(0).key("deathwormToughness").build();
+        public final DoubleEntry tideGuardianToughness = DoubleEntry.builder("config.iceandfire.armors.tideGuardianToughness", 2.5).min(0).key("tideGuardianToughness").build();
 
         public ArmorsConfig() {
             super("armors", "config.iceandfire.category.armors");
@@ -310,6 +381,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry generateMausoleumChance = DoubleEntry.builder("config.iceandfire.worldgen.generateMausoleumChance", 0.5).range(0, 1).key("generateMausoleumChance").build();
         public final DoubleEntry generatePixieVillageChance = DoubleEntry.builder("config.iceandfire.worldgen.generatePixieVillageChance", 0.2).range(0, 1).key("generatePixieVillageChance").build();
         public final DoubleEntry generateSirenIslandChance = DoubleEntry.builder("config.iceandfire.worldgen.generateSirenIslandChance", 0.5).range(0, 1).key("generateSirenIslandChance").build();
+        public final IntegerEntry dragonCaveYOffset = IntegerEntry.builder("config.iceandfire.worldgen.dragonCaveYOffset", 0).range(-64, 64).key("dragonCaveYOffset").build();
 
         public WorldGenConfig() {
             super("worldgen", "config.iceandfire.category.worldgen");

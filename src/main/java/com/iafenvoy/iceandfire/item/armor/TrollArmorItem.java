@@ -1,7 +1,9 @@
 package com.iafenvoy.iceandfire.item.armor;
 
 import com.iafenvoy.iceandfire.IceAndFire;
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.TrollType;
+import com.iafenvoy.iceandfire.registry.IafItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -20,7 +22,7 @@ public class TrollArmorItem extends Item {
     private final ArmorType type;
 
     public TrollArmorItem(TrollType trollType, ArmorType type) {
-        super(new Properties().humanoidArmor(trollType.getMaterial().value(), type));
+        super(IafItems.cosmeticArmorProperties(new Properties().humanoidArmor(trollType.getMaterial().value(), type)));
         this.trollType = trollType;
         this.type = type;
     }
@@ -32,6 +34,7 @@ public class TrollArmorItem extends Item {
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull TooltipDisplay display, @NonNull Consumer<Component> tooltip, @NotNull TooltipFlag type) {
         super.appendHoverText(stack, context, display, tooltip, type);
-        tooltip.accept(Component.translatable(String.format(Locale.ROOT, "item.%s.troll_leather_armor_%s.desc", IceAndFire.MOD_ID, this.type.getName())).withStyle(ChatFormatting.GREEN));
+        if (IafCommonConfig.INSTANCE.armors.trollProjectileReduction.getValue())
+            tooltip.accept(Component.translatable(String.format(Locale.ROOT, "item.%s.troll_leather_armor_%s.desc", IceAndFire.MOD_ID, this.type.getName())).withStyle(ChatFormatting.GREEN));
     }
 }

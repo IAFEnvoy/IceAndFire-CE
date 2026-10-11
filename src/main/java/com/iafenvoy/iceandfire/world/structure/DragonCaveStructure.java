@@ -64,7 +64,7 @@ public abstract class DragonCaveStructure extends Structure implements Dangerous
     }
 
     private void addPieces(StructurePiecesBuilder collector, BlockPos pos, GenerationContext context, boolean male) {
-        int y = context.heightAccessor().getMinY() + 40 + context.random().nextInt(30);
+        int y = context.heightAccessor().getMinY() + 40 + context.random().nextInt(30) + IafCommonConfig.INSTANCE.worldGen.dragonCaveYOffset.getValue();
         long seed = context.random().nextLong();
         for (int i = -1; i <= 1; i++)
             for (int j = -1; j <= 1; j++)

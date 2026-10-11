@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.item;
 
+import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -28,12 +29,19 @@ public class HydraHeartItem extends Item {
             double healthPercentage = player.getHealth() / Math.max(1, player.getMaxHealth());
             if (healthPercentage < 1.0D) {
                 int level = 0;
-                if (healthPercentage < 0.25D) level = 3;
-                else if (healthPercentage < 0.5D) level = 2;
-                else if (healthPercentage < 0.75D) level = 1;
+                if (IafCommonConfig.INSTANCE.tools.hydraHeartNerfedBrackets.getValue()) {
+                    if (healthPercentage < 0.25D) level = 2;
+                    else if (healthPercentage < 0.5D) level = 1;
+                    else if (healthPercentage < 0.75D) level = 0;
+                    else return;
+                } else {
+                    if (healthPercentage < 0.25D) level = 3;
+                    else if (healthPercentage < 0.5D) level = 2;
+                    else if (healthPercentage < 0.75D) level = 1;
+                }
                 //Consider using EffectInstance.combine
                 if (!player.hasEffect(MobEffects.REGENERATION) || player.getEffect(MobEffects.REGENERATION).getAmplifier() < level)
-                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, level, true, false));
+                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, IafCommonConfig.INSTANCE.tools.hydraHeartRegenDuration.getValue(), level, true, false));
             }
             //In hotbar
         }

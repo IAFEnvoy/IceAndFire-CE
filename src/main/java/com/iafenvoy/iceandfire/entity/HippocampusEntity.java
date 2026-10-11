@@ -506,6 +506,18 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
     }
 
     @Override
+    public void onInsideBubbleColumn(boolean dragDown) {
+        if (!IafCommonConfig.INSTANCE.hippocampus.bubbleColumnImmunity.getValue())
+            super.onInsideBubbleColumn(dragDown);
+    }
+
+    @Override
+    public void onAboveBubbleColumn(boolean dragDown, @NotNull BlockPos pos) {
+        if (!IafCommonConfig.INSTANCE.hippocampus.bubbleColumnImmunity.getValue())
+            super.onAboveBubbleColumn(dragDown, pos);
+    }
+
+    @Override
     public boolean isFood(ItemStack stack) {
         return stack.is(IafItemTags.BREED_HIPPOCAMPUS);
     }
