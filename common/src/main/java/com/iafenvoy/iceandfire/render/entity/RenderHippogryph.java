@@ -44,8 +44,8 @@ public class RenderHippogryph extends MobEntityRenderer<EntityHippogryph, ModelH
 
         @Override
         public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, EntityHippogryph hippo, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-            if (hippo.getArmor() != 0) {
-                RenderLayer type = switch (hippo.getArmor()) {
+            if (hippo.getArmorTier() != 0) {
+                RenderLayer type = switch (hippo.getArmorTier()) {
                     case 1 -> this.TEXTURE_IRON;
                     case 2 -> this.TEXTURE_GOLD;
                     case 3 -> this.TEXTURE_DIAMOND;

@@ -77,8 +77,8 @@ public class RenderHippocampus extends MobEntityRenderer<EntityHippocampus, Mode
                 VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.CHEST);
                 this.getContextModel().render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
             }
-            if (hippo.getArmor() != 0) {
-                RenderLayer type = switch (hippo.getArmor()) {
+            if (hippo.getArmorTier() != 0) {
+                RenderLayer type = switch (hippo.getArmorTier()) {
                     case 1 -> this.TEXTURE_IRON;
                     case 2 -> this.TEXTURE_GOLD;
                     case 3 -> this.TEXTURE_DIAMOND;

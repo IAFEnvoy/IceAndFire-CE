@@ -348,7 +348,7 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
         compound.putInt("Variant", this.getVariant());
         compound.putBoolean("Chested", this.isChested());
         compound.putBoolean("Saddled", this.isSaddled());
-        compound.putInt("Armor", this.getArmor());
+        compound.putInt("Armor", this.getArmorTier());
         NbtList nbttaglist = new NbtList();
         for (int i = 0; i < this.inventory.size(); ++i) {
             ItemStack itemstack = this.inventory.getStack(i);
@@ -439,8 +439,14 @@ public class EntityHippocampus extends TameableEntity implements NamedScreenHand
             this.dropChestItems();
     }
 
-    @Override
-    public int getArmor() {
+    /**
+     * Armor tier stored in the entity data: 0 = none, 1 = iron, 2 = gold, 3 = diamond, 4 = netherite.
+     * <p>
+     * This must NOT override {@link net.minecraft.entity.LivingEntity#getArmor()}: vanilla uses that method for the
+     * armor damage reduction, and overriding it made the damage formula read the tier index (0-4) instead of the
+     * armor attribute value set in {@link #setArmor(int)}.
+     */
+    public int getArmorTier() {
         return this.dataTracker.get(ARMOR);
     }
 

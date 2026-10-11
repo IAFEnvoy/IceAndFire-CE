@@ -381,7 +381,7 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         compound.putBoolean("Saddled", this.isSaddled());
         compound.putBoolean("Hovering", this.isHovering());
         compound.putBoolean("Flying", this.isFlying());
-        compound.putInt("Armor", this.getArmor());
+        compound.putInt("Armor", this.getArmorTier());
         compound.putInt("Feedings", this.feedings);
         if (this.hippogryphInventory != null) {
             NbtList nbttaglist = new NbtList();
@@ -551,8 +551,14 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         }
     }
 
-    @Override
-    public int getArmor() {
+    /**
+     * Armor tier stored in the entity data: 0 = none, 1 = iron, 2 = gold, 3 = diamond, 4 = netherite.
+     * <p>
+     * This must NOT override {@link net.minecraft.entity.LivingEntity#getArmor()}: vanilla uses that method for the
+     * armor damage reduction, and overriding it made the damage formula read the tier index (0-4) instead of the
+     * armor attribute value set in {@link #setArmor(int)}.
+     */
+    public int getArmorTier() {
         return this.dataTracker.get(ARMOR);
     }
 
@@ -562,6 +568,7 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
             case 1 -> 10;
             case 2 -> 20;
             case 3 -> 30;
+            case 4 -> 35;
             default -> 0;
         };
         this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(armorValue);
