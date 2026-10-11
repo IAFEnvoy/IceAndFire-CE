@@ -612,6 +612,7 @@
   "config.iceandfire.dragon.canHealFromBiting": "Can Heal From Biting",
   "config.iceandfire.dragon.chunkLoadSummonCrystal": "Chunk Load Summon Crystal",
   "config.iceandfire.dragon.digWhenStuck": "Dig When Stuck",
+  "config.iceandfire.dragon.destroyBoats": "Destroy Boats",
   "config.iceandfire.dragon.dragonFlightSpeedMod": "Dragon Flight Speed Mod",
   "config.iceandfire.dragon.eggBornTime": "Egg Born Time",
   "config.iceandfire.dragon.enableBrushDragonScales": "Enable Brush Dragon Scales",
