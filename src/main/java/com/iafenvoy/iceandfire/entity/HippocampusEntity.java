@@ -340,7 +340,7 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
         output.putInt("Variant", this.getVariant());
         output.putBoolean("Chested", this.isChested());
         output.putBoolean("Saddled", this.isSaddled());
-        output.putInt("Armor", this.getArmorValue());
+        output.putInt("Armor", this.getArmorTier());
         output.store("Items", ItemStack.OPTIONAL_CODEC.listOf(), this.inventory.getItems());
     }
 
@@ -423,8 +423,14 @@ public class HippocampusEntity extends TamableAnimal implements MenuProvider, IS
             this.dropChestItems();
     }
 
-    @Override
-    public int getArmorValue() {
+    /**
+     * Armor tier stored in the entity data: 0 = none, 1 = iron, 2 = gold, 3 = diamond, 4 = netherite.
+     * <p>
+     * This must NOT override {@link net.minecraft.world.entity.LivingEntity#getArmorValue()}: vanilla uses that
+     * method for the armor damage reduction, and overriding it made the damage formula read the tier index (0-4)
+     * instead of the armor attribute value set in {@link #setArmor(int)}.
+     */
+    public int getArmorTier() {
         return this.entityData.get(ARMOR);
     }
 

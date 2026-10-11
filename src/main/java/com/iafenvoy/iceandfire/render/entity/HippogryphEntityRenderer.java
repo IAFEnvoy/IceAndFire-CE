@@ -33,7 +33,7 @@ public class HippogryphEntityRenderer extends LegacyMobRenderer<HippogryphEntity
     }
 
     private void submitEquipment(HippogryphEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int light, int outline) {
-        RenderType armor = switch (entity.getArmorValue()) {
+        RenderType armor = switch (entity.getArmorTier()) {
             case 1 -> ARMOR_IRON;
             case 2 -> ARMOR_GOLD;
             case 3 -> ARMOR_DIAMOND;

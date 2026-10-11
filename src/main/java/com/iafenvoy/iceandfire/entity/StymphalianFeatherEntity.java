@@ -21,7 +21,7 @@ public class StymphalianFeatherEntity extends AbstractArrow {
         super(t, worldIn);
         this.setOwner(shooter);
         this.setBaseDamage(IafCommonConfig.INSTANCE.stymphalianBird.featherAttackDamage.getValue());
-        this.setPos(shooter.position());
+        this.setPos(shooter.getX(), shooter.getEyeY() - 0.1F, shooter.getZ());
     }
 
     @Override

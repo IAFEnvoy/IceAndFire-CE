@@ -50,7 +50,7 @@ public class HippocampusEntityRenderer extends LegacyMobRenderer<HippocampusEnti
         if (entity.isSaddled() && entity.getControllingPassenger() != null)
             submit(this.model, poseStack, collector, BRIDLE, light, -1);
         if (entity.isChested()) submit(this.model, poseStack, collector, CHEST, light, -1);
-        RenderType armor = switch (entity.getArmorValue()) {
+        RenderType armor = switch (entity.getArmorTier()) {
             case 1 -> ARMOR_IRON;
             case 2 -> ARMOR_GOLD;
             case 3 -> ARMOR_DIAMOND;
