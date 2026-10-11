@@ -31,6 +31,10 @@
     "iceandfire:tide_green_chestplate",
     "iceandfire:tide_purple_chestplate",
     "iceandfire:tide_red_chestplate",
-    "iceandfire:tide_teal_chestplate"
+    "iceandfire:tide_teal_chestplate",
+    {
+      "id": "#forge:armors/chestplates",
+      "required": false
+    }
   ]
 }

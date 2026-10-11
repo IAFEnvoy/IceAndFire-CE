@@ -31,6 +31,10 @@
     "iceandfire:tide_green_leggings",
     "iceandfire:tide_purple_leggings",
     "iceandfire:tide_red_leggings",
-    "iceandfire:tide_teal_leggings"
+    "iceandfire:tide_teal_leggings",
+    {
+      "id": "#forge:armors/leggings",
+      "required": false
+    }
   ]
 }

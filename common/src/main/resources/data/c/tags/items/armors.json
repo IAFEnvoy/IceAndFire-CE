@@ -4,6 +4,10 @@
     "#c:helmet",
     "#c:chestplate",
     "#c:leggings",
-    "#c:boots"
+    "#c:boots",
+    {
+      "id": "#forge:armors",
+      "required": false
+    }
   ]
 }

@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "iceandfire:copper_nugget"
+    "iceandfire:copper_nugget",
+    {
+      "id": "#forge:nuggets/copper",
+      "required": false
+    }
   ]
 }

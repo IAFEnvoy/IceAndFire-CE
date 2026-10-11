@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "iceandfire:silver_block"
+    "iceandfire:silver_block",
+    {
+      "id": "#forge:storage_blocks/silver",
+      "required": false
+    }
   ]
 }

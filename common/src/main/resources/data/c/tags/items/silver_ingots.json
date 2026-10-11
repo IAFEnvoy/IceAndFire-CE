@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "iceandfire:silver_ingot"
+    "iceandfire:silver_ingot",
+    {
+      "id": "#forge:ingots/silver",
+      "required": false
+    }
   ]
 }

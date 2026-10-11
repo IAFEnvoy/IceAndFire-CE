@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "iceandfire:witherbone"
+    "iceandfire:witherbone",
+    {
+      "id": "#forge:bones/wither",
+      "required": false
+    }
   ]
 }

@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     "minecraft:chest",
-    "minecraft:trapped_chest"
+    "minecraft:trapped_chest",
+    {
+      "id": "#forge:chests/wooden",
+      "required": false
+    }
   ]
 }

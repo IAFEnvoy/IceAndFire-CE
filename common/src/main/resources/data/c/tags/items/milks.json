@@ -3,7 +3,7 @@
   "values": [
     "minecraft:milk_bucket",
     {
-      "id": "forge:milks",
+      "id": "#forge:milks",
       "required": false
     }
   ]
