@@ -41,7 +41,10 @@ public abstract class LegacyEntityModelRenderer<T extends Entity, M extends Adva
     public void submit(LegacyEntityRenderState<T> state, PoseStack poseStack, SubmitNodeCollector collector, @NonNull CameraRenderState camera) {
         T entity = state.entity;
         poseStack.pushPose();
+        // Match LivingEntityRenderer's model origin before handing rendering to the legacy model,
+        // otherwise models authored around y=24 (e.g. DragonEggModel) are drawn one block too low.
         poseStack.scale(-1.0F, -1.0F, 1.0F);
+        poseStack.translate(0.0F, -1.501F, 0.0F);
         this.model.setupAnim(entity, 0.0F, 0.0F, state.ageInTicks, 0.0F, 0.0F);
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity)), (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
