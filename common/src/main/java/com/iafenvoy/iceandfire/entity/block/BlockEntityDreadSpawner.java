@@ -2,13 +2,16 @@ package com.iafenvoy.iceandfire.entity.block;
 
 import com.iafenvoy.iceandfire.entity.util.DreadSpawnerBaseLogic;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
+import com.iafenvoy.iceandfire.registry.IafBlocks;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.MobSpawnerEntry;
 import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
@@ -18,7 +21,9 @@ public class BlockEntityDreadSpawner extends MobSpawnerBlockEntity {
     private final DreadSpawnerBaseLogic spawner = new DreadSpawnerBaseLogic() {
         @Override
         public void sendStatus(World world, BlockPos pos, int status) {
-            world.addSyncedBlockEvent(pos, Blocks.SPAWNER, status, 0);
+            // Vanilla sends this for Blocks.SPAWNER, which ServerWorld rejects for this block, so the
+            // client never gets the spawn effect. Send it for our own block instead.
+            world.addSyncedBlockEvent(pos, IafBlocks.DREAD_SPAWNER.get(), status, 0);
         }
 
         @Override
@@ -42,10 +47,12 @@ public class BlockEntityDreadSpawner extends MobSpawnerBlockEntity {
         this.spawner.readNbt(this.world, this.pos, compound);
     }
 
-    public NbtCompound save(NbtCompound compound) {
+    @Override
+    protected void writeNbt(NbtCompound compound) {
+        // MobSpawnerBlockEntity only saves its own private logic, which is never ticked for this block,
+        // so the dread logic has to be written on top of it to keep the spawner state.
         super.writeNbt(compound);
         this.spawner.writeNbt(compound);
-        return compound;
     }
 
     @Override
@@ -55,7 +62,7 @@ public class BlockEntityDreadSpawner extends MobSpawnerBlockEntity {
 
     @Override
     public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound compoundtag = this.save(new NbtCompound());
+        NbtCompound compoundtag = this.createNbt();
         compoundtag.remove("SpawnPotentials");
         return compoundtag;
     }
@@ -78,5 +85,22 @@ public class BlockEntityDreadSpawner extends MobSpawnerBlockEntity {
     @Override
     public BlockEntityType<?> getType() {
         return this.type != null ? this.type : super.getType();
+    }
+
+    @Override
+    public void setEntityType(EntityType<?> type, Random random) {
+        // MobSpawnerBlockEntity writes to the private logic, which does nothing here.
+        this.spawner.setEntityId(type, this.world, random, this.pos);
+        this.markDirty();
+    }
+
+    // Vanilla MobSpawnerBlockEntity#serverTick/clientTick tick their private logic, which is inert for
+    // this block, so the dread logic is ticked directly instead.
+    public static void clientTick(World world, BlockPos pos, BlockState state, BlockEntityDreadSpawner blockEntity) {
+        blockEntity.spawner.clientTick(world, pos);
+    }
+
+    public static void serverTick(World world, BlockPos pos, BlockState state, BlockEntityDreadSpawner blockEntity) {
+        blockEntity.spawner.serverTick((ServerWorld) world, pos);
     }
 }
