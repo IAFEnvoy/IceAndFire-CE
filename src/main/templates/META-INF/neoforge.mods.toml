@@ -42,7 +42,7 @@ logoFile = "logo.png" #optional
 credits = "Alexthe666" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-authors = "IAFEnvoy, xiaowu, uoay, burknado"
+authors = "IAFEnvoy, xiaowu, uoay, aelux"
 
 # The description text for the mod (multi line!) (#mandatory)
 description = '''
