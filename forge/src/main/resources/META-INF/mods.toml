@@ -7,7 +7,7 @@ license = "LGPL-3.0"
 modId = "iceandfire"
 version = "${version}"
 displayName = "Ice And Fire Community Edition"
-authors = "Alexthe666 (Origin Author), IAFEnvoy"
+authors = "Alexthe666 (Origin Author), IAFEnvoy, burknado"
 description = '''
 An unofficial fork of Ice And Fire.
 Dragons and other mythological creatures in minecraft.
