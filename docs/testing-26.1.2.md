@@ -7,14 +7,16 @@
 ```powershell
 .\gradlew.bat -PauditRegression runGameTestServer --console=plain
 .\gradlew.bat -PauditClientRegression runClient --console=plain
+.\gradlew.bat -Pissue292Regression runClient --console=plain
 .\gradlew.bat clean build --console=plain
 ```
 
 最后一个命令用于生成普通发布产物。测试通过后仍需执行该命令清理测试构建遗留，不能分发带 opt-in 测试源码构建的 JAR。
 
-- 第一条运行 21 项模组回归，另外包含 1 项默认测试；期望日志为 `All 22 required tests passed`。覆盖网络坐标、讲台边界、锻炉、持久化和初次同步数据、AI 调度及生命周期、部件、寻路、鸟群、地形恢复、水晶卸载召回/跨维度、权杖、闪电和副手幽灵剑。目录：`build/regression-runtime`。
+- 第一条运行 23 项模组回归，另外包含 1 项默认测试；期望日志为 `All 24 required tests passed`。覆盖网络坐标、讲台边界、锻炉、持久化和初次同步数据、AI 调度及生命周期、部件、寻路、鸟群、地形恢复、水晶卸载召回/跨维度、权杖、闪电、副手幽灵剑，以及龙抓取猎物的服务端伤害/回血/进食/释放。目录：`build/regression-runtime`。
 - 第二条启动独立客户端，资源加载后运行五类模型的正/逆序延迟回调断言，并自行退出。期望 `IAF CLIENT REGRESSION: all 5 deferred geometry/model tests passed`，以及 `build/client-regression-runtime/client-regression-result.json` 中 `passed:5, failed:0`。该测试不进入游戏世界，不替代画面验收。
-- 第三条期望 `BUILD SUCCESSFUL`。普通产物在 `build/libs/`，其中不应存在 `com/iafenvoy/iceandfire/regression/` 或 `data/iceandfire/structure/regression_empty.nbt`。
+- 第三条进入独立集成世界，使用真实 `ClientLevel` 检查三种龙、两个阶段、本地与远端玩家实体共 12 组嘴部定位场景，期望 `IAF ISSUE 292 CLIENT: all 12 player-prey scenarios passed`。详情见 [#292 修复说明](issue-292.md)。
+- 第四条期望 `BUILD SUCCESSFUL`。普通产物在 `build/libs/`，其中不应存在 `com/iafenvoy/iceandfire/regression/` 或 `data/iceandfire/structure/regression_empty.nbt`。
 
 ## 2. 集中人工验收
 

@@ -79,6 +79,52 @@ public final class IssueRegressionTests {
 
     private static final BlockPos POS = new BlockPos(3, 2, 3);
 
+    public static void shakePreyDamagesAndReleasesPlayersOnServer(GameTestHelper helper) {
+        verifyShakePrey(helper, true, false);
+        helper.succeed();
+    }
+
+    public static void shakePreyFeedsForMobsButDoesNotHealFromRejectedDamage(GameTestHelper helper) {
+        verifyShakePrey(helper, false, false);
+        verifyShakePrey(helper, false, true);
+        helper.succeed();
+    }
+
+    private static void verifyShakePrey(GameTestHelper helper, boolean playerPrey, boolean invulnerable) {
+        for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+            for (int age : new int[]{75, 100}) {
+                DragonBaseEntity dragon = (DragonBaseEntity) helper.spawnWithNoFreeWill(type, POS);
+                dragon.setAgeInDays(age);
+                dragon.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE).setBaseValue(2);
+                dragon.setHunger(50);
+                dragon.setHealth(dragon.getMaxHealth() / 2);
+                net.minecraft.world.entity.LivingEntity prey = playerPrey ? helper.makeMockPlayer(GameType.SURVIVAL)
+                        : helper.spawnWithNoFreeWill(EntityType.COW, POS);
+                prey.setInvulnerable(invulnerable);
+                helper.assertTrue(prey.startRiding(dragon, true, false), "test prey failed to mount dragon");
+                float oldPreyHealth = prey.getHealth(), oldDragonHealth = dragon.getHealth();
+                dragon.setAnimation(DragonBaseEntity.ANIMATION_SHAKEPREY);
+                dragon.setAnimationTick(55);
+                dragon.positionRider(prey, net.minecraft.world.entity.Entity::setPos);
+                helper.assertTrue(prey.getVehicle() == dragon && prey.getHealth() == oldPreyHealth,
+                        "shake-prey damaged or released prey before tick 56");
+                dragon.setAnimationTick(56);
+                dragon.positionRider(prey, net.minecraft.world.entity.Entity::setPos);
+                helper.assertTrue(!prey.isPassenger(), "server did not release prey after the bite");
+                float expectedHealth = invulnerable ? oldPreyHealth : oldPreyHealth - 4;
+                helper.assertTrue(prey.getHealth() == expectedHealth, "server shake-prey damage changed");
+                boolean heals = !invulnerable && com.iafenvoy.iceandfire.config.IafCommonConfig.INSTANCE.dragon.canHealFromBiting.getValue();
+                helper.assertTrue(dragon.getHealth() == oldDragonHealth + (heals ? 2 : 0), "bite healing changed");
+                helper.assertTrue(dragon.getHunger() == (playerPrey ? 50 : 51), "player/mob feeding rule changed");
+                dragon.positionRider(prey, net.minecraft.world.entity.Entity::setPos);
+                helper.assertTrue(prey.getHealth() == expectedHealth && dragon.getHunger() == (playerPrey ? 50 : 51),
+                        "released prey was processed twice");
+                prey.discard();
+                dragon.discard();
+            }
+        }
+    }
+
     public static void searchCooldownDoesNotMissEitherSchedulerPhase(GameTestHelper helper) {
         for (int phase = 0; phase < 4; phase++) {
             SearchCooldown cooldown = new SearchCooldown(4);

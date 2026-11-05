@@ -1609,10 +1609,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
             this.setAnimation(ANIMATION_SHAKEPREY);
         }
 
-        if (this.getAnimation() == ANIMATION_SHAKEPREY && this.getAnimationTick() > 55 && prey != null) {
+        // Passenger positioning runs on both sides; only the server resolves the bite and releases prey.
+        if (this.getAnimation() == ANIMATION_SHAKEPREY && this.getAnimationTick() > 55 && prey != null
+                && this.level() instanceof ServerLevel serverLevel) {
             float baseDamage = (float) this.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
             float damage = baseDamage * 2;
-            boolean didDamage = prey.hurtServer((ServerLevel) this.level(), this.level().damageSources().mobAttack(this), damage);
+            boolean didDamage = prey.hurtServer(serverLevel, serverLevel.damageSources().mobAttack(this), damage);
 
             if (didDamage) {
                 if (IafCommonConfig.INSTANCE.dragon.canHealFromBiting.getValue()) {
