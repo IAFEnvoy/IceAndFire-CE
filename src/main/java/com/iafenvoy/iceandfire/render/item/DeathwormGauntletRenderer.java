@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.render.entity.DeathWormEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.DeathWormGauntletModel;
 import com.iafenvoy.uranus.client.render.DynamicItemRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -26,7 +27,7 @@ public class DeathwormGauntletRenderer implements DynamicItemRenderer {
         matrices.pushPose();
         matrices.translate(0.5F, 0.5F, 0.5F);
         MODEL.animate(stack, Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
-        collector.submitCustomGeometry(matrices, RenderTypes.entityCutout(texture, false), (pose, buffer) -> {
+        ModelPose.submit(collector, matrices, RenderTypes.entityCutout(texture, false), MODEL, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             MODEL.renderToBuffer(modelStack, buffer, light, overlay, -1);

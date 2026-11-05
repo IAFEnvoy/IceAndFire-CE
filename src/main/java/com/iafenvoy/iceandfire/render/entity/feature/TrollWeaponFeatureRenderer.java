@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.entity.TrollEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.TrollModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -21,7 +22,7 @@ public class TrollWeaponFeatureRenderer implements LegacyEntityFeature<TrollEnti
     @Override
     public void submit(TrollEntity troll, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int light, int outlineColor) {
         if (troll.getWeaponType() != null && !GorgonEntity.isStoneMob(troll)) {
-            collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(troll.getWeaponType().getTexture()), (pose, buffer) -> {
+            ModelPose.submit(collector, poseStack, RenderTypes.entityCutout(troll.getWeaponType().getTexture()), this.model, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 this.model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, outlineColor == 0 ? -1 : outlineColor);

@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
-import java.util.function.Supplier;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 
 public class JarBlockEntityRenderer<T extends JarBlockEntity> implements BlockEntityRenderer<T, JarBlockEntityRenderer.State> {
     public static class State extends BlockEntityRenderState {
@@ -38,7 +38,7 @@ public class JarBlockEntityRenderer<T extends JarBlockEntity> implements BlockEn
     public static final RenderType TEXTURE_3_GLO = RenderTypes.eyes(PixieEntityRenderer.TEXTURE_3);
     public static final RenderType TEXTURE_4_GLO = RenderTypes.eyes(PixieEntityRenderer.TEXTURE_4);
     public static final RenderType TEXTURE_5_GLO = RenderTypes.eyes(PixieEntityRenderer.TEXTURE_5);
-    private static final Supplier<PixieModel> MODEL_PIXIE = PixieModel::new;
+    private final PixieModel modelPixie = new PixieModel();
 
     public JarBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -93,14 +93,14 @@ public class JarBlockEntityRenderer<T extends JarBlockEntity> implements BlockEn
                 else matrixStackIn.translate(0F, 0.60F, 0F);
                 matrixStackIn.mulPose(Axis.YP.rotationDegrees(this.interpolateRotation(entity.prevRotationYaw, entity.rotationYaw, state.partialTicks)));
                 matrixStackIn.scale(0.50F, 0.50F, 0.50F);
-                PixieModel model = MODEL_PIXIE.get();
+                PixieModel model = this.modelPixie;
                 model.animateInJar(entity.hasProduced, entity, 0);
-                submitNodeCollector.submitCustomGeometry(matrixStackIn, type, (pose, buffer) -> {
+                ModelPose.submit(submitNodeCollector, matrixStackIn, type, model, (pose, buffer) -> {
                     PoseStack modelStack = new PoseStack();
                     modelStack.last().set(pose);
                     model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
                 });
-                submitNodeCollector.submitCustomGeometry(matrixStackIn, typeGlow, (pose, buffer) -> {
+                ModelPose.submit(submitNodeCollector, matrixStackIn, typeGlow, model, (pose, buffer) -> {
                     PoseStack modelStack = new PoseStack();
                     modelStack.last().set(pose);
                     model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);

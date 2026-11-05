@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.registry.IafBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DirtPathBlock;
@@ -44,24 +43,16 @@ public class CharedPathBlock extends DirtPathBlock {
         };
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public void tick(@NotNull BlockState state, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource rand) {
-        super.tick(state, world, pos, rand);
-        if (!world.isClientSide()) {
-            if (!world.hasChunksAt(pos.offset(-3, -3, -3), pos.offset(3, 3, 3))) return;
-            if (state.getValue(REVERTS) && rand.nextInt(3) == 0)
-                world.setBlockAndUpdate(pos, Blocks.DIRT_PATH.defaultBlockState());
-        }
-        if (world.getBlockState(pos.above()).isSolid())
-            world.setBlockAndUpdate(pos, this.getSmushedState(this.dragonType));
-        this.updateBlockState(world, pos);
+    public void randomTick(@NotNull BlockState state, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource rand) {
+        if (state.getValue(REVERTS) && rand.nextInt(3) == 0)
+            world.setBlockAndUpdate(pos, Blocks.DIRT_PATH.defaultBlockState());
     }
 
-    @SuppressWarnings("deprecation")
-    private void updateBlockState(Level worldIn, BlockPos pos) {
-        if (worldIn.getBlockState(pos.above()).isSolid())
-            worldIn.setBlockAndUpdate(pos, this.getSmushedState(this.dragonType));
+    @Override
+    public void tick(@NotNull BlockState state, @NotNull ServerLevel world, @NotNull BlockPos pos, @NotNull RandomSource rand) {
+        if (!state.canSurvive(world, pos))
+            world.setBlockAndUpdate(pos, this.getSmushedState(this.dragonType).setValue(ReturningStateBlock.REVERTS, state.getValue(REVERTS)));
     }
 
     @Override

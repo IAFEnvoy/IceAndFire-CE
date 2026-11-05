@@ -2,6 +2,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.util.IafMath;
+import com.iafenvoy.iceandfire.util.SearchCooldown;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
@@ -13,6 +14,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class AmphithereAIFleePlayerGoal extends Goal {
+    private final SearchCooldown searchCooldown = new SearchCooldown(4);
     protected final AmphithereEntity entity;
     private final double farSpeed;
     private final double nearSpeed;
@@ -33,8 +35,9 @@ public class AmphithereAIFleePlayerGoal extends Goal {
     @Override
     public boolean canUse() {
         if (!this.entity.isFlying() && !this.entity.isTame()) {
-            if (this.entity.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+            if (this.searchCooldown.isReady(this.entity.level().getGameTime()))
                 this.list = this.entity.level().getEntitiesOfClass(Player.class, this.entity.getBoundingBox().inflate(this.avoidDistance, 6D, this.avoidDistance), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+            if (!this.list.isEmpty()) this.list.removeIf(target -> !target.isAlive() || target.level() != this.entity.level());
             if (this.list.isEmpty()) return false;
 
             this.closestLivingEntity = this.list.getFirst();

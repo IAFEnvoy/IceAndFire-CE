@@ -34,13 +34,7 @@ public final class SirenMorningDespawn {
         }
     }
 
-    /**
-     * {@code Level#isDay()} was removed in 26.1.2 in favour of the world clock system, so the day
-     * window is derived from the dimension's default clock. The thresholds match the removed vanilla
-     * implementation (0.25 to 0.75 of the day-night cycle).
-     */
     private static boolean isDay(SirenEntity siren) {
-        long time = siren.level().getDefaultClockTime() % 24000L;
-        return time >= 6000L && time < 18000L;
+        return SirenDaylight.isDay(siren.level(), siren.blockPosition());
     }
 }

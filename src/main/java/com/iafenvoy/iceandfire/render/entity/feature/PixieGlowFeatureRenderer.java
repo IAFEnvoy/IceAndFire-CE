@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.entity.PixieEntityRenderer;
 import com.iafenvoy.iceandfire.render.model.PixieModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -28,7 +29,7 @@ public class PixieGlowFeatureRenderer implements LegacyEntityFeature<PixieEntity
             case 5 -> PixieEntityRenderer.TEXTURE_5;
             default -> PixieEntityRenderer.TEXTURE_0;
         };
-        collector.submitCustomGeometry(poseStack, RenderTypes.eyes(texture), (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, RenderTypes.eyes(texture), this.model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             this.model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, outlineColor == 0 ? -1 : outlineColor);

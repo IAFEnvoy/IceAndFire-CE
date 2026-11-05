@@ -9,6 +9,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class EntitySheepAIFollowCyclopsGoal extends Goal {
@@ -20,6 +21,7 @@ public class EntitySheepAIFollowCyclopsGoal extends Goal {
     public EntitySheepAIFollowCyclopsGoal(Animal animal, double speed) {
         this.childAnimal = animal;
         this.moveSpeed = speed;
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
@@ -47,7 +49,7 @@ public class EntitySheepAIFollowCyclopsGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (this.cyclops.isAlive()) return false;
+        if (this.cyclops == null || !this.cyclops.isAlive()) return false;
         else {
             final double d0 = this.childAnimal.distanceToSqr(this.cyclops);
             return d0 >= 9.0D && d0 <= 256.0D;

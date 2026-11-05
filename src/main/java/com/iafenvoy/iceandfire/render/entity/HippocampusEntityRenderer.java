@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.entity.HippocampusEntity;
 import com.iafenvoy.iceandfire.render.model.HippocampusModel;
 import com.iafenvoy.iceandfire.util.Color4i;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -72,7 +73,7 @@ public class HippocampusEntityRenderer extends LegacyMobRenderer<HippocampusEnti
     }
 
     private static void submit(HippocampusModel model, PoseStack poseStack, SubmitNodeCollector collector, RenderType type, int light, int color) {
-        collector.submitCustomGeometry(poseStack, type, (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, type, model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, color);

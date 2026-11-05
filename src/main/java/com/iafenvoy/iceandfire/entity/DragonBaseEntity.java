@@ -2032,6 +2032,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     public void setCrystalBound(boolean crystalBound) {
         this.entityData.set(CRYSTAL_BOUND, crystalBound);
+        if (this.level() instanceof ServerLevel serverLevel) {
+            DragonPosWorldData data = DragonPosWorldData.get(serverLevel);
+            if (crystalBound) data.addDragon(this.getUUID(), this.blockPosition());
+            else data.removeDragon(this.getUUID());
+        }
     }
 
     public float getDistanceSquared(Vec3 Vector3d) {
@@ -2976,18 +2981,6 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     public int getFlightChancePerTick() {
         return FLIGHT_CHANCE_PER_TICK;
-    }
-
-    @Override
-    public void onClientRemoval() {
-        if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {
-            if (this.isBoundToCrystal()) {
-                DragonPosWorldData data = DragonPosWorldData.get(this.level());
-                if (data != null)
-                    data.addDragon(this.getUUID(), this.blockPosition());
-            }
-        }
-        super.onClientRemoval();
     }
 
     @Override

@@ -74,7 +74,6 @@ public final class IafRenderers {
         event.registerEntityRenderer(IafEntities.DREAD_SCUTTLER.get(), DreadScuttlerEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DREAD_GHOUL.get(), DreadGhoulEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DREAD_BEAST.get(), DreadBeastEntityRenderer::new);
-        event.registerEntityRenderer(IafEntities.DREAD_SCUTTLER.get(), DreadScuttlerEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DREAD_THRALL.get(), DreadThrallEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DREAD_LICH.get(), DreadLichEntityRenderer::new);
         event.registerEntityRenderer(IafEntities.DREAD_LICH_SKULL.get(), DreadLichSkullEntityRenderer::new);

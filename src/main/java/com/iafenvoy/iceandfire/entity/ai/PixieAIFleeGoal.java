@@ -1,6 +1,7 @@
 package com.iafenvoy.iceandfire.entity.ai;
 
 import com.iafenvoy.iceandfire.entity.PixieEntity;
+import com.iafenvoy.iceandfire.util.SearchCooldown;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class PixieAIFleeGoal<T extends Entity> extends Goal {
+    private final SearchCooldown searchCooldown = new SearchCooldown(4);
     protected final PixieEntity pixie;
     private final float avoidDistance;
     private final Class<T> classToAvoid;
@@ -36,9 +38,10 @@ public class PixieAIFleeGoal<T extends Entity> extends Goal {
             return false;
         }
 
-        if (this.pixie.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+        if (this.searchCooldown.isReady(this.pixie.level().getGameTime()))
             this.list = this.pixie.level().getEntitiesOfClass(this.classToAvoid, this.pixie.getBoundingBox().inflate(this.avoidDistance, 3.0D, this.avoidDistance), EntitySelector.NO_SPECTATORS);
 
+        if (!this.list.isEmpty()) this.list.removeIf(target -> !target.isAlive() || target.level() != this.pixie.level());
         if (this.list.isEmpty()) return false;
 
         this.closestLivingEntity = this.list.getFirst();
@@ -67,7 +70,8 @@ public class PixieAIFleeGoal<T extends Entity> extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return this.hidePlace != null && this.pixie.distanceToSqr(this.hidePlace.add(0.5, 0.5, 0.5)) < 2;
+        return this.hidePlace != null && !this.pixie.isTame() && this.closestLivingEntity != null
+                && this.closestLivingEntity.isAlive() && this.pixie.distanceToSqr(this.hidePlace) > 2;
     }
 
     @Override
@@ -78,6 +82,8 @@ public class PixieAIFleeGoal<T extends Entity> extends Goal {
 
     @Override
     public void stop() {
+        this.hidePlace = null;
+        this.pixie.getMoveControl().setWantedPosition(this.pixie.getX(), this.pixie.getY(), this.pixie.getZ(), 0);
         this.closestLivingEntity = null;
         this.pixie.slowSpeed = false;
     }

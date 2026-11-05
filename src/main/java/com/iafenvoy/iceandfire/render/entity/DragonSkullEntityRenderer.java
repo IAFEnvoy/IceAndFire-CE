@@ -18,6 +18,7 @@ import com.iafenvoy.uranus.client.model.basic.BasicModelPart;
 import com.iafenvoy.uranus.client.model.util.TabulaModelHandlerHelper;
 import com.iafenvoy.uranus.util.function.MemorizeSupplier;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -79,7 +80,7 @@ public class DragonSkullEntityRenderer extends EntityRenderer<DragonSkullEntity,
         matrixStackIn.translate(0, entity.isOnWall() ? -0.24F : -0.12F, entity.isOnWall() ? 0.4F : 0.5F);
         model.resetToDefaultPose();
         setRotationAngles(model.getCube("Head"), entity.isOnWall() ? (float) Math.toRadians(50F) : 0F);
-        collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityTranslucent(this.getTextureLocation(entity)), (pose, buffer) -> {
+        ModelPose.submit(collector, matrixStackIn, RenderTypes.entityTranslucent(this.getTextureLocation(entity)), model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             model.getCube("Head").render(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);

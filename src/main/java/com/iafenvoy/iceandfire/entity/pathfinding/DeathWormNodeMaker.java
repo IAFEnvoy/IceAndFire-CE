@@ -57,21 +57,18 @@ public class DeathWormNodeMaker extends NodeEvaluator {
     }
 
     private PathType isFree(int p_186327_1_, int p_186327_2_, int p_186327_3_) {
-        BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
-        for (int i = p_186327_1_; i < p_186327_1_ + this.entityWidth; ++i) {
-            for (int j = p_186327_2_; j < p_186327_2_ + this.entityHeight; ++j) {
-                for (int k = p_186327_3_; k < p_186327_3_ + this.entityDepth; ++k) {
-                    BlockState blockstate = this.currentContext.getBlockState(blockpos$mutable.set(i, j, k));
-                    if (!this.isPassable(this.currentContext.level(), blockpos$mutable.below()) && (blockstate.isAir() || this.isPassable(this.currentContext.level(), blockpos$mutable))) {
-                        return PathType.BREACH;
-                    }
-
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        boolean breach = false;
+        for (int x = p_186327_1_; x < p_186327_1_ + this.entityWidth; x++) {
+            for (int y = p_186327_2_; y < p_186327_2_ + this.entityHeight; y++) {
+                for (int z = p_186327_3_; z < p_186327_3_ + this.entityDepth; z++) {
+                    BlockState state = this.currentContext.getBlockState(pos.set(x, y, z));
+                    if (!this.isPassable(state)) return PathType.BLOCKED;
+                    if (!this.isPassable(this.currentContext.level(), pos.below())) breach = true;
                 }
             }
         }
-
-        BlockState blockstate1 = this.currentContext.getBlockState(blockpos$mutable);
-        return this.isPassable(blockstate1) ? PathType.WATER : PathType.BLOCKED;
+        return breach ? PathType.BREACH : PathType.WATER;
     }
 
 

@@ -1,0 +1,236 @@
+{
+  "date": "2026-11-05",
+  "source_commit": "c67d90775dfc9c4fb87fd89ed9e211ce57c74f7b",
+  "branch": "master",
+  "minecraft": "26.1.2",
+  "neoforge": "26.1.2.97",
+  "java": 25,
+  "gradle": "9.2.1",
+  "implemented_issue_ids": [
+    "N01",
+    "N02",
+    "N03",
+    "N04",
+    "F01",
+    "F02",
+    "F03",
+    "F04",
+    "S01",
+    "S02",
+    "S03",
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "E01",
+    "E02",
+    "E03",
+    "W01",
+    "W02",
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "R01",
+    "R03",
+    "N05",
+    "S04",
+    "L01",
+    "V01",
+    "V02",
+    "V03",
+    "V04",
+    "V05",
+    "V06",
+    "V07",
+    "V08"
+  ],
+  "already_fixed_in_baseline": [
+    "F05",
+    "R02"
+  ],
+  "server_gametest": {
+    "status": "PASS",
+    "mod_regressions": 21,
+    "default_tests": 1,
+    "required_total": 22,
+    "command": ".\\gradlew.bat -PauditRegression runGameTestServer --console=plain"
+  },
+  "client": {
+    "passed": 5,
+    "failed": 0,
+    "checks": "knight_nested_cloak,egg,hydra_head,pixie,gauntlet",
+    "screen": "AccessibilityOnboardingScreen",
+    "command": ".\\gradlew.bat -PauditClientRegression runClient --console=plain",
+    "world_entered": false,
+    "gpu_scene_validated": false
+  },
+  "release_build": {
+    "status": "PASS",
+    "command": ".\\gradlew.bat clean build --console=plain",
+    "unit_test_task": "NO-SOURCE"
+  },
+  "jar": {
+    "path": "build/libs/iceandfire-2.2-beta.4.jar",
+    "bytes": 21482626,
+    "sha256": "43f3b086f68c592ea73c71fe05e01b203a9a331058e68a993fd167a53716a5ef",
+    "regression_entries": [],
+    "removed_asset_entries_remaining": [],
+    "class_major_version_max": 69,
+    "class_versions_above_java25": [],
+    "legacy_pack_metadata": {
+      "pack": {
+        "description": {
+          "translate": "resourcePack.iceandfire.legacy.description"
+        },
+        "min_format": [
+          84,
+          0
+        ],
+        "max_format": [
+          84,
+          0
+        ]
+      }
+    }
+  },
+  "resources": {
+    "json_files": 2574,
+    "mcmeta_files": 1,
+    "parse_or_duplicate_key_errors": [],
+    "reference_scope": "IceAndFire namespace model/parent and texture-map references across all IceAndFire asset JSON in src/main/resources and src/generated/resources",
+    "checked": {
+      "model": 861,
+      "texture": 623
+    },
+    "missing": []
+  },
+  "git_diff_check": "PASS",
+  "raw_evidence_directory": "C:/Users/tanks/.codex/visualizations/2026/11/04/01a1a6c7-fe80-7ab2-b99a-4c729142a3a9/optimization-audit/fixes-26.1.2-2026-11-05",
+  "logs": {
+    "gametest-final.log": {
+      "sha256": "c8f0405c96afc431f79c0a5e914b03f449d53f208eccf49e301995c4f21b2908",
+      "build_successful": true,
+      "summary": [
+        "[17:26:30] [Server thread/INFO] [minecraft/GameTestServer]: All 22 required tests passed :)",
+        "BUILD SUCCESSFUL in 17s"
+      ]
+    },
+    "client-regression.log": {
+      "sha256": "fa0c9154fa4b3974b1a9056f0daf5d4b6f670b8bdea4a814c76e0a2473e0dc10",
+      "build_successful": true,
+      "summary": [
+        "IAF CLIENT REGRESSION: all 5 deferred geometry/model tests passed",
+        "BUILD SUCCESSFUL in 20s"
+      ]
+    },
+    "release-build.log": {
+      "sha256": "67fd531dc35ec9581ec3788b0c4d67c3df1d5d62b25b6027980be8366cc79c06",
+      "build_successful": true,
+      "summary": [
+        "BUILD SUCCESSFUL in 18s"
+      ]
+    }
+  },
+  "working_source_sha256": {
+    "build.gradle": "b702919869c5bcc034431b4c3cd89b88363267b9f3b0ce1903bf1e26480272d8",
+    "src/main/java/com/iafenvoy/iceandfire/IceAndFire.java": "619d85c38938522cfd7a2ac0e4f8b7e059e7a311fd70ec4ed2122447397177f1",
+    "src/main/java/com/iafenvoy/iceandfire/IceAndFireClient.java": "7eae3ba21069718d2ac2258237dde3fb8a0d24c8b86e0336d40f7f7b089221a2",
+    "src/main/java/com/iafenvoy/iceandfire/data/component/MiscData.java": "8cc6b1be45a89f7fc2ac98c686be8b50b33c5cf9444c10bde7ea920720b26e9a",
+    "src/main/java/com/iafenvoy/iceandfire/entity/CyclopsEntity.java": "12dc76469b93ff81991acae0e91009bc62763904289ba6b7356ddd9bf2a39c89",
+    "src/main/java/com/iafenvoy/iceandfire/entity/DragonBaseEntity.java": "9d293cb7018037e058055617845616ee83527be6594776aef0f811f259d427da",
+    "src/main/java/com/iafenvoy/iceandfire/entity/PixieEntity.java": "8bda05c037ecc64d7e1fa593261f7abbdea2671a8e349900032840c088551f2b",
+    "src/main/java/com/iafenvoy/iceandfire/entity/SeaSerpentEntity.java": "c40a7a805d905cb0b1813be75602e9de7008f694ff8b0a606a2ebfb467975658",
+    "src/main/java/com/iafenvoy/iceandfire/entity/StymphalianBirdEntity.java": "edf886808c914f837e7e8b8f7e21b7e135445387f9e476e81527e57ec239b2f8",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/AmphithereAIFleePlayerGoal.java": "5fa580d4b81545c7b798e470f713f958535478940f7ce17948ce3727a331f883",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/AmphithereAITargetItemsGoal.java": "04d26f52baabd73e14d7f1a4175515c206fd62233599e4836f2b8271a2029f6e",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/CockatriceAITargetItemsGoal.java": "e04587507679913362f02b746e379ab96601e1644926f7671548e6a2c70582da",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAIMateGoal.java": "909f2d4587e5cd1c022eda64cd7aa788c3120f339a5fae989b60973af74420a1",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITargetGoal.java": "00288492f9e128def6f4b25eca96d5a2ffe2a563b15911f735a40f0ee4b76205",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITargetItemsGoal.java": "15faa150e81e9fea65bfd19c56fb854e0e99a8d22665d7c70efc5d817ff7f009",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/DreadAIRideHorseGoal.java": "3e99487a87358f88c07fedc687ea90e7eef3dee2eb774ee5a6151d934ae298ad",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/EntityAIWatchClosestIgnoreRiderGoal.java": "cb6f3548423d40533d56f857daebc5978de17f2da5588c67d2d65c12ca644b9a",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/EntitySheepAIFollowCyclopsGoal.java": "a736f11f31a1898bb7d37bae926093940951dd2f3a8c7b25b952bb0a3f2bf337",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIFleeGoal.java": "7e26599b84b56047abe8bdbb8e1af37039cbf42b8a77c9c98cb056cb08763f1e",
+    "src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIPickupItemGoal.java": "7f6540f5c7cbb88846b647e722261c398ab69b4636bbcd737854602be4772a56",
+    "src/main/java/com/iafenvoy/iceandfire/entity/pathfinding/DeathWormNodeMaker.java": "405c849778b357388864898888963fe36a12e1949681ffcb7667e2f10449ec1f",
+    "src/main/java/com/iafenvoy/iceandfire/entity/util/StymphalianBirdFlock.java": "69dc62ff16a3fb6490b1d18940966561d036d0095d7bbbe6d6b5da4165c8e863",
+    "src/main/java/com/iafenvoy/iceandfire/event/handler/ServerEvents.java": "667292c947c31dab30183e39a0f727db3d976d81f1671a9685059088cea4dc3a",
+    "src/main/java/com/iafenvoy/iceandfire/item/CockatriceScepterItem.java": "885d7ba14ba322417982f92011094f7bf4fa7f3775e5a04f9f57a909e17b26a0",
+    "src/main/java/com/iafenvoy/iceandfire/item/SummoningCrystalItem.java": "46312b245c6e904f1b338ce4fd18e2ce5a1cb8c69d4c58b6d94833dfa8472893",
+    "src/main/java/com/iafenvoy/iceandfire/item/ability/LightningMultihitAbility.java": "c7fdb37d350269f40755d89c1f34749f1df169347d512fa0adcaaf2a20dd44f7",
+    "src/main/java/com/iafenvoy/iceandfire/item/ability/SummonGhostSwordAbility.java": "dc051a454e37ba6db3c26b15e0998acb26b26b0b9442f151a533da7b52564680",
+    "src/main/java/com/iafenvoy/iceandfire/item/ability/SwingHandAbility.java": "72b92cead0b45f8abbf8e58b2c04bba5006d49ff785388919dd0bc266c24577b",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/CharedPathBlock.java": "fc97d0b82b0288ef0cc9ab7cc02a7fb9b4004b5a221c8708e3d85e85ec57780d",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/DragonForgeCoreBlock.java": "b4c7d69d40617dcbfcb5d90afb88c8c053a6e1937fcebe13728b854f41f95fb7",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/FallingReturningStateBlock.java": "3566ebec6e22b00c835636e783b744afee8bdad6a82ff8ed32436d2f45e53a97",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/JarBlock.java": "23ac35a81b69f72df7948c49d1cabe50cfc5a025db79e866fae96b8e0f46ceb8",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/ReturningStateBlock.java": "662d5d0c614a8418d00651faf23c4f25cd7acf018b778e4e2d38726960f3c960",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeBlockEntity.java": "06baccc2a002c632157d5f5b03b328ba0d63015e2fe8773e3d6856a5ad06b4ba",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeInputBlockEntity.java": "0e12f4d9c419d3545a8352d1720f0423b9fd0e4f448ced956867be430015dfba",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/EggInIceBlockEntity.java": "846f50a04851c316f508807d0bd177c60e79c55fd498580eeb1d4e801213955a",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/JarBlockEntity.java": "df7150380deb75b29c323b0c0bfe88bb5a4a362d58a50d4fa1a17e55896a873a",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/LecternBlockEntity.java": "97cb033b937dd1cf3a1525e7ad999a9695137e7ba8bd914debec49e503fbbbf6",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/PixieHouseBlockEntity.java": "341f1e201cb398e477888070f96bf599d0c69be09aa9f25fbb7748ba09357c36",
+    "src/main/java/com/iafenvoy/iceandfire/item/block/entity/PodiumBlockEntity.java": "8ca84f330b7de0b594103e47440d49391dc625c4f810ba24c1994d00dae84e6d",
+    "src/main/java/com/iafenvoy/iceandfire/mixin/LivingEntityMixin.java": "6127cee7b883c4c30731a11be51134b875861c28109c6032b02efe30d93e9d4a",
+    "src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHandlers.java": "b610b3e0a227f06499397f2a96b8558492f57e177c73d6516f6798fb7bb7b775",
+    "src/main/java/com/iafenvoy/iceandfire/registry/IafRenderers.java": "0fe6d47659ffc16c00903aa08b9a8e2c26bbb5cfd7104478ec3948111ffe2416",
+    "src/main/java/com/iafenvoy/iceandfire/render/block/EggInIceBlockEntityRenderer.java": "effe6023cb5546a636c19d2a9e932a21f85e05f98eb3e4d085e0eedc7c622521",
+    "src/main/java/com/iafenvoy/iceandfire/render/block/JarBlockEntityRenderer.java": "f78d2ee0ef726850ff6e7586fcd4b63288024b67ad05843a86351e6ef0c18f8f",
+    "src/main/java/com/iafenvoy/iceandfire/render/block/PixieHouseBlockEntityRenderer.java": "0ecda840854273d0f87d8c9000c5647257a56eaee5bc2881d2cc4089cf878687",
+    "src/main/java/com/iafenvoy/iceandfire/render/block/PodiumBlockEntityRenderer.java": "3f84d69678272bed567513cd637554ca0d7b419ba9fedfbb8247eafd20c9cc5f",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/CockatriceEntityRenderer.java": "62d25239fcb9acb4dd0b0872278b6c43e7ddf7791d2d3f2b1f4ca28f2b655b43",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/DragonSkullEntityRenderer.java": "977c0c2cad7ca67606b09a39ef4118d4fbcac99ea237e8097e982eb3e00e2b12",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/GhostEntityRenderer.java": "88479ebfc27cbe0bee8faf9d3d02842829661e3a9f0821901d081798e0c88e5f",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/HippocampusEntityRenderer.java": "0f91c5940698705af59c6d750b9c05c91e82f6791c8a077172e941a6fdb8264a",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/HippogryphEntityRenderer.java": "f3e02a35215ad4d0adff56afd45332fa375df136fadd2e7c6215bbd42d770694",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/LegacyEntityModelRenderer.java": "749ba3b4536c5909e78f490fac398731752c685355b219ddecccbe9f382b700d",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/LegacyMobRenderer.java": "d195e9235079fa8d9f5b3cc8ce2a807a1d5b48bfe988e1654a91c5b28c92e158",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/StoneStatueEntityRenderer.java": "0d7bbb1179422c6dbbc3688d2dfa7368355f3843ea17c2856911f21562d81ba0",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/BipedArmorFeatureRenderer.java": "bfd63e6a4b6aacb63702d528398afd20ef728c8f68459b86c83465fb81db950d",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/DragonArmorFeatureRenderer.java": "714ae1e448e21af4854d08bc5abb860becfc13f83e7b1dda5aa2b398093928d0",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/DragonEyesFeatureRenderer.java": "b39ff1b330356fff71d612304c4b048d8e05b7e930c5f73c3d61fae2e9ee8490",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/DragonMaleOverlayFeatureRenderer.java": "ba1cdc3f3e8a794bf0886bc9fbc68391b3504dc9f98280436c049ae2c2ddde11",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/GenericGlowingFeatureRenderer.java": "d89d443bac1e9a229e5e102bf3f42153fccfb610ec47fb922935e994f3bf7a79",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/GorgonEyesFeatureRenderer.java": "f0cd580dc431e957bc17c94722f2275be996a04dc22aff64e03c4fa772532f87",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/HydraHeadFeatureRenderer.java": "a1a39ee40cba50e988d3c9a768155950480ee8ec549b162ca48c79f71eebb6a8",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/PixieGlowFeatureRenderer.java": "d537037fbc62eb3809546cb92263a855c973133939ee09fbf76b2921e7985f05",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/TrollEyesFeatureRenderer.java": "31e3156f8c6dfb65d3af368e0a8767b4d129123f0951d19780bc4ce4f849aba5",
+    "src/main/java/com/iafenvoy/iceandfire/render/entity/feature/TrollWeaponFeatureRenderer.java": "5b02919f86cb260736f87482bb103e0d99a1d53476aa7c7ec5f8c2cf1030f330",
+    "src/main/java/com/iafenvoy/iceandfire/render/item/DeathwormGauntletRenderer.java": "a6e0f7a5a14cc2b2a85b7d51ea477aa92c5d309b29758bd30af566666e847af9",
+    "src/main/java/com/iafenvoy/iceandfire/screen/gui/bestiary/BestiaryScreen.java": "4f43543b8c0bdb38b8de961ea46b1d710172e8402576bc6c4f790d25745f16ad",
+    "src/main/java/com/iafenvoy/iceandfire/screen/menu/LecternMenu.java": "5ef178550e8ec1ee09710fe921c58efbd1b68728310666eee69bd6f9e3f614ba",
+    "src/main/java/com/iafenvoy/iceandfire/world/DragonPosWorldData.java": "8cc7d3825138781e7567eb07e9a9e8f8877dd57451c0637963cb9c985324bdcd",
+    "src/main/java/com/iafenvoy/iceandfire/world/siren/SirenMorningDespawn.java": "e5407c722f9df4e46285165d2f262f92607683d3868ab0daac128648746c5b84",
+    "src/main/java/com/iafenvoy/iceandfire/world/siren/SirenSpawnPlacements.java": "2c0ba52a6820b9ab2cb2a97f15d08620bb83d8b6e8b720bbaadcbeb86dd65c09",
+    "src/main/java/com/iafenvoy/iceandfire/world/structure/PixieVillageStructure.java": "fcb2d30dceb442088de6075946ffa16c9459b7b43a55c71c70f0ffa85a2a74ca",
+    "src/main/resources/resourcepacks/iaf_legacy/pack.mcmeta": "cce32bd641e68b009ad9185f9fe8e24a28e592010cc6b98bea0ea5e428a351f6",
+    "src/main/java/com/iafenvoy/iceandfire/registry/IafTicketTypes.java": "32f6a8112e58f1fca2f239f5d3aa0aeb293854cbb900b84e958952bbb18f0b1e",
+    "src/main/java/com/iafenvoy/iceandfire/util/BlockEntitySync.java": "3344af4b71735e9c3ec6df093049eca6bebe2df7536d3a9624b3569fc486ed98",
+    "src/main/java/com/iafenvoy/iceandfire/util/SearchCooldown.java": "606f3e9a5bf6d307ea7799a2f511a6a5e2068ec8cf451f6c748af3f97ff4b7ea",
+    "src/main/java/com/iafenvoy/iceandfire/world/DragonSummoning.java": "1cadfb97caa14ab0808e527d247ffdd04b389ed5a3e5c48f95210ce2b9613cd1",
+    "src/main/java/com/iafenvoy/iceandfire/world/siren/SirenDaylight.java": "11da098f40cedc77fbe429de05be6ee36923dcb48fbb307c10857a769752ecc9",
+    "src/regression/java/com/iafenvoy/iceandfire/regression/ClientRegressionTests.java": "8e737e06d76e10425a7b58122c4f10644abf48c6948d5686be4608bc47d617da",
+    "src/regression/java/com/iafenvoy/iceandfire/regression/IssueRegressionTests.java": "dede7d709f749d94f6e150ec3a12a0e0b3dbd5be68d5b8447696e9e99faea5b6",
+    "src/regression/resources/data/iceandfire/structure/regression_empty.nbt": "33f6ae83a190ee9c0168581a812389dec7bef84697762199448f6bba04b25736"
+  },
+  "unverified": [
+    "multiplayer interaction and packet delivery",
+    "in-world GPU visuals",
+    "published jar installed in a clean launcher",
+    "TPS/MSPT/FPS/JFR/GC benchmarks",
+    "JEI runtime and optional integration combinations",
+    "external optimization JAR mixin coexistence"
+  ],
+  "commit_build": {
+    "mod_version": "2.2",
+    "command": ".\\gradlew.bat build --console=plain",
+    "status": "PASS",
+    "artifact": "build/libs/iceandfire-2.2.jar",
+    "sha256": "c3aea40dbfea20065bb3904003a3c3082500d508e3f9f64e88d4bd4fb0f820ed",
+    "note": "The version was changed from 2.2-beta.4 to 2.2 after the regression runs; rebuilt before committing."
+  }
+}

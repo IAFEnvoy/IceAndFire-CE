@@ -69,7 +69,9 @@ public class JarBlock extends BaseEntityBlock {
     @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hit) {
         if (!this.empty && world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie && jar.hasProduced) {
+            if (world.isClientSide()) return InteractionResult.SUCCESS;
             jar.hasProduced = false;
+            com.iafenvoy.iceandfire.util.BlockEntitySync.update(jar);
             ItemEntity item = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get()));
             if (!world.isClientSide())
                 world.addFreshEntity(item);

@@ -1,0 +1,869 @@
+[
+  {
+    "id": "N01",
+    "priority": "P1",
+    "title": "乘骑控制包直接采纳客户端坐标",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHandlers.java",
+        "line": 47
+      }
+    ],
+    "trigger": "玩家与海马、死亡蠕虫或羽蛇有乘骑关系，并发送 dragon_control。",
+    "cause": "服务端对 payload.pos 直接 setPos，没有位移、速度、碰撞或世界边界校验。海马和羽蛇的所有权检查只包住 setControlState，没有包住 setPos；乘骑关系检查确实存在，因此不是任意移动全世界实体。",
+    "impact": "客户端可提交远距离位置移动所骑实体。正常包使用 BlockPos，也会把带小数的坐标取整，控制状态变化时存在位置跳动风险。",
+    "reproduce": "在隔离测试服骑上述实体，记录按控制键前后两端坐标；针对越界输入做本地处理器测试。审查未向任何服务器发送构造包。",
+    "direction": "由服务端权威移动逻辑决定位置，控制包只传意图；统一验证控制者及所有权。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "N02",
+    "priority": "P2",
+    "title": "方块实体同步全服广播，缺少维度归属",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/network/ClientNetworkHandlers.java",
+        "line": 69
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/PodiumBlockEntity.java",
+        "line": 83
+      }
+    ],
+    "trigger": "不同维度的相同坐标存在讲台底座、小精灵房屋或罐子，任意一处更新。",
+    "cause": "UpdatePodium / UpdatePixieHouse / UpdatePixieJar 只有 BlockPos，发送端 sendToAllPlayers，接收端在玩家当前 Level 按同坐标修改对象。API实现是全服务器 broadcastAll。",
+    "impact": "其他维度同坐标同类方块实体可能显示错误物品、小精灵颜色或产出状态；不跟踪该区块的玩家也收到流量。这里确认的是客户端错态，未证明服务端库存被改写。",
+    "reproduce": "两名玩家分别在主世界和下界同坐标放对应方块，改变一端，观察另一端；同时统计接收包数量。",
+    "direction": "按维度和区块跟踪范围分发，或在包中附维度并校验；优先使用标准方块实体更新机制。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "N03",
+    "priority": "P1",
+    "title": "讲台菜单未验证按钮编号即访问数组",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/screen/menu/LecternMenu.java",
+        "line": 125
+      }
+    ],
+    "trigger": "讲台中至少有三张手稿，客户端提交当前菜单ID和超出0–2的按钮编号。",
+    "cause": "possiblePagesInt[id] 在 Mth.clamp 之前执行。ServerGamePacketListenerImpl 只检查菜单ID、旁观者及 stillValid，未对本菜单按钮范围作检查。",
+    "impact": "可稳定到达数组越界异常；具体表现是断连、任务异常日志或其他影响，取决于包异常处理层。本报告不把它夸大为已验证的整服崩溃。",
+    "reproduce": "用独立菜单测试传入 -1、3 等编号，并满足手稿前置条件；无需在生产服发送异常包。",
+    "direction": "处理入口先验证编号范围，再读取数组和扣材料。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "N04",
+    "priority": "P2",
+    "title": "讲台菜单有效性恒为true",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/LecternBlockEntity.java",
+        "line": 178
+      }
+    ],
+    "trigger": "玩家打开讲台后离开有效距离，或讲台被替换、移除。",
+    "cause": "菜单委托的 LecternBlockEntity.stillValid 无条件返回 true，缺少距离与当前位置方块实体身份检查。",
+    "impact": "服务端无法使过期菜单自然失效，玩家仍持有旧容器引用并可尝试操作。拆除方块本身会掉落库存，不能据此断言物品复制。",
+    "reproduce": "开界面后由第二名玩家移除讲台，或保持界面移动/传送离开，再尝试翻页与取放。",
+    "direction": "校验玩家距离、Level及当前坐标的方块实体身份。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "F01",
+    "priority": "P2",
+    "title": "锻炉结构失效后仍切换到激活核心",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/DragonForgeCoreBlock.java",
+        "line": 48
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/DragonForgeCoreBlock.java",
+        "line": 78
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeBlockEntity.java",
+        "line": 87
+      }
+    ],
+    "trigger": "已组装锻炉被拆坏，prevAssembled由true变false。",
+    "cause": "tick检测assembled变化后调用不带布尔状态的setState；setState始终使用ACTIVATED_MAP。26版新增shouldChangedStateKeepBlockEntity，目标LevelChunk在保留BE时跳过preRemoveSideEffects，旧报告的掉库存原因不再成立。",
+    "impact": "激活的核心在拆坏多方块后仍保持激活外观/发光。不能沿用旧报告的库存丢失结论。",
+    "reproduce": "向锻炉放入物品后完成结构，再拆一角；分别核对库存保留、方块ID和亮度。",
+    "direction": "显式传递assembled状态，保留BE并选择正确的启用/禁用方块，或改用同一方块的状态属性。",
+    "status": "部分解决",
+    "version_note": "新版通过 shouldChangedStateKeepBlockEntity 保留核心BE，旧的切换掉库存路径已消除；但 setState 仍只取激活方块，拆坏结构后不能切回 disabled。"
+  },
+  {
+    "id": "F02",
+    "priority": "P2",
+    "title": "锻炉输入口永久保留旧核心引用",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeInputBlockEntity.java",
+        "line": 35
+      }
+    ],
+    "trigger": "输入口已连接核心，保留输入口而拆除、替换原核心。",
+    "cause": "core 只在 null 时查询，之后不检查 isRemoved 或 level.getBlockEntity(corePos) 是否仍是它。供能与可工作检查继续访问旧对象。",
+    "impact": "输入口可能向脱离世界的旧核心供能，或因旧库存不可冶炼而停止诱龙，新核心无法正常工作。该问题不适用于每tick重查邻居的锻炉砖。",
+    "reproduce": "工作一次后保留输入口，拆掉核心并重放，给新核心装料，比较重放输入口前后的受火结果。",
+    "direction": "缓存必须随邻居变化、对象移除及BE身份变化失效。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "F03",
+    "priority": "P2",
+    "title": "无龙焰时锻炉进度先减再加，无法正常衰减",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeBlockEntity.java",
+        "line": 92
+      }
+    ],
+    "trigger": "结构有效、材料可冶炼、lastDragonFlameTimer已归零，cookTime至少为2。",
+    "cause": "先 cookTime--，随后 isBurning 仍以 cookTime>0 判断，又 cookTime++。另一条 !isBurning() && cookTime>0 分支按当前定义永不可满足。",
+    "impact": "进度维持旧值，而非按代码意图回退。模型中2连续五步保持2、1则降到0；没有证据表明无火能自动无限出货，40tick余热也需与此区分。",
+    "reproduce": "给少量火后停止供火，等timer耗尽，持续观察进度；对照模型结果。",
+    "direction": "分离“有热源”和“有进度”状态，明确余热、停止、衰减规则。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "F04",
+    "priority": "P2",
+    "title": "锻炉输出合并只比物品类型，忽略数据组件",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeBlockEntity.java",
+        "line": 249
+      }
+    ],
+    "trigger": "输出槽有相同物品但不同 components 的栈，例如自定义名字、属性或自定义数据的配方结果。",
+    "cause": "canSmelt 仅 ItemStack.isSameItem，smeltItem 直接 grow 旧输出，不比组件。",
+    "impact": "新产物被并入旧组件栈，输出属性错误；普通无组件龙钢配方通常看不出此问题。",
+    "reproduce": "用数据包定义同物品不同组件的结果，预放另一组件栈后完成一次冶炼。",
+    "direction": "使用包含组件的堆叠兼容性检查，并同时遵守输入/输出栈上限。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "F05",
+    "priority": "P3",
+    "title": "配方assemble返回共享模板对象",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/recipe/DragonForgeRecipe.java",
+        "line": 61
+      }
+    ],
+    "trigger": "外部配方消费者取得 assemble 结果后修改数量或组件。",
+    "cause": "26版改用ItemStackTemplate，创建结果栈时调用result.create()。",
+    "impact": "旧共享输出栈问题在当前实现中已解决。",
+    "reproduce": "调用两次assemble，修改第一次的数量/组件，确认第二次及后续结果独立。",
+    "direction": "保留模板创建新栈的语义。",
+    "status": "已解决",
+    "version_note": "result 改为不可变模板 ItemStackTemplate；assemble/getResultItem 均调用 create() 返回新栈。"
+  },
+  {
+    "id": "S01",
+    "priority": "P2",
+    "title": "召唤水晶的卸载实体恢复链仍不完整",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/SummoningCrystalItem.java",
+        "line": 115
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/DragonBaseEntity.java",
+        "line": 2982
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/world/DragonPosWorldData.java",
+        "line": 45
+      }
+    ],
+    "trigger": "打开chunkLoadSummonCrystal后，绑定龙所在区块卸载；强制加载分支还要求存在有效位置记录。",
+    "cause": "仅在DragonBaseEntity.onClientRemoval调用addDragon，而DragonPosWorldData.get对客户端返回null；正常服务端位置表缺少维护入口。条件改正后，若位置表中已有记录，代码能setChunkForced(true)，但没有加载完成后的再次查找/召唤，也没有对应setChunkForced(false)。",
+    "impact": "常规情况下仍无法靠水晶找回已卸载龙；如果记录由其他路径预先写入，区块可永久保持强制加载且本次交互不自动完成召唤。位置表Codec和dirty已改善，不能再说它们完全没有实现。",
+    "reproduce": "分别测试已加载龙、刚卸载龙、重启后龙；诊断位置表及/forceload query，验证触发后会重试且区块票据最终被释放。",
+    "direction": "服务端维护带维度的位置记录，异步加载后重查实体，完成或失败时释放仅由本操作创建的区块加载请求。",
+    "status": "部分解决",
+    "version_note": "原错误的 isClientSide 条件已改正，位置表Codec及dirty也已实现；服务端写入入口仍缺失，加载后也没有重试召唤及解除强制区块。"
+  },
+  {
+    "id": "S02",
+    "priority": "P2",
+    "title": "小精灵罐缺少初次区块同步数据",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/JarBlockEntity.java",
+        "line": 98
+      }
+    ],
+    "trigger": "新玩家进入已有小精灵罐的区块，或客户端重载该区块。",
+    "cause": "Jar只提供getUpdatePacket，没有override getUpdateTag；默认tag为空，持久化中的PixieType/HasProduced等未进入初次同步。",
+    "impact": "客户端可能保持pixieType=0、默认产出状态等，非0颜色罐的粒子/模型状态错误，直到其他更新偶然纠正。服务端NBT本身不因此丢失。",
+    "reproduce": "放置非0颜色罐并产粉，另一客户端首次进入或重进区块，比较显示和交互状态。",
+    "direction": "定义完整且适量的初次同步tag，状态变化时发送标准更新。",
+    "status": "仍存在",
+    "version_note": "Jar仍没有 getUpdateTag；另外四种BE在26迁移中删除该方法，见V06。"
+  },
+  {
+    "id": "S03",
+    "priority": "P2",
+    "title": "小精灵罐/房屋关键状态变化未标记持久化",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/JarBlockEntity.java",
+        "line": 66
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/PixieHouseBlockEntity.java",
+        "line": 100
+      }
+    ],
+    "trigger": "区块已保存后产粉、收粉、小精灵进入或释放，且没有其他变化使该区块重新dirty。",
+    "cause": "hasProduced、hasPixie及相关库存/主人字段直接变更，关键路径未调用setChanged。网络广播不等于标记磁盘保存。",
+    "impact": "区块卸载/重启后可能回滚到旧状态；特定保存时序下可重复收粉或小精灵状态不一致。尚未做存档复现，不声称每次都丢档或必定复制。",
+    "reproduce": "先保存ready状态，再收粉；确保无其他区块写入，卸载并重载，检查HasProduced及实体数量。房屋进出做相同对照。",
+    "direction": "关键状态转移统一封装并setChanged；动画计时与持久化计时区分，避免每帧/每tick盲目存盘。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "A01",
+    "priority": "P1",
+    "title": "七种AI的全局模数节流可能永久错过搜索",
+    "evidence": "当前源码＋26.1.2 Mob/GoalSelector调度确认＋控制流模型；未做实体GameTest",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/CockatriceAITargetItemsGoal.java",
+        "line": 46
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITargetItemsGoal.java",
+        "line": 66
+      }
+    ],
+    "trigger": "完整GoalSelector调度长期落在奇数gameTime，搜索列表初始为空或需要刷新。",
+    "cause": "这些Goal只在gameTime%4==0时更新列表。Mob按(tickCount+entityId)%2隔tick执行完整selector，另一相位仅tick运行Goal；canUse不保证经过模4窗口。",
+    "impact": "部分实体的食物搜索、躲避、拾物或找马可能长期不启动/列表不刷新，而不只是延迟4tick。首次tick例外、随机门槛、竞争Goal和加载相位会影响实际表现，不是简单“奇数ID必坏”。",
+    "reproduce": "模型400tick：两相位均有200次完整调度，其中一相位100次允许搜索，另一相位0次。游戏中生成多只同类，满足同样前置条件，观察不同实例并记录canUse时间。",
+    "direction": "用实例级上次扫描时间/到期时间，首次必扫；不要以绝对gameTime取模充当调用频率保证。",
+    "status": "仍存在",
+    "version_note": "26.1.2 Mob.serverAiStep 仍隔tick交替调用完整GoalSelector与tickRunningGoals；全局模4门槛仍可能被固定相位错过。"
+  },
+  {
+    "id": "A02",
+    "priority": "P2",
+    "title": "DragonAITargetGoal初始目标为空却先要求非空",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITargetGoal.java",
+        "line": 32
+      }
+    ],
+    "trigger": "该Goal刚创建、target字段尚未选定时。",
+    "cause": "只有this.target!=null才调用super.canUse，而负责搜索并写入target的正是父类canUse。初始null无法通过首次搜索。",
+    "impact": "这个主动寻猎Goal不启动，驯服龙等依赖它的行为受影响。野龙另有DragonAITargetNonTamedGoal和反击Goal，因此不能推成“所有龙完全不攻击”。",
+    "reproduce": "给龙满足移动/饥饿/猎物条件，单独观察该Goal首次canUse及父类findTarget是否被调用。",
+    "direction": "先让父类选目标，再验证所选目标的体型、主人、食物等条件。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "A03",
+    "priority": "P2",
+    "title": "龙繁殖Goal使用旧生命周期方法名",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAIMateGoal.java",
+        "line": 48
+      }
+    ],
+    "trigger": "龙繁殖Goal运行期间。",
+    "cause": "定义continueExecuting而非canContinueToUse，没有override。父类canContinueToUse默认再调用canUse，重新getNearbyMate并覆盖targetMate。",
+    "impact": "原定配偶存活、发情和spawnBabyDelay<60继续条件没有被selector使用；运行中重复大范围查询、可能换配偶，且超时结束规则失效。",
+    "reproduce": "让两条龙发情但先隔开足够距离，记录运行中getNearbyMate频率及60步后的Goal状态；再让最近配偶变化。",
+    "direction": "正确覆写生命周期方法并保证运行期目标稳定、目标失效及时停止。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "A04",
+    "priority": "P2",
+    "title": "羊跟随独眼巨人的继续条件写反",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntitySheepAIFollowCyclopsGoal.java",
+        "line": 50
+      }
+    ],
+    "trigger": "羊找到活着的独眼巨人并启动跟随。",
+    "cause": "canContinueToUse在cyclops.isAlive时直接false。",
+    "impact": "活巨人导致跟随Goal立即停止并可能再启动，增加重复实体搜索与寻路；已死亡目标反而进入距离判断。",
+    "reproduce": "活巨人附近放羊，记录Goal的start/stop和路径查询次数；与死亡状态对照。",
+    "direction": "纠正存活判断，并审视MOVE flags及目标移除条件。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "A05",
+    "priority": "P3",
+    "title": "羽蛇观察邻近实体Goal的主体字段从未赋值",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntityAIWatchClosestIgnoreRiderGoal.java",
+        "line": 25
+      }
+    ],
+    "trigger": "羽蛇尝试使用EntityAIWatchClosestIgnoreRiderGoal。",
+    "cause": "构造参数entity只传给super，没有存入this.entity；乘客遍历最终全部与null比较，正常实体乘客列表不会匹配。",
+    "impact": "这个观察Goal的canUse永远不成功；不影响全部羽蛇AI。条件的正负方向也与IgnoreRider名称不一致，需按设计一起核对。",
+    "reproduce": "在羽蛇附近放不同实体，检查该Goal.canUse最终条件。",
+    "direction": "初始化主体引用并按真实设计排除乘骑关系。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "A06",
+    "priority": "P2",
+    "title": "小精灵逃跑Goal只在接近终点时继续",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIFleeGoal.java",
+        "line": 70
+      }
+    ],
+    "trigger": "持物、未驯服小精灵选到较远躲避位置。",
+    "cause": "继续条件是distanceToSqr(hidePlace+0.5)<2，远离终点反而false。stop清slowSpeed，却没有清MoveControl目标。",
+    "impact": "Goal提前退出、重复选点与状态切换；移动控制可能仍继续移动，故不直接断言完全不能逃跑。另受A01搜索相位问题影响。",
+    "reproduce": "小精灵偷取物品后靠近它，记录离目标距离及Goal运行/停止状态。",
+    "direction": "明确以未到达、安全距离和目标有效性作为继续条件，stop清理相关移动状态。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "E01",
+    "priority": "P2",
+    "title": "海蛇缩放替换部件对象，世界部件索引可能保留旧对象",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/SeaSerpentEntity.java",
+        "line": 198
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/SeaSerpentEntity.java",
+        "line": 230
+      }
+    ],
+    "trigger": "海蛇已登记到Level后refreshDimensions检测scale与lastScale不同；构造时lastScale仍为0，初次tick也值得验证。",
+    "cause": "updateScale一开始重建9元素数组，随后创造全新部件；Level仅在onTrackingStart把原getParts对象登记到map，更新位置只遍历新数组，未重登记。",
+    "impact": "世界查询/攻击射线与当前移动部件可能指向不同对象，导致部件碰撞盒、命中或兼容模组识别错误。ID相同不等于对象相同。",
+    "reproduce": "记录登记时getParts与世界part map对象身份，首tick、缩放和重新跟踪后比较；观察F3+B与尾部攻击。",
+    "direction": "保留已注册部件身份并原地更新尺寸，或严格按框架生命周期重登记。龙和九头蛇并非都存在相同重建模式。",
+    "status": "仍存在",
+    "version_note": "已适配 NeoForge PartEntity 和连续ID，但 updateScale 仍整体替换9个部件，未同步刷新两端世界索引。"
+  },
+  {
+    "id": "E02",
+    "priority": "P2",
+    "title": "死亡蠕虫体积寻路只以最后一个位置决定阻塞",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/pathfinding/DeathWormNodeMaker.java",
+        "line": 59
+      }
+    ],
+    "trigger": "蠕虫寻路体积跨多个方块，其中有不可通行实心方块，而最后采样位置为沙/空气。",
+    "cause": "isFree循环没有对不可通行体素立即返回BLOCKED，除特定BREACH条件外最终只检查mutable停留的最后位置。",
+    "impact": "混合体积可能被判可通行，产生走进障碍、卡住或重复重算路径风险。实际碰撞系统是否阻止穿入仍需游戏验证。",
+    "reproduce": "用较大蠕虫测试一侧沙、一侧石墙通道，对照所有体素的判定与生成路径。",
+    "direction": "按完整实体体积聚合通行性，并区分沙内移动与破沙出口。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "E03",
+    "priority": "P2",
+    "title": "金属羽鸟群成员从不清理已移除实体",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/util/StymphalianBirdFlock.java",
+        "line": 54
+      }
+    ],
+    "trigger": "鸟群部分成员死亡、卸载，仍有其他成员存活并保留flock。",
+    "cause": "members只add，无remove清理；leader死后从含死亡/已卸载成员的整个列表随机选。多处群体指令也遍历全部旧成员。",
+    "impact": "可保留已移除鸟引用、浪费遍历，并选出无效leader。该问题随存活群对象寿命持续，不是已证明跨所有世界永久泄漏。",
+    "reproduce": "建立鸟群，杀死/卸载多数成员后观察members、leader和存活鸟行为，检查引用能否释放。",
+    "direction": "按Level及实体生命周期移除成员，只从有效活成员选leader。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "W01",
+    "priority": "P2",
+    "title": "龙息转化地形恢复逻辑写在错误的tick回调",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/ReturningStateBlock.java",
+        "line": 45
+      }
+    ],
+    "trigger": "龙息把地形变为revert=true的焦土、冻土等，期望随后随机恢复。",
+    "cause": "属性启用了randomTicks，但恢复写在scheduled tick而非randomTick；BlockBehaviour.randomTick为空，不会转调tick。普通ReturningStateBlock没有相应调度来源。",
+    "impact": "普通转化块不会按预期自然恢复；掉落方块/路径可能在放置或邻居变化触发的计划tick偶尔恢复，但也不是持续随机恢复。",
+    "reproduce": "对普通返回块设置revert=true，隔离场景提高randomTickSpeed并等待；再用显式scheduled tick对照。",
+    "direction": "恢复逻辑使用正确随机回调；下落与路径生存检查仍按各自scheduled tick语义处理。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "W02",
+    "priority": "P3",
+    "title": "小精灵村庄随机范围使一个道路方向和一种房屋不可生成",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/world/structure/PixieVillageStructure.java",
+        "line": 86
+      }
+    ],
+    "trigger": "生成小精灵村庄。",
+    "cause": "方向用nextInt(3)进入四方向from2DDataValue，houseColor用nextInt(5)却有case5深色橡木房。",
+    "impact": "生成分布有偏，一个方向和case5房屋分支不可达；属于内容正确性问题，不是运行时崩溃。",
+    "reproduce": "检查随机数上界即可证明；游戏内统计多村庄道路/房屋分布可验证体验。",
+    "direction": "根据实际可选集合大小随机选择，避免硬编码数量脱节。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "C01",
+    "priority": "P2",
+    "title": "鸡蛇权杖将耐久累计放在全局Item实例",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/CockatriceScepterItem.java",
+        "line": 36
+      }
+    ],
+    "trigger": "两名玩家或两把权杖交错/同时使用。",
+    "cause": "specialWeaponDmg是Item单例字段，每目标每秒递增，任意玩家releaseUsing扣自己当前栈后把共享字段归零。",
+    "impact": "A累计消耗可由B松手时承担，A随后松手可能不扣；同一进程逻辑两端还可能共同访问此实例。",
+    "reproduce": "两玩家对不同数量目标使用不同时间，交错松手，对比每把耐久变化。",
+    "direction": "使用者/ItemStack独立存储使用状态，耐久结算由服务端一次性完成。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "C02",
+    "priority": "P2",
+    "title": "权杖目标列表清理绕过附件同步，未找到的UUID也不回收",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/CockatriceScepterItem.java",
+        "line": 140
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/data/component/MiscData.java",
+        "line": 70
+      }
+    ],
+    "trigger": "松开权杖、目标不再被注视，或目标已卸载/移除。",
+    "cause": "直接clear/iterator.remove可变列表不markDirty；checkScepterTarget也未标记，且getEntity返回null时不删除。服务端attackTargets遇未找到实体直接continue。",
+    "impact": "远端可能保留旧目标/光束状态，未解析UUID可持续存在并参与后续遍历。客户端自行按凋零清理只能缓解部分情形。",
+    "reproduce": "第三客户端旁观权杖开始、松手和目标卸载，比较两端附件UUID列表和同步包。",
+    "direction": "通过封装的添加/删除接口同步状态；明确卸载目标的保留期限和失效规则。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "C03",
+    "priority": "P2",
+    "title": "连锁闪电BFS重复入队、重复查询相同范围",
+    "evidence": "当前源码＋队列控制流模型；未做伤害GameTest",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/ability/LightningMultihitAbility.java",
+        "line": 34
+      }
+    ],
+    "trigger": "范围内多个可见Mob，数量低于搜索预算且尚未出队的Mob会再次被发现。",
+    "cause": "只在出队后加入attacked，入队时不去重。每一轮还围绕固定attacker.position查询同一范围，attacked使用LinkedList.contains。",
+    "impact": "模型4只Mob、上限10时处理顺序A,B,C,D,C,D,D，重复hurt尝试、闪电连线及实体查询。伤害免疫帧可能阻止实际重复扣血，不能把hurt调用次数等同伤害倍数。静态可见集合大于上限时首轮已填满队列，本例不会因此漏掉原本预算内独特目标。",
+    "reproduce": "用4只Mob和默认上限10，记录出入队、hurt尝试及lightnings；模型已验证重复入队。",
+    "direction": "入队时维护已发现集合，固定范围可一次查询；若设计是真正逐目标扩散，则按当前节点位置及明确距离/伤害规则处理。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "C04",
+    "priority": "P2",
+    "title": "幽灵剑能力忽略触发手，始终使用主手物品",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/ability/SummonGhostSwordAbility.java",
+        "line": 29
+      }
+    ],
+    "trigger": "副手物品带SUMMON_GHOST_SWORD标签，并触发副手swing。",
+    "cause": "Mixin按传入hand检查标签，active却丢掉hand，改取MAIN_HAND并用于伤害、耐久和冷却。",
+    "impact": "副手能力可能读取/损耗无关主手武器，伤害和冷却对象错误。默认组件为空对象与被明确移除组件的null应区分，未另报普通物品必NPE。",
+    "reproduce": "主手普通武器、副手幽灵剑，触发副手挥动，记录投射物伤害、耐久及冷却所属物品。",
+    "direction": "传递触发手和实际栈，服务端核对后生成投射物与结算。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "R01",
+    "priority": "P2",
+    "title": "图鉴每帧两次打开并解析文本，输入流未关闭",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/screen/gui/bestiary/BestiaryScreen.java",
+        "line": 677
+      }
+    ],
+    "trigger": "打开图鉴章节页面并持续渲染。",
+    "cause": "drawPerPage先imageFromTxt再writeFromTxt，两处对同语言/章节/页调用resource.open和IOUtils.readLines，无try-with-resources。两段分别解析图片指令与正文。",
+    "impact": "产生重复资源读取、字符串解析和对象分配，输入流未显式关闭。60FPS下理论是每秒120次资源打开；这是调用量推算，不是磁盘物理读取次数或FPS提升数据。资源缺失/解析异常还可能逐帧打日志。",
+    "reproduce": "用JFR/分配分析观察图鉴开启前后resource.open、readLines、字符串与ItemStack分配，跟踪close与句柄。",
+    "direction": "按语言、章节、页缓存解析后的内容，资源重载时失效；用try-with-resources关闭流。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "R02",
+    "priority": "P2",
+    "title": "石像每次render都重新烘焙备用猪模型",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/StoneStatueEntityRenderer.java",
+        "line": 99
+      }
+    ],
+    "trigger": "任意石像进入渲染，包括modelMap已命中。",
+    "cause": "26版getModel先查询缓存，只有未命中才new PigModel(context.bakeLayer(PIG))。",
+    "impact": "旧的每帧无条件烘焙已解决；仍存在其他模型分配热点，见性能观察。",
+    "reproduce": "固定视角观察同类型多座石像，缓存建立后确认没有重复PigModel烘焙。",
+    "direction": "保留按需烘焙；另行处理R03的状态隔离问题。",
+    "status": "已解决",
+    "version_note": "getModel 先查 modelMap，命中直接返回；PigModel/bakeLayer 只在类型首次缓存未命中时建立。"
+  },
+  {
+    "id": "R03",
+    "priority": "P2",
+    "title": "石像假实体按类型缓存，串用第一座石像的NBT",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/StoneStatueEntityRenderer.java",
+        "line": 83
+      }
+    ],
+    "trigger": "同屏或先后渲染相同实体类型、不同NBT的多座石像。",
+    "cause": "hollowEntityMap只按实体类型字符串索引，只有缓存首次创建才load trappedTag，后续石像复用第一次的fakeEntity。",
+    "impact": "例如不同巨魔类型使用第一座的石像纹理、不同九头蛇头数使用第一座的头数。持有旧ClientLevel的风险需核对渲染器重建生命周期，未当成已实测跨世界内存泄漏。",
+    "reproduce": "制作两种巨魔或不同头数九头蛇石像，交换渲染先后顺序，比较外观。",
+    "direction": "模型模板可按类型缓存，但可变实体状态应按石像身份/数据版本隔离或正确更新。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "N05",
+    "priority": "P2",
+    "title": "开始跟踪鸡或村民就触发受攻击警报",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/event/handler/ServerEvents.java",
+        "line": 162
+      }
+    ],
+    "trigger": "生存玩家走近、重进区块或其他原因开始跟踪鸡/村民，附近有非自己所有的鸡蛇/羽蛇。",
+    "cause": "onLivingSetTarget实际订阅PlayerEvent.StartTracking，直接把开始跟踪的玩家作为attacker交给同一套攻击警报函数；不是只在攻击事件调用。函数会为附近守卫setTarget(player)。",
+    "impact": "正常加载/接近也可能被误当作攻击村民或鸡，引起仇恨；每个被跟踪目标还附带范围实体查询。函数仍有创造模式/同主人等过滤，因此不是所有玩家必定受攻击。",
+    "reproduce": "在鸡旁放非己驯服鸡蛇，或村民旁放羽蛇，生存玩家从跟踪范围外走入，期间不攻击任何实体，记录守卫target。",
+    "direction": "把受攻击警报绑定实际攻击/伤害事件，开始跟踪仅承担需要的同步。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "S04",
+    "priority": "P3",
+    "title": "锻炉进度修改仍未完整标记持久化",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeBlockEntity.java",
+        "line": 184
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/DragonForgeBlockEntity.java",
+        "line": 329
+      }
+    ],
+    "trigger": "区块刚完成保存后只改变锻炉进度，且没有其他触发保存的方块/实体修改。",
+    "cause": "CookTime现在直接转int保存，short窄化已消除；tick仅在完成或isBurning转变等有限分支setChanged，常规递增、归零以及transferPower仍没有一致dirty策略。",
+    "impact": "稳定区块中进度变化可能不触发重新保存，重载可回退到旧进度；不再存在32768处short回绕。默认短配方是否出现回退依赖实际保存时序。",
+    "reproduce": "为长配方设置32768以上进度，确认序列化保持正数；另在区块保存后改变进度，检查BE/区块dirty并卸载重载。",
+    "direction": "定义合理持久化粒度，在进度和供能状态改变时标记需要保存。",
+    "status": "部分解决",
+    "version_note": "保存改为 int，旧short回绕消除；运行中的进度/供能修改仍未完整标记dirty。"
+  },
+  {
+    "id": "L01",
+    "priority": "P3",
+    "title": "独眼巨人破坏树木的减速计算被丢弃",
+    "evidence": "当前源码及相关目标API核对；未做该问题的游戏内定向复现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/entity/CyclopsEntity.java",
+        "line": 359
+      }
+    ],
+    "trigger": "开启griefing，独眼巨人撞到可破坏的树叶/原木。",
+    "cause": "getDeltaMovement().scale(0.6)返回新Vec3，返回值没有传回setDeltaMovement。",
+    "impact": "该行无实际减速效果；仅确认局部逻辑，不扩展为全部移动控制失效。",
+    "reproduce": "比较命中树木前后该调用处速度向量；确认scale前后原对象不变。",
+    "direction": "将计算结果赋给运动状态，并确认是否应该每方块重复减速。",
+    "status": "仍存在",
+    "version_note": "在26.1.2当前实现中仍保留相关控制流；已按当前源码重新定位。"
+  },
+  {
+    "id": "V01",
+    "title": "底座的非龙蛋物品分支没有提交绘制",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/block/PodiumBlockEntityRenderer.java",
+        "line": 76
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/screen/menu/PodiumMenu.java",
+        "line": 13
+      }
+    ],
+    "trigger": "底座槽位放入非DragonEggItem物品（菜单允许普通物品），或旧存档中已有普通物品。",
+    "cause": "非蛋分支只对PoseStack做平移旋转缩放，注释称下一pass绘制，但State没有ItemStackRenderState，也没有resolver/update或submit调用；全链没有补交。",
+    "impact": "槽位中的普通物品在世界中缺失显示，龙蛋分支仍能绘制。",
+    "reproduce": "底座先放龙蛋再放普通物品，关闭菜单观察；重进区块再对照槽位内容。",
+    "direction": "在extract阶段准备物品渲染状态，在submit阶段实际提交。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V02",
+    "title": "人形护甲的多个槽位共享延迟绘制模型状态",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/feature/BipedArmorFeatureRenderer.java",
+        "line": 45
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/feature/BipedArmorFeatureRenderer.java",
+        "line": 51
+      }
+    ],
+    "trigger": "同一恐惧人形实体同时装备头、胸、脚等多件护甲；或同屏多只使用同一renderer。",
+    "cause": "CHEST/FEET/HEAD复用同一个modelArmor；提交前setModelAttributes/setModelSlotVisible修改姿态和HideableModelRenderer.invisible，lambda执行时才读模型。CustomFeatureRenderer.Storage仅复制PoseStack矩阵并存回调，不复制模型。",
+    "impact": "后提交槽位覆盖前面槽位的可见部件和姿态，例如全套装备的外层三次绘制均可能读到最后HEAD状态，胸甲/靴子缺失或纹理画到错误部件。此问题单个实体就能触发。",
+    "reproduce": "让恐惧骑士/巫妖穿四件不同材质护甲，分别单件及全套对照。控制流模型已证明回调读取最后状态，但不是GPU画面实测。",
+    "direction": "每次提交保存完整模型姿态及invisible等可见性，或把装备渲染改为真正由独立渲染状态驱动；只缓存PoseStack不足。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V03",
+    "title": "多处自定义几何提交没有保存独立模型姿态",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/feature/HydraHeadFeatureRenderer.java",
+        "line": 46
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/LegacyEntityModelRenderer.java",
+        "line": 48
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/block/PixieHouseBlockEntityRenderer.java",
+        "line": 66
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/item/DeathwormGauntletRenderer.java",
+        "line": 28
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/DragonSkullEntityRenderer.java",
+        "line": 80
+      }
+    ],
+    "trigger": "同帧绘制两只不同断头/攻击进度的九头蛇、两枚不同动画状态的蛋、多个精灵屋、不同开合状态的蠕虫手套或不同朝向的龙头骨。",
+    "cause": "这些路径在submit中修改共享模型，随后将renderToBuffer封装为延迟回调，却未捕获姿态。九头蛇MODELS按头编号全局共享；DragonEgg的基础桥、精灵屋、手套也共享模型。LegacyMobRenderer主身体已有ModelPose.capture，但该机制没有覆盖这些路径。",
+    "impact": "较早实体/物品可读取较晚实例的动画或可见性，例如两只九头蛇的不同断头状态串用、两枚蛋同姿态。引用live entity本身未被泛化为线程安全漏洞。",
+    "reproduce": "同屏放两只九头蛇并让它们断不同编号的头，交换观察/提交顺序；另放静止与孵化中的同类蛋，以及闭合与伸出的手套。",
+    "direction": "逐个审计custom geometry回调的可变捕获，捕获每次提交需要的模型状态；共享的不可变网格仍可保留。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V04",
+    "title": "LegacyMobRenderer无条件提交隐形生物的实体身体",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/LegacyMobRenderer.java",
+        "line": 111
+      }
+    ],
+    "trigger": "龙、小精灵、恐惧生物等使用此渲染桥的生物获得隐形状态。",
+    "cause": "桥继承基础EntityRenderer，submit无条件使用entityCutout提交整个身体，未执行LivingEntityRenderer的isBodyVisible/getRenderType分支。基础EntityRenderer虽提取isInvisible，但不会替子类取消这次自定义几何提交。",
+    "impact": "隐形状态下仍可绘制完整身体，失去原MobRenderer对隐形、旁观/队伍半透明和仅轮廓的处理。",
+    "reproduce": "对小精灵或龙使用/effect give ... minecraft:invisibility，再检查普通玩家视角和发光轮廓组合。",
+    "direction": "按26版LivingEntityRenderer语义选择身体RenderType和提交条件，同时单独保留应显示的光效/装备层。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V05",
+    "title": "塞壬昼夜判定把日照角度阈值当作原始时钟tick",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/world/siren/SirenMorningDespawn.java",
+        "line": 44
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/world/siren/SirenSpawnPlacements.java",
+        "line": 53
+      }
+    ],
+    "trigger": "启用塞壬清晨消失/夜间海滩生成，在默认主世界时钟运行。",
+    "cause": "isDay使用[6000,18000)，isNight使用其补集；26.1.2 Timelines仍定义day=1000、noon=6000、night=13000、midnight=18000。旧isDay的0.25/0.75是经过偏移/缓动的太阳角度，不能直接乘24000作为clock ticks。",
+    "impact": "1000（白天）被当作夜间，13000（夜晚）被当作白天；自然生成且带标签的塞壬在前半夜可能被清晨清理，清晨却不清理。生成还有Monster亮度等其他门槛，因此不能据此声称晴天上午必能刷出。",
+    "reproduce": "暂停时钟，依次设1000、6000、13000、18000；用真正自然生成或带iceandfire_night_siren标签的未命名塞壬观察至少20tick。/summon默认不会触发自然生成标签，不能直接拿它证明未消失。",
+    "direction": "依据目标版本环境属性/时间轴定义昼夜语义，至少以官方时钟标记校验默认时段，考虑无默认时钟和自定义时间轴。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V06",
+    "title": "四种方块实体在移植中丢失首次区块同步数据",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/EggInIceBlockEntity.java",
+        "line": 77
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/PixieHouseBlockEntity.java",
+        "line": 84
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/PodiumBlockEntity.java",
+        "line": 148
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/item/block/entity/LecternBlockEntity.java",
+        "line": 218
+      }
+    ],
+    "trigger": "客户端首次跟踪已放置的冰中龙蛋、小精灵房屋、装物品的底座或讲台，尤其重连/离开再返回区块。",
+    "cause": "与aa2f11a6比较，这四个类迁移ValueInput/ValueOutput时删除了getUpdateTag覆写。目标BlockEntity默认返回空CompoundTag；getUpdatePacket(create(this))也使用getUpdateTag，不会自动把saveAdditional完整数据同步给客户端。",
+    "impact": "房屋hasPixie等保持客户端默认值，底座物品和讲台书本展示缺失；冰中龙蛋客户端type缺失导致蛋显示不正确或不显示。菜单槽位另有容器同步，不能把打开菜单后的正常显示当首次区块同步正确。Jar的同类旧缺陷单独保留为S02，不重复计数。",
+    "reproduce": "服务端先填入这些BE的数据，让第二客户端首次进入，且不打开GUI；然后重连、卸载重载区块和触发更新，检查两端字段及渲染。",
+    "direction": "恢复包含必要展示字段的getUpdateTag，并使用标准区块跟踪范围的BE更新；存档Codec迁移与客户端同步必须分别验证。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V07",
+    "title": "模型在构造时已就绪会跳过龙/海蛇附加层初始化",
+    "priority": "P2",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/LegacyMobRenderer.java",
+        "line": 39
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/LegacyMobRenderer.java",
+        "line": 52
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/DragonBaseEntityRenderer.java",
+        "line": 23
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/render/entity/SeaSerpentEntityRenderer.java",
+        "line": 22
+      }
+    ],
+    "trigger": "注册所用Supplier构造renderer时已能返回Tabula模型，例如模型已缓存后重建renderer/资源重载的路径。",
+    "cause": "LegacyMobRenderer构造函数把非null模型直接标为modelInitialized=true；ensureModel仅在false时调用onModelAvailable。注册使用的DragonBaseEntityRenderer Supplier重载本身不addDragonLayers，SeaSerpent也仅在onModelAvailable添加古代层。",
+    "impact": "满足该条件时龙的护甲、旗帜、骑手、雄性/眼睛层根本没有加入；海蛇古代层同样可能缺失。若首次构造返回null再稍后成功则不会触发此缺陷，因此不是所有启动场景必现。",
+    "reproduce": "记录构造时supplier是否返回非null、onModelAvailable调用次数和layers数量；已有模型时重建renderer，检查龙护甲、旗帜和骑手，随后F3+T再检查。",
+    "direction": "将模型就绪和附加层已初始化分开，在安全的构造完成后统一执行一次初始化；处理资源重载后的模型引用更新。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  },
+  {
+    "id": "V08",
+    "title": "内置旧版材质包仍声明1.21的资源格式34",
+    "priority": "P3",
+    "status": "新增发现",
+    "refs": [
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/java/com/iafenvoy/iceandfire/IceAndFireClient.java",
+        "line": 56
+      },
+      {
+        "path": "E:/Java/IceAndFire-CE/src/main/resources/resourcepacks/iaf_legacy/pack.mcmeta",
+        "line": 3
+      }
+    ],
+    "trigger": "玩家在26.1.2资源包界面选择内置iaf_legacy材质包。",
+    "cause": "resourcepacks/iaf_legacy/pack.mcmeta仍为pack_format:34，没有声明支持26.1.2的84.0。目标版本PackFormat保留旧格式解析，但将其支持范围解释为旧格式，不能把更新主模组版本等同于更新内置包声明。",
+    "impact": "该内置包会被判断为版本不匹配；可能需要玩家确认强制启用。未把它报告为必定崩溃/完全不能使用。",
+    "reproduce": "打开资源包选择界面查看iaf_legacy兼容性提示；启用后实际检查其覆盖纹理。",
+    "direction": "验证覆盖资源适用26.1.2后，以新版min_format/max_format等字段声明经过验证的支持范围。",
+    "evidence": "当前源码与26.1.2.97目标API确认；客户端画面未实测"
+  }
+]

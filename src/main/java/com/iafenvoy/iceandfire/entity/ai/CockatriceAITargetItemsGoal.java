@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.CockatriceEntity;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.util.IafMath;
+import com.iafenvoy.iceandfire.util.SearchCooldown;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TargetGoal {
+    private final SearchCooldown searchCooldown = new SearchCooldown(4);
     protected final DragonAITargetItemsGoal.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected final int targetChance;
@@ -43,9 +45,10 @@ public class CockatriceAITargetItemsGoal<T extends ItemEntity> extends TargetGoa
             return false;
         }
 
-        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+        if (this.searchCooldown.isReady(this.mob.level().getGameTime()))
             this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
+        if (!this.list.isEmpty()) this.list.removeIf(item -> !item.isAlive() || item.level() != this.mob.level() || !this.targetEntitySelector.test(item));
         if (this.list.isEmpty()) return false;
         else {
             this.list.sort(this.theNearestAttackableTargetSorter);

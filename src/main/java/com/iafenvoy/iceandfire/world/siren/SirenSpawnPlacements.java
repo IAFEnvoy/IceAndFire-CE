@@ -36,21 +36,16 @@ public final class SirenSpawnPlacements {
     }
 
     private static boolean canSirenSpawn(EntityType<? extends Monster> type, ServerLevelAccessor level, EntitySpawnReason reason, BlockPos pos, RandomSource random) {
-        return isNight(level)
+        return isNight(level, pos)
                 && DANGER_RADIUS.isFarEnoughFromSpawn(level, pos)
                 && isOnSurface(level, pos)
                 && isAwayFromPlayers(level, reason, pos)
                 && Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }
 
-    /**
-     * {@code Level#isNight()} was removed in 26.1.2 in favour of the world clock system, so the night
-     * window is derived from the dimension's default clock. The thresholds match the removed vanilla
-     * implementation (0.75 to 1.0 of the day-night cycle).
-     */
-    private static boolean isNight(ServerLevelAccessor level) {
-        long time = level.getLevel().getDefaultClockTime() % 24000L;
-        return time < 6000L || time >= 18000L;
+    private static boolean isNight(ServerLevelAccessor level, BlockPos pos) {
+        return level.getLevel().dimensionType().defaultClock().isPresent()
+                && !SirenDaylight.isDay(level.getLevel(), pos);
     }
 
     private static boolean isOnSurface(ServerLevelAccessor level, BlockPos pos) {

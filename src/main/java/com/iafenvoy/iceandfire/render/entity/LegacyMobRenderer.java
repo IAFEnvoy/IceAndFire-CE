@@ -5,6 +5,9 @@ import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import com.iafenvoy.uranus.client.model.util.HideableModelRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -16,7 +19,10 @@ import net.minecraft.world.entity.Mob;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +42,7 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
         super(context);
         this.modelSupplier = modelSupplier;
         this.model = modelSupplier.get();
-        this.modelInitialized = this.model != null;
+        this.modelInitialized = false;
         this.shadowRadius = shadowRadius;
     }
 
@@ -78,6 +84,7 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
     public void extractRenderState(T entity, LegacyEntityRenderState<T> state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         state.entity = entity;
+        state.isInvisibleToPlayer = state.isInvisible && entity.isInvisibleTo(Minecraft.getInstance().player);
         // EntityRenderer only fills the base render state, while these fields are normally provided by
         // LivingEntityRenderer#extractRenderState, so fill them here.
         float headRot = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
@@ -107,12 +114,18 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
         this.scale(entity, poseStack, state.partialTick);
         poseStack.translate(0.0F, -1.501F, 0.0F);
         this.model.setupAnim(entity, state.walkAnimationPos, state.walkAnimationSpeed, state.ageInTicks, state.yRot, state.xRot);
+        boolean translucent = state.isInvisible && !state.isInvisibleToPlayer;
+        Identifier texture = this.getTextureLocation(entity);
+        RenderType bodyType = translucent ? RenderTypes.entityTranslucentCullItemTarget(texture)
+                : !state.isInvisible ? RenderTypes.entityCutout(texture, false)
+                : state.appearsGlowing() ? RenderTypes.outline(texture) : null;
+        int bodyColor = translucent ? 0x26FFFFFF : state.isInvisible ? state.outlineColor : -1;
         ModelPose modelPose = ModelPose.capture(this.model);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity), false), (pose, buffer) -> {
+        if (bodyType != null) collector.submitCustomGeometry(poseStack, bodyType, (pose, buffer) -> {
             modelPose.apply();
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
-            this.model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.pack(OverlayTexture.u(0.0F), OverlayTexture.v(state.hasRedOverlay)), state.outlineColor == 0 ? -1 : state.outlineColor);
+            this.model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.pack(OverlayTexture.u(0.0F), OverlayTexture.v(state.hasRedOverlay)), bodyColor);
         });
         for (LegacyEntityFeature<T> feature : this.legacyFeatures)
             feature.submit(entity, state.partialTick, poseStack, collector, camera, state.lightCoords, state.outlineColor);
@@ -127,11 +140,31 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
             this.parts = parts;
         }
 
+        /** The collector copies matrices, but does not copy Uranus model state. */
+        public static void submit(SubmitNodeCollector collector, PoseStack stack, RenderType type,
+                                  AdvancedEntityModel<?> model, SubmitNodeCollector.CustomGeometryRenderer geometry) {
+            ModelPose snapshot = capture(model);
+            collector.submitCustomGeometry(stack, type, (pose, buffer) -> {
+                snapshot.apply();
+                geometry.render(pose, buffer);
+            });
+        }
+
         public static ModelPose capture(AdvancedEntityModel<?> model) {
             List<ModelPartPose> parts = new ArrayList<>();
+            Set<AdvancedModelBox> visited = Collections.newSetFromMap(new IdentityHashMap<>());
             for (AdvancedModelBox part : model.getAllParts())
-                parts.add(new ModelPartPose(part));
+                capturePart(part, parts, visited);
             return new ModelPose(parts);
+        }
+
+        private static void capturePart(AdvancedModelBox part, List<ModelPartPose> parts, Set<AdvancedModelBox> visited) {
+            if (!visited.add(part)) return;
+            parts.add(new ModelPartPose(part));
+            // Some legacy models list only their biped roots in getAllParts().
+            if (part.childModels != null)
+                for (var child : part.childModels)
+                    if (child instanceof AdvancedModelBox advanced) capturePart(advanced, parts, visited);
         }
 
         public void apply() {
@@ -145,7 +178,7 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
         private final float rotateAngleX, rotateAngleY, rotateAngleZ;
         private final float scaleX, scaleY, scaleZ;
         private final float offsetX, offsetY, offsetZ;
-        private final boolean showModel;
+        private final boolean showModel, scaleChildren, invisible;
 
         private ModelPartPose(AdvancedModelBox part) {
             this.part = part;
@@ -162,6 +195,8 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
             this.offsetY = part.offsetY;
             this.offsetZ = part.offsetZ;
             this.showModel = part.showModel;
+            this.scaleChildren = part.scaleChildren;
+            this.invisible = part instanceof HideableModelRenderer hideable && hideable.invisible;
         }
 
         private void apply() {
@@ -178,6 +213,8 @@ public abstract class LegacyMobRenderer<T extends Mob, M extends AdvancedEntityM
             this.part.offsetY = this.offsetY;
             this.part.offsetZ = this.offsetZ;
             this.part.showModel = this.showModel;
+            this.part.scaleChildren = this.scaleChildren;
+            if (this.part instanceof HideableModelRenderer hideable) hideable.invisible = this.invisible;
         }
     }
 }

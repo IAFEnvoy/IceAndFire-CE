@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.render.model.CockatriceChickModel;
 import com.iafenvoy.iceandfire.render.model.CockatriceModel;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -107,7 +108,7 @@ public class CockatriceEntityRenderer extends EntityRenderer<CockatriceEntity, L
         this.scale(entity, poseStack);
         poseStack.translate(0.0F, -1.501F, 0.0F);
         model.setupAnim(entity, state.walkAnimationPos, state.walkAnimationSpeed, state.ageInTicks, state.yRot, state.xRot);
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity)), (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, RenderTypes.entityCutout(this.getTextureLocation(entity)), model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             model.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.pack(0, state.hasRedOverlay), state.outlineColor == 0 ? -1 : state.outlineColor);

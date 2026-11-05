@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.render.model.HydraBodyModel;
 import com.iafenvoy.iceandfire.render.model.HydraHeadModel;
 import com.iafenvoy.uranus.client.model.AdvancedModelBox;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -44,7 +45,7 @@ public class HydraHeadFeatureRenderer implements LegacyEntityFeature<HydraEntity
             poseStack.translate(TRANSLATE[heads - 1][head - 1] * 0.5F, 0.0F, 0.0F);
             poseStack.mulPose(Axis.YP.rotationDegrees(ROTATE[heads - 1][head - 1]));
             model.setupAnim(hydra, 0.0F, 0.0F, ageInTicks, 0.0F, 0.0F);
-            collector.submitCustomGeometry(poseStack, type, (pose, buffer) -> {
+            ModelPose.submit(collector, poseStack, type, model, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, outlineColor == 0 ? -1 : outlineColor);

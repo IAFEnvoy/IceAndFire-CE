@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.render.entity.GorgonEntityRenderer;
 import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.model.GorgonModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -23,7 +24,7 @@ public class GorgonEyesFeatureRenderer implements LegacyEntityFeature<GorgonEnti
     @Override
     public void submit(GorgonEntity entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int lightCoords, int outlineColor) {
         if (entity.getAnimation() == GorgonEntity.ANIMATION_SCARE || entity.getAnimation() == GorgonEntity.ANIMATION_HIT) {
-            collector.submitCustomGeometry(poseStack, RenderTypes.eyes(TEXTURE), (pose, buffer) -> {
+            ModelPose.submit(collector, poseStack, RenderTypes.eyes(TEXTURE), this.model, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 this.model.renderToBuffer(modelStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);

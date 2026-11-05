@@ -33,7 +33,6 @@ import java.util.function.Consumer;
 
 public class CockatriceScepterItem extends Item {
     private final Random rand = new Random();
-    private int specialWeaponDmg;
 
     public CockatriceScepterItem() {
         super(new Properties().durability(700));
@@ -49,11 +48,7 @@ public class CockatriceScepterItem extends Item {
 
     @Override
     public boolean releaseUsing(@NotNull ItemStack stack, @NotNull Level worldIn, @NotNull LivingEntity livingEntity, int timeLeft) {
-        if (this.specialWeaponDmg > 0) {
-            stack.hurtAndBreak(this.specialWeaponDmg, livingEntity, livingEntity.getUsedItemHand());
-            this.specialWeaponDmg = 0;
-        }
-        MiscData.get(livingEntity).getTargetedByScepters().clear();
+        if (!worldIn.isClientSide()) MiscData.get(livingEntity).clearScepterTargets();
         return true;
     }
 
@@ -83,6 +78,10 @@ public class CockatriceScepterItem extends Item {
 
     @Override
     public void onUseTick(@NotNull Level level, @NotNull LivingEntity player, @NotNull ItemStack stack, int count) {
+        if (level.isClientSide()) {
+            this.attackTargets(player, stack);
+            return;
+        }
         if (player instanceof Player) {
             double dist = 32;
             Vec3 playerEyePosition = player.getEyePosition(1.0F);
@@ -119,36 +118,37 @@ public class CockatriceScepterItem extends Item {
             for (Entity pointedEntity : pointedEntities)
                 if (pointedEntity instanceof LivingEntity target) {
                     if (!target.isAlive()) return;
-                    MiscData.get(player).addScepterTarget(target);
+                    if (!level.isClientSide()) MiscData.get(player).addScepterTarget(target);
                 }
 
-            this.attackTargets(player);
+            this.attackTargets(player, stack);
         }
     }
 
-    private void attackTargets(final LivingEntity caster) {
+    private void attackTargets(final LivingEntity caster, ItemStack stack) {
         MiscData miscData = MiscData.get(caster);
-        for (Iterator<UUID> iterator = miscData.getTargetedByScepters().iterator(); iterator.hasNext(); ) {
-            UUID uuid = iterator.next();
+        int durabilityCost = 0;
+        for (UUID uuid : miscData.getTargetedByScepters()) {
             Entity entity = null;
             if (caster.level() instanceof ServerLevel serverWorld) entity = serverWorld.getEntity(uuid);
             else if (caster.level() instanceof ClientLevel clientWorld)
                 entity = clientWorld.entityStorage.getEntityGetter().get(uuid);
-            if (!(entity instanceof LivingEntity target)) continue;
-
-            if (!IafEntityUtil.isEntityLookingAt(caster, target, 0.2F) || caster.isRemoved() || target.isRemoved()) {
-                iterator.remove();
+            if (!(entity instanceof LivingEntity target) || !target.isAlive()
+                    || !IafEntityUtil.isEntityLookingAt(caster, target, 0.2F) || caster.isRemoved()) {
+                if (!caster.level().isClientSide()) miscData.removeScepterTarget(uuid);
                 continue;
             }
-
-            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 2));
-
-            if (caster.tickCount % 20 == 0) {
-                this.specialWeaponDmg++;
-                target.hurt(caster.level().damageSources.wither(), 2);
-            }
-
-            this.drawParticleBeam(caster, target);
+            if (!caster.level().isClientSide()) {
+                target.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 2));
+                if (caster.tickCount % 20 == 0) {
+                    durabilityCost++;
+                    target.hurt(caster.level().damageSources().wither(), 2);
+                }
+            } else this.drawParticleBeam(caster, target);
+        }
+        if (durabilityCost > 0) {
+            stack.hurtAndBreak(durabilityCost, caster, caster.getUsedItemHand());
+            if (stack.isEmpty()) miscData.clearScepterTargets();
         }
     }
 

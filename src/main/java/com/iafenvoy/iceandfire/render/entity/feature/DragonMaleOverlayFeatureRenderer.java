@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -23,7 +24,7 @@ public class DragonMaleOverlayFeatureRenderer<T extends DragonBaseEntity> implem
     public void submit(T dragon, float partialTick, PoseStack matrixStackIn, SubmitNodeCollector collector, CameraRenderState camera, int packedLightIn, int outlineColor) {
         Identifier texture = DragonColor.getById(dragon.getVariant()).getTextureProvider().getMaleOverlay();
         if (dragon.isMale() && !dragon.isSkeletal() && texture != null)
-            collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityTranslucent(texture), (pose, buffer) -> {
+            ModelPose.submit(collector, matrixStackIn, RenderTypes.entityTranslucent(texture), this.model, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 this.model.renderToBuffer(modelStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, -1);

@@ -38,6 +38,11 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.LinkedHashMap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 
 /**
  * Renders a frozen copy using the trapped entity's current model and render state.
@@ -55,7 +60,14 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
             Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_8.png"),
             Identifier.fromNamespaceAndPath(Identifier.DEFAULT_NAMESPACE, "textures/block/destroy_stage_9.png")};
     private final Map<String, Object> modelMap = new HashMap<>();
-    private final Map<String, Entity> hollowEntityMap = new HashMap<>();
+    private record HollowEntity(String type, CompoundTag data, Entity entity) { }
+    private Level cachedLevel;
+    private final Map<UUID, HollowEntity> hollowEntityMap = new LinkedHashMap<>(16, 0.75F, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<UUID, HollowEntity> entry) {
+            return this.size() > 128;
+        }
+    };
     private final EntityRendererProvider.Context context;
 
     public StoneStatueEntityRenderer(EntityRendererProvider.Context context) {
@@ -80,17 +92,23 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
 
     private Entity getHollowEntity(StoneStatueEntity statue) {
         String typeId = statue.getTrappedEntityTypeString();
-        Entity existing = this.hollowEntityMap.get(typeId);
-        if (existing != null) return existing;
-        if (Minecraft.getInstance().level == null) return null;
+        Level level = Minecraft.getInstance().level;
+        if (this.cachedLevel != level) {
+            this.hollowEntityMap.clear();
+            this.cachedLevel = level;
+        }
+        if (level == null) return null;
+        CompoundTag data = statue.getTrappedTag();
+        HollowEntity existing = this.hollowEntityMap.get(statue.getUUID());
+        if (existing != null && existing.type.equals(typeId) && existing.data.equals(data)) return existing.entity;
         Entity entity = statue.getTrappedEntityType().create(Minecraft.getInstance().level, EntitySpawnReason.TRIGGERED);
         if (entity == null) return null;
         try {
-            EntityDataHelper.load(entity, statue.getTrappedTag());
+            EntityDataHelper.load(entity, data);
         } catch (Exception exception) {
             IceAndFire.LOGGER.warn("Mob {} could not build statue NBT", typeId);
         }
-        this.hollowEntityMap.put(typeId, entity);
+        this.hollowEntityMap.put(statue.getUUID(), new HollowEntity(typeId, data.copy(), entity));
         return entity;
     }
 
@@ -127,7 +145,14 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity,
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void submitModel(Object model, Entity fakeEntity, LegacyEntityRenderState<StoneStatueEntity> state, PoseStack poseStack, SubmitNodeCollector collector, RenderType renderType) {
         if (model instanceof ICustomStatueModel statueModel && fakeEntity != null) {
+            LegacyMobRenderer.ModelPose snapshot = null;
+            if (model instanceof AdvancedEntityModel<?> advanced) {
+                advanced.resetToDefaultPose();
+                snapshot = LegacyMobRenderer.ModelPose.capture(advanced);
+            }
+            LegacyMobRenderer.ModelPose captured = snapshot;
             collector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+                if (captured != null) captured.apply();
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 statueModel.renderStatue(modelStack, buffer, state.lightCoords, fakeEntity);

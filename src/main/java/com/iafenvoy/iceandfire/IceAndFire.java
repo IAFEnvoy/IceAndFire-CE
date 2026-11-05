@@ -58,6 +58,7 @@ public final class IceAndFire {
         IafSkullType.initItems();
         TrollType.initArmors();
 
+        IafTicketTypes.REGISTRY.register(bus);
         IafAttachments.REGISTRY.register(bus);
         IafAttributes.REGISTRY.register(bus);
         IafSounds.REGISTRY.register(bus);

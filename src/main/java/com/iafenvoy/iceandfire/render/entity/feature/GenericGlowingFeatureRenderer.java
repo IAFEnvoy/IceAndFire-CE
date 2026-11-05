@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
 import com.iafenvoy.uranus.client.model.AdvancedEntityModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -22,7 +23,7 @@ public class GenericGlowingFeatureRenderer<T extends Mob, M extends AdvancedEnti
 
     @Override
     public void submit(T entity, float partialTick, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera, int lightCoords, int outlineColor) {
-        collector.submitCustomGeometry(poseStack, RenderTypes.eyes(this.texture), (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, RenderTypes.eyes(this.texture), this.model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             this.model.renderToBuffer(modelStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);

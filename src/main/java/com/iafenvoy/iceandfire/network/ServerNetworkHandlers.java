@@ -2,10 +2,8 @@ package com.iafenvoy.iceandfire.network;
 
 import com.iafenvoy.iceandfire.entity.*;
 import com.iafenvoy.iceandfire.entity.util.ISyncMount;
-import com.iafenvoy.iceandfire.event.handler.ServerEvents;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
 import com.iafenvoy.iceandfire.network.payload.StartRidingMobPayload;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
@@ -21,12 +19,8 @@ public final class ServerNetworkHandlers {
             Entity entity = player.level().getEntity(payload.dragonId());
             // Either the player rides the creature (adult), or the creature rides the player
             // (baby dragon on the shoulder).
-            if (ServerEvents.isRidingOrBeingRiddenBy(entity, player) || ServerEvents.isRidingOrBeingRiddenBy(player, entity)) {
-                BlockPos pos = payload.pos();
-                /*
-                    For some of these entities the `setPos` is handled in `Entity#move`
-                    Doing it here would cause server-side movement checks to fail (resulting in "moved wrongly" messages)
-                */
+            if (entity != null && (entity.getControllingPassenger() == player || entity.getVehicle() == player)) {
+                // The payload's legacy position field is deliberately ignored. Movement is server validated.
                 switch (entity) {
                     case DragonBaseEntity dragon -> {
                         if (dragon.isOwnedBy(player)) {
@@ -44,17 +38,13 @@ public final class ServerNetworkHandlers {
                     case HippocampusEntity hippo -> {
                         if (hippo.isOwnedBy(player))
                             hippo.setControlState(payload.controlState());
-                        hippo.setPos(pos.getX(), pos.getY(), pos.getZ());
                     }
                     case DeathWormEntity deathWorm -> {
                         deathWorm.setControlState(payload.controlState());
-                        deathWorm.setPos(pos.getX(), pos.getY(), pos.getZ());
                     }
                     case AmphithereEntity amphithere -> {
                         if (amphithere.isOwnedBy(player))
                             amphithere.setControlState(payload.controlState());
-                        // TODO :: Is this handled by Entity#move due to recent changes?
-                        amphithere.setPos(pos.getX(), pos.getY(), pos.getZ());
                     }
                     default -> {
                     }

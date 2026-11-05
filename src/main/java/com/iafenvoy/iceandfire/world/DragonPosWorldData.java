@@ -43,7 +43,7 @@ public class DragonPosWorldData extends SavedData {
     }
 
     public void addDragon(UUID uuid, BlockPos pos) {
-        if (!pos.equals(this.lastDragonPositions.put(uuid, pos))) this.setDirty();
+        if (!pos.equals(this.lastDragonPositions.put(uuid, pos.immutable()))) this.setDirty();
     }
 
     public void removeDragon(UUID uuid) {

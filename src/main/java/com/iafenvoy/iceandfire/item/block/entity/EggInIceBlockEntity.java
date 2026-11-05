@@ -7,6 +7,8 @@ import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.EntityReference;
@@ -71,6 +73,11 @@ public class EggInIceBlockEntity extends BlockEntity {
         this.type = DragonColor.getById(input.getStringOr("Color", ""));
         this.age = input.getIntOr("Age", 0);
         input.read("OwnerUUID", UUIDUtil.CODEC).ifPresent(uuid -> this.ownerUUID = uuid);
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Override

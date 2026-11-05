@@ -7,6 +7,8 @@ import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.IafRegistries;
 import com.iafenvoy.iceandfire.screen.menu.LecternMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -176,7 +178,9 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return true;
+        return this.level != null && player.level() == this.level
+                && this.level.getBlockEntity(this.worldPosition) == this
+                && player.distanceToSqr(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D) <= 64;
     }
 
     @Override
@@ -212,6 +216,11 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
     @Override
     public @NotNull ItemStack removeItemNoUpdate(int index) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Override

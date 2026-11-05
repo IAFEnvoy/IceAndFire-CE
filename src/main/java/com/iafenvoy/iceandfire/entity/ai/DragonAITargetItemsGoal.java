@@ -25,6 +25,7 @@ public class DragonAITargetItemsGoal extends TargetGoal {
 
     protected ItemEntity targetEntity;
 
+    private final com.iafenvoy.iceandfire.util.SearchCooldown searchCooldown = new com.iafenvoy.iceandfire.util.SearchCooldown(4);
     private List<ItemEntity> list = IafMath.emptyItemEntityList;
 
     public DragonAITargetItemsGoal(DragonBaseEntity creature, boolean checkSight) {
@@ -63,7 +64,7 @@ public class DragonAITargetItemsGoal extends TargetGoal {
     }
 
     private boolean updateList() {
-        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+        if (this.searchCooldown.isReady(this.mob.level().getGameTime())) // only update the list every 4 ticks
             this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
@@ -87,8 +88,12 @@ public class DragonAITargetItemsGoal extends TargetGoal {
     @Override
     public void tick() {
         super.tick();
+        if (this.targetEntity == null || !this.targetEntity.isAlive()) {
+            this.stop();
+            return;
+        }
         ItemStack stack = this.targetEntity.getItem();
-        if (this.targetEntity == null || !this.targetEntity.isAlive() || stack.isEmpty()) this.stop();
+        if (stack.isEmpty()) this.stop();
         else if (this.mob.distanceToSqr(this.targetEntity) < this.mob.getBbWidth() * 2 + this.mob.getBbHeight() / 2 || (this.mob instanceof DragonBaseEntity dragon && dragon.getHeadPosition().distanceToSqr(this.targetEntity.position()) < this.mob.getBbHeight())) {
             this.mob.playSound(SoundEvents.GENERIC_EAT.value(), 1, 1);
             final int hunger = FoodUtils.getFoodPoints(this.targetEntity.getItem(), true, this.isIce);

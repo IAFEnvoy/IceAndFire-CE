@@ -159,16 +159,6 @@ public final class ServerEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingSetTarget(PlayerEvent.StartTracking event) {
-        Player player = event.getEntity();
-        if (event.getTarget() instanceof LivingEntity target) {
-            if (BuiltInRegistries.ENTITY_TYPE.wrapAsHolder(target.getType()).is(IafEntityTags.CHICKENS))
-                signalChickenAlarm(target, player);
-            else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
-        }
-    }
-
-    @SubscribeEvent
     public static void onPlayerAttack(AttackEntityEvent event) {
         Player player = event.getEntity();
         Level world = event.getEntity().level();

@@ -32,8 +32,8 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
     }
 
     public static void tick(final Level level, final BlockPos position, final BlockState state, final DragonForgeInputBlockEntity forgeInput) {
-        if (forgeInput.core == null)
-            forgeInput.core = forgeInput.getConnectedTileEntity(position);
+        if (level.isClientSide()) return;
+        forgeInput.refreshCore();
 
         if (forgeInput.ticksSinceDragonFire > 0)
             forgeInput.ticksSinceDragonFire--;
@@ -56,6 +56,7 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
     }
 
     public void onHitWithFlame(double amount) {
+        this.refreshCore();
         if (this.core != null)
             this.core.transferPower(amount);
     }
@@ -101,7 +102,14 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
     }
 
     public boolean isAssembled() {
+        this.refreshCore();
         return (this.core != null && this.core.assembled() && this.core.canSmelt());
+    }
+
+    private void refreshCore() {
+        if (this.level == null) return;
+        if (this.core == null || this.core.isRemoved() || this.core.getDragonType() != this.getDragonType() || this.level.getBlockEntity(this.core.getBlockPos()) != this.core)
+            this.core = this.getConnectedTileEntity(this.worldPosition);
     }
 
     private boolean canSeeInput(DragonBaseEntity dragon, Vec3 target) {
@@ -132,7 +140,7 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
     private DragonForgeBlockEntity getConnectedTileEntity(final BlockPos position) {
         assert this.level != null;
         for (Direction facing : Direction.Plane.HORIZONTAL)
-            if (this.level.getBlockEntity(position.relative(facing)) instanceof DragonForgeBlockEntity forge)
+            if (this.level.getBlockEntity(position.relative(facing)) instanceof DragonForgeBlockEntity forge && forge.getDragonType() == this.getDragonType())
                 return forge;
         return null;
     }

@@ -1,10 +1,11 @@
 package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.item.DragonEggItem;
-import com.iafenvoy.iceandfire.network.payload.UpdatePodiumS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.screen.menu.PodiumMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 public class PodiumBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
@@ -61,14 +61,7 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
                 if (this.stacks.get(index).isEmpty())
                     this.stacks.set(index, ItemStack.EMPTY);
             }
-            return itemstack;
-        } else return ItemStack.EMPTY;
-    }
-
-    public ItemStack getStackInSlotOnClosing(int index) {
-        if (!this.stacks.get(index).isEmpty()) {
-            ItemStack itemstack = this.stacks.get(index);
-            this.stacks.set(index, itemstack);
+            this.setChanged();
             return itemstack;
         } else return ItemStack.EMPTY;
     }
@@ -78,9 +71,14 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
         this.stacks.set(index, stack);
         if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize())
             stack.setCount(this.getMaxStackSize());
-        assert this.level != null;
-        if (!this.level.isClientSide())
-            PacketDistributor.sendToAllPlayers(new UpdatePodiumS2CPayload(this.getBlockPos(), this.stacks.getFirst()));
+        this.setChanged();
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        if (this.level != null && !this.level.isClientSide())
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
     }
 
     @Override
@@ -122,6 +120,7 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
     @Override
     public void clearContent() {
         this.stacks.clear();
+        this.setChanged();
     }
 
     @Override
@@ -145,13 +144,20 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
     }
 
     @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registries) {
+        return this.saveWithoutMetadata(registries);
+    }
+
+    @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
     public @NotNull ItemStack removeItemNoUpdate(int index) {
-        return ItemStack.EMPTY;
+        ItemStack removed = ContainerHelper.takeItem(this.stacks, index);
+        if (!removed.isEmpty()) this.setChanged();
+        return removed;
     }
 
     @Override

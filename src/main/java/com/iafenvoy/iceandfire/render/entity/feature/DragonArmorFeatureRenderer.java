@@ -8,6 +8,7 @@ import com.iafenvoy.iceandfire.render.entity.LegacyEntityFeature;
 import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
 import com.iafenvoy.uranus.client.model.TabulaModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -33,7 +34,7 @@ public class DragonArmorFeatureRenderer<T extends DragonBaseEntity> implements L
         for (EquipmentSlot slot : ARMOR_SLOTS) {
             Identifier texture = getArmorTexture(dragon.getItemBySlot(slot), slot);
             if (texture == null) continue;
-            collector.submitCustomGeometry(matrixStackIn, RenderTypes.entityCutout(texture, false), (pose, buffer) -> {
+            ModelPose.submit(collector, matrixStackIn, RenderTypes.entityCutout(texture, false), this.model, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 this.model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, -1);

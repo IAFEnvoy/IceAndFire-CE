@@ -52,6 +52,12 @@ public class IceAndFireClient {
     }
 
     @SubscribeEvent
+    public static void onReload(net.neoforged.neoforge.client.event.AddClientReloadListenersEvent event) {
+        event.addListener(IceAndFire.id("bestiary_pages"), (net.minecraft.server.packs.resources.ResourceManagerReloadListener)
+                manager -> com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryScreen.invalidatePageCache());
+    }
+
+    @SubscribeEvent
     public static void onAddPackFinders(AddPackFindersEvent event) {
         event.addPackFinders(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "resourcepacks/iaf_legacy"), PackType.CLIENT_RESOURCES, Component.translatable("resourcePack.iceandfire.legacy.name"), PackSource.BUILT_IN, false, Pack.Position.TOP);
     }

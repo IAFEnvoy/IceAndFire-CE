@@ -40,6 +40,12 @@ sourceSets.main.java {
     exclude 'com/iafenvoy/iceandfire/compat/IceAndFireArsNouveauCompat.java'
 }
 
+// Opt-in integration tests use the target game's registries and an isolated test world.
+if (providers.gradleProperty('auditRegression').isPresent() || providers.gradleProperty('auditClientRegression').isPresent()) {
+    sourceSets.main.java.srcDir 'src/regression/java'
+    sourceSets.main.resources.srcDir 'src/regression/resources'
+}
+
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
     maven { url = "https://maven.terraformersmc.com/" }
@@ -73,6 +79,11 @@ neoForge {
         client {
             client()
 
+            if (providers.gradleProperty('auditClientRegression').isPresent()) {
+                gameDirectory = project.file('build/client-regression-runtime')
+                systemProperty 'iceandfire.auditClientRegression', 'true'
+            }
+
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
@@ -89,6 +100,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = project.file('build/regression-runtime')
         }
 
         data {

@@ -5,6 +5,7 @@ import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer;
 import com.iafenvoy.iceandfire.render.model.BipedBaseModel;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
@@ -50,7 +51,7 @@ public class BipedArmorFeatureRenderer<T extends Mob & IAnimatedEntity, M extend
         this.parentModel.setModelAttributes(model);
         this.setModelSlotVisible(model, slot);
         Identifier texture = this.getArmorResource(entity, stack, slot, null);
-        collector.submitCustomGeometry(poseStack, RenderTypes.armorCutoutNoCull(texture), (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, RenderTypes.armorCutoutNoCull(texture), model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             model.renderToBuffer(modelStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY, -1);

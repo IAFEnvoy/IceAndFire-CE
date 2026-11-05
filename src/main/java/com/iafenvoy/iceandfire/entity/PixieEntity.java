@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.entity;
 import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.entity.ai.*;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieHouseS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.registry.IafSounds;
@@ -45,7 +44,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @SuppressWarnings("ALL")
 public class PixieEntity extends TamableAnimal {
@@ -301,7 +299,7 @@ public class PixieEntity extends TamableAnimal {
                     house.pixieItems.set(0, this.getItemInHand(InteractionHand.MAIN_HAND));
                     house.tamedPixie = this.isTame();
                     house.pixieOwnerUUID = this.getOwnerReference() == null ? null : this.getOwnerReference().getUUID();
-                    PacketDistributor.sendToAllPlayers(new UpdatePixieHouseS2CPayload(this.housePos, true, this.getColor()));
+                    com.iafenvoy.iceandfire.util.BlockEntitySync.update(house);
                     this.remove(RemovalReason.DISCARDED);
                 }
             }

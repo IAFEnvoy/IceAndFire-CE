@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.screen.gui.bestiary;
 
-import com.google.common.collect.Maps;
 import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.data.BestiaryPage;
 import com.iafenvoy.iceandfire.data.SeaSerpentType;
@@ -22,18 +21,17 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     protected static final int X = 390;
@@ -41,7 +39,87 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/bestiary.png");
     private static final Identifier DRAWINGS_0 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_0.png");
     private static final Identifier DRAWINGS_1 = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/drawings_1.png");
-    private static final Map<String, Identifier> PICTURE_LOCATION_CACHE = Maps.newHashMap();
+    private static volatile int resourceGeneration;
+    private int cachedGeneration = -1;
+    private final Map<Identifier, ParsedPage> pageCache = new HashMap<>();
+
+    private record ParsedPage(List<Consumer<GuiGraphicsExtractor>> drawings, List<String> text) { }
+
+    public static void invalidatePageCache() {
+        resourceGeneration++;
+    }
+
+    private ParsedPage currentPage() {
+        if (this.cachedGeneration != resourceGeneration) {
+            this.pageCache.clear();
+            this.cachedGeneration = resourceGeneration;
+        }
+        String fileName = this.pageType.name() + "_" + this.bookPages + ".txt";
+        String language = Minecraft.getInstance().options.languageCode.toLowerCase(Locale.ROOT);
+        Identifier location = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + language + "_0/" + fileName);
+        return this.pageCache.computeIfAbsent(location, key -> this.loadPage(key, fileName));
+    }
+
+    private ParsedPage loadPage(Identifier location, String fileName) {
+        var manager = Minecraft.getInstance().getResourceManager();
+        Optional<Resource> resource = manager.getResource(location);
+        if (resource.isEmpty()) resource = manager.getResource(Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName));
+        List<Consumer<GuiGraphicsExtractor>> drawings = new ArrayList<>();
+        List<String> text = new ArrayList<>();
+        if (resource.isEmpty()) {
+            IceAndFire.LOGGER.warn("Missing bestiary page {}", location);
+            return new ParsedPage(List.of(), List.of());
+        }
+        try (var reader = resource.get().openAsReader()) {
+            int blockDepth = 0;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (!line.contains("<") && !line.contains(">")) {
+                    text.add(line);
+                    continue;
+                }
+                try {
+                    if (line.startsWith("<image>")) {
+                        String[] fields = line.substring(8, line.length() - 1).trim().split("\\s+");
+                        Identifier texture = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/" + fields[0]);
+                        int x = Integer.parseInt(fields[1]), y = Integer.parseInt(fields[2]);
+                        int u = Integer.parseInt(fields[3]), v = Integer.parseInt(fields[4]);
+                        int width = Integer.parseInt(fields[5]), height = Integer.parseInt(fields[6]);
+                        float scale = Float.parseFloat(fields[7]) * 512F;
+                        drawings.add(ms -> this.drawImage(ms, texture, x, y, u, v, width, height, scale));
+                    } else if (line.startsWith("<item>") || line.startsWith("<block>")) {
+                        boolean block = line.startsWith("<block>");
+                        String[] fields = line.substring(block ? 8 : 7, line.length() - 1).trim().split("\\s+");
+                        ItemStack stack = new ItemStack(getItemByRegistryName(fields[0]));
+                        int x = Integer.parseInt(fields[2]), y = Integer.parseInt(fields[3]);
+                        float scale = Float.parseFloat(fields[4]) * 2F;
+                        int depth = block ? ++blockDepth : 0;
+                        drawings.add(ms -> {
+                            if (block) this.drawBlockStack(ms, stack, x, y, scale, depth);
+                            else this.drawItemStack(ms, stack, x, y, scale);
+                        });
+                    } else if (line.startsWith("<recipe>")) {
+                        String[] fields = line.substring(9, line.length() - 1).trim().split("\\s+");
+                        float scale = Float.parseFloat(fields[fields.length - 1]);
+                        int x = Integer.parseInt(fields[fields.length - 3]), y = Integer.parseInt(fields[fields.length - 2]);
+                        ItemStack result = new ItemStack(getItemByRegistryName(fields[0]));
+                        ItemStack[] ingredients = new ItemStack[9];
+                        Arrays.fill(ingredients, ItemStack.EMPTY);
+                        int slot = 8;
+                        for (int i = fields.length - 5; i >= 2; i -= 2)
+                            ingredients[slot--] = new ItemStack(getItemByRegistryName(fields[i]));
+                        drawings.add(ms -> { this.drawRecipe(ms, result, ingredients, x, y, scale); });
+                    }
+                } catch (RuntimeException exception) {
+                    IceAndFire.LOGGER.warn("Invalid bestiary directive in {}: {}", location, line, exception);
+                }
+            }
+        } catch (IOException exception) {
+            IceAndFire.LOGGER.error("Could not read bestiary page {}", location, exception);
+        }
+        return new ParsedPage(List.copyOf(drawings), List.copyOf(text));
+    }
     public final List<BestiaryPage> allPageTypes = new ArrayList<>();
     public final List<IndexPageButton> indexButtons = new ArrayList<>();
     protected final ItemStack book;
@@ -663,64 +741,7 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     }
 
     public void imageFromTxt(GuiGraphicsExtractor ms) {
-        String fileName = this.pageType.name() + "_" + this.bookPages + ".txt";
-        String languageName = Minecraft.getInstance().options.languageCode.toLowerCase(Locale.ROOT);
-        Identifier fileLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
-        Identifier backupLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
-        Optional<Resource> resource;
-
-        resource = Minecraft.getInstance().getResourceManager().getResource(fileLoc);
-        if (resource.isEmpty())
-            resource = Minecraft.getInstance().getResourceManager().getResource(backupLoc);
-        try {
-            if (resource.isPresent()) {
-                final List<String> lines = IOUtils.readLines(resource.get().open(), StandardCharsets.UTF_8);
-                int zLevelAdd = 0;
-                for (String line : lines) {
-                    line = line.trim();
-                    if (line.contains("<") || line.contains(">"))
-                        if (line.contains("<image>")) {
-                            line = line.substring(8, line.length() - 1);
-                            String[] split = line.split(" ");
-                            Identifier id = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "textures/gui/bestiary/" + split[0]);
-                            Identifier resourcelocation = PICTURE_LOCATION_CACHE.computeIfAbsent(id.toString(), k -> id);
-                            ms.pose().pushMatrix();
-                            this.drawImage(ms, resourcelocation, Integer.parseInt(split[1]), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Integer.parseInt(split[4]), Integer.parseInt(split[5]), Integer.parseInt(split[6]), Float.parseFloat(split[7]) * 512F);
-                            ms.pose().popMatrix();
-                        }
-                    if (line.contains("<item>")) {
-                        line = line.substring(7, line.length() - 1);
-                        String[] split = line.split(" ");
-                        this.drawItemStack(ms, new ItemStack(getItemByRegistryName(split[0]), 1), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Float.parseFloat(split[4]) * 2F);
-                    }
-                    if (line.contains("<block>")) {
-                        zLevelAdd += 1;
-                        line = line.substring(8, line.length() - 1);
-                        String[] split = line.split(" ");
-                        this.drawBlockStack(ms, new ItemStack(getItemByRegistryName(split[0]), 1), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Float.parseFloat(split[4]) * 2F, zLevelAdd);
-                    }
-                    if (line.contains("<recipe>")) {
-                        line = line.substring(9, line.length() - 1);
-                        String[] split = line.split(" ");
-                        float scale = Float.parseFloat(split[split.length - 1]);
-                        int x = Integer.parseInt(split[split.length - 3]);
-                        int y = Integer.parseInt(split[split.length - 2]);
-                        ItemStack result = new ItemStack(getItemByRegistryName(split[0]), 1);
-                        ItemStack[] ingredients = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY};
-                        int j = 8;
-                        for (int i = split.length - 5; i >= 2; i -= 2) {
-                            ingredients[j] = new ItemStack(getItemByRegistryName(split[i]), 1);
-                            j--;
-                        }
-                        ms.pose().pushMatrix();
-                        this.drawRecipe(ms, result, ingredients, x, y, scale);
-                        ms.pose().popMatrix();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            IceAndFire.LOGGER.error(e);
-        }
+        for (var drawing : this.currentPage().drawings()) drawing.accept(ms);
     }
 
     private void drawRecipe(GuiGraphicsExtractor ms, ItemStack result, ItemStack[] ingredients, int x, int y, float scale) {
@@ -753,36 +774,19 @@ public class BestiaryScreen extends AbstractContainerScreen<BestiaryMenu> {
     }
 
     public void writeFromTxt(GuiGraphicsExtractor ms) {
-        String fileName = this.pageType.name() + "_" + this.bookPages + ".txt";
-        String languageName = Minecraft.getInstance().options.languageCode.toLowerCase(Locale.ROOT);
-        Identifier fileLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
-        Identifier backupLoc = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
-        Optional<Resource> resource;
-
-        resource = Minecraft.getInstance().getResourceManager().getResource(fileLoc);
-        if (resource.isEmpty())
-            resource = Minecraft.getInstance().getResourceManager().getResource(backupLoc);
-        try {
-            assert resource.isPresent();
-            final List<String> lines = IOUtils.readLines(resource.get().open(), "UTF-8");
-            int linenumber = 0;
-            for (String line : lines) {
-                line = line.trim();
-                if (line.contains("<") || line.contains(">")) continue;
-                ms.pose().pushMatrix();
-                if (this.usingVanillaFont()) {
-                    ms.pose().scale(0.945F, 0.945F);
-                    ms.pose().translate(0, 5.5F);
-                }
-                if (linenumber <= 19)
-                    ms.text(this.font, line, 15, 20 + linenumber * 10, 0xFF303030, false);
-                else
-                    ms.text(this.font, line, 220, (linenumber - 19) * 10, 0xFF303030, false);
-                linenumber++;
-                ms.pose().popMatrix();
+        int linenumber = 0;
+        for (String line : this.currentPage().text()) {
+            ms.pose().pushMatrix();
+            if (this.usingVanillaFont()) {
+                ms.pose().scale(0.945F, 0.945F);
+                ms.pose().translate(0, 5.5F);
             }
-        } catch (Exception e) {
-            IceAndFire.LOGGER.error(e);
+            if (linenumber <= 19)
+                ms.text(this.font, line, 15, 20 + linenumber * 10, 0xFF303030, false);
+            else
+                ms.text(this.font, line, 220, (linenumber - 19) * 10, 0xFF303030, false);
+            linenumber++;
+            ms.pose().popMatrix();
         }
         ms.pose().pushMatrix();
         String s = I18n.get("bestiary." + this.pageType.name());

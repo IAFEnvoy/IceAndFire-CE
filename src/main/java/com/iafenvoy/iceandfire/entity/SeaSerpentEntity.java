@@ -195,7 +195,6 @@ public class SeaSerpentEntity extends Animal implements IAnimatedEntity, IMultip
     }
 
     public void updateScale(float scale) {
-        this.segments = new SlowPartEntity[9];
         for (int i = 0; i < this.segments.length; i++) {
             if (this.segments[i] == null || this.segments[i].isRemoved()) {
                 if (i > 3)

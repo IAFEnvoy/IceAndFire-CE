@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.registry.IafRenderTypes;
 import com.iafenvoy.iceandfire.render.model.GhostModel;
 import com.iafenvoy.iceandfire.util.Color4i;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -69,7 +70,7 @@ public class GhostEntityRenderer extends LegacyMobRenderer<GhostEntity, GhostMod
             this.submitShoppingListFace(poseStack, collector, renderType, overlay, alpha, 0.0F, 0.5F, state.lightCoords);
             poseStack.popPose();
         } else {
-            collector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            ModelPose.submit(collector, poseStack, renderType, this.model, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 this.model.renderToBuffer(modelStack, buffer, state.lightCoords, overlay, new Color4i(1.0F, 1.0F, 1.0F, alpha).getIntValue());

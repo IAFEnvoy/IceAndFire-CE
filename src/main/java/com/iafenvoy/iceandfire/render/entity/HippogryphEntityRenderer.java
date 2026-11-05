@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.HippogryphEntity;
 import com.iafenvoy.iceandfire.render.model.HippogryphModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -48,7 +49,7 @@ public class HippogryphEntityRenderer extends LegacyMobRenderer<HippogryphEntity
     }
 
     private static void submit(HippogryphModel model, PoseStack poseStack, SubmitNodeCollector collector, RenderType type, int light) {
-        collector.submitCustomGeometry(poseStack, type, (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, type, model, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             model.renderToBuffer(modelStack, buffer, light, OverlayTexture.NO_OVERLAY, -1);

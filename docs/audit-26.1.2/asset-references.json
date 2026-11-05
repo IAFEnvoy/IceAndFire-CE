@@ -1,0 +1,23 @@
+{
+  "checked": {
+    "model": 863,
+    "texture": 624
+  },
+  "missing": [
+    {
+      "source": "src/main/resources/assets/iceandfire/models/item/copper_block.json",
+      "kind": "model",
+      "value": "iceandfire:block/copper_block"
+    },
+    {
+      "source": "src/main/resources/assets/iceandfire/models/item/copper_ore.json",
+      "kind": "model",
+      "value": "iceandfire:block/copper_ore"
+    },
+    {
+      "source": "src/main/resources/assets/iceandfire/models/item/pixie_jar_5.json",
+      "kind": "texture",
+      "value": "iceandfire:item/jar_5"
+    }
+  ]
+}

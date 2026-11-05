@@ -6,10 +6,11 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 
 public class EntityAIWatchClosestIgnoreRiderGoal extends LookAtPlayerGoal {
-    LivingEntity entity;
+    private final LivingEntity entity;
 
     public EntityAIWatchClosestIgnoreRiderGoal(Mob entity, Class<? extends LivingEntity> type, float dist) {
         super(entity, type, dist);
+        this.entity = entity;
     }
 
     public static boolean isRidingOrBeingRiddenBy(Entity first, Entity entityIn) {
@@ -22,6 +23,8 @@ public class EntityAIWatchClosestIgnoreRiderGoal extends LookAtPlayerGoal {
 
     @Override
     public boolean canUse() {
-        return super.canUse() && this.lookAt != null && isRidingOrBeingRiddenBy(this.lookAt, this.entity);
+        return super.canUse() && this.lookAt != null
+                && !isRidingOrBeingRiddenBy(this.lookAt, this.entity)
+                && !isRidingOrBeingRiddenBy(this.entity, this.lookAt);
     }
 }

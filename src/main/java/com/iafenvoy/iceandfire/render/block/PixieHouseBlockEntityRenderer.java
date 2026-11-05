@@ -6,6 +6,7 @@ import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
 import com.iafenvoy.iceandfire.render.model.PixieHouseModel;
 import com.iafenvoy.iceandfire.render.model.PixieModel;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.iafenvoy.iceandfire.render.entity.LegacyMobRenderer.ModelPose;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -80,19 +81,19 @@ public class PixieHouseBlockEntityRenderer<T extends PixieHouseBlockEntity> impl
                 case 5 -> JarBlockEntityRenderer.TEXTURE_5_GLO;
                 default -> JarBlockEntityRenderer.TEXTURE_0_GLO;
             };
-            collector.submitCustomGeometry(poseStack, pixieTexture, (pose, buffer) -> {
+            ModelPose.submit(collector, poseStack, pixieTexture, PIXIE_MODEL, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 PIXIE_MODEL.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
             });
-            collector.submitCustomGeometry(poseStack, pixieGlow, (pose, buffer) -> {
+            ModelPose.submit(collector, poseStack, pixieGlow, PIXIE_MODEL, (pose, buffer) -> {
                 PoseStack modelStack = new PoseStack();
                 modelStack.last().set(pose);
                 PIXIE_MODEL.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
             });
             poseStack.popPose();
         }
-        collector.submitCustomGeometry(poseStack, HOUSE_TEXTURES[houseType], (pose, buffer) -> {
+        ModelPose.submit(collector, poseStack, HOUSE_TEXTURES[houseType], HOUSE_MODEL, (pose, buffer) -> {
             PoseStack modelStack = new PoseStack();
             modelStack.last().set(pose);
             HOUSE_MODEL.renderToBuffer(modelStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);

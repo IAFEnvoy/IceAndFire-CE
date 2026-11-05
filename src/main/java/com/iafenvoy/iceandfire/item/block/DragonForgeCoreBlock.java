@@ -4,7 +4,6 @@ import com.iafenvoy.iceandfire.data.DragonType;
 import com.iafenvoy.iceandfire.item.block.entity.DragonForgeBlockEntity;
 import com.iafenvoy.iceandfire.item.block.util.DragonProof;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
-import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.util.DragonTypeProvider;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -33,25 +32,23 @@ import java.util.Map;
 //FIXME::Introduce a base block class for all dragon forge blocks
 public class DragonForgeCoreBlock extends BaseEntityBlock implements DragonProof, DragonTypeProvider {
     private static final Map<DragonType, Block> ACTIVATED_MAP = new HashMap<>();
+    private static final Map<DragonType, Block> DISABLED_MAP = new HashMap<>();
     private final DragonType dragonType;
 
     public DragonForgeCoreBlock(DragonType dragonType, boolean activated) {
         super(Properties.of().mapColor(MapColor.METAL).dynamicShape().strength(40, 500).sound(SoundType.METAL).lightLevel((state) -> activated ? 15 : 0));
         this.dragonType = dragonType;
-        if (activated) ACTIVATED_MAP.put(dragonType, this);
+        (activated ? ACTIVATED_MAP : DISABLED_MAP).put(dragonType, this);
     }
 
     public static String name(DragonType dragonType, boolean activated) {
         return String.format(Locale.ROOT, "dragonforge_%s_core%s", dragonType.name(), activated ? "" : "_disabled");
     }
 
-    public static void setState(DragonType dragonType, Level worldIn, BlockPos pos) {
-        BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-        worldIn.setBlock(pos, ACTIVATED_MAP.getOrDefault(dragonType, IafBlocks.DRAGONFORGE_FIRE_CORE.get()).defaultBlockState(), 3);
-        if (blockEntity != null) {
-            blockEntity.clearRemoved();
-            worldIn.setBlockEntity(blockEntity);
-        }
+    public static void setState(DragonType type, boolean assembled, Level level, BlockPos pos) {
+        Block target = (assembled ? ACTIVATED_MAP : DISABLED_MAP).get(type);
+        if (target != null && !level.getBlockState(pos).is(target))
+            level.setBlock(pos, target.defaultBlockState(), 3);
     }
 
     @Override
