@@ -42,7 +42,7 @@ sourceSets.main.java {
 
 // Opt-in integration tests use the target game's registries and an isolated test world.
 if (providers.gradleProperty('auditRegression').isPresent() || providers.gradleProperty('auditClientRegression').isPresent()
-        || providers.gradleProperty('issue292Regression').isPresent()) {
+        || providers.gradleProperty('issue292Regression').isPresent() || providers.gradleProperty('issue285Regression').isPresent()) {
     sourceSets.main.java.srcDir 'src/regression/java'
     sourceSets.main.resources.srcDir 'src/regression/resources'
 }
@@ -79,6 +79,11 @@ neoForge {
     runs {
         client {
             client()
+
+            if (providers.gradleProperty('issue285Regression').isPresent()) {
+                gameDirectory = project.file('build/issue285-client-runtime')
+                systemProperty 'iceandfire.issue285Regression', 'true'
+            }
 
             if (providers.gradleProperty('issue292Regression').isPresent()) {
                 gameDirectory = project.file('build/issue292-client-runtime')

@@ -492,6 +492,80 @@ public final class IssueRegressionTests {
         });
     }
 
+    public static void iceEggLoadsEmptyAndLegacyColorsWithoutLosingData(GameTestHelper helper) {
+        helper.setBlock(POS, IafBlocks.EGG_IN_ICE.get());
+        var egg = helper.getBlockEntity(POS, EggInIceBlockEntity.class);
+        var registry = helper.getLevel().registryAccess();
+        var owner = java.util.UUID.randomUUID();
+        for (int scenario = 0; scenario < 7; scenario++) {
+            egg.type = IafDragonColors.BLUE;
+            egg.age = 123;
+            egg.ownerUUID = owner;
+            var saved = egg.saveWithFullMetadata(registry);
+            saved.remove("Color");
+            switch (scenario) {
+                case 1 -> saved.putByte("Color", (byte) 0);
+                case 2 -> saved.putInt("Color", 0);
+                case 3 -> saved.putString("Color", "");
+                case 4 -> saved.putString("Color", "removed_color");
+                case 5 -> saved.putString("Color", "INVALID COLOR!");
+                case 6 -> saved.putString("Color", "removed_mod:blue");
+            }
+            var loaded = net.minecraft.world.level.block.entity.BlockEntity.loadStatic(
+                    egg.getBlockPos(), egg.getBlockState(), saved, registry);
+            helper.assertTrue(loaded instanceof EggInIceBlockEntity, "invalid color discarded ice egg scenario " + scenario);
+            var copy = (EggInIceBlockEntity) loaded;
+            helper.assertTrue(copy.type == null && copy.age == 123 && owner.equals(copy.ownerUUID),
+                    "invalid color fabricated an egg or lost age/owner in scenario " + scenario);
+            var repaired = copy.saveWithFullMetadata(registry);
+            helper.assertTrue(!repaired.contains("Color"), "empty ice egg wrote a wrongly typed color");
+
+            saved.remove("OwnerUUID");
+            egg.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(
+                    net.minecraft.util.ProblemReporter.DISCARDING, registry, saved));
+            helper.assertTrue(egg.type == null && egg.ownerUUID == null,
+                    "empty update retained stale color/owner in scenario " + scenario);
+        }
+        var packet = egg.getUpdatePacket();
+        helper.assertTrue(packet != null, "empty egg must still synchronize state clearing");
+        var copy = new EggInIceBlockEntity(egg.getBlockPos(), egg.getBlockState());
+        copy.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(
+                net.minecraft.util.ProblemReporter.DISCARDING, registry, packet.getTag()));
+        helper.assertTrue(copy.type == null && copy.ownerUUID == null && copy.age == 123,
+                "empty egg update packet failed to round-trip");
+        helper.succeed();
+    }
+
+    public static void iceEggColorsAndOwnersSurviveSaveAndSynchronization(GameTestHelper helper) {
+        helper.setBlock(POS, IafBlocks.EGG_IN_ICE.get());
+        var egg = helper.getBlockEntity(POS, EggInIceBlockEntity.class);
+        var registry = helper.getLevel().registryAccess();
+        var owner = java.util.UUID.randomUUID();
+        for (var color : java.util.List.of(IafDragonColors.BLUE, IafDragonColors.WHITE,
+                IafDragonColors.SAPPHIRE, IafDragonColors.SILVER)) {
+            egg.type = color;
+            egg.age = 456;
+            egg.ownerUUID = owner;
+            var saved = egg.saveWithFullMetadata(registry);
+            var loaded = (EggInIceBlockEntity) net.minecraft.world.level.block.entity.BlockEntity.loadStatic(
+                    egg.getBlockPos(), egg.getBlockState(), saved, registry);
+            helper.assertTrue(loaded != null && loaded.type == color && loaded.age == 456 && owner.equals(loaded.ownerUUID),
+                    "ice egg disk round-trip lost color, age or owner");
+            for (var tag : java.util.List.of(egg.getUpdateTag(registry), egg.getUpdatePacket().getTag())) {
+                var copy = new EggInIceBlockEntity(egg.getBlockPos(), egg.getBlockState());
+                copy.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(
+                        net.minecraft.util.ProblemReporter.DISCARDING, registry, tag));
+                helper.assertTrue(copy.type == color && copy.age == 456 && owner.equals(copy.ownerUUID),
+                        "ice egg chunk/packet synchronization lost data");
+                tag.putString("Color", "iceandfire:" + color.getName());
+                copy.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(
+                        net.minecraft.util.ProblemReporter.DISCARDING, registry, tag));
+                helper.assertTrue(copy.type == color, "namespaced ice egg color failed to load");
+            }
+        }
+        helper.succeed();
+    }
+
     public static void displayBlockEntitiesSendInitialContents(GameTestHelper helper) {
         var registry = helper.getLevel().registryAccess();
         helper.setBlock(POS, IafBlocks.PODIUM_OAK.get());

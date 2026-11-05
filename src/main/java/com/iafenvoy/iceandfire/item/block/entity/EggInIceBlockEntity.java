@@ -1,16 +1,19 @@
 package com.iafenvoy.iceandfire.item.block.entity;
 
+import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.DragonColor;
 import com.iafenvoy.iceandfire.entity.DragonEggEntity;
 import com.iafenvoy.iceandfire.entity.IceDragonEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafEntities;
+import com.iafenvoy.iceandfire.registry.IafRegistries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
@@ -61,18 +64,21 @@ public class EggInIceBlockEntity extends BlockEntity {
     protected void saveAdditional(@NotNull ValueOutput output) {
         super.saveAdditional(output);
         if (this.type != null) output.putString("Color", this.type.getName());
-        else output.putByte("Color", (byte) 0);
         output.putInt("Age", this.age);
-        if (this.ownerUUID == null) output.putString("OwnerUUID", "");
-        else output.store("OwnerUUID", UUIDUtil.CODEC, this.ownerUUID);
+        if (this.ownerUUID != null) output.store("OwnerUUID", UUIDUtil.CODEC, this.ownerUUID);
     }
 
     @Override
     protected void loadAdditional(@NotNull ValueInput input) {
         super.loadAdditional(input);
-        this.type = DragonColor.getById(input.getStringOr("Color", ""));
+        // Command-placed eggs and legacy Color:0b saves have no usable color.
+        // Avoid both a throwing lookup and the registry's default red egg.
+        String color = input.getStringOr("Color", "");
+        Identifier colorId = color.isEmpty() ? null
+                : Identifier.tryParse(color.contains(":") ? color : IceAndFire.MOD_ID + ":" + color);
+        this.type = colorId == null ? null : IafRegistries.DRAGON_COLOR.getOptional(colorId).orElse(null);
         this.age = input.getIntOr("Age", 0);
-        input.read("OwnerUUID", UUIDUtil.CODEC).ifPresent(uuid -> this.ownerUUID = uuid);
+        this.ownerUUID = input.read("OwnerUUID", UUIDUtil.CODEC).orElse(null);
     }
 
     @Override
