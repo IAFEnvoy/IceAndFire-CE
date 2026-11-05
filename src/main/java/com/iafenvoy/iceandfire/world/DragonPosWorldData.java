@@ -25,6 +25,7 @@ public class DragonPosWorldData extends SavedData {
         ListTag list = nbt.getList("DragonMap", 10);
         for (int i = 0; i < list.size(); ++i) {
             CompoundTag obj = list.getCompound(i);
+            if (!obj.hasUUID("DragonUUID")) continue;
             UUID uuid = obj.getUUID("DragonUUID");
             BlockPos pos = new BlockPos(obj.getInt("DragonPosX"), obj.getInt("DragonPosY"), obj.getInt("DragonPosZ"));
             data.lastDragonPositions.put(uuid, pos);
@@ -36,20 +37,17 @@ public class DragonPosWorldData extends SavedData {
         if (world instanceof ServerLevel serverWorld) {
             DimensionDataStorage storage = serverWorld.getDataStorage();
             DragonPosWorldData data = storage.computeIfAbsent(TYPE, IDENTIFIER);
-            data.setDirty();
             return data;
         }
         return null;
     }
 
     public void addDragon(UUID uuid, BlockPos pos) {
-        this.lastDragonPositions.put(uuid, pos);
-        this.setDirty();
+        if (!pos.equals(this.lastDragonPositions.put(uuid, pos.immutable()))) this.setDirty();
     }
 
     public void removeDragon(UUID uuid) {
-        this.lastDragonPositions.remove(uuid);
-        this.setDirty();
+        if (this.lastDragonPositions.remove(uuid) != null) this.setDirty();
     }
 
     public BlockPos getDragonPos(UUID uuid) {

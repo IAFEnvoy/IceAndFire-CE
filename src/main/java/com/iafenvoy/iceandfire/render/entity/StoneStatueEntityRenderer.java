@@ -24,14 +24,18 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity> {
     protected static final ResourceLocation[] DESTROY_STAGES = new ResourceLocation[]{
@@ -46,7 +50,15 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
             ResourceLocation.fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, "textures/block/destroy_stage_8.png"),
             ResourceLocation.fromNamespaceAndPath(ResourceLocation.DEFAULT_NAMESPACE, "textures/block/destroy_stage_9.png")};
     private final Map<String, EntityModel> modelMap = new HashMap<>();
-    private final Map<String, Entity> hollowEntityMap = new HashMap<>();
+    private final Map<StoneStatueEntity, StatueState> hollowEntityMap = new WeakHashMap<>();
+    private WeakReference<Level> cachedLevel = new WeakReference<>(null);
+    private EntityModel fallbackModel;
+    private record StatueState(String type, CompoundTag tag, Entity entity) { }
+
+    public void clearEntityCache() {
+        this.hollowEntityMap.clear();
+        this.cachedLevel.clear();
+    }
     private final EntityRendererProvider.Context context;
 
     public StoneStatueEntityRenderer(EntityRendererProvider.Context context) {
@@ -67,7 +79,11 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
 
     @Override
     public void render(StoneStatueEntity entityIn, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
-        EntityModel model = new PigModel<>(this.context.bakeLayer(ModelLayers.PIG));
+        if (this.cachedLevel.get() != entityIn.level()) {
+            this.clearEntityCache();
+            this.cachedLevel = new WeakReference<>(entityIn.level());
+        }
+        EntityModel model = this.modelMap.get(entityIn.getTrappedEntityTypeString());
 
         // Get the correct model
         if (this.modelMap.get(entityIn.getTrappedEntityTypeString()) != null)
@@ -79,23 +95,28 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
                 model = ((RenderLayerParent<?, ?>) renderer).getModel();
             else if (entityIn.getTrappedEntityType() == EntityType.PLAYER)
                 model = new StonePlayerModel(this.context.bakeLayer(ModelLayers.PLAYER));
+            if (model == null) {
+                if (this.fallbackModel == null) this.fallbackModel = new PigModel<>(this.context.bakeLayer(ModelLayers.PIG));
+                model = this.fallbackModel;
+            }
             this.modelMap.put(entityIn.getTrappedEntityTypeString(), model);
         }
         if (model == null) return;
 
-        Entity fakeEntity;
-        if (this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString()) == null) {
-            fakeEntity = entityIn.getTrappedEntityType().create(Minecraft.getInstance().level);
-            if (fakeEntity != null) {
+        StatueState cached = this.hollowEntityMap.get(entityIn);
+        if (cached == null || !cached.type.equals(entityIn.getTrappedEntityTypeString()) || !cached.tag.equals(entityIn.getTrappedTag())) {
+            Entity fake = entityIn.getTrappedEntityType().create(entityIn.level());
+            if (fake != null) {
                 try {
-                    fakeEntity.load(entityIn.getTrappedTag());
+                    fake.load(entityIn.getTrappedTag());
                 } catch (Exception e) {
-                    IceAndFire.LOGGER.warn("Mob {} could not build statue NBT", entityIn.getTrappedEntityTypeString());
+                    IceAndFire.LOGGER.warn("Mob {} could not build statue NBT", entityIn.getTrappedEntityTypeString(), e);
                 }
-                this.hollowEntityMap.putIfAbsent(entityIn.getTrappedEntityTypeString(), fakeEntity);
             }
-        } else
-            fakeEntity = this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString());
+            cached = new StatueState(entityIn.getTrappedEntityTypeString(), entityIn.getTrappedTag().copy(), fake);
+            this.hollowEntityMap.put(entityIn, cached);
+        }
+        Entity fakeEntity = cached.entity;
         RenderType tex = IafRenderTypes.getStoneMobRenderType(200, 200);
         if (fakeEntity instanceof TrollEntity troll)
             tex = RenderType.entityCutout(troll.getTrollType().getStatueTexture());
@@ -134,7 +155,7 @@ public class StoneStatueEntityRenderer extends EntityRenderer<StoneStatueEntity>
             matrixStackIn.translate(0, 1.5F, 0);
             matrixStackIn.mulPose(Axis.XP.rotationDegrees(180.0F));
             matrixStackIn.mulPose(Axis.YP.rotationDegrees(yaw));
-            if (model instanceof ICustomStatueModel statueModel)
+            if (model instanceof ICustomStatueModel statueModel && fakeEntity != null)
                 statueModel.renderStatue(matrixStackIn, ivertexbuilder2, packedLightIn, fakeEntity);
             else
                 model.renderToBuffer(matrixStackIn, ivertexbuilder2, packedLightIn, OverlayTexture.NO_OVERLAY, -1);

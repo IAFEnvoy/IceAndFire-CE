@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.item.DragonEggItem;
-import com.iafenvoy.iceandfire.network.payload.UpdatePodiumS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.screen.menu.PodiumMenu;
 import net.minecraft.core.BlockPos;
@@ -20,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 public class PodiumBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
@@ -61,6 +59,7 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
                 if (this.stacks.get(index).isEmpty())
                     this.stacks.set(index, ItemStack.EMPTY);
             }
+            this.setChanged();
             return itemstack;
         } else return ItemStack.EMPTY;
     }
@@ -78,9 +77,14 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
         this.stacks.set(index, stack);
         if (!stack.isEmpty() && stack.getCount() > this.getMaxStackSize())
             stack.setCount(this.getMaxStackSize());
-        assert this.level != null;
-        if (!this.level.isClientSide)
-            PacketDistributor.sendToAllPlayers(new UpdatePodiumS2CPayload(this.getBlockPos(), this.stacks.getFirst()));
+        this.setChanged();
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        if (this.level != null && !this.level.isClientSide)
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
     }
 
     @Override
@@ -92,6 +96,7 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
 
     @Override
     public void saveAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
+        super.saveAdditional(nbt, registryLookup);
         ContainerHelper.saveAllItems(nbt, this.stacks, registryLookup);
     }
 
@@ -123,6 +128,7 @@ public class PodiumBlockEntity extends BaseContainerBlockEntity implements World
     @Override
     public void clearContent() {
         this.stacks.clear();
+        this.setChanged();
     }
 
     @Override

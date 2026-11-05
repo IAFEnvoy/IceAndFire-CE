@@ -156,14 +156,6 @@ public final class ServerEvents {
         event.setNewDamage(amount);
     }
 
-    @SubscribeEvent
-    public static void onLivingSetTarget(PlayerEvent.StartTracking event) {
-        Player player = event.getEntity();
-        if (event.getTarget() instanceof LivingEntity target) {
-            if (target.getType().is(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
-            else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
-        }
-    }
 
     @SubscribeEvent
     public static void onPlayerAttack(AttackEntityEvent event) {

@@ -5,8 +5,10 @@ import com.iafenvoy.iceandfire.data.component.MiscData;
 import com.iafenvoy.iceandfire.entity.DragonBaseEntity;
 import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.network.payload.DragonControlC2SPayload;
+import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafKeyMappings;
 import com.iafenvoy.iceandfire.registry.IafMobEffects;
+import com.iafenvoy.iceandfire.render.entity.StoneStatueEntityRenderer;
 import com.iafenvoy.iceandfire.render.entity.feature.DragonRiderFeatureRenderer;
 import com.iafenvoy.iceandfire.render.misc.ChainRenderer;
 import com.iafenvoy.iceandfire.render.misc.CockatriceBeamRenderer;
@@ -32,6 +34,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.CalculateDetachedCameraDistanceEvent;
 import net.neoforged.neoforge.client.event.RenderLivingEvent;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -43,6 +46,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public final class ClientEvents {
     public static int currentView = 0;
     public static final CopyOnWriteArrayList<Tuple<Vec3, Vec3>> LIGHTNINGS = new CopyOnWriteArrayList<>();
+
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        if (event.getLevel().isClientSide()) {
+            var renderer = Minecraft.getInstance().getEntityRenderDispatcher().renderers.get(IafEntities.STONE_STATUE.get());
+            if (renderer instanceof StoneStatueEntityRenderer statues)
+                statues.clearEntityCache();
+        }
+    }
 
     @SubscribeEvent
     public static void onCameraSetup(CalculateDetachedCameraDistanceEvent event) {

@@ -111,6 +111,15 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
     }
 
     @Override
+    public void onRemovedFromLevel() {
+        if (this.flock != null) {
+            this.flock.removeFromFlock(this);
+            this.flock = null;
+        }
+        super.onRemovedFromLevel();
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (!this.level().isClientSide && this.level().getDifficulty() == Difficulty.PEACEFUL) {
@@ -229,7 +238,8 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
                 this.flock.addToFlock(this);
             }
         } else {
-            if (!this.flock.isLeader(this)) {
+            this.flock.update();
+            if (this.flock.getLeader() != null && !this.flock.isLeader(this)) {
                 double dist = this.distanceToSqr(this.flock.getLeader());
                 if (dist > 360) {
                     this.setFlying(true);
@@ -387,7 +397,7 @@ public class StymphalianBirdEntity extends Monster implements IAnimatedEntity, E
 
     private float getFlySpeed(boolean y) {
         float speed = 2;
-        if (this.flock != null && !this.flock.isLeader(this) && this.distanceToSqr(this.flock.getLeader()) > 10) {
+        if (this.flock != null && this.flock.getLeader() != null && !this.flock.isLeader(this) && this.distanceToSqr(this.flock.getLeader()) > 10) {
             speed = 4;
         }
         if (this.getAnimation() == ANIMATION_SHOOT_ARROWS && !y) {

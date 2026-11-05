@@ -3,6 +3,7 @@ package com.iafenvoy.iceandfire.entity.ai;
 import com.iafenvoy.iceandfire.entity.AmphithereEntity;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
 import com.iafenvoy.iceandfire.util.IafMath;
+import com.iafenvoy.iceandfire.util.SearchCooldown;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class AmphithereAITargetItemsGoal extends TargetGoal {
+    private final SearchCooldown searchCooldown = new SearchCooldown(4);
     protected final DragonAITargetItemsGoal.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected final int targetChance;
@@ -46,11 +48,12 @@ public class AmphithereAITargetItemsGoal extends TargetGoal {
         }
 
         // If the target entity already is what we want skip AABB
-        if (this.targetEntitySelector.test(this.targetEntity)) return true;
+        if (this.targetEntity != null && this.targetEntity.isAlive() && this.targetEntitySelector.test(this.targetEntity)) return true;
 
-        if (this.mob.level().getGameTime() % 4 == 0) // only update the list every 4 ticks
+        if (this.searchCooldown.isReady(this.mob.level().getGameTime()))
             this.list = this.mob.level().getEntitiesOfClass(ItemEntity.class, this.getTargetableArea(this.getFollowDistance()), this.targetEntitySelector);
 
+        if (!this.list.isEmpty()) this.list.removeIf(item -> !item.isAlive() || item.level() != this.mob.level() || !this.targetEntitySelector.test(item));
         if (this.list.isEmpty()) return false;
 
         this.list.sort(this.theNearestAttackableTargetSorter);

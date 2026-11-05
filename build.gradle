@@ -52,6 +52,14 @@ base {
 // Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+// Regression code runs in a separate mod source set and is excluded from the release jar.
+sourceSets {
+    regression {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.neo_version
@@ -63,6 +71,19 @@ neoForge {
 
     // This line is optional. Access Transformers are automatically detected
     // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    mods {
+        iceandfireRegression {
+            sourceSet(sourceSets.main)
+            sourceSet(sourceSets.regression)
+        }
+        // define mod <-> source bindings
+        // these are used to tell the game which sources are for which mod
+        // multi mod projects should define one per mod
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -85,7 +106,10 @@ neoForge {
         // The gametest system is also enabled by default for other run configs under the /test command.
         gameTestServer {
             type = "gameTestServer"
+            sourceSet = sourceSets.regression
+            gameDirectory = layout.buildDirectory.dir('regression-world')
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            loadedMods = [mods.iceandfireRegression]
         }
 
         data {
@@ -100,6 +124,7 @@ neoForge {
 
         // applies to all the run configs above
         configureEach {
+            if (name != 'gameTestServer') loadedMods = [mods.iceandfire]
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
@@ -114,14 +139,7 @@ neoForge {
         }
     }
 
-    mods {
-        // define mod <-> source bindings
-        // these are used to tell the game which sources are for which mod
-        // multi mod projects should define one per mod
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
-    }
+
 }
 
 // Sets up a dependency configuration called 'localRuntime'.

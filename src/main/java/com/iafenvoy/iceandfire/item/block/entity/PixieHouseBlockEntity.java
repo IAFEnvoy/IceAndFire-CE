@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.entity.PixieEntity;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieHouseS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -93,28 +91,34 @@ public class PixieHouseBlockEntity extends BlockEntity {
         super.loadAdditional(nbt, registryLookup);
         this.houseType = nbt.getInt("HouseType");
         this.hasPixie = nbt.getBoolean("HasPixie");
-        this.pixieType = nbt.getInt("PixieType");
+        this.pixieType = Math.clamp(nbt.getInt("PixieType"), 0, PixieEntity.PARTICLE_RGB.length - 1);
         this.tamedPixie = nbt.getBoolean("TamedPixie");
-        if (nbt.hasUUID("PixieOwnerUUID"))
-            this.pixieOwnerUUID = nbt.getUUID("PixieOwnerUUID");
+        this.pixieOwnerUUID = nbt.hasUUID("PixieOwnerUUID") ? nbt.getUUID("PixieOwnerUUID") : null;
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, this.pixieItems, registryLookup);
     }
 
+    public void markUpdated() {
+        this.setChanged();
+        if (this.level != null && !this.level.isClientSide)
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+    }
+
     public void releasePixie() {
+        if (this.level == null || this.level.isClientSide || !this.hasPixie) return;
         PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.level);
         pixie.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F, ThreadLocalRandom.current().nextInt(360), 0);
-        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst());
+        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst().copy());
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;
         pixie.setTame(this.tamedPixie, true);
         pixie.setOwnerUUID(this.pixieOwnerUUID);
-        assert this.level != null;
-        if (!this.level.isClientSide)
-            this.level.addFreshEntity(pixie);
+        if (!this.level.addFreshEntity(pixie)) return;
         this.hasPixie = false;
         this.pixieType = 0;
-        if (!this.level.isClientSide)
-            PacketDistributor.sendToAllPlayers(new UpdatePixieHouseS2CPayload(this.worldPosition, false, 0));
+        this.pixieItems.set(0, ItemStack.EMPTY);
+        this.tamedPixie = false;
+        this.pixieOwnerUUID = null;
+        this.markUpdated();
     }
 }

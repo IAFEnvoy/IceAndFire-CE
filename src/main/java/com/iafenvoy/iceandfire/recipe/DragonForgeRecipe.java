@@ -62,7 +62,7 @@ public class DragonForgeRecipe implements Recipe<DragonForgeBlockEntity.DragonFo
 
     @Override
     public @NotNull ItemStack assemble(DragonForgeBlockEntity.@NotNull DragonForgeRecipeInput input, HolderLookup.@NotNull Provider lookup) {
-        return this.result;
+        return this.result.copy();
     }
 
     public boolean isValidInput(ItemStack stack) {

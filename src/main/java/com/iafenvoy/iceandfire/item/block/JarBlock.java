@@ -4,10 +4,8 @@ import com.iafenvoy.iceandfire.item.block.entity.JarBlockEntity;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafItems;
-import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -73,11 +71,11 @@ public class JarBlock extends BaseEntityBlock {
     @Override
     protected @NotNull InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level world, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hit) {
         if (!this.empty && world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof JarBlockEntity jar && jar.hasPixie && jar.hasProduced) {
-            jar.hasProduced = false;
-            ItemEntity item = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get()));
-            if (!world.isClientSide)
-                world.addFreshEntity(item);
-            world.playLocalSound(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5, IafSounds.PIXIE_HURT.get(), SoundSource.NEUTRAL, 1, 1, false);
+            if (!world.isClientSide) {
+                jar.hasProduced = false;
+                jar.markUpdated();
+                world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get())));
+            }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
@@ -101,7 +99,7 @@ public class JarBlock extends BaseEntityBlock {
                 jar.pixieType = this.pixieType;
             } else
                 jar.hasPixie = false;
-            jar.setChanged();
+            jar.markUpdated();
         }
     }
 

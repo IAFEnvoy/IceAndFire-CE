@@ -1,8 +1,6 @@
 package com.iafenvoy.iceandfire.item.block.entity;
 
 import com.iafenvoy.iceandfire.entity.PixieEntity;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieHouseS2CPayload;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieJarS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafParticles;
@@ -19,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -60,16 +57,15 @@ public class JarBlockEntity extends BlockEntity {
                     pos.getY() + (double) (entityJar.rand.nextFloat() * PARTICLE_HEIGHT),
                     pos.getZ() + 0.5F + (double) (entityJar.rand.nextFloat() * PARTICLE_WIDTH * 2F) - PARTICLE_WIDTH, PixieEntity.PARTICLE_RGB[entityJar.pixieType][0], PixieEntity.PARTICLE_RGB[entityJar.pixieType][1], PixieEntity.PARTICLE_RGB[entityJar.pixieType][2]);
         }
-        if (entityJar.ticksExisted % 24000 == 0 && !entityJar.hasProduced && entityJar.hasPixie) {
-            entityJar.hasProduced = true;
-            if (!level.isClientSide)
-                PacketDistributor.sendToAllPlayers(new UpdatePixieJarS2CPayload(pos, true));
-        }
-        if (entityJar.hasPixie && entityJar.hasProduced != entityJar.prevHasProduced && entityJar.ticksExisted > 5) {
-            if (!level.isClientSide)
-                PacketDistributor.sendToAllPlayers(new UpdatePixieJarS2CPayload(pos, entityJar.hasProduced));
-            else
-                level.playLocalSound(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5, IafSounds.PIXIE_HURT.get(), SoundSource.BLOCKS, 1, 1, false);
+        if (!level.isClientSide) {
+            if (entityJar.ticksExisted % 24000 == 0 && !entityJar.hasProduced && entityJar.hasPixie) {
+                entityJar.hasProduced = true;
+                entityJar.markUpdated();
+            } else if (entityJar.hasPixie && entityJar.ticksExisted % 200 == 0) {
+                entityJar.setChanged();
+            }
+        } else if (entityJar.hasPixie && entityJar.hasProduced != entityJar.prevHasProduced && entityJar.ticksExisted > 5) {
+            level.playLocalSound(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5, IafSounds.PIXIE_HURT.get(), SoundSource.BLOCKS, 1, 1, false);
         }
         entityJar.prevRotationYaw = entityJar.rotationYaw;
         if (entityJar.rand.nextInt(30) == 0)
@@ -98,32 +94,45 @@ public class JarBlockEntity extends BlockEntity {
     }
 
     @Override
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider registryLookup) {
+        return this.saveWithoutMetadata(registryLookup);
+    }
+
+    @Override
     protected void loadAdditional(@NotNull CompoundTag nbt, HolderLookup.@NotNull Provider registryLookup) {
         super.loadAdditional(nbt, registryLookup);
         this.hasPixie = nbt.getBoolean("HasPixie");
-        this.pixieType = nbt.getInt("PixieType");
+        this.pixieType = Math.clamp(nbt.getInt("PixieType"), 0, PixieEntity.PARTICLE_RGB.length - 1);
         this.hasProduced = nbt.getBoolean("HasProduced");
         this.ticksExisted = nbt.getInt("TicksExisted");
         this.tamedPixie = nbt.getBoolean("TamedPixie");
-        if (nbt.hasUUID("PixieOwnerUUID"))
-            this.pixieOwnerUUID = nbt.getUUID("PixieOwnerUUID");
+        this.pixieOwnerUUID = nbt.hasUUID("PixieOwnerUUID") ? nbt.getUUID("PixieOwnerUUID") : null;
         this.pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
         ContainerHelper.loadAllItems(nbt, this.pixieItems, registryLookup);
     }
 
+    public void markUpdated() {
+        this.setChanged();
+        if (this.level != null && !this.level.isClientSide)
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+    }
+
     public void releasePixie() {
+        if (this.level == null || this.level.isClientSide || !this.hasPixie) return;
         PixieEntity pixie = new PixieEntity(IafEntities.PIXIE.get(), this.level);
         pixie.absMoveTo(this.worldPosition.getX() + 0.5F, this.worldPosition.getY() + 1F, this.worldPosition.getZ() + 0.5F, new Random().nextInt(360), 0);
-        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst());
+        pixie.setItemInHand(InteractionHand.MAIN_HAND, this.pixieItems.getFirst().copy());
         pixie.setColor(this.pixieType);
         pixie.ticksUntilHouseAI = 500;
         pixie.setTame(this.tamedPixie, false);
         pixie.setOwnerUUID(this.pixieOwnerUUID);
-        assert this.level != null;
-        this.level.addFreshEntity(pixie);
+        if (!this.level.addFreshEntity(pixie)) return;
         this.hasPixie = false;
         this.pixieType = 0;
-        if (!this.level.isClientSide)
-            PacketDistributor.sendToAllPlayers(new UpdatePixieHouseS2CPayload(this.worldPosition, false, 0));
+        this.pixieItems.set(0, ItemStack.EMPTY);
+        this.tamedPixie = false;
+        this.pixieOwnerUUID = null;
+        this.hasProduced = false;
+        this.markUpdated();
     }
 }

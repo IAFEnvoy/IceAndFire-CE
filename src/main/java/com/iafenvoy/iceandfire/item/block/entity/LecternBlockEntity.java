@@ -178,7 +178,9 @@ public class LecternBlockEntity extends BaseContainerBlockEntity implements Worl
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return true;
+        return this.level != null && player.level() == this.level
+                && this.level.getBlockEntity(this.worldPosition) == this
+                && player.distanceToSqr(this.worldPosition.getX() + 0.5D, this.worldPosition.getY() + 0.5D, this.worldPosition.getZ() + 0.5D) <= 64;
     }
 
     @Override

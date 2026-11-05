@@ -3,7 +3,6 @@ package com.iafenvoy.iceandfire.entity;
 import com.google.common.base.Predicate;
 import com.iafenvoy.iceandfire.entity.ai.*;
 import com.iafenvoy.iceandfire.item.block.entity.PixieHouseBlockEntity;
-import com.iafenvoy.iceandfire.network.payload.UpdatePixieHouseS2CPayload;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.registry.IafSounds;
@@ -42,7 +41,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @SuppressWarnings("ALL")
 public class PixieEntity extends TamableAnimal {
@@ -295,10 +293,11 @@ public class PixieEntity extends TamableAnimal {
                 else {
                     house.hasPixie = true;
                     house.pixieType = this.getColor();
-                    house.pixieItems.set(0, this.getItemInHand(InteractionHand.MAIN_HAND));
+                    house.pixieItems.set(0, this.getItemInHand(InteractionHand.MAIN_HAND).copy());
+                    this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                     house.tamedPixie = this.isTame();
                     house.pixieOwnerUUID = this.getOwnerUUID();
-                    PacketDistributor.sendToAllPlayers(new UpdatePixieHouseS2CPayload(this.housePos, true, this.getColor()));
+                    house.markUpdated();
                     this.remove(RemovalReason.DISCARDED);
                 }
             }

@@ -83,7 +83,7 @@ public class PixieVillageStructure extends Structure {
             List<BlockPos> posesInBB = new ArrayList<>();
             while (placedRoads < maxRoads) {
                 int roadLength = 10 + random.nextInt(15);
-                Direction buildingDirection = Direction.from2DDataValue(random.nextInt(3));
+                Direction buildingDirection = Direction.Plane.HORIZONTAL.getRandomDirection(random);
                 for (int i = 0; i < roadLength; i++) {
                     BlockPos buildPosition2 = buildPosition.relative(buildingDirection, i);
                     buildPosition2 = world.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, buildPosition2).below();
@@ -96,7 +96,7 @@ public class PixieVillageStructure extends Structure {
                     }
                     if (random.nextInt(8) == 0) {
                         Direction houseDir = random.nextBoolean() ? buildingDirection.getClockWise() : buildingDirection.getCounterClockWise();
-                        int houseColor = random.nextInt(5);
+                        int houseColor = random.nextInt(6);
                         BlockState houseState = switch (houseColor) {
                             case 0 ->
                                     IafBlocks.PIXIE_HOUSE_MUSHROOM_RED.get().defaultBlockState().setValue(PixieHouseBlock.FACING, houseDir.getOpposite());

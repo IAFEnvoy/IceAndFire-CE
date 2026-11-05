@@ -18,6 +18,7 @@ public class StymphalianBirdFlock {
     private ArrayList<StymphalianBirdEntity> members = new ArrayList<>();
     private BlockPos leaderTarget;
     private RandomSource random;
+    private long lastUpdate = Long.MIN_VALUE;
 
     private StymphalianBirdFlock() {
     }
@@ -48,16 +49,31 @@ public class StymphalianBirdFlock {
     }
 
     public void addToFlock(StymphalianBirdEntity bird) {
-        this.members.add(bird);
+        if (!this.members.contains(bird)) {
+            this.members.add(bird);
+            this.lastUpdate = Long.MIN_VALUE;
+        }
+    }
+
+    public void removeFromFlock(StymphalianBirdEntity bird) {
+        this.members.remove(bird);
+        if (this.leader == bird) this.leader = null;
+        this.lastUpdate = Long.MIN_VALUE;
     }
 
     public void update() {
-        if (!this.members.isEmpty() && (this.leader == null || !this.leader.isAlive()))
-            this.leader = this.members.get(this.random.nextInt(this.members.size()));
-        if (this.leader != null && this.leader.isAlive()) {
-            BlockPos prevLeaderTarget = this.leaderTarget;
-            this.leaderTarget = this.leader.airTarget;
+        if (this.members.isEmpty()) {
+            this.leader = null;
+            return;
         }
+        long time = this.members.getFirst().level().getGameTime();
+        if (this.lastUpdate == time) return;
+        this.lastUpdate = time;
+        var level = this.members.getFirst().level();
+        this.members.removeIf(bird -> !bird.isAlive() || bird.isRemoved() || bird.level() != level);
+        if (this.leader == null || !this.members.contains(this.leader))
+            this.leader = this.members.isEmpty() ? null : this.members.get(this.random.nextInt(this.members.size()));
+        if (this.leader != null) this.leaderTarget = this.leader.airTarget;
     }
 
     public void onLeaderAttack(LivingEntity attackTarget) {
@@ -67,6 +83,7 @@ public class StymphalianBirdFlock {
     }
 
     public StymphalianBirdEntity getLeader() {
+        this.update();
         return this.leader;
     }
 

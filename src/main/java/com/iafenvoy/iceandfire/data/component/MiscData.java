@@ -1,5 +1,6 @@
 package com.iafenvoy.iceandfire.data.component;
 
+import com.iafenvoy.iceandfire.item.CockatriceScepterItem;
 import com.iafenvoy.iceandfire.registry.IafAttachments;
 import com.iafenvoy.iceandfire.util.attachment.NeedUpdateData;
 import com.mojang.serialization.Codec;
@@ -9,7 +10,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -41,6 +41,9 @@ public class MiscData extends NeedUpdateData<LivingEntity> {
 
     @Override
     public void tick(LivingEntity entity) {
+        if (!entity.level().isClientSide && !this.targetedByScepters.isEmpty()
+                && (!entity.isUsingItem() || !(entity.getUseItem().getItem() instanceof CockatriceScepterItem)))
+            this.clearScepterTargets();
         if (this.loveTicks > 0) {
             this.loveTicks--;
             if (this.loveTicks == 0) {
@@ -67,8 +70,20 @@ public class MiscData extends NeedUpdateData<LivingEntity> {
         }
     }
 
+    // Client rendering may prune missing entities locally; the server owns synchronization.
     public void checkScepterTarget(Function<UUID, Entity> entityGetter) {
-        this.targetedByScepters.removeIf(uuid -> entityGetter.apply(uuid) instanceof LivingEntity living && (living.isRemoved() || living.getEffect(MobEffects.WITHER) == null || living.getEffect(MobEffects.WITHER).getDuration() <= 0));
+        this.targetedByScepters.removeIf(uuid -> !(entityGetter.apply(uuid) instanceof LivingEntity living) || !living.isAlive());
+    }
+
+    public void removeScepterTarget(UUID uuid) {
+        if (this.targetedByScepters.remove(uuid)) this.markDirty();
+    }
+
+    public void clearScepterTargets() {
+        if (!this.targetedByScepters.isEmpty()) {
+            this.targetedByScepters.clear();
+            this.markDirty();
+        }
     }
 
     public void setLoveTicks(int loveTicks) {
@@ -101,7 +116,7 @@ public class MiscData extends NeedUpdateData<LivingEntity> {
     }
 
     public List<UUID> getTargetedByScepters() {
-        return this.targetedByScepters;
+        return List.copyOf(this.targetedByScepters);
     }
 
     public static MiscData get(LivingEntity living) {

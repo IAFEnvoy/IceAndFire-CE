@@ -4,6 +4,7 @@ import com.iafenvoy.iceandfire.compat.ponder.IceAndFirePonderPlugin;
 import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.registry.IafRenderers;
+import com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryScreen;
 import com.iafenvoy.integration.IntegrationExecutor;
 import com.iafenvoy.jupiter.ConfigManager;
 import com.iafenvoy.jupiter.render.screen.ConfigSelectScreen;
@@ -12,12 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
@@ -28,6 +31,12 @@ public class IceAndFireClient {
         ConfigManager.getInstance().registerConfigHandler(IafClientConfig.INSTANCE);
 
         IntegrationExecutor.runWhenLoad("ponder", () -> IceAndFirePonderPlugin::init);
+    }
+
+    @SubscribeEvent
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener((ResourceManagerReloadListener) manager ->
+                BestiaryScreen.invalidatePageCache());
     }
 
     @SubscribeEvent

@@ -21,7 +21,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "swing(Lnet/minecraft/world/InteractionHand;Z)V", at = @At("HEAD"))
     private void onSwingHand(InteractionHand hand, boolean updateSelf, CallbackInfo ci) {
         if (this.getItemInHand(hand).is(IafItemTags.SUMMON_GHOST_SWORD) && BuiltinAbilities.SUMMON_GHOST_SWORD.isEnable())
-            BuiltinAbilities.SUMMON_GHOST_SWORD.active((LivingEntity) (Object) this);
+            BuiltinAbilities.SUMMON_GHOST_SWORD.active((LivingEntity) (Object) this, hand);
     }
 
     @Inject(method = "onEffectRemoved", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;refreshDirtyAttributes()V"))

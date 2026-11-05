@@ -38,6 +38,6 @@ public final class IafAttachments {
     private static <T extends Entity, A extends IafEntityAttachment<T>> void tickAndSync(Supplier<AttachmentType<A>> type, T entity) {
         A attachment = entity.getData(type);
         attachment.tick(entity);
-        if (attachment.isDirty()) entity.syncData(type);
+        if (attachment.isDirty() && !entity.level().isClientSide) entity.syncData(type);
     }
 }

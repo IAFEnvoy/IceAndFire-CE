@@ -29,9 +29,8 @@ public class DragonAITargetGoal<T extends LivingEntity> extends NearestAttackabl
             return false;
         if (!this.dragon.isTame() && this.dragon.lookingForRoostAIFlag)
             return false;
+        if (!super.canUse()) return false;
         if (this.target != null && !this.target.getClass().equals(this.dragon.getClass())) {
-            if (!super.canUse())
-                return false;
 
             final float dragonSize = Math.max(this.dragon.getBbWidth(), this.dragon.getBbWidth() * this.dragon.getRenderSize());
             if (dragonSize >= this.target.getBbWidth()) {
