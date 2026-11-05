@@ -81,3 +81,35 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
 }
+
+// Loader-backed regressions, isolated from the published mod.
+sourceSets {
+    gametest {
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+loom {
+    mods {
+        iceandfire { sourceSet sourceSets.main }
+        iceandfire_regressions { sourceSet sourceSets.gametest }
+    }
+    runs {
+        clientRegression {
+            client()
+            name 'Ice and Fire client smoke'
+            source sourceSets.gametest
+            runDir 'build/client-smoke-run'
+            vmArg '-Diceandfire.client-smoke=true'
+        }
+        gametest {
+            server()
+            name 'Ice and Fire regressions'
+            source sourceSets.gametest
+            runDir 'build/gametest-run'
+            vmArg '-Dfabric-api.gametest'
+            vmArg "-Dfabric-api.gametest.report-file=${layout.buildDirectory.file('reports/gametest.xml').get().asFile.absolutePath}"
+        }
+    }
+}

@@ -1,8 +1,5 @@
 package com.iafenvoy.iceandfire.entity;
 
-import com.iafenvoy.iceandfire.StaticVariables;
-import com.iafenvoy.uranus.network.PacketBufferUtils;
-import dev.architectury.networking.NetworkManager;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -14,7 +11,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -153,9 +149,6 @@ public abstract class EntityMultipartPart extends Entity {
                     this.scheduleVelocityUpdate();
                     this.setYaw(renderYawOffset);
                     this.setPartYaw(this.getYaw());
-                    if (!this.getWorld().isClient) {
-                        this.collideWithNearbyEntities();
-                    }
                 } else {
                     this.setPosition(parent.getX() + this.radius * MathHelper.cos((float) (renderYawOffset * (Math.PI / 180.0F) + this.angleYaw)), parent.getY() + this.offsetY, parent.getZ() + this.radius * MathHelper.sin((float) (renderYawOffset * (Math.PI / 180.0F) + this.angleYaw)));
                     this.scheduleVelocityUpdate();
@@ -225,24 +218,20 @@ public abstract class EntityMultipartPart extends Entity {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
+        if (this.getWorld().isClient) return ActionResult.SUCCESS;
         Entity parent = this.getParent();
-        if (this.getWorld().isClient && this.getParentId() != null) {
-            PacketByteBuf buf = PacketBufferUtils.create();
-            buf.writeUuid(this.getParentId()).writeFloat(0);
-            NetworkManager.sendToServer(StaticVariables.MULTIPART_INTERACT, buf);
-        }
-        return parent != null ? parent.interact(player, hand) : ActionResult.PASS;
+        if (parent == null || !com.iafenvoy.iceandfire.network.MultipartInteraction.canInteract(player, this))
+            return ActionResult.PASS;
+        ActionResult result = parent.interact(player, hand);
+        if (!result.isAccepted() && parent instanceof LivingEntity living)
+            result = player.getStackInHand(hand).useOnEntity(player, living, hand);
+        return result;
     }
 
     @Override
     public boolean damage(DamageSource source, float damage) {
         Entity parent = this.getParent();
-        if (this.getWorld().isClient && this.getParentId() != null && source.getAttacker() instanceof PlayerEntity) {
-            PacketByteBuf buf = PacketBufferUtils.create();
-            buf.writeUuid(this.getParentId()).writeFloat(damage * this.damageMultiplier);
-            NetworkManager.sendToServer(StaticVariables.MULTIPART_INTERACT, buf);
-        }
-        return parent != null && parent.damage(source, damage * this.damageMultiplier);
+        return !this.getWorld().isClient && parent != null && parent.damage(source, damage * this.damageMultiplier);
     }
 
     @Override

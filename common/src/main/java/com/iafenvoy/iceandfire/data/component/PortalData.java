@@ -22,12 +22,27 @@ public class PortalData {
     private final PlayerEntity player;
     private boolean teleported = false;
     private int teleportTick = -1;
+    private boolean dirty;
+
+    public boolean consumeDirty() {
+        boolean changed = this.dirty;
+        this.dirty = false;
+        return changed;
+    }
 
     public PortalData(PlayerEntity player) {
         this.player = player;
     }
 
     public void tick() {
+        if (this.player.getWorld().isClient) return;
+        boolean oldTeleported = this.teleported;
+        int oldTick = this.teleportTick;
+        this.tickPortal();
+        if (oldTeleported != this.teleported || oldTick != this.teleportTick) this.dirty = true;
+    }
+
+    private void tickPortal() {
         World world = this.player.getWorld();
         if (!this.teleported && this.teleportTick == 0 && world instanceof ServerWorld serverWorld) {
             this.teleported = true;
@@ -54,7 +69,8 @@ public class PortalData {
 
     public void readFromNbt(NbtCompound tag) {
         this.setTeleported(tag.getBoolean("teleported"));
-        this.setTeleportTick(tag.getInt("teleport_tick"));
+        this.setTeleportTick(tag.contains("teleport_tick") ? tag.getInt("teleport_tick") : -1);
+        this.dirty = false;
     }
 
     public void writeToNbt(NbtCompound tag) {
@@ -71,10 +87,12 @@ public class PortalData {
     }
 
     public void setTeleported(boolean teleported) {
+        if (this.teleported != teleported) this.dirty = true;
         this.teleported = teleported;
     }
 
     public void setTeleportTick(int teleportTick) {
+        if (this.teleportTick != teleportTick) this.dirty = true;
         this.teleportTick = teleportTick;
     }
 

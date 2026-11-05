@@ -28,9 +28,8 @@ public class DragonAITarget<T extends LivingEntity> extends ActiveTargetGoal<T> 
             return false;
         if (!this.dragon.isTamed() && this.dragon.lookingForRoostAIFlag)
             return false;
-        if (this.targetEntity != null && !this.targetEntity.getClass().equals(this.dragon.getClass())) {
-            if (!super.canStart())
-                return false;
+        if (!super.canStart() || this.targetEntity == null) return false;
+        if (!this.targetEntity.getClass().equals(this.dragon.getClass())) {
 
             final float dragonSize = Math.max(this.dragon.getWidth(), this.dragon.getWidth() * this.dragon.getRenderSize());
             if (dragonSize >= this.targetEntity.getWidth()) {

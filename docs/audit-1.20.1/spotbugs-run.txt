@@ -1,0 +1,32 @@
+
+> Configure project :
+Architect Plugin: 3.4.164
+Architectury Loom: 1.7.435
+You are using an outdated version of Architectury Loom! This version will not receive any support, please consider updating!
+
+> Task :common:auditClasspath
+> Task :fabric:auditClasspath
+> Task :forge:auditClasspath
+
+> Task :fabric:auditSpotbugs
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+The following classes needed for analysis were missing:
+  com.demonwav.mcdev.annotations.CheckEnv
+  com.demonwav.mcdev.annotations.Env
+
+> Task :forge:auditSpotbugs
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+
+> Task :common:auditSpotbugs
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+The following classes needed for analysis were missing:
+  dev.emi.emi.EmiPort
+
+BUILD SUCCESSFUL in 53s
+6 actionable tasks: 6 executed

@@ -1,0 +1,16 @@
+[
+  {
+    "platform": "fabric",
+    "path": "fabric/build/libs/IceAndFireCE-fabric-1.2.10.jar",
+    "sha256": "25c5fb16a05c034ae7ff25dc005a8fe8d2f3c5694d66aa2663b1cddbf0b617d4",
+    "size": 26930483,
+    "test_entries": []
+  },
+  {
+    "platform": "forge",
+    "path": "forge/build/libs/IceAndFireCE-forge-1.2.10.jar",
+    "sha256": "a946defb4678b43d31d5dedea4913fbe7bf0217d7d1eba5a553e1a8e72d4abdc",
+    "size": 27042621,
+    "test_entries": []
+  }
+]

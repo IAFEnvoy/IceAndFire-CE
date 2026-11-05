@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class PixieAIPickupItem<T extends ItemEntity> extends TrackTargetGoal {
+    private final SearchCooldown searchCooldown = new SearchCooldown();
     protected final DragonAITargetItems.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected ItemEntity targetEntity;
@@ -49,8 +50,8 @@ public class PixieAIPickupItem<T extends ItemEntity> extends TrackTargetGoal {
         EntityPixie pixie = (EntityPixie) this.mob;
         if (pixie.isPixieSitting()) return false;
 
-        if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        if (!this.searchCooldown.shouldSearch(this.mob.getWorld().getTime(), this.mob.getId())) return false;
+        this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
         else {

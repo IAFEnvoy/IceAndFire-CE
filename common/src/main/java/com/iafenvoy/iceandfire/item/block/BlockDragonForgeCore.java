@@ -42,22 +42,14 @@ public class BlockDragonForgeCore extends BlockWithEntity implements IDragonProo
     }
 
     public static void setState(int dragonType, boolean active, World worldIn, BlockPos pos) {
+        BlockState desired = switch (dragonType) {
+            case 1 -> (active ? IafBlocks.DRAGONFORGE_ICE_CORE : IafBlocks.DRAGONFORGE_ICE_CORE_DISABLED).get().getDefaultState();
+            case 2 -> (active ? IafBlocks.DRAGONFORGE_LIGHTNING_CORE : IafBlocks.DRAGONFORGE_LIGHTNING_CORE_DISABLED).get().getDefaultState();
+            default -> (active ? IafBlocks.DRAGONFORGE_FIRE_CORE : IafBlocks.DRAGONFORGE_FIRE_CORE_DISABLED).get().getDefaultState();
+        };
+        if (worldIn.getBlockState(pos).isOf(desired.getBlock())) return;
         BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-        if (active)
-            switch (dragonType) {
-                case 0 -> worldIn.setBlockState(pos, IafBlocks.DRAGONFORGE_FIRE_CORE.get().getDefaultState(), 3);
-                case 1 -> worldIn.setBlockState(pos, IafBlocks.DRAGONFORGE_ICE_CORE.get().getDefaultState(), 3);
-                case 2 -> worldIn.setBlockState(pos, IafBlocks.DRAGONFORGE_LIGHTNING_CORE.get().getDefaultState(), 3);
-            }
-        else
-            switch (dragonType) {
-                case 0 ->
-                        worldIn.setBlockState(pos, IafBlocks.DRAGONFORGE_FIRE_CORE_DISABLED.get().getDefaultState(), 3);
-                case 1 ->
-                        worldIn.setBlockState(pos, IafBlocks.DRAGONFORGE_ICE_CORE_DISABLED.get().getDefaultState(), 3);
-                case 2 ->
-                        worldIn.setBlockState(pos, IafBlocks.DRAGONFORGE_LIGHTNING_CORE_DISABLED.get().getDefaultState(), 3);
-            }
+        worldIn.setBlockState(pos, desired, 3);
         if (blockEntity != null) {
             blockEntity.cancelRemoval();
             worldIn.addBlockEntity(blockEntity);
@@ -92,6 +84,8 @@ public class BlockDragonForgeCore extends BlockWithEntity implements IDragonProo
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.isOf(newState.getBlock())) return;
+        if (newState.getBlock() instanceof BlockDragonForgeCore core && core.isFire == this.isFire) return;
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof BlockEntityDragonForge) {
             ItemScatterer.spawn(world, pos, (BlockEntityDragonForge) blockEntity);

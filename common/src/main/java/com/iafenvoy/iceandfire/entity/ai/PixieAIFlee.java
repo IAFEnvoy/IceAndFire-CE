@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class PixieAIFlee<T extends Entity> extends Goal {
+    private final SearchCooldown searchCooldown = new SearchCooldown();
     protected final EntityPixie pixie;
     private final float avoidDistance;
     private final Class<T> classToAvoid;
@@ -36,8 +37,8 @@ public class PixieAIFlee<T extends Entity> extends Goal {
             return false;
         }
 
-        if (this.pixie.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.pixie.getWorld().getEntitiesByClass(this.classToAvoid, this.pixie.getBoundingBox().expand(this.avoidDistance, 3.0D, this.avoidDistance), EntityPredicates.EXCEPT_SPECTATOR);
+        if (!this.searchCooldown.shouldSearch(this.pixie.getWorld().getTime(), this.pixie.getId())) return false;
+        this.list = this.pixie.getWorld().getEntitiesByClass(this.classToAvoid, this.pixie.getBoundingBox().expand(this.avoidDistance, 3.0D, this.avoidDistance), EntityPredicates.EXCEPT_SPECTATOR);
 
         if (this.list.isEmpty()) return false;
 
@@ -67,7 +68,9 @@ public class PixieAIFlee<T extends Entity> extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return this.hidePlace != null && this.pixie.squaredDistanceTo(this.hidePlace.add(0.5, 0.5, 0.5)) < 2;
+        return this.hidePlace != null && this.closestLivingEntity != null && this.closestLivingEntity.isAlive()
+                && !this.pixie.isTamed() && !this.pixie.getMainHandStack().isEmpty()
+                && this.pixie.squaredDistanceTo(this.hidePlace) > 2;
     }
 
     @Override

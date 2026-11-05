@@ -1,0 +1,27 @@
+{
+  "gametest": {
+    "total": 25,
+    "failed": 0,
+    "passed": 25,
+    "loader": "Fabric 0.16.9, Minecraft 1.20.1"
+  },
+  "client_smoke": "PASS: client startup, renderer initialization, page reuse, language fallback, missing page, resource reload",
+  "build": {
+    "fabric": "passed",
+    "forge": "passed"
+  },
+  "json_scan": {
+    "files": 1964,
+    "parse_errors": 0,
+    "duplicate_keys": 0
+  },
+  "release_jars_contain_test_mod": false,
+  "diff_check": "passed",
+  "unverified": [
+    "Forge dedicated-server/runtime replay",
+    "Multiplayer/visual acceptance",
+    "Disk-unloaded dragon successful recovery",
+    "Long-duration performance and bandwidth A/B",
+    "ProjectE integration"
+  ]
+}

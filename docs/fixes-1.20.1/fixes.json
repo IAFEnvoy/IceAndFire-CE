@@ -1,0 +1,472 @@
+[
+  {
+    "id": "N01",
+    "priority": "P1",
+    "title": "乘骑控制包采纳客户端坐标，控制者及所有权验证不完整",
+    "status": "implemented",
+    "change": "忽略客户端位置；仅真正控制乘客或主人肩乘幼龙可设置控制位，过滤高位。",
+    "verification": "multipartReachAndController",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHelper.java"
+    ]
+  },
+  {
+    "id": "N02",
+    "priority": "P2",
+    "title": "方块实体状态向全服广播，缺少维度和跟踪范围",
+    "status": "implemented",
+    "change": "底座、罐、房屋改走原版完整 BE 更新与区块跟踪；龙实体包限制为所在世界的跟踪玩家。",
+    "verification": "podiumInventoryContract, jarInitialStateAndSingleRelease；多人跨维度显示需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPodium.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/network/ClientNetworkHelper.java"
+    ]
+  },
+  {
+    "id": "N03",
+    "priority": "P1",
+    "title": "讲台按钮先索引数组再限制编号",
+    "status": "implemented",
+    "change": "先检查按钮编号与菜单有效性，再访问数组；页索引严格检查 0 <= index < size。",
+    "verification": "lecternBoundsAndLifetime",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/screen/handler/LecternScreenHandler.java"
+    ]
+  },
+  {
+    "id": "N04",
+    "priority": "P2",
+    "title": "讲台菜单在方块被拆除或玩家离开后仍有效",
+    "status": "implemented",
+    "change": "校验同世界、世界内 BE 身份及 8 格距离。",
+    "verification": "lecternBoundsAndLifetime",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityLectern.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/screen/handler/LecternScreenHandler.java"
+    ]
+  },
+  {
+    "id": "N05",
+    "priority": "P2",
+    "title": "开始跟踪鸡或村民就触发受攻击警报",
+    "status": "implemented",
+    "change": "移除 START_TRACKING_TAIL 警报注册；保留实际攻击事件的鸡/村民警报。",
+    "verification": "源码复核；进视距时敌意需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/IceAndFire.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/event/ServerEvents.java"
+    ]
+  },
+  {
+    "id": "F01",
+    "priority": "P2",
+    "title": "锻炉切换使用旧组装状态，且状态替换会散落库存",
+    "status": "implemented",
+    "change": "用当前组装结果切换核心；同种核心启停转换保留 BE 和库存，避免重复设置方块。",
+    "verification": "forgeStateKeepsInventory",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/item/block/BlockDragonForgeCore.java"
+    ]
+  },
+  {
+    "id": "F02",
+    "priority": "P2",
+    "title": "锻炉输入口永久保留失效核心引用",
+    "status": "implemented",
+    "change": "每次使用前校验核心身份、移除状态、邻接距离和龙种，失效后重新查找。",
+    "verification": "forgeInputRevalidatesCore",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForgeInput.java"
+    ]
+  },
+  {
+    "id": "F03",
+    "priority": "P2",
+    "title": "失去龙焰后进度先减再加，结构查询重复",
+    "status": "implemented",
+    "change": "服务端每 tick 只检查一次组装，分开供能/余热/衰减逻辑，无热时进度每 tick 减一。",
+    "verification": "forgeCoolingAndPersistence",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java"
+    ]
+  },
+  {
+    "id": "F04",
+    "priority": "P2",
+    "title": "锻炉输出忽略 NBT，空输出槽容量也取错对象",
+    "status": "implemented",
+    "change": "使用包含 NBT 的 ItemStack.canCombine；结果物品自身最大堆叠数约束空槽，long 汇总数量。",
+    "verification": "forgeOutputNbtAndCapacity",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java"
+    ]
+  },
+  {
+    "id": "F05",
+    "priority": "P3",
+    "title": "锻炉配方返回可变的共享输出模板",
+    "status": "implemented",
+    "change": "craft、getOutput、getResultItem 均返回副本。",
+    "verification": "recipeReturnsCopies",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/recipe/DragonForgeRecipe.java"
+    ]
+  },
+  {
+    "id": "S01",
+    "priority": "P2",
+    "title": "召唤水晶的卸载恢复、跨维度及身份校验不完整",
+    "status": "implemented",
+    "change": "安全解析绑定 UUID；服务端跨世界查找、主人 UUID/龙种/存活/绑定校验；有限临时票据加载；成功后更新返回的新龙并只清 Dragon 标签；取消、超时、停服释放票据；服务端保存龙位置。",
+    "verification": "crystalValidatesOwnerAndPreservesOtherNbt, crystalCrossDimensionClearsReturnedEntity, crystalMalformedUuidAndPositionDirtiness, crystalTimeoutReleasesTickets, crystalChangingStackCancelsTickets；磁盘卸载后恢复成功需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/EntityDragonBase.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/item/ItemSummoningCrystal.java"
+    ]
+  },
+  {
+    "id": "S02",
+    "priority": "P2",
+    "title": "精灵罐缺少首次区块同步数据",
+    "status": "implemented",
+    "change": "Jar 首次区块数据包含精灵、主人、持物和产粉状态。",
+    "verification": "jarInitialStateAndSingleRelease",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityJar.java"
+    ]
+  },
+  {
+    "id": "S03",
+    "priority": "P2",
+    "title": "精灵罐和房屋关键状态变化未完整持久化",
+    "status": "implemented",
+    "change": "产粉截止时间保存；收取、进入、释放时统一标脏/同步，释放仅服务端执行并原子清空原库存与主人。",
+    "verification": "jarInitialStateAndSingleRelease；重启后的产粉时间需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityJar.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPixieHouse.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/item/block/BlockJar.java"
+    ]
+  },
+  {
+    "id": "S04",
+    "priority": "P3",
+    "title": "锻炉进度存盘缺少标脏且被 short 截断",
+    "status": "implemented",
+    "change": "CookTime 保存 int，兼容旧 short 数值读取；保存余热倒计时；供能、熔炼和库存变化标脏。",
+    "verification": "forgeCoolingAndPersistence",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java"
+    ]
+  },
+  {
+    "id": "A01",
+    "priority": "P1",
+    "title": "七种 AI 使用全局模四搜索，可与选择器固定错相",
+    "status": "implemented",
+    "change": "7 个 Goal 各自持有搜索截止时间；按实体 ID 错开首次搜索，隔 tick 调用也能到期，不再依赖全局模 4 等于零。",
+    "verification": "searchCooldownEveryOtherTick, itemGoalFindsFoodAfterSpawn",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/AmphithereAIFleePlayer.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/AmphithereAITargetItems.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/CockatriceAITargetItems.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITargetItems.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DreadAIRideHorse.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIFlee.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIPickupItem.java"
+    ]
+  },
+  {
+    "id": "A02",
+    "priority": "P2",
+    "title": "龙目标搜索要求初始目标先非空",
+    "status": "implemented",
+    "change": "先由父 Goal 搜索新目标，再验证龙的目标条件。",
+    "verification": "源码及三模块编译；进世界观察初次索敌",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITarget.java"
+    ]
+  },
+  {
+    "id": "A03",
+    "priority": "P2",
+    "title": "龙繁殖仍使用未覆盖的旧生命周期方法名",
+    "status": "implemented",
+    "change": "覆盖 shouldContinue，补充伴侣非空及可移动条件。",
+    "verification": "源码及三模块编译；进世界繁殖回归",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAIMate.java"
+    ]
+  },
+  {
+    "id": "A04",
+    "priority": "P2",
+    "title": "羊跟随独眼巨人的继续条件写反",
+    "status": "implemented",
+    "change": "修正独眼巨人存活条件。",
+    "verification": "源码复核；进世界羊跟随回归",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntitySheepAIFollowCyclops.java"
+    ]
+  },
+  {
+    "id": "A05",
+    "priority": "P3",
+    "title": "忽略乘客的观察 Goal 主体字段从未赋值",
+    "status": "implemented",
+    "change": "初始化观察者字段，同时排除观察者与目标互相乘骑。",
+    "verification": "源码复核；进世界乘骑回归",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntityAIWatchClosestIgnoreRider.java"
+    ]
+  },
+  {
+    "id": "A06",
+    "priority": "P2",
+    "title": "精灵逃跑只在靠近终点时继续",
+    "status": "implemented",
+    "change": "目标存活、持物、未驯服且尚未到达藏身点时继续逃跑。",
+    "verification": "源码复核；进世界精灵逃跑回归",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIFlee.java"
+    ]
+  },
+  {
+    "id": "E01",
+    "priority": "P2",
+    "title": "海蛇每次缩放重建世界部件，未移除旧数组部件",
+    "status": "implemented",
+    "change": "海蛇复用 9 个部件，仅缺失/移除时创建；避免构造期重复初始化；缩放和写 NBT 不移除存活部件。",
+    "verification": "seaSerpentReusesPartsAndSaveIsPure",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/EntitySeaSerpent.java"
+    ]
+  },
+  {
+    "id": "E02",
+    "priority": "P2",
+    "title": "死亡蠕虫体积寻路没有汇总所有体素的通行性",
+    "status": "implemented",
+    "change": "遍历占用体积全部方块，任一阻挡即拒绝，再汇总 BREACH。",
+    "verification": "源码复核；混合沙/石体积的实际寻路需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/pathfinding/NodeProcessorDeathWorm.java"
+    ]
+  },
+  {
+    "id": "E03",
+    "priority": "P2",
+    "title": "金属羽鸟群永久持有已移除成员",
+    "status": "implemented",
+    "change": "群更新每世界 tick 一次；成员去重，清死亡/移除/跨世界/离群对象，只从活成员选首领。",
+    "verification": "flockReelectsLiveLeader",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/util/StymphalianBirdFlock.java"
+    ]
+  },
+  {
+    "id": "W02",
+    "priority": "P3",
+    "title": "精灵村庄少一个道路方向和一种房屋",
+    "status": "implemented",
+    "change": "村庄方向取完整 4 方向，房型覆盖全部 6 种。",
+    "verification": "源码复核；大样本生成分布未量化",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/world/structure/PixieVillageStructure.java"
+    ]
+  },
+  {
+    "id": "C01",
+    "priority": "P2",
+    "title": "鸡蛇权杖把耐久累计保存在共享 Item 实例",
+    "status": "implemented",
+    "change": "删除 Item 单例累计耐久，在服务端对当前使用栈即时扣除；使用时长改为 72000 tick。",
+    "verification": "scepterDamagesOnlyActiveStackAndClears",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/item/ItemCockatriceScepter.java"
+    ]
+  },
+  {
+    "id": "C02",
+    "priority": "P2",
+    "title": "权杖部分目标清理绕过同步标记",
+    "status": "implemented",
+    "change": "目标列表只读访问；统一删除/清空方法标脏；停用、结束和耗尽耐久时清理。",
+    "verification": "miscTargetsSerializeAndClear, scepterDamagesOnlyActiveStackAndClears",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/data/component/MiscData.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/item/ItemCockatriceScepter.java"
+    ]
+  },
+  {
+    "id": "C03",
+    "priority": "P2",
+    "title": "连锁闪电重复入队和查询固定攻击者范围",
+    "status": "implemented",
+    "change": "闪电入队立即去重；攻击者范围只查一次；按已发现实体数限制预算。",
+    "verification": "源码复核；密集实体实际伤害/性能需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/item/tool/DragonSteelOverrides.java"
+    ]
+  },
+  {
+    "id": "C04",
+    "priority": "P2",
+    "title": "幽灵剑显式拒绝副手，且生成路径没有服务端保护",
+    "status": "implemented",
+    "change": "由挥动手传递真实手栈，仅服务端生成，并按对应手发送破损状态。",
+    "verification": "ghostSwordOffhandOnlyOnce",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/item/tool/ItemGhostSword.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/mixin/LivingEntityMixin.java"
+    ]
+  },
+  {
+    "id": "R01",
+    "priority": "P2",
+    "title": "图鉴逐帧两次读资源文本，输入流未关闭",
+    "status": "implemented",
+    "change": "按语言/页面缓存文本并关闭资源流；缺页缓存为空；资源重载清缓存。",
+    "verification": "客户端 smoke：缓存复用、英语回退、缺页和资源重载",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/screen/gui/bestiary/BestiaryScreen.java"
+    ]
+  },
+  {
+    "id": "R02",
+    "priority": "P2",
+    "title": "石像每次绘制都创建并烘焙备用猪模型",
+    "status": "implemented",
+    "change": "渲染器构造时烘焙一次备用猪模型。",
+    "verification": "源码及客户端渲染器初始化 smoke；未测实际帧耗时",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderStoneStatue.java"
+    ]
+  },
+  {
+    "id": "R03",
+    "priority": "P2",
+    "title": "石像按实体类型缓存假实体，串用首座石像 NBT",
+    "status": "implemented",
+    "change": "每座石像缓存自己的假实体，类型或完整 NBT 改变时重建；不由全局类型缓存持有世界。",
+    "verification": "源码复核；不同 NBT 同类型石像的画面需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderStoneStatue.java"
+    ]
+  },
+  {
+    "id": "L01",
+    "priority": "P3",
+    "title": "独眼巨人破树后的减速向量被丢弃",
+    "status": "implemented",
+    "change": "将减速后的向量写回 setVelocity。",
+    "verification": "源码复核；连续破树速度需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/EntityCyclops.java"
+    ]
+  },
+  {
+    "id": "B01",
+    "priority": "P1",
+    "title": "multipart 请求允许客户端指定任意正伤害及远距离目标",
+    "status": "implemented",
+    "change": "禁用接受客户端伤害/目标的旧通道；走原版实体攻击/交互包，校验真实部件、父实体、近战范围与可见性；伤害由服务端计算。",
+    "verification": "multipartReachAndController, vanillaMultipartAttackHitsParentOnce",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHelper.java"
+    ]
+  },
+  {
+    "id": "B02",
+    "priority": "P1",
+    "title": "多处网络接收器直接修改世界，未排入游戏线程",
+    "status": "implemented",
+    "change": "接收回调只解码；ctx.queue 后重新解析玩家/世界/实体，再修改状态。",
+    "verification": "源码核对接收器；真实多人线程压力未测",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/network/ClientNetworkHelper.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHelper.java"
+    ]
+  },
+  {
+    "id": "B03",
+    "priority": "P1",
+    "title": "九头蛇头索引来自客户端，负值可导致后续伤害数组越界",
+    "status": "implemented",
+    "change": "头索引来自服务端命中部件；九头蛇内部也对负值和上界防御。",
+    "verification": "hydraIndexDefense",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/EntityHydra.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHelper.java"
+    ]
+  },
+  {
+    "id": "B04",
+    "priority": "P2",
+    "title": "权杖目标 ID 序列化和反序列化位于不同 NBT 层级",
+    "status": "implemented",
+    "change": "统一 miscData 子层读写，兼容旧外层；空更新清旧状态；服务端不恢复会话整数 ID，客户端有限重试解析。",
+    "verification": "miscTargetsSerializeAndClear；实际光束同步需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/data/component/MiscData.java"
+    ]
+  },
+  {
+    "id": "B05",
+    "priority": "P2",
+    "title": "慢跟随部件每 tick 重复执行碰撞查询和推挤",
+    "status": "implemented",
+    "change": "慢跟随分支内重复碰撞调用删除，每 tick 一次。",
+    "verification": "源码复核；实际推挤需人工验收",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/EntityMultipartPart.java",
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/EntitySlowPart.java"
+    ]
+  },
+  {
+    "id": "B06",
+    "priority": "P2",
+    "title": "底座库存变更的持久化和增量同步不完整",
+    "status": "implemented",
+    "change": "底座 set/remove/clear 满足库存契约并统一标脏、同步；实现菜单构造。",
+    "verification": "podiumInventoryContract",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPodium.java"
+    ]
+  },
+  {
+    "id": "B07",
+    "priority": "P3",
+    "title": "传送门状态无变化仍每玩家每 tick 同步",
+    "status": "implemented",
+    "change": "传送门字段变化才置脏；Fabric 仅服务端变化时同步，Forge isDirty 消费真实脏标记。",
+    "verification": "portalSyncOnlyOnChange；双平台实际网络字节未测",
+    "files": [
+      "fabric/src/main/java/com/iafenvoy/iceandfire/fabric/component/PortalDataComponent.java",
+      "forge/src/main/java/com/iafenvoy/iceandfire/forge/component/PortalDataStorage.java"
+    ]
+  },
+  {
+    "id": "B08",
+    "priority": "P3",
+    "title": "ProjectE 自定义转换资源重复定义鹰马爪且数值冲突",
+    "status": "implemented",
+    "change": "鹰马爪只保留一项 4096 EMC，采用资源中前面的稀有材料值。",
+    "verification": "1964 个 JSON 解析及重复键检查；未装 ProjectE 实测",
+    "files": [
+      "common/src/main/resources/data/iceandfire/pe_custom_conversions/iceandfire_default.json"
+    ]
+  },
+  {
+    "id": "B09",
+    "priority": "P3",
+    "title": "龙洞分支生成的方向随机上界少一个",
+    "status": "implemented",
+    "change": "龙洞分支、箱子朝向按完整方向数组长度随机。",
+    "verification": "源码复核；大样本生成分布未量化",
+    "files": [
+      "common/src/main/java/com/iafenvoy/iceandfire/world/structure/DragonCaveStructure.java"
+    ]
+  }
+]

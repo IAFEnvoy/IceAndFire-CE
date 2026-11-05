@@ -30,6 +30,25 @@ public class EntityStoneStatue extends LivingEntity implements IBlacklistedFromS
     private static final TrackedData<Integer> CRACK_AMOUNT = DataTracker.registerData(EntityStoneStatue.class, TrackedDataHandlerRegistry.INTEGER);
     private EntityDimensions stoneStatueSize = EntityDimensions.fixed(0.5F, 0.5F);
 
+    private Entity renderEntity;
+    private EntityType<?> renderType;
+    private NbtCompound renderTag;
+
+    public Entity getOrCreateRenderEntity() {
+        EntityType<?> type = this.getTrappedEntityType();
+        NbtCompound tag = this.getTrappedTag();
+        if (this.renderTag == null || this.renderType != type || !tag.equals(this.renderTag)) {
+            this.renderType = type;
+            this.renderEntity = type.create(this.getWorld());
+            this.renderTag = tag.copy();
+            if (this.renderEntity != null) {
+                try { this.renderEntity.readNbt(this.renderTag); }
+                catch (RuntimeException e) { IceAndFire.LOGGER.warn("Invalid statue data for {}", type, e); }
+            }
+        }
+        return this.renderEntity;
+    }
+
     public EntityStoneStatue(EntityType<? extends LivingEntity> t, World worldIn) {
         super(t, worldIn);
     }

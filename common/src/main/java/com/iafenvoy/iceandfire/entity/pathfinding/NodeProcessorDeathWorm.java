@@ -59,22 +59,17 @@ public class NodeProcessorDeathWorm extends PathNodeMaker {
         return pathnodetype != PathNodeType.BREACH && pathnodetype != PathNodeType.WATER ? null : this.getNode(p_186328_1_, p_186328_2_, p_186328_3_);
     }
 
-    private PathNodeType isFree(int p_186327_1_, int p_186327_2_, int p_186327_3_) {
-        BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
-        for (int i = p_186327_1_; i < p_186327_1_ + this.entityBlockXSize; ++i) {
-            for (int j = p_186327_2_; j < p_186327_2_ + this.entityBlockYSize; ++j) {
-                for (int k = p_186327_3_; k < p_186327_3_ + this.entityBlockZSize; ++k) {
-                    BlockState blockstate = this.cachedWorld.getBlockState(blockpos$mutable.set(i, j, k));
-                    if (!this.isPassable(this.cachedWorld, blockpos$mutable.down()) && (blockstate.isAir() || this.isPassable(this.cachedWorld, blockpos$mutable))) {
-                        return PathNodeType.BREACH;
-                    }
-
+    private PathNodeType isFree(int x, int y, int z) {
+        BlockPos.Mutable cursor = new BlockPos.Mutable();
+        boolean breach = false;
+        for (int i = x; i < x + this.entityBlockXSize; i++)
+            for (int j = y; j < y + this.entityBlockYSize; j++)
+                for (int k = z; k < z + this.entityBlockZSize; k++) {
+                    cursor.set(i, j, k);
+                    if (!this.isPassable(this.cachedWorld.getBlockState(cursor))) return PathNodeType.BLOCKED;
+                    if (!this.isPassable(this.cachedWorld, cursor.down())) breach = true;
                 }
-            }
-        }
-
-        BlockState blockstate1 = this.cachedWorld.getBlockState(blockpos$mutable);
-        return this.isPassable(blockstate1) ? PathNodeType.WATER : PathNodeType.BLOCKED;
+        return breach ? PathNodeType.BREACH : PathNodeType.WATER;
     }
 
 

@@ -27,9 +27,12 @@ public class ItemGhostSword extends SwordItem {
     }
 
     public static void spawnGhostSwordEntity(ItemStack stack, PlayerEntity playerEntity) {
+        spawnGhostSwordEntity(stack, playerEntity, Hand.MAIN_HAND);
+    }
+
+    public static void spawnGhostSwordEntity(ItemStack stack, PlayerEntity playerEntity, Hand hand) {
+        if (playerEntity.getWorld().isClient || playerEntity.getStackInHand(hand) != stack) return;
         if (playerEntity.getItemCooldownManager().isCoolingDown(stack.getItem()))
-            return;
-        if (playerEntity.getStackInHand(Hand.MAIN_HAND) != stack)
             return;
         final Multimap<EntityAttribute, EntityAttributeModifier> dmg = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
         double totalDmg = 0D;
@@ -40,7 +43,7 @@ public class ItemGhostSword extends SwordItem {
         EntityGhostSword shot = new EntityGhostSword(IafEntities.GHOST_SWORD.get(), playerEntity.getWorld(), playerEntity, totalDmg * 0.5F);
         shot.setVelocity(playerEntity, playerEntity.getPitch(), playerEntity.getYaw(), 0.0F, 1, 0.5f);
         playerEntity.getWorld().spawnEntity(shot);
-        stack.damage(1, playerEntity, entity -> entity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+        stack.damage(1, playerEntity, entity -> entity.sendToolBreakStatus(hand));
         playerEntity.getItemCooldownManager().set(stack.getItem(), 10);
     }
 

@@ -1,6 +1,5 @@
 package com.iafenvoy.iceandfire.render.entity;
 
-import com.iafenvoy.iceandfire.IceAndFire;
 import com.iafenvoy.iceandfire.entity.EntityHydra;
 import com.iafenvoy.iceandfire.entity.EntityStoneStatue;
 import com.iafenvoy.iceandfire.entity.EntityTroll;
@@ -45,12 +44,13 @@ public class RenderStoneStatue extends EntityRenderer<EntityStoneStatue> {
             Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_8.png"),
             Identifier.of(Identifier.DEFAULT_NAMESPACE,"textures/block/destroy_stage_9.png")};
     private final Map<String, EntityModel> modelMap = new HashMap<>();
-    private final Map<String, Entity> hollowEntityMap = new HashMap<>();
+    private final EntityModel fallbackModel;
     private final EntityRendererFactory.Context context;
 
     public RenderStoneStatue(EntityRendererFactory.Context context) {
         super(context);
         this.context = context;
+        this.fallbackModel = new PigEntityModel<>(context.getPart(EntityModelLayers.PIG));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class RenderStoneStatue extends EntityRenderer<EntityStoneStatue> {
 
     @Override
     public void render(EntityStoneStatue entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn) {
-        EntityModel model = new PigEntityModel<>(this.context.getPart(EntityModelLayers.PIG));
+        EntityModel model = this.fallbackModel;
 
         // Get the correct model
         if (this.modelMap.get(entityIn.getTrappedEntityTypeString()) != null)
@@ -81,19 +81,7 @@ public class RenderStoneStatue extends EntityRenderer<EntityStoneStatue> {
         }
         if (model == null) return;
 
-        Entity fakeEntity;
-        if (this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString()) == null) {
-            fakeEntity = entityIn.getTrappedEntityType().create(MinecraftClient.getInstance().world);
-            if (fakeEntity != null) {
-                try {
-                    fakeEntity.readNbt(entityIn.getTrappedTag());
-                } catch (Exception e) {
-                    IceAndFire.LOGGER.warn("Mob {} could not build statue NBT", entityIn.getTrappedEntityTypeString());
-                }
-                this.hollowEntityMap.putIfAbsent(entityIn.getTrappedEntityTypeString(), fakeEntity);
-            }
-        } else
-            fakeEntity = this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString());
+        Entity fakeEntity = entityIn.getOrCreateRenderEntity();
         RenderLayer tex = IafRenderLayers.getStoneMobRenderType(200, 200);
         if (fakeEntity instanceof EntityTroll troll)
             tex = RenderLayer.getEntityCutout(troll.getTrollType().getStatueTexture());

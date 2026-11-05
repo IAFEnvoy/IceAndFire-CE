@@ -20,6 +20,9 @@ public class IceAndFireClient {
         IafRenderers.registerEntityRenderers();
         IafRenderers.registerParticleRenderers();
         IafKeybindings.init();
+        dev.architectury.registry.ReloadListenerRegistry.register(net.minecraft.resource.ResourceType.CLIENT_RESOURCES,
+                new com.iafenvoy.iceandfire.screen.gui.bestiary.BestiaryPageCache(),
+                net.minecraft.util.Identifier.of(IceAndFire.MOD_ID, "bestiary_pages"));
     }
 
     public static void process() {

@@ -18,6 +18,7 @@ public class StymphalianBirdFlock {
     private ArrayList<EntityStymphalianBird> members = new ArrayList<>();
     private BlockPos leaderTarget;
     private Random random;
+    private long lastUpdate = Long.MIN_VALUE;
 
     private StymphalianBirdFlock() {
     }
@@ -48,16 +49,19 @@ public class StymphalianBirdFlock {
     }
 
     public void addToFlock(EntityStymphalianBird bird) {
-        this.members.add(bird);
+        if (!this.members.contains(bird)) this.members.add(bird);
     }
 
     public void update() {
-        if (!this.members.isEmpty() && (this.leader == null || !this.leader.isAlive()))
-            this.leader = this.members.get(this.random.nextInt(this.members.size()));
-        if (this.leader != null && this.leader.isAlive()) {
-            BlockPos prevLeaderTarget = this.leaderTarget;
-            this.leaderTarget = this.leader.airTarget;
-        }
+        if (this.members.isEmpty()) { this.leader = null; return; }
+        var world = this.members.get(0).getWorld();
+        long now = world.getTime();
+        if (now == this.lastUpdate) return;
+        this.lastUpdate = now;
+        this.members.removeIf(bird -> bird.isRemoved() || !bird.isAlive() || bird.getWorld() != world || bird.flock != this);
+        if (this.leader == null || !this.members.contains(this.leader))
+            this.leader = this.members.isEmpty() ? null : this.members.get(this.random.nextInt(this.members.size()));
+        if (this.leader != null) this.leaderTarget = this.leader.airTarget;
     }
 
     public void onLeaderAttack(LivingEntity attackTarget) {

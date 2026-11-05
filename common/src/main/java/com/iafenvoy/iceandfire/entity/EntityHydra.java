@@ -222,8 +222,10 @@ public class EntityHydra extends HostileEntity implements IAnimatedEntity, IMult
             this.headBoxes[HEADS + i].copyPositionAndRotation(this);
             this.headBoxes[i].setParent(this);
             this.headBoxes[HEADS + i].setParent(this);
-            this.getWorld().spawnEntity(this.headBoxes[i]);
-            this.getWorld().spawnEntity(this.headBoxes[HEADS + i]);
+            if (!this.getWorld().isClient) {
+                this.getWorld().spawnEntity(this.headBoxes[i]);
+                this.getWorld().spawnEntity(this.headBoxes[HEADS + i]);
+            }
         }
         this.multipartLoaded = true;
     }
@@ -242,7 +244,7 @@ public class EntityHydra extends HostileEntity implements IAnimatedEntity, IMult
             EntityUtil.updatePart(this.headBoxes[i], this);
 
             this.headBoxes[HEADS + i].setPosition(this.headBoxes[HEADS + i].getX(), this.getY() + partY, this.headBoxes[HEADS + i].getZ());
-            EntityUtil.updatePart(this.headBoxes[HEADS + 1], this);
+            EntityUtil.updatePart(this.headBoxes[HEADS + i], this);
         }
 
         if (this.getHeadCount() > 1 && !this.isOnFire())
@@ -296,7 +298,6 @@ public class EntityHydra extends HostileEntity implements IAnimatedEntity, IMult
         compound.putInt("SeveredHead", this.getSeveredHead());
         for (int i = 0; i < HEADS; i++)
             compound.putFloat("HeadDamage" + i, this.headDamageTracker[i]);
-        this.clearParts();
     }
 
     @Override
@@ -320,7 +321,7 @@ public class EntityHydra extends HostileEntity implements IAnimatedEntity, IMult
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (this.lastHitHead > this.getHeadCount())
+        if (this.lastHitHead < 0 || this.lastHitHead >= this.getHeadCount())
             this.lastHitHead = this.getHeadCount() - 1;
         int headIndex = this.lastHitHead;
         this.headDamageTracker[headIndex] += amount;
@@ -429,11 +430,11 @@ public class EntityHydra extends HostileEntity implements IAnimatedEntity, IMult
     }
 
     public void onHitHead(float damage, int headIndex) {
-        this.lastHitHead = headIndex;
+        this.triggerHeadFlags(headIndex);
     }
 
     public void triggerHeadFlags(int index) {
-        this.lastHitHead = index;
+        this.lastHitHead = MathHelper.clamp(index, 0, Math.min(HEADS, this.getHeadCount()) - 1);
     }
 
     @Override

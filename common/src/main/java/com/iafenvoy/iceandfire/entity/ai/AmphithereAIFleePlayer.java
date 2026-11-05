@@ -13,6 +13,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class AmphithereAIFleePlayer extends Goal {
+    private final SearchCooldown searchCooldown = new SearchCooldown();
     protected final EntityAmphithere entity;
     private final double farSpeed;
     private final double nearSpeed;
@@ -33,8 +34,8 @@ public class AmphithereAIFleePlayer extends Goal {
     @Override
     public boolean canStart() {
         if (!this.entity.isFlying() && !this.entity.isTamed()) {
-            if (this.entity.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-                this.list = this.entity.getWorld().getEntitiesByClass(PlayerEntity.class, this.entity.getBoundingBox().expand(this.avoidDistance, 6D, this.avoidDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+            if (!this.searchCooldown.shouldSearch(this.entity.getWorld().getTime(), this.entity.getId())) return false;
+            this.list = this.entity.getWorld().getEntitiesByClass(PlayerEntity.class, this.entity.getBoundingBox().expand(this.avoidDistance, 6D, this.avoidDistance), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
             if (this.list.isEmpty()) return false;
 
             this.closestLivingEntity = this.list.get(0);

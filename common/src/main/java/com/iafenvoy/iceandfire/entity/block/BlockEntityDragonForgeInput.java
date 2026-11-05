@@ -27,8 +27,8 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
     }
 
     public static void tick(final World level, final BlockPos position, final BlockState state, final BlockEntityDragonForgeInput forgeInput) {
-        if (forgeInput.core == null)
-            forgeInput.core = forgeInput.getConnectedTileEntity(position);
+        if (level.isClient) return;
+        forgeInput.validateCore();
 
         if (forgeInput.ticksSinceDragonFire > 0)
             forgeInput.ticksSinceDragonFire--;
@@ -47,8 +47,11 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
     }
 
     public void onHitWithFlame() {
-        if (this.core != null)
+        this.validateCore();
+        if (this.core != null) {
+            this.ticksSinceDragonFire = 40;
             this.core.transferPower(1);
+        }
     }
 
     @Override
@@ -92,7 +95,8 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
     }
 
     public boolean isAssembled() {
-        return (this.core != null && this.core.assembled() && this.core.canSmelt());
+        this.validateCore();
+        return this.core != null && this.core.assembled() && this.core.canSmelt();
     }
 
     private boolean canSeeInput(EntityDragonBase dragon, Vec3d target) {
@@ -135,10 +139,19 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
         return state.getBlock() instanceof BlockDragonForgeInput && state.get(BlockDragonForgeInput.ACTIVE);
     }
 
+    private void validateCore() {
+        if (this.world == null || this.world.isClient) { this.core = null; return; }
+        if (this.core == null || this.core.isRemoved() || this.world.getBlockEntity(this.core.getPos()) != this.core
+                || this.core.getPos().getSquaredDistance(this.pos) != 1
+                || this.core.getFireType(this.core.getCachedState().getBlock()) != this.getDragonType())
+            this.core = this.getConnectedTileEntity(this.pos);
+    }
+
     private BlockEntityDragonForge getConnectedTileEntity(final BlockPos position) {
         assert this.world != null;
         for (Direction facing : HORIZONTALS)
-            if (this.world.getBlockEntity(position.offset(facing)) instanceof BlockEntityDragonForge forge)
+            if (this.world.getBlockEntity(position.offset(facing)) instanceof BlockEntityDragonForge forge
+                    && !forge.isRemoved() && forge.getFireType(forge.getCachedState().getBlock()) == this.getDragonType())
                 return forge;
         return null;
     }

@@ -1,0 +1,5 @@
+{
+  "compile_exit": 0,
+  "run_exit": 1,
+  "limitation": "Vanilla registry bootstrap in plain JVM; no loader, world or gameplay integration."
+}

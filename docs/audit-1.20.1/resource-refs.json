@@ -1,0 +1,34 @@
+{
+  "checked": {
+    "models": 343,
+    "textures": 631
+  },
+  "missing": [
+    {
+      "source": "common/src/main/resources/assets/iceandfire/models/item/amythest_gem.json",
+      "kind": "texture",
+      "ref": "iceandfire:item/amethyst_gem",
+      "missing": "assets/iceandfire/textures/item/amethyst_gem.png"
+    },
+    {
+      "source": "common/src/main/resources/assets/iceandfire/models/item/copper_block.json",
+      "kind": "parent",
+      "ref": "iceandfire:block/copper_block",
+      "missing": "assets/iceandfire/models/block/copper_block.json"
+    },
+    {
+      "source": "common/src/main/resources/assets/iceandfire/models/item/copper_ore.json",
+      "kind": "parent",
+      "ref": "iceandfire:block/copper_ore",
+      "missing": "assets/iceandfire/models/block/copper_ore.json"
+    },
+    {
+      "source": "common/src/main/resources/assets/iceandfire/models/item/pixie_jar_5.json",
+      "kind": "texture",
+      "ref": "iceandfire:item/jar_5",
+      "missing": "assets/iceandfire/textures/item/jar_5.png"
+    }
+  ],
+  "files": 820,
+  "limitations": "Only explicit iceandfire model/parent/texture JSON references; no dynamic Java textures, registry or optional dependency resolution."
+}

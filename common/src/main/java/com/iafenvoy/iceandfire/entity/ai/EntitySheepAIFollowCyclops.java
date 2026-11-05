@@ -47,7 +47,7 @@ public class EntitySheepAIFollowCyclops extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        if (this.cyclops.isAlive()) return false;
+        if (this.cyclops == null || !this.cyclops.isAlive()) return false;
         else {
             final double d0 = this.childAnimal.squaredDistanceTo(this.cyclops);
             return d0 >= 9.0D && d0 <= 256.0D;

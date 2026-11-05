@@ -9,6 +9,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class DreadAIRideHorse extends Goal {
+    private final SearchCooldown searchCooldown = new SearchCooldown();
     private final EntityDreadKnight knight;
     private AbstractHorseEntity horse;
 
@@ -25,8 +26,8 @@ public class DreadAIRideHorse extends Goal {
             this.list = IafMath.emptyAbstractHorseEntityList;
             return false;
         } else {
-            if (this.knight.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-                this.list = this.knight.getWorld().getEntitiesByClass(AbstractHorseEntity.class,
+            if (!this.searchCooldown.shouldSearch(this.knight.getWorld().getTime(), this.knight.getId())) return false;
+            this.list = this.knight.getWorld().getEntitiesByClass(AbstractHorseEntity.class,
                         this.knight.getBoundingBox().expand(16.0D, 7.0D, 16.0D), entity -> !entity.hasPassengers());
 
             if (this.list.isEmpty()) return false;

@@ -26,12 +26,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
-import net.minecraft.resource.Resource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.apache.commons.io.IOUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -673,18 +670,10 @@ public class BestiaryScreen extends HandledScreen<BestiaryScreenHandler> {
     }
 
     public void imageFromTxt(DrawContext ms) {
-        String fileName = this.pageType.getName() + "_" + this.bookPages + ".txt";
-        String languageName = MinecraftClient.getInstance().options.language.toLowerCase(Locale.ROOT);
-        Identifier fileLoc = Identifier.of(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
-        Identifier backupLoc = Identifier.of(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
-        Optional<Resource> resource;
-
-        resource = MinecraftClient.getInstance().getResourceManager().getResource(fileLoc);
-        if (resource.isEmpty())
-            resource = MinecraftClient.getInstance().getResourceManager().getResource(backupLoc);
+        List<String> lines = BestiaryPageCache.get(this.pageType.getName() + "_" + this.bookPages + ".txt");
         try {
-            if (resource.isPresent()) {
-                final List<String> lines = IOUtils.readLines(resource.get().getInputStream(), StandardCharsets.UTF_8);
+            if (!lines.isEmpty()) {
+
                 int zLevelAdd = 0;
                 for (String line : lines) {
                     line = line.trim();
@@ -768,18 +757,9 @@ public class BestiaryScreen extends HandledScreen<BestiaryScreenHandler> {
     }
 
     public void writeFromTxt(DrawContext ms) {
-        String fileName = this.pageType.getName() + "_" + this.bookPages + ".txt";
-        String languageName = MinecraftClient.getInstance().options.language.toLowerCase(Locale.ROOT);
-        Identifier fileLoc = Identifier.of(IceAndFire.MOD_ID, "lang/bestiary/" + languageName + "_0/" + fileName);
-        Identifier backupLoc = Identifier.of(IceAndFire.MOD_ID, "lang/bestiary/en_us_0/" + fileName);
-        Optional<Resource> resource;
-
-        resource = MinecraftClient.getInstance().getResourceManager().getResource(fileLoc);
-        if (resource.isEmpty())
-            resource = MinecraftClient.getInstance().getResourceManager().getResource(backupLoc);
+        List<String> lines = BestiaryPageCache.get(this.pageType.getName() + "_" + this.bookPages + ".txt");
         try {
-            assert resource.isPresent();
-            final List<String> lines = IOUtils.readLines(resource.get().getInputStream(), "UTF-8");
+
             int linenumber = 0;
             for (String line : lines) {
                 line = line.trim();

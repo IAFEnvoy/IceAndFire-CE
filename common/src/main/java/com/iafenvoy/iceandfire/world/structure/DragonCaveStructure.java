@@ -124,7 +124,7 @@ public abstract class DragonCaveStructure extends Structure {
             //Get shells
             //Get hollows
             for (int i = 0; i < amount + rand.nextInt(2); i++) {
-                Direction direction = GenerationConstants.HORIZONTALS[rand.nextInt(GenerationConstants.HORIZONTALS.length - 1)];
+                Direction direction = GenerationConstants.HORIZONTALS[rand.nextInt(GenerationConstants.HORIZONTALS.length)];
                 int r = 2 * (int) (radius / 3F) + rand.nextInt(8);
                 BlockPos centerOffset = center.offset(direction, radius - 2);
                 sphereBlocks = Stream.concat(sphereBlocks, ShapeBuilder.start().getAllInCutOffSphereMutable(r, r, centerOffset).toStream(false));
@@ -215,7 +215,7 @@ public abstract class DragonCaveStructure extends Structure {
                     boolean generateGold = rand.nextDouble() < IafCommonConfig.INSTANCE.dragon.generateDenGoldChance.getValue() * (this.male ? 1 : 2);
                     world.setBlockState(pos, generateGold ? this.getTreasurePile().with(BlockGoldPile.LAYERS, 1 + rand.nextInt(7)) : Blocks.AIR.getDefaultState(), 3);
                 } else if (chance == 61) {
-                    world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, GenerationConstants.HORIZONTALS[rand.nextInt(3)]), Block.NOTIFY_LISTENERS);
+                    world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, GenerationConstants.HORIZONTALS[rand.nextInt(GenerationConstants.HORIZONTALS.length)]), Block.NOTIFY_LISTENERS);
                     if (world.getBlockState(pos).getBlock() instanceof ChestBlock) {
                         BlockEntity blockEntity = world.getBlockEntity(pos);
                         if (blockEntity instanceof ChestBlockEntity chestBlockEntity)

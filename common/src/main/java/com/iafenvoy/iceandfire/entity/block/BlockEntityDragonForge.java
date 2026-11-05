@@ -42,7 +42,6 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
     private final DragonForgePropertyDelegate propertyDelegate = new DragonForgePropertyDelegate();
     public int lastDragonFlameTimer = 0;
     private DefaultedList<ItemStack> forgeItemStacks = DefaultedList.ofSize(3, ItemStack.EMPTY);
-    private boolean prevAssembled;
     private boolean canAddFlameAgain = true;
 
     public BlockEntityDragonForge(BlockPos pos, BlockState state) {
@@ -54,47 +53,25 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
         this.getPropertyDelegate().fireType = fireType;
     }
 
-    public static void tick(World level, BlockPos pos, BlockState state, BlockEntityDragonForge entityDragonforge) {
-        boolean flag = entityDragonforge.isBurning();
-        boolean flag1 = false;
-        entityDragonforge.getPropertyDelegate().fireType = entityDragonforge.getFireType(entityDragonforge.getCachedState().getBlock());
-        if (entityDragonforge.lastDragonFlameTimer > 0)
-            entityDragonforge.lastDragonFlameTimer--;
-        entityDragonforge.updateGrills(entityDragonforge.assembled());
-        if (!level.isClient) {
-            if (entityDragonforge.prevAssembled != entityDragonforge.assembled())
-                BlockDragonForgeCore.setState(entityDragonforge.getPropertyDelegate().fireType, entityDragonforge.prevAssembled, level, pos);
-            entityDragonforge.prevAssembled = entityDragonforge.assembled();
-            if (!entityDragonforge.assembled()) return;
-        }
-        if (entityDragonforge.getPropertyDelegate().cookTime > 0 && entityDragonforge.canSmelt() && entityDragonforge.lastDragonFlameTimer == 0)
-            entityDragonforge.getPropertyDelegate().cookTime--;
-        if (entityDragonforge.getStack(0).isEmpty() && !level.isClient)
-            entityDragonforge.getPropertyDelegate().cookTime = 0;
-        assert entityDragonforge.world != null;
-        if (!entityDragonforge.world.isClient) {
-            if (entityDragonforge.isBurning()) {
-                if (entityDragonforge.canSmelt()) {
-                    ++entityDragonforge.getPropertyDelegate().cookTime;
-                    if (entityDragonforge.getPropertyDelegate().cookTime >= entityDragonforge.getMaxCookTime()) {
-                        entityDragonforge.getPropertyDelegate().cookTime = 0;
-                        entityDragonforge.smeltItem();
-                        flag1 = true;
-                    }
-                } else if (entityDragonforge.getPropertyDelegate().cookTime > 0) {
-                    entityDragonforge.lastDragonFlameTimer = 40;
-                    entityDragonforge.getPropertyDelegate().cookTime = 0;
-                }
-            } else if (!entityDragonforge.isBurning() && entityDragonforge.getPropertyDelegate().cookTime > 0)
-                entityDragonforge.getPropertyDelegate().cookTime = MathHelper.clamp(entityDragonforge.getPropertyDelegate().cookTime - 2, 0, entityDragonforge.getMaxCookTime());
-
-            if (flag != entityDragonforge.isBurning())
-                flag1 = true;
-        }
-
-        if (flag1) entityDragonforge.markDirty();
-        if (!entityDragonforge.canAddFlameAgain)
-            entityDragonforge.canAddFlameAgain = true;
+    public static void tick(World level, BlockPos pos, BlockState state, BlockEntityDragonForge forge) {
+        if (level.isClient) return;
+        int oldProgress = forge.propertyDelegate.cookTime;
+        int oldHeat = forge.lastDragonFlameTimer;
+        forge.propertyDelegate.fireType = forge.getFireType(state.getBlock());
+        boolean assembled = forge.assembled();
+        forge.updateGrills(assembled);
+        BlockDragonForgeCore.setState(forge.propertyDelegate.fireType, assembled, level, pos);
+        if (forge.lastDragonFlameTimer > 0) forge.lastDragonFlameTimer--;
+        if (!assembled || !forge.canSmelt()) forge.propertyDelegate.cookTime = 0;
+        else if (forge.isBurning()) {
+            if (++forge.propertyDelegate.cookTime >= forge.getMaxCookTime()) {
+                forge.propertyDelegate.cookTime = 0;
+                forge.smeltItem();
+            }
+        } else forge.propertyDelegate.cookTime = Math.max(0, forge.propertyDelegate.cookTime - 1);
+        forge.canAddFlameAgain = true;
+        if (oldProgress != forge.propertyDelegate.cookTime || oldHeat != forge.lastDragonFlameTimer)
+            forge.markDirty();
     }
 
     @Override
@@ -146,12 +123,16 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
 
     @Override
     public ItemStack removeStack(int index, int count) {
-        return Inventories.splitStack(this.forgeItemStacks, index, count);
+        ItemStack removed = Inventories.splitStack(this.forgeItemStacks, index, count);
+        if (!removed.isEmpty()) this.markDirty();
+        return removed;
     }
 
     @Override
     public ItemStack removeStack(int index) {
-        return Inventories.removeStack(this.forgeItemStacks, index);
+        ItemStack removed = Inventories.removeStack(this.forgeItemStacks, index);
+        if (!removed.isEmpty()) this.markDirty();
+        return removed;
     }
 
     @Override
@@ -165,8 +146,8 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
 
         if (index == 0 && !flag || this.getPropertyDelegate().cookTime > this.getMaxCookTime()) {
             this.getPropertyDelegate().cookTime = 0;
-            this.markDirty();
         }
+        this.markDirty();
     }
 
     @Override
@@ -174,12 +155,15 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
         super.readNbt(compound);
         this.forgeItemStacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         Inventories.readNbt(compound, this.forgeItemStacks);
-        this.getPropertyDelegate().cookTime = compound.getInt("CookTime");
+        this.getPropertyDelegate().cookTime = Math.max(0, compound.getInt("CookTime"));
+        this.lastDragonFlameTimer = MathHelper.clamp(compound.getInt("DragonFlameTimer"), 0, 40);
     }
 
     @Override
     public void writeNbt(NbtCompound compound) {
-        compound.putInt("CookTime", (short) this.getPropertyDelegate().cookTime);
+        super.writeNbt(compound);
+        compound.putInt("CookTime", this.getPropertyDelegate().cookTime);
+        compound.putInt("DragonFlameTimer", this.lastDragonFlameTimer);
         Inventories.writeNbt(compound, this.forgeItemStacks);
     }
 
@@ -189,7 +173,7 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
     }
 
     public boolean isBurning() {
-        return this.getPropertyDelegate().cookTime > 0;
+        return this.lastDragonFlameTimer > 0;
     }
 
     public int getFireType(Block block) {
@@ -243,11 +227,11 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
         if (forgeRecipeOutput.isEmpty()) return false;
 
         ItemStack outputStack = this.forgeItemStacks.get(2);
-        if (!outputStack.isEmpty() && !ItemStack.areItemsEqual(outputStack, forgeRecipeOutput))
+        if (!outputStack.isEmpty() && !ItemStack.canCombine(outputStack, forgeRecipeOutput))
             return false;
 
-        int calculatedOutputCount = outputStack.getCount() + forgeRecipeOutput.getCount();
-        return (calculatedOutputCount <= this.getMaxCountPerStack() && calculatedOutputCount <= outputStack.getMaxCount());
+        long calculatedOutputCount = (long) outputStack.getCount() + forgeRecipeOutput.getCount();
+        return (calculatedOutputCount <= this.getMaxCountPerStack() && calculatedOutputCount <= forgeRecipeOutput.getMaxCount());
     }
 
     @Override
@@ -271,6 +255,7 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
 
         cookStack.decrement(1);
         bloodStack.decrement(1);
+        this.markDirty();
     }
 
     @Override
@@ -306,6 +291,7 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
     @Override
     public void clear() {
         this.forgeItemStacks.clear();
+        this.markDirty();
     }
 
     @Override
@@ -314,16 +300,13 @@ public class BlockEntityDragonForge extends LockableContainerBlockEntity impleme
     }
 
     public void transferPower(int i) {
-        assert this.world != null;
-        if (!this.world.isClient) {
-            if (this.canSmelt()) {
-                if (this.canAddFlameAgain) {
-                    this.getPropertyDelegate().cookTime = Math.min(this.getMaxCookTime() + 1, this.getPropertyDelegate().cookTime + i);
-                    this.canAddFlameAgain = false;
-                }
-            } else this.getPropertyDelegate().cookTime = 0;
+        if (this.world == null || this.world.isClient || i <= 0) return;
+        if (this.canSmelt() && this.canAddFlameAgain) {
+            this.propertyDelegate.cookTime = (int) Math.min((long) this.getMaxCookTime(), (long) this.propertyDelegate.cookTime + i);
+            this.canAddFlameAgain = false;
         }
         this.lastDragonFlameTimer = 40;
+        this.markDirty();
     }
 
     private boolean checkBoneCorners(BlockPos pos) {

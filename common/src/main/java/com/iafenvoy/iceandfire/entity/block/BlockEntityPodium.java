@@ -1,11 +1,8 @@
 package com.iafenvoy.iceandfire.entity.block;
 
-import com.iafenvoy.iceandfire.StaticVariables;
 import com.iafenvoy.iceandfire.item.ItemDragonEgg;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.screen.handler.PodiumScreenHandler;
-import com.iafenvoy.uranus.ServerHelper;
-import com.iafenvoy.uranus.network.PacketBufferUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +11,6 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -51,40 +47,21 @@ public class BlockEntityPodium extends LockableContainerBlockEntity implements S
 
     @Override
     public ItemStack removeStack(int index, int count) {
-        if (!this.stacks.get(index).isEmpty()) {
-            ItemStack itemstack;
-            if (this.stacks.get(index).getCount() <= count) {
-                itemstack = this.stacks.get(index);
-                this.stacks.set(index, ItemStack.EMPTY);
-            } else {
-                itemstack = this.stacks.get(index).split(count);
-                if (this.stacks.get(index).isEmpty())
-                    this.stacks.set(index, ItemStack.EMPTY);
-            }
-            return itemstack;
-        } else return ItemStack.EMPTY;
+        ItemStack removed = Inventories.splitStack(this.stacks, index, count);
+        if (!removed.isEmpty()) BlockEntitySync.changed(this);
+        return removed;
     }
 
     public ItemStack getStackInSlotOnClosing(int index) {
-        if (!this.stacks.get(index).isEmpty()) {
-            ItemStack itemstack = this.stacks.get(index);
-            this.stacks.set(index, itemstack);
-            return itemstack;
-        } else return ItemStack.EMPTY;
+        return this.removeStack(index);
     }
 
     @Override
     public void setStack(int index, ItemStack stack) {
         this.stacks.set(index, stack);
-        if (!stack.isEmpty() && stack.getCount() > this.getMaxCountPerStack())
-            stack.setCount(this.getMaxCountPerStack());
-        this.writeNbt(this.toInitialChunkDataNbt());
-        assert this.world != null;
-        if (!this.world.isClient) {
-            PacketByteBuf buf = PacketBufferUtils.create().writeBlockPos(this.getPos());
-            PacketBufferUtils.writeItemStack(buf, this.stacks.get(0));
-            ServerHelper.sendToAll(StaticVariables.UPDATE_PODIUM, buf);
-        }
+        if (stack.getCount() > Math.min(this.getMaxCountPerStack(), stack.getMaxCount()))
+            stack.setCount(Math.min(this.getMaxCountPerStack(), stack.getMaxCount()));
+        BlockEntitySync.changed(this);
     }
 
     @Override
@@ -96,6 +73,7 @@ public class BlockEntityPodium extends LockableContainerBlockEntity implements S
 
     @Override
     public void writeNbt(NbtCompound compound) {
+        super.writeNbt(compound);
         Inventories.writeNbt(compound, this.stacks);
     }
 
@@ -126,6 +104,7 @@ public class BlockEntityPodium extends LockableContainerBlockEntity implements S
     @Override
     public void clear() {
         this.stacks.clear();
+        BlockEntitySync.changed(this);
     }
 
     @Override
@@ -160,7 +139,9 @@ public class BlockEntityPodium extends LockableContainerBlockEntity implements S
 
     @Override
     public ItemStack removeStack(int index) {
-        return ItemStack.EMPTY;
+        ItemStack removed = Inventories.removeStack(this.stacks, index);
+        if (!removed.isEmpty()) BlockEntitySync.changed(this);
+        return removed;
     }
 
     @Override
@@ -175,7 +156,7 @@ public class BlockEntityPodium extends LockableContainerBlockEntity implements S
 
     @Override
     protected ScreenHandler createScreenHandler(int id, PlayerInventory player) {
-        return null;
+        return new PodiumScreenHandler(id, this, player);
     }
 
     @Override

@@ -24,7 +24,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -32,6 +31,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public interface DragonSteelOverrides<T extends ToolItem> {
@@ -95,26 +96,22 @@ public interface DragonSteelOverrides<T extends ToolItem> {
                 //Cache for BFS
                 Queue<Pair<MobEntity, Double>> bfsQueue = new LinkedList<>();
                 bfsQueue.add(new Pair<>(mob, damages.isEmpty() ? 1 : damages.iterator().next().getValue()));
-                List<MobEntity> attacked = new LinkedList<>();
+                Set<MobEntity> discovered = new HashSet<>();
+                discovered.add(mob);
+                List<MobEntity> candidates = world.getNonSpectatingEntities(MobEntity.class,
+                        attacker.getBoundingBox().expand(searchRange)).stream()
+                        .filter(x -> x != attacker && x.isAlive()).filter(attacker::canSee).toList();
                 while (!bfsQueue.isEmpty()) {
                     Pair<MobEntity, Double> pair = bfsQueue.poll();
                     MobEntity mobEntity = pair.getLeft();
                     double damage = pair.getRight();
                     if (mobEntity != target)//Don't hit the source entity again
                         mobEntity.damage(world.getDamageSources().mobAttack(attacker), (float) damage);
-                    attacked.add(mobEntity);
-                    //Search for more targets
-                    List<MobEntity> targets = world.getNonSpectatingEntities(MobEntity.class, new Box(
-                            pos.getX() - searchRange,
-                            pos.getY() - searchRange,
-                            pos.getZ() - searchRange,
-                            pos.getX() + searchRange,
-                            pos.getY() + searchRange,
-                            pos.getZ() + searchRange
-                    )).stream().filter(attacker::canSee).filter(x -> !attacked.contains(x)).toList();
-                    for (MobEntity m : targets) {
-                        if (attacked.size() + bfsQueue.size() >= IafCommonConfig.INSTANCE.armors.dragonLightningMaxSearchCount.getValue())
+                    // The configured range is centered on the attacker, so collect it once.
+                    for (MobEntity m : candidates) {
+                        if (discovered.size() >= IafCommonConfig.INSTANCE.armors.dragonLightningMaxSearchCount.getValue())
                             break;
+                        if (!discovered.add(m)) continue;
                         bfsQueue.add(new Pair<>(m, damage * IafCommonConfig.INSTANCE.armors.dragonLightningDamageReduction.getValue()));
                         lightnings.add(new Pair<>(mobEntity.getBoundingBox().getCenter(), m.getBoundingBox().getCenter()));
                     }

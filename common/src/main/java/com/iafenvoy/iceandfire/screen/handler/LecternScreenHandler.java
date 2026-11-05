@@ -17,7 +17,6 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
 
@@ -96,32 +95,28 @@ public class LecternScreenHandler extends ScreenHandler {
     }
 
     public BestiaryPages[] getPossiblePages() {
-        this.possiblePagesInt[0] = this.getPageField(0);
-        this.possiblePagesInt[1] = this.getPageField(1);
-        this.possiblePagesInt[2] = this.getPageField(2);
+        this.onUpdate();
         BestiaryPages[] pages = new BestiaryPages[3];
         List<BestiaryPages> allPages = BestiaryPages.values();
-        if (this.tileFurnace.getStack(0).getItem() == IafItems.BESTIARY.get()) {
-            if (this.possiblePagesInt[0] < 0) pages[0] = null;
-            else pages[0] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[0]));
-            if (this.possiblePagesInt[1] < 0) pages[1] = null;
-            else pages[1] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[1]));
-            if (this.possiblePagesInt[2] < 0) pages[2] = null;
-            else pages[2] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[2]));
-        }
+        if (this.tileFurnace.getStack(0).getItem() == IafItems.BESTIARY.get())
+            for (int i = 0; i < pages.length; i++) {
+                int index = this.possiblePagesInt[i];
+                if (index >= 0 && index < allPages.size()) pages[i] = allPages.get(index);
+            }
         return pages;
     }
 
     @Override
     public boolean onButtonClick(PlayerEntity playerIn, int id) {
+        if (id < 0 || id >= this.possiblePagesInt.length || !this.canUse(playerIn)) return false;
         this.onUpdate();
         ItemStack bookStack = this.tileFurnace.getStack(0);
         ItemStack manuscriptStack = this.tileFurnace.getStack(1);
         int i = 3;
         if ((manuscriptStack.isEmpty() || manuscriptStack.getCount() < i || manuscriptStack.getItem() != IafItems.MANUSCRIPT.get()))
             return false;
-        else if (this.possiblePagesInt[id] > 0 && !bookStack.isEmpty() && bookStack.getItem() == IafItems.BESTIARY.get()) {
-            BestiaryPages page = this.getPossiblePages()[MathHelper.clamp(id, 0, 2)];
+        else if (this.possiblePagesInt[id] >= 0 && !bookStack.isEmpty() && bookStack.getItem() == IafItems.BESTIARY.get()) {
+            BestiaryPages page = this.getPossiblePages()[id];
             if (page != null) {
                 if (!playerIn.getWorld().isClient) {
                     manuscriptStack.decrement(i);

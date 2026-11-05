@@ -11,7 +11,6 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class MiscData extends NeedUpdateData {
     public int loveTicks;
@@ -19,10 +18,11 @@ public class MiscData extends NeedUpdateData {
     public boolean hasDismounted;
 
     // Transient data
-    public List<LivingEntity> targetedByScepter;
+    private List<LivingEntity> targetedByScepter;
     private List<Integer> targetedByScepterIds;
 
     private boolean isInitialized;
+    private int resolveTicks;
 
     public void tickMisc(final LivingEntity entity) {
         if (!this.isInitialized)
@@ -51,7 +51,7 @@ public class MiscData extends NeedUpdateData {
     }
 
     public List<LivingEntity> getTargetedByScepter() {
-        return Objects.requireNonNullElse(this.targetedByScepter, Collections.emptyList());
+        return this.targetedByScepter == null ? Collections.emptyList() : Collections.unmodifiableList(this.targetedByScepter);
     }
 
     public void addScepterTarget(final LivingEntity target) {
@@ -71,8 +71,16 @@ public class MiscData extends NeedUpdateData {
     }
 
     public void checkScepterTarget() {
-        if (this.targetedByScepter == null) return;
-        this.targetedByScepter.removeIf(living -> living.isRemoved() || living.getStatusEffect(StatusEffects.WITHER) == null || living.getStatusEffect(StatusEffects.WITHER).getDuration() <= 0);
+        if (this.targetedByScepter != null && this.targetedByScepter.removeIf(living -> living.isRemoved()
+                || !living.isAlive() || !living.hasStatusEffect(StatusEffects.WITHER))) this.markDirty();
+    }
+
+    public void clearScepterTargets() {
+        if (this.targetedByScepter != null && !this.targetedByScepter.isEmpty()) {
+            this.targetedByScepter.clear();
+            this.markDirty();
+        }
+        this.targetedByScepterIds = null;
     }
 
     public void setLoveTicks(int loveTicks) {
@@ -96,11 +104,12 @@ public class MiscData extends NeedUpdateData {
         miscData.putInt("lungeTicks", this.lungeTicks);
         miscData.putBoolean("hasDismounted", this.hasDismounted);
 
+        miscData.putIntArray("targetedByScepterIds", new int[0]);
         if (this.targetedByScepter != null) {
             int[] ids = new int[this.targetedByScepter.size()];
             for (int i = 0; i < this.targetedByScepter.size(); i++)
                 ids[i] = this.targetedByScepter.get(i).getId();
-            tag.putIntArray("targetedByScepterIds", ids);
+            miscData.putIntArray("targetedByScepterIds", ids);
         }
 
         tag.put("miscData", miscData);
@@ -111,12 +120,14 @@ public class MiscData extends NeedUpdateData {
         this.loveTicks = miscData.getInt("loveTicks");
         this.lungeTicks = miscData.getInt("lungeTicks");
         this.hasDismounted = miscData.getBoolean("hasDismounted");
-        int[] loadedChainedToIds = miscData.getIntArray("targetedByScepterIds");
+        int[] loadedChainedToIds = miscData.contains("targetedByScepterIds")
+                ? miscData.getIntArray("targetedByScepterIds") : tag.getIntArray("targetedByScepterIds");
 
         this.isInitialized = false;
-
+        this.resolveTicks = 100;
+        this.targetedByScepter = null;
+        this.targetedByScepterIds = new ArrayList<>();
         if (loadedChainedToIds.length > 0) {
-            this.targetedByScepterIds = new ArrayList<>();
             for (int loadedChainedToId : loadedChainedToIds)
                 this.targetedByScepterIds.add(loadedChainedToId);
         }
@@ -134,19 +145,26 @@ public class MiscData extends NeedUpdateData {
     }
 
     private void initialize(final World level) {
-        List<LivingEntity> entities = new ArrayList<>();
-
-        if (this.targetedByScepterIds != null) {
-            for (int id : this.targetedByScepterIds) {
-                if (id == -1) continue;
-                Entity entity = level.getEntityById(id);
-                if (entity instanceof LivingEntity livingEntity)
-                    entities.add(livingEntity);
-            }
+        if (this.targetedByScepterIds == null) { this.isInitialized = true; return; }
+        // Entity IDs only identify entities within a live client session.
+        if (!level.isClient) {
+            this.targetedByScepterIds = null;
+            this.targetedByScepter = null;
+            this.isInitialized = true;
+            return;
         }
-
-        this.targetedByScepter = !entities.isEmpty() ? entities : null;
-        this.targetedByScepterIds = null;
-        this.isInitialized = true;
+        if (this.targetedByScepter == null) this.targetedByScepter = new ArrayList<>();
+        this.targetedByScepterIds.removeIf(id -> {
+            Entity entity = level.getEntityById(id);
+            if (entity instanceof LivingEntity living) {
+                if (!this.targetedByScepter.contains(living)) this.targetedByScepter.add(living);
+                return true;
+            }
+            return id < 0;
+        });
+        if (this.targetedByScepterIds.isEmpty() || --this.resolveTicks <= 0) {
+            this.targetedByScepterIds = null;
+            this.isInitialized = true;
+        }
     }
 }

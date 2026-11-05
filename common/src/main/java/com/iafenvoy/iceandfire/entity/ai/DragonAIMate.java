@@ -44,8 +44,9 @@ public class DragonAIMate extends Goal {
     /**
      * Returns whether an in-progress Goal should continue executing
      */
-    public boolean continueExecuting() {
-        return this.targetMate.isAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
+    @Override
+    public boolean shouldContinue() {
+        return this.targetMate != null && this.dragon.canMove() && this.targetMate.isAlive() && this.targetMate.isInLove() && this.spawnBabyDelay < 60;
     }
 
     /**

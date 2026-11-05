@@ -66,16 +66,16 @@ public class DragonForgeRecipe implements Recipe<BlockEntityDragonForge> {
 
     @Override
     public ItemStack getOutput(DynamicRegistryManager registryAccess) {
-        return this.result;
+        return this.result.copy();
     }
 
     public ItemStack getResultItem() {
-        return this.result;
+        return this.result.copy();
     }
 
     @Override
     public ItemStack craft(BlockEntityDragonForge dragonforge, DynamicRegistryManager registryAccess) {
-        return this.result;
+        return this.result.copy();
     }
 
     @Override

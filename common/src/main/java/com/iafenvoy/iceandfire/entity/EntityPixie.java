@@ -1,15 +1,12 @@
 package com.iafenvoy.iceandfire.entity;
 
 import com.google.common.base.Predicate;
-import com.iafenvoy.iceandfire.StaticVariables;
 import com.iafenvoy.iceandfire.entity.ai.*;
 import com.iafenvoy.iceandfire.entity.block.BlockEntityPixieHouse;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.registry.IafSounds;
 import com.iafenvoy.iceandfire.registry.tag.IafItemTags;
-import com.iafenvoy.uranus.ServerHelper;
-import com.iafenvoy.uranus.network.PacketBufferUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,7 +30,6 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
@@ -323,12 +319,11 @@ public class EntityPixie extends TameableEntity {
                 } else {
                     house.hasPixie = true;
                     house.pixieType = this.getColor();
-                    house.pixieItems.set(0, this.getStackInHand(Hand.MAIN_HAND));
+                    house.pixieItems.set(0, this.getStackInHand(Hand.MAIN_HAND).copy());
+                    this.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
                     house.tamedPixie = this.isTamed();
                     house.pixieOwnerUUID = this.getOwnerUuid();
-                    PacketByteBuf buf = PacketBufferUtils.create().writeBlockPos(this.housePos);
-                    buf.writeBoolean(true).writeInt(this.getColor());
-                    ServerHelper.sendToAll(StaticVariables.UPDATE_PIXIE_HOUSE, buf);
+                    com.iafenvoy.iceandfire.entity.block.BlockEntitySync.changed(house);
                     this.remove(RemovalReason.DISCARDED);
                 }
             }

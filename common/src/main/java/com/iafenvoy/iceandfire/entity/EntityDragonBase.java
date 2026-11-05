@@ -23,7 +23,6 @@ import com.iafenvoy.iceandfire.render.model.IFChainBuffer;
 import com.iafenvoy.iceandfire.render.model.util.LegSolverQuadruped;
 import com.iafenvoy.iceandfire.screen.handler.DragonScreenHandler;
 import com.iafenvoy.iceandfire.world.DragonPosWorldData;
-import com.iafenvoy.uranus.ServerHelper;
 import com.iafenvoy.uranus.animation.Animation;
 import com.iafenvoy.uranus.animation.AnimationHandler;
 import com.iafenvoy.uranus.animation.IAnimatedEntity;
@@ -487,7 +486,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
                     PacketByteBuf buf = PacketBufferUtils.create();
                     buf.writeInt(this.getId()).writeBoolean(true);
                     buf.writeBlockPos(this.burningTarget);
-                    ServerHelper.sendToAll(StaticVariables.DRAGON_SET_BURN_BLOCK, buf);
+                    com.iafenvoy.iceandfire.network.EntityNetwork.sendToTracking(this, StaticVariables.DRAGON_SET_BURN_BLOCK, buf);
                 }
                 this.burningTarget = null;
             }
@@ -613,6 +612,12 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     @Override
     public void remove(RemovalReason reason) {
+        if (!this.getWorld().isClient) {
+            DragonPosWorldData data = DragonPosWorldData.get(this.getWorld());
+            if (reason.shouldDestroy() || reason == RemovalReason.CHANGED_DIMENSION || !this.isBoundToCrystal())
+                data.removeDragon(this.getUuid());
+            else data.addDragon(this.getUuid(), this.getBlockPos());
+        }
         this.removeParts();
         super.remove(reason);
     }
@@ -1139,8 +1144,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        // Interaction usually means right-click but the relevant item is often in the main hand
-        ItemStack stack = player.getMainHandStack();
+        ItemStack stack = player.getStackInHand(hand);
         int lastDeathStage = Math.min(this.getAgeInDays() / 5, 25);
 
         if (stack == ItemStack.EMPTY) {
@@ -1173,10 +1177,12 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
             }
             if (this.isOwner(player)) {
                 if (stack.getItem() == this.dragonType.getCrystalItem() && !ItemSummoningCrystal.hasDragon(stack)) {
+                    if (this.getWorld().isClient) return ActionResult.SUCCESS;
                     this.setCrystalBound(true);
                     NbtCompound compound = stack.getOrCreateNbt();
                     NbtCompound dragonTag = new NbtCompound();
                     dragonTag.putUuid("DragonUUID", this.getUuid());
+                    dragonTag.putString("Dimension", this.getWorld().getRegistryKey().getValue().toString());
                     if (this.getCustomName() != null) {
                         dragonTag.putString("CustomName", this.getCustomName().getString());
                     }
@@ -1197,13 +1203,13 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
                             this.startRiding(player, true);
                             PacketByteBuf buf = PacketBufferUtils.create();
                             buf.writeInt(this.getId()).writeBoolean(true).writeBoolean(true);
-                            ServerHelper.sendToAll(StaticVariables.START_RIDING_MOB_S2C, buf);
+                            com.iafenvoy.iceandfire.network.EntityNetwork.sendToTracking(this, StaticVariables.START_RIDING_MOB_S2C, buf);
                         } else if (dragonStage > 2 && !player.hasVehicle()) {
                             player.setSneaking(false);
                             player.startRiding(this, true);
                             PacketByteBuf buf = PacketBufferUtils.create();
                             buf.writeInt(this.getId()).writeBoolean(true).writeBoolean(false);
-                            ServerHelper.sendToAll(StaticVariables.START_RIDING_MOB_S2C, buf);
+                            com.iafenvoy.iceandfire.network.EntityNetwork.sendToTracking(this, StaticVariables.START_RIDING_MOB_S2C, buf);
                             this.setInSittingPose(false);
                         }
                         this.getNavigation().stop();
@@ -1718,6 +1724,8 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     @Override
     public void tick() {
         super.tick();
+        if (!this.getWorld().isClient && this.isBoundToCrystal() && this.age % 20 == 0)
+            DragonPosWorldData.get(this.getWorld()).addDragon(this.getUuid(), this.getBlockPos());
         this.calculateDimensions();
         this.updateParts();
         this.prevDragonPitch = this.getDragonPitch();
@@ -2039,6 +2047,11 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     public void setCrystalBound(boolean crystalBound) {
         this.dataTracker.set(CRYSTAL_BOUND, crystalBound);
+        if (!this.getWorld().isClient) {
+            DragonPosWorldData data = DragonPosWorldData.get(this.getWorld());
+            if (crystalBound) data.addDragon(this.getUuid(), this.getBlockPos());
+            else data.removeDragon(this.getUuid());
+        }
     }
 
     public float getDistanceSquared(Vec3d Vector3d) {
@@ -2959,14 +2972,6 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     @Override
     public void onRemoved() {
-        if (IafCommonConfig.INSTANCE.dragon.chunkLoadSummonCrystal.getValue()) {
-            if (this.isBoundToCrystal()) {
-                DragonPosWorldData data = DragonPosWorldData.get(this.getWorld());
-                if (data != null) {
-                    data.addDragon(this.getUuid(), this.getBlockPos());
-                }
-            }
-        }
         super.onRemoved();
     }
 

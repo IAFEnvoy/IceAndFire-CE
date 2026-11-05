@@ -1,0 +1,55 @@
+{
+  "source_commit": "2d624d664ae3242f4d589643d88fdcf366b750eb",
+  "java_files": 609,
+  "java_lines": 63030,
+  "by_module": {
+    "common": 590,
+    "fabric": 9,
+    "forge": 10
+  },
+  "json_files": 1971,
+  "json_errors": [],
+  "duplicate_keys": [
+    {
+      "file": "common/src/main/resources/data/iceandfire/pe_custom_conversions/iceandfire_default.json",
+      "key": "iceandfire:hippogryph_talon"
+    }
+  ],
+  "resource_types": {
+    "iceandfire:dread_land": 1,
+    "minecraft:crafting_shapeless": 76,
+    "minecraft:crafting_shaped": 275,
+    "minecraft:smithing_transform": 6,
+    "minecraft:blasting": 6,
+    "minecraft:smelting": 14,
+    "minecraft:tree": 2,
+    "minecraft:flower": 3,
+    "minecraft:ore": 2,
+    "iceandfire:spawn_death_worm": 1,
+    "iceandfire:spawn_dragon_skeleton_fire": 1,
+    "iceandfire:spawn_dragon_skeleton_ice": 1,
+    "iceandfire:spawn_dragon_skeleton_lightning": 1,
+    "iceandfire:spawn_hippocampus": 1,
+    "iceandfire:spawn_sea_serpent": 1,
+    "iceandfire:spawn_stymphalian_bird": 1,
+    "iceandfire:spawn_wandering_cyclops": 1,
+    "minecraft:flat_cache": 2,
+    "iceandfire:cyclops_cave": 1,
+    "iceandfire:fire_dragon_cave": 1,
+    "iceandfire:fire_dragon_roost": 1,
+    "iceandfire:gorgon_temple": 1,
+    "iceandfire:graveyard": 1,
+    "iceandfire:hydra_cave": 1,
+    "iceandfire:ice_dragon_cave": 1,
+    "iceandfire:ice_dragon_roost": 1,
+    "iceandfire:lightning_dragon_cave": 1,
+    "iceandfire:lightning_dragon_roost": 1,
+    "iceandfire:mausoleum": 1,
+    "iceandfire:pixie_village": 1,
+    "iceandfire:siren_island": 1,
+    "farmersdelight:cooking": 5,
+    "iceandfire:dragonforge": 3,
+    "minecraft:stonecutting": 5,
+    "minecraft:block": 97
+  }
+}

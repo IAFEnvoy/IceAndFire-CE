@@ -1,0 +1,5 @@
+ע: SpongePowered MIXIN Annotation Processor Version=0.8.7
+ע: Supported obfuscation types: ObfuscationServiceMCP supports [searge,notch]
+CONFIRMED: B04 actual MiscData.deserialize ignores IDs written at outer tag level
+CONFIRMED: A03 actual Goal.shouldContinue delegates to canStart each call
+TOTAL_CONFIRMED=2

@@ -55,6 +55,7 @@ public class BlockJar extends BlockWithEntity {
 
     @Override
     public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.isOf(newState.getBlock())) return;
         this.dropPixie(worldIn, pos);
         super.onStateReplaced(state, worldIn, pos, newState, isMoving);
     }
@@ -67,7 +68,9 @@ public class BlockJar extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockHitResult resultIn) {
         if (!this.empty && world.getBlockEntity(pos) != null && world.getBlockEntity(pos) instanceof BlockEntityJar jar && jar.hasPixie && jar.hasProduced) {
+            if (world.isClient) return ActionResult.SUCCESS;
             jar.hasProduced = false;
+            com.iafenvoy.iceandfire.entity.block.BlockEntitySync.changed(jar);
             ItemEntity item = new ItemEntity(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, new ItemStack(IafItems.PIXIE_DUST.get()));
             if (!world.isClient)
                 world.spawnEntity(item);

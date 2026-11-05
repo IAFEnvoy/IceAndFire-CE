@@ -1,0 +1,102 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :
+Architect Plugin: 3.4.164
+Architectury Loom: 1.7.435
+You are using an outdated version of Architectury Loom! This version will not receive any support, please consider updating!
+
+> Task :fabric:processResources
+> Task :forge:processResources
+> Task :forge:processIncludeJars
+
+> Task :fabric:processIncludeJars
+(Fi3C0IO5) is not valid semver for dependency maven.modrinth:here-be-no-dragons:Fi3C0IO5
+
+> Task :fabric:sourcesJar
+> Task :forge:sourcesJar
+> Task :fabric:processTestResources NO-SOURCE
+> Task :forge:processTestResources NO-SOURCE
+> Task :fabric:validateAccessWidener
+> Task :forge:validateAccessWidener
+> Task :common:compileJava
+ע: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+ע: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+ע: ĳЩ�����ļ�ʹ����δ�����򲻰�ȫ�Ĳ�����
+ע: �й���ϸ��Ϣ, ��ʹ�� -Xlint:unchecked ���±��롣
+
+> Task :common:processResources
+> Task :common:classes
+> Task :common:jar
+> Task :common:processIncludeJars
+
+> Task :fabric:compileJava
+����: δ֪��ö�ٳ��� Env.CLIENT
+  ԭ��: �Ҳ���com.demonwav.mcdev.annotations.Env�����ļ�
+����: δ֪��ö�ٳ��� Env.CLIENT
+  ԭ��: �Ҳ���com.demonwav.mcdev.annotations.Env�����ļ�
+����: δ֪��ö�ٳ��� Env.CLIENT
+  ԭ��: �Ҳ���com.demonwav.mcdev.annotations.Env�����ļ�
+3 ������
+
+> Task :fabric:classes
+> Task :fabric:jar
+> Task :fabric:compileTestJava NO-SOURCE
+> Task :fabric:testClasses UP-TO-DATE
+> Task :fabric:test NO-SOURCE
+> Task :fabric:check
+
+> Task :forge:compileJava
+����: δ֪��ö�ٳ��� EnvType.CLIENT
+  ԭ��: �Ҳ���net.fabricmc.api.EnvType�����ļ�
+����: δ֪��ö�ٳ��� EnvType.CLIENT
+  ԭ��: �Ҳ���net.fabricmc.api.EnvType�����ļ�
+����: δ֪��ö�ٳ��� EnvType.CLIENT
+  ԭ��: �Ҳ���net.fabricmc.api.EnvType�����ļ�
+3 ������
+
+> Task :forge:classes
+> Task :forge:jar
+> Task :forge:compileTestJava NO-SOURCE
+> Task :forge:testClasses UP-TO-DATE
+> Task :forge:test NO-SOURCE
+> Task :forge:check
+> Task :fabric:remapSourcesJar
+> Task :forge:remapSourcesJar
+> Task :common:sourcesJar
+> Task :common:compileTestJava NO-SOURCE
+> Task :common:processTestResources NO-SOURCE
+> Task :common:testClasses UP-TO-DATE
+> Task :common:test NO-SOURCE
+> Task :common:validateAccessWidener
+> Task :common:check
+
+> Task :common:transformProductionFabric
+[Architectury Transformer] Read classpath in 1.262 s
+[Architectury Transformer] Transformed jar with 5 transformer(s) in 4.689 s
+
+> Task :fabric:shadowJar
+> Task :common:remapJar
+
+> Task :common:transformProductionForge
+[Architectury Transformer] Read classpath in 3.617 s
+[Architectury Transformer] Transformed jar with 7 transformer(s) in 6.458 s
+
+> Task :common:remapSourcesJar
+> Task :forge:shadowJar
+> Task :fabric:remapJar
+> Task :fabric:assemble
+> Task :fabric:build
+> Task :forge:remapJar
+> Task :forge:assemble
+> Task :forge:build
+> Task :common:assemble
+> Task :common:build
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.10/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 3m 16s
+28 actionable tasks: 28 executed

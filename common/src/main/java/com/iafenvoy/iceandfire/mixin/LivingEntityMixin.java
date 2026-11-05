@@ -32,6 +32,6 @@ public abstract class LivingEntityMixin {
         Item item = stack.getItem();
         LivingEntity self = (LivingEntity) (Object) this;
         if (item instanceof ItemGhostSword && self instanceof PlayerEntity player)
-            ItemGhostSword.spawnGhostSwordEntity(stack, player);
+            ItemGhostSword.spawnGhostSwordEntity(stack, player, hand);
     }
 }

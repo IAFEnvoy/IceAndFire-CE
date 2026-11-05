@@ -26,7 +26,6 @@ import java.util.Random;
 
 public class ItemCockatriceScepter extends Item {
     private final Random rand = new Random();
-    private int specialWeaponDmg;
 
     public ItemCockatriceScepter() {
         super(new Settings().maxDamage(700));
@@ -41,16 +40,12 @@ public class ItemCockatriceScepter extends Item {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World worldIn, LivingEntity livingEntity, int timeLeft) {
-        if (this.specialWeaponDmg > 0) {
-            stack.damage(this.specialWeaponDmg, livingEntity, player -> player.sendToolBreakStatus(livingEntity.getActiveHand()));
-            this.specialWeaponDmg = 0;
-        }
-        IafEntityData data = IafEntityData.get(livingEntity);
-        data.miscData.getTargetedByScepter().clear();
+        if (!worldIn.isClient) IafEntityData.get(livingEntity).miscData.clearScepterTargets();
     }
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+        if (!world.isClient) IafEntityData.get(user).miscData.clearScepterTargets();
         if (user instanceof PlayerEntity player)
             player.getItemCooldownManager().set(this, 20);
         return super.finishUsing(stack, world, user);
@@ -58,7 +53,7 @@ public class ItemCockatriceScepter extends Item {
 
     @Override
     public int getMaxUseTime(ItemStack stack) {
-        return 1;
+        return 72000;
     }
 
     @Override
@@ -70,11 +65,12 @@ public class ItemCockatriceScepter extends Item {
     public TypedActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand hand) {
         ItemStack itemStackIn = playerIn.getStackInHand(hand);
         playerIn.setCurrentHand(hand);
-        return new TypedActionResult<>(ActionResult.PASS, itemStackIn);
+        return TypedActionResult.consume(itemStackIn);
     }
 
     @Override
     public void usageTick(World level, LivingEntity player, ItemStack stack, int count) {
+        if (level.isClient || stack != player.getActiveItem()) return;
         if (player instanceof PlayerEntity) {
             double dist = 32;
             Vec3d playerEyePosition = player.getCameraPosVec(1.0F);
@@ -130,8 +126,15 @@ public class ItemCockatriceScepter extends Item {
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40, 2));
 
             if (caster.age % 20 == 0) {
-                this.specialWeaponDmg++;
+                ItemStack active = caster.getActiveItem();
+                if (active.getItem() != this) return;
+                active.damage(1, caster, entity -> entity.sendToolBreakStatus(caster.getActiveHand()));
                 target.damage(caster.getWorld().damageSources.wither(), 2);
+                if (active.isEmpty()) {
+                    data.miscData.clearScepterTargets();
+                    caster.stopUsingItem();
+                    return;
+                }
             }
 
             this.drawParticleBeam(caster, target);

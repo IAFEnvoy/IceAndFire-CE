@@ -5,10 +5,8 @@ import com.iafenvoy.iceandfire.client.FlightStaminaOverlay;
 import com.iafenvoy.iceandfire.config.IafClientConfig;
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
 import com.iafenvoy.iceandfire.entity.EntityDragonBase;
-import com.iafenvoy.iceandfire.entity.EntityMultipartPart;
 import com.iafenvoy.iceandfire.entity.util.ICustomMoveController;
 import com.iafenvoy.iceandfire.particle.CockatriceBeamRender;
-import com.iafenvoy.iceandfire.particle.LightningRender;
 import com.iafenvoy.iceandfire.registry.IafKeybindings;
 import com.iafenvoy.iceandfire.registry.IafParticles;
 import com.iafenvoy.iceandfire.render.block.RenderFrozenState;
@@ -69,7 +67,7 @@ public class ClientEvents {
 
     public static EventResult onEntityInteract(PlayerEntity player, Entity entity, Hand hand) {
         // Hook multipart
-        if (entity instanceof EntityMultipartPart) return EventResult.interruptTrue();
+        // Let vanilla send the actual part ID; the server validates its parent and reach.
         return EventResult.pass();
     }
 

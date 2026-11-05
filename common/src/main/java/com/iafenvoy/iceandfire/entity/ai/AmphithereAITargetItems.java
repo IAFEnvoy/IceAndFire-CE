@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class AmphithereAITargetItems<T extends ItemEntity> extends TrackTargetGoal {
+    private final SearchCooldown searchCooldown = new SearchCooldown();
     protected final DragonAITargetItems.Sorter theNearestAttackableTargetSorter;
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected final int targetChance;
@@ -50,8 +51,8 @@ public class AmphithereAITargetItems<T extends ItemEntity> extends TrackTargetGo
         // If the target entity already is what we want skip AABB
         if (this.targetEntitySelector.test(this.targetEntity)) return true;
 
-        if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks
-            this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
+        if (!this.searchCooldown.shouldSearch(this.mob.getWorld().getTime(), this.mob.getId())) return false;
+        this.list = this.mob.getWorld().getEntitiesByClass(ItemEntity.class, this.getTargetableArea(this.getFollowRange()), this.targetEntitySelector);
 
         if (this.list.isEmpty()) return false;
 

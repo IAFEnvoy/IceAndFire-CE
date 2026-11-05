@@ -321,7 +321,7 @@ public class EntityCyclops extends HostileEntity implements IAnimatedEntity, IBl
                         BlockState state = this.getWorld().getBlockState(pos);
                         Block block = state.getBlock();
                         if (!state.isAir() && !state.getOutlineShape(this.getWorld(), pos).isEmpty() && !(block instanceof PlantBlock) && block != Blocks.BEDROCK && (state.getBlock() instanceof LeavesBlock || state.isIn(BlockTags.LOGS))) {
-                            this.getVelocity().multiply(0.6D);
+                            this.setVelocity(this.getVelocity().multiply(0.6D));
                             if (IafEvents.ON_GRIEF_BREAK_BLOCK.invoker().onBreakBlock(this, a, b, c)) continue;
                             if (block != Blocks.AIR)
                                 if (!this.getWorld().isClient)

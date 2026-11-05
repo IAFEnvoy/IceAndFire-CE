@@ -23,8 +23,9 @@ public class PortalDataComponent implements ComponentV3, AutoSyncedComponent, Co
 
     @Override
     public void tick() {
+        if (this.player.getWorld().isClient) return;
         this.data.tick();
-        COMPONENT.sync(this.player);
+        if (this.data.consumeDirty()) COMPONENT.sync(this.player);
     }
 
     @Override

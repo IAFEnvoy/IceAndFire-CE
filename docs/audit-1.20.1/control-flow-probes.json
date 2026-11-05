@@ -1,0 +1,52 @@
+{
+  "kind": "Control-flow simulations, not executions of Minecraft entity/forge code",
+  "ai_phase": [
+    {
+      "world_server_parity_offset": 0,
+      "entity_id_parity": 0,
+      "searches": 50
+    },
+    {
+      "world_server_parity_offset": 0,
+      "entity_id_parity": 1,
+      "searches": 0
+    },
+    {
+      "world_server_parity_offset": 1,
+      "entity_id_parity": 0,
+      "searches": 0
+    },
+    {
+      "world_server_parity_offset": 1,
+      "entity_id_parity": 1,
+      "searches": 50
+    }
+  ],
+  "forge_no_flame": [
+    {
+      "initial": 1,
+      "after_100_no_flame_ticks": 0
+    },
+    {
+      "initial": 2,
+      "after_100_no_flame_ticks": 2
+    },
+    {
+      "initial": 20,
+      "after_100_no_flame_ticks": 20
+    }
+  ],
+  "lightning_dequeue_sequence": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "C",
+    "D",
+    "D"
+  ],
+  "lightning_duplicate_dequeues": {
+    "C": 2,
+    "D": 3
+  }
+}

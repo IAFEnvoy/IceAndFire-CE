@@ -1,0 +1,172 @@
+{
+  "date": "2026-11-05",
+  "branch": "1.20.1",
+  "source_commit": "2d624d664ae3242f4d589643d88fdcf366b750eb",
+  "previous_fix_commit": "8a602dde",
+  "previous_fix_branch": "master",
+  "production_code_modified": false,
+  "environment": {
+    "minecraft": "1.20.1",
+    "forge": "47.3.3",
+    "fabric_loader": "0.16.9",
+    "fabric_api": "0.92.2+1.20.1",
+    "architectury": "9.2.14",
+    "yarn": "1.20.1+build.10",
+    "java": "17",
+    "gradle": "8.10",
+    "mod_version": "1.2.10"
+  },
+  "source_inventory": {
+    "files": 609,
+    "lines": 63030,
+    "by_module": {
+      "common": 590,
+      "fabric": 9,
+      "forge": 10
+    },
+    "exhaustive_line_by_line_manual_review": false,
+    "method": "All production Java files inventoried and scanned; bytecode analysis of all three compiled modules; targeted manual review of risk paths and version APIs."
+  },
+  "findings": {
+    "total": 41,
+    "by_priority": {
+      "P1": 6,
+      "P2": 27,
+      "P3": 8
+    },
+    "baseline_present": 32,
+    "new": 9,
+    "baseline_not_applicable": 9
+  },
+  "build": {
+    "command": ".\\gradlew.bat build --console=plain",
+    "java_home": "C:\\Users\\tanks\\.gradle\\jdks\\eclipse_adoptium-17-amd64-windows.2",
+    "exit_code": 0,
+    "result": "BUILD SUCCESSFUL in 3m 16s",
+    "tasks_executed": 28,
+    "test_tasks": "NO-SOURCE",
+    "log": "build.txt"
+  },
+  "spotbugs": {
+    "version": "4.9.8",
+    "exit_code": 0,
+    "total_alerts": 967,
+    "by_module": {
+      "common": 956,
+      "fabric": 6,
+      "forge": 5
+    },
+    "missing_analysis_classes": [
+      "dev.emi.emi.EmiPort",
+      "com.demonwav.mcdev.annotations.CheckEnv",
+      "com.demonwav.mcdev.annotations.Env"
+    ],
+    "note": "Warnings are candidates, not confirmed issues. Mixin impossible casts and unchecked world-null warnings were not automatically promoted."
+  },
+  "resources": {
+    "json_files": 1971,
+    "syntax_errors": 0,
+    "conflicting_duplicate_keys": 1,
+    "explicit_reference_scan": "resource-refs.json"
+  },
+  "semantic_probes": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "limitation": "Standalone calls on compiled 1.20.1 common classes and actual Minecraft dependencies; no world, networking, Mixin transform or loader integration."
+  },
+  "recipe_probe_attempt": {
+    "compile_exit": 0,
+    "run_exit": 1,
+    "limitation": "Vanilla registry bootstrap in plain JVM; no loader, world or gameplay integration."
+  },
+  "runtime": {
+    "client_started": false,
+    "dedicated_server_started": false,
+    "game_tests_run": false,
+    "multiplayer_verified": false,
+    "gpu_visuals_verified": false,
+    "performance_benchmark": false
+  },
+  "artifacts": [
+    {
+      "file": "api-evidence.md",
+      "sha256": "08d24a937892ca3803e57927515c5de9d73e5c8ebe4ae8f811578708a4107066",
+      "bytes": 41209
+    },
+    {
+      "file": "AuditProbes.java",
+      "sha256": "2b66cea13000dcc2d7abe04b9cc5f9b610731f597913397c6a448edd511bf956",
+      "bytes": 1193
+    },
+    {
+      "file": "AuditRecipeProbes.java",
+      "sha256": "780169d621b652ef86737b9218e882479571b4c79ee561f658d4e0406f8d8644",
+      "bytes": 1314
+    },
+    {
+      "file": "build.txt",
+      "sha256": "3379eb172f134521a1aa3b4fa084cadb1526122fd405d1ae36e2a7ae6cec74a6",
+      "bytes": 3862
+    },
+    {
+      "file": "control-flow-probes.json",
+      "sha256": "a42edc81d61c8b40477a839b95f9ecf8da9226900e50eff172a6c264eed17909",
+      "bytes": 964
+    },
+    {
+      "file": "coverage.csv",
+      "sha256": "35a851c1a2eddffd1516564bdce7be7e88f91754f5dfbf667dd09aa917b6f279",
+      "bytes": 152796
+    },
+    {
+      "file": "findings.json",
+      "sha256": "f717d38a8dc2b2cd9db48b03921ff3b8f866f1179a84faf72004ffb0634db163",
+      "bytes": 53913
+    },
+    {
+      "file": "recipe-probes.json",
+      "sha256": "51b4c7a04926e71cfc68abf4a1b20bf7dec6837d1052b54ccd18ba5581b67375",
+      "bytes": 146
+    },
+    {
+      "file": "recipe-probes.txt",
+      "sha256": "c34620bcdaf4d2c7fc88e66268cd80c4c12a5cf0286f4624d5cc6a5cf1805ea9",
+      "bytes": 1829
+    },
+    {
+      "file": "resource-refs.json",
+      "sha256": "34c2c953b0149c1ee6c76c4ad64b974a5be94edf8c8b64730dbe1d08ceddc1e2",
+      "bytes": 1237
+    },
+    {
+      "file": "scope.json",
+      "sha256": "76fc27811bab33e7f0ca68e5592464bf4ec458b5fcf081dc95a20af22c420a15",
+      "bytes": 1758
+    },
+    {
+      "file": "semantic-probes.json",
+      "sha256": "2fb6109951e8d7f99e9c103da4ccea696d88b3474be37501d18f6b26de4e721a",
+      "bytes": 210
+    },
+    {
+      "file": "semantic-probes.txt",
+      "sha256": "f9ad190280c703416c33d196d14836a82f7e0f03f3975467cc44a3e299fbe813",
+      "bytes": 317
+    },
+    {
+      "file": "spotbugs-run.txt",
+      "sha256": "bcc53ba5c8f56f4a9781f5c04656bec239c81b1e68c2025b82e21f31e6a11450",
+      "bytes": 1239
+    },
+    {
+      "file": "spotbugs-summary.json",
+      "sha256": "07a1d785a3734c7af9213f0550617d97193249b148b3172e6a83163a2b55ba57",
+      "bytes": 387657
+    },
+    {
+      "file": "version-matrix.json",
+      "sha256": "c34bed97c49ef8a083736623bb0084db88a17fcb6f721db7ccd4a397179570e1",
+      "bytes": 31003
+    }
+  ]
+}

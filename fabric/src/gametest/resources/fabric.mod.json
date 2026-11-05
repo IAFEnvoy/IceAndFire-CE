@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "iceandfire_regressions",
+  "version": "1.0.0",
+  "name": "Ice and Fire regression tests",
+  "environment": "*",
+  "entrypoints": {
+    "client": ["com.iafenvoy.iceandfire.test.ClientRegressionSmoke"],
+    "fabric-gametest": ["com.iafenvoy.iceandfire.test.RegressionTests"]
+  },
+  "depends": {
+    "iceandfire": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

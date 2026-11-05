@@ -1,0 +1,757 @@
+[
+  {
+    "id": "N01",
+    "baseline_title": "乘骑控制包直接采纳客户端坐标",
+    "status": "present",
+    "current_title": "乘骑控制包采纳客户端坐标，控制者及所有权验证不完整",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHelper.java",
+        "line": 42,
+        "excerpt": "hippo.setPos(pos.getX(), pos.getY(), pos.getZ());"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/network/ServerNetworkHelper.java",
+        "line": 50,
+        "excerpt": "amphithere.setPos(pos.getX(), pos.getY(), pos.getZ());"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "N02",
+    "baseline_title": "方块实体同步全服广播，缺少维度归属",
+    "status": "present",
+    "current_title": "方块实体状态向全服广播，缺少维度和跟踪范围",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPodium.java",
+        "line": 86,
+        "excerpt": "ServerHelper.sendToAll(StaticVariables.UPDATE_PODIUM, buf);"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/network/ClientNetworkHelper.java",
+        "line": 73,
+        "excerpt": "NetworkManager.registerReceiver(NetworkManager.Side.S2C, StaticVariables.UPDATE_PIXIE_HOUSE, (buf, ctx) -> {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "N03",
+    "baseline_title": "讲台菜单未验证按钮编号即访问数组",
+    "status": "present",
+    "current_title": "讲台按钮先索引数组再限制编号",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/screen/handler/LecternScreenHandler.java",
+        "line": 123,
+        "excerpt": "else if (this.possiblePagesInt[id] > 0 && !bookStack.isEmpty() && bookStack.getItem() == IafItems.BESTIARY.get()) {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/screen/handler/LecternScreenHandler.java",
+        "line": 106,
+        "excerpt": "else pages[0] = allPages.get(Math.min(allPages.size(), this.possiblePagesInt[0]));"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "N04",
+    "baseline_title": "讲台菜单有效性恒为true",
+    "status": "present",
+    "current_title": "讲台菜单在方块被拆除或玩家离开后仍有效",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityLectern.java",
+        "line": 177,
+        "excerpt": "public boolean canPlayerUse(PlayerEntity player) {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/screen/handler/LecternScreenHandler.java",
+        "line": 69,
+        "excerpt": "return this.tileFurnace.canPlayerUse(playerIn);"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "F01",
+    "baseline_title": "锻炉结构失效后仍切换到激活核心",
+    "status": "present",
+    "current_title": "锻炉切换使用旧组装状态，且状态替换会散落库存",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 66,
+        "excerpt": "BlockDragonForgeCore.setState(entityDragonforge.getPropertyDelegate().fireType, entityDragonforge.prevAssembled, level, pos);"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/block/BlockDragonForgeCore.java",
+        "line": 94,
+        "excerpt": "public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {"
+      }
+    ],
+    "note": "26.1.2 的 setState 单选激活核心结论不能直接套用到本版。"
+  },
+  {
+    "id": "F02",
+    "baseline_title": "锻炉输入口永久保留旧核心引用",
+    "status": "present",
+    "current_title": "锻炉输入口永久保留失效核心引用",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForgeInput.java",
+        "line": 30,
+        "excerpt": "if (forgeInput.core == null)"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "F03",
+    "baseline_title": "无龙焰时锻炉进度先减再加，无法正常衰减",
+    "status": "present",
+    "current_title": "失去龙焰后进度先减再加，结构查询重复",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 70,
+        "excerpt": "if (entityDragonforge.getPropertyDelegate().cookTime > 0 && entityDragonforge.canSmelt() && entityDragonforge.lastDragonFlameTimer == 0)"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 78,
+        "excerpt": "++entityDragonforge.getPropertyDelegate().cookTime;"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "F04",
+    "baseline_title": "锻炉输出合并只比物品类型，忽略数据组件",
+    "status": "present",
+    "current_title": "锻炉输出忽略 NBT，空输出槽容量也取错对象",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 246,
+        "excerpt": "if (!outputStack.isEmpty() && !ItemStack.areItemsEqual(outputStack, forgeRecipeOutput))"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 250,
+        "excerpt": "return (calculatedOutputCount <= this.getMaxCountPerStack() && calculatedOutputCount <= outputStack.getMaxCount());"
+      }
+    ],
+    "note": "这里使用 1.20.1 的 NBT 语义，不是 26.1.2 DataComponent API。"
+  },
+  {
+    "id": "F05",
+    "baseline_title": "配方assemble返回共享模板对象",
+    "status": "present",
+    "current_title": "锻炉配方返回可变的共享输出模板",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/recipe/DragonForgeRecipe.java",
+        "line": 77,
+        "excerpt": "public ItemStack craft(BlockEntityDragonForge dragonforge, DynamicRegistryManager registryAccess) {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/recipe/DragonForgeRecipe.java",
+        "line": 72,
+        "excerpt": "public ItemStack getResultItem() {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "S01",
+    "baseline_title": "召唤水晶的卸载实体恢复链仍不完整",
+    "status": "present",
+    "current_title": "召唤水晶的卸载恢复、跨维度及身份校验不完整",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/ItemSummoningCrystal.java",
+        "line": 92,
+        "excerpt": "UUID id = dragonTag.getUuid(\"DragonUUID\");"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/ItemSummoningCrystal.java",
+        "line": 115,
+        "excerpt": "ServerWorld serverWorld = (ServerWorld) context.getWorld();"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/EntityDragonBase.java",
+        "line": 2961,
+        "excerpt": "public void onRemoved() {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "S02",
+    "baseline_title": "小精灵罐缺少初次区块同步数据",
+    "status": "present",
+    "current_title": "精灵罐缺少首次区块同步数据",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityJar.java",
+        "line": 100,
+        "excerpt": "public BlockEntityUpdateS2CPacket toUpdatePacket() {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "S03",
+    "baseline_title": "小精灵罐/房屋关键状态变化未标记持久化",
+    "status": "present",
+    "current_title": "精灵罐和房屋关键状态变化未完整持久化",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityJar.java",
+        "line": 64,
+        "excerpt": "entityJar.hasProduced = true;"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityJar.java",
+        "line": 118,
+        "excerpt": "public void releasePixie() {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPixieHouse.java",
+        "line": 103,
+        "excerpt": "public void releasePixie() {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/block/BlockJar.java",
+        "line": 70,
+        "excerpt": "jar.hasProduced = false;"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "A01",
+    "baseline_title": "七种AI的全局模数节流可能永久错过搜索",
+    "status": "present",
+    "current_title": "七种 AI 使用全局模四搜索，可与选择器固定错相",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/AmphithereAIFleePlayer.java",
+        "line": 36,
+        "excerpt": "if (this.entity.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/AmphithereAITargetItems.java",
+        "line": 53,
+        "excerpt": "if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/CockatriceAITargetItems.java",
+        "line": 46,
+        "excerpt": "if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITargetItems.java",
+        "line": 65,
+        "excerpt": "if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DreadAIRideHorse.java",
+        "line": 28,
+        "excerpt": "if (this.knight.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIFlee.java",
+        "line": 39,
+        "excerpt": "if (this.pixie.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIPickupItem.java",
+        "line": 52,
+        "excerpt": "if (this.mob.getWorld().getTime() % 4 == 0) // only update the list every 4 ticks"
+      }
+    ],
+    "note": "结论依赖本版真实选择器调度，不能把查询次数减少直接视作正确优化。"
+  },
+  {
+    "id": "A02",
+    "baseline_title": "DragonAITargetGoal初始目标为空却先要求非空",
+    "status": "present",
+    "current_title": "龙目标搜索要求初始目标先非空",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAITarget.java",
+        "line": 31,
+        "excerpt": "if (this.targetEntity != null && !this.targetEntity.getClass().equals(this.dragon.getClass())) {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "A03",
+    "baseline_title": "龙繁殖Goal使用旧生命周期方法名",
+    "status": "present",
+    "current_title": "龙繁殖仍使用未覆盖的旧生命周期方法名",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/DragonAIMate.java",
+        "line": 47,
+        "excerpt": "public boolean continueExecuting() {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "A04",
+    "baseline_title": "羊跟随独眼巨人的继续条件写反",
+    "status": "present",
+    "current_title": "羊跟随独眼巨人的继续条件写反",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntitySheepAIFollowCyclops.java",
+        "line": 50,
+        "excerpt": "if (this.cyclops.isAlive()) return false;"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "A05",
+    "baseline_title": "羽蛇观察邻近实体Goal的主体字段从未赋值",
+    "status": "present",
+    "current_title": "忽略乘客的观察 Goal 主体字段从未赋值",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntityAIWatchClosestIgnoreRider.java",
+        "line": 9,
+        "excerpt": "LivingEntity entity;"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/EntityAIWatchClosestIgnoreRider.java",
+        "line": 25,
+        "excerpt": "return super.canStart() && this.target != null && isRidingOrBeingRiddenBy(this.target, this.entity);"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "A06",
+    "baseline_title": "小精灵逃跑Goal只在接近终点时继续",
+    "status": "present",
+    "current_title": "精灵逃跑只在靠近终点时继续",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/ai/PixieAIFlee.java",
+        "line": 69,
+        "excerpt": "public boolean shouldContinue() {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "E01",
+    "baseline_title": "海蛇缩放替换部件对象，世界部件索引可能保留旧对象",
+    "status": "present",
+    "current_title": "海蛇每次缩放重建世界部件，未移除旧数组部件",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/EntitySeaSerpent.java",
+        "line": 197,
+        "excerpt": "this.segments = new EntitySlowPart[9];"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/EntitySeaSerpent.java",
+        "line": 204,
+        "excerpt": "this.getWorld().spawnEntity(this.segments[i]);"
+      }
+    ],
+    "note": "1.20.1 使用普通 multipart 实体，不应套用 26.1.2 PartEntity 世界索引说明。"
+  },
+  {
+    "id": "E02",
+    "baseline_title": "死亡蠕虫体积寻路只以最后一个位置决定阻塞",
+    "status": "present",
+    "current_title": "死亡蠕虫体积寻路没有汇总所有体素的通行性",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/pathfinding/NodeProcessorDeathWorm.java",
+        "line": 62,
+        "excerpt": "private PathNodeType isFree(int p_186327_1_, int p_186327_2_, int p_186327_3_) {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "E03",
+    "baseline_title": "金属羽鸟群成员从不清理已移除实体",
+    "status": "present",
+    "current_title": "金属羽鸟群永久持有已移除成员",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/util/StymphalianBirdFlock.java",
+        "line": 54,
+        "excerpt": "public void update() {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/util/StymphalianBirdFlock.java",
+        "line": 51,
+        "excerpt": "this.members.add(bird);"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "W01",
+    "baseline_title": "龙息转化地形恢复逻辑写在错误的tick回调",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/block/BlockReturningState.java",
+        "line": 43,
+        "excerpt": "public void scheduledTick(BlockState state, ServerWorld worldIn, BlockPos pos, Random rand) {"
+      }
+    ],
+    "note": "不适用：1.20.1 AbstractBlock.randomTick 默认调用 scheduledTick，结合本类 ticksRandomly，恢复回调可被随机 tick 正常触发。已核对实际字节码，不因方法名认定无效。"
+  },
+  {
+    "id": "W02",
+    "baseline_title": "小精灵村庄随机范围使一个道路方向和一种房屋不可生成",
+    "status": "present",
+    "current_title": "精灵村庄少一个道路方向和一种房屋",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/world/structure/PixieVillageStructure.java",
+        "line": 76,
+        "excerpt": "Direction buildingDirection = Direction.fromHorizontal(random.nextInt(3));"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/world/structure/PixieVillageStructure.java",
+        "line": 87,
+        "excerpt": "int houseColor = random.nextInt(5);"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "C01",
+    "baseline_title": "鸡蛇权杖将耐久累计放在全局Item实例",
+    "status": "present",
+    "current_title": "鸡蛇权杖把耐久累计保存在共享 Item 实例",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/ItemCockatriceScepter.java",
+        "line": 29,
+        "excerpt": "private int specialWeaponDmg;"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/ItemCockatriceScepter.java",
+        "line": 133,
+        "excerpt": "this.specialWeaponDmg++;"
+      }
+    ],
+    "note": "本版 getMaxUseTime=1，不能直接复用 26.1.2 的持续长按用例；还需检查完整使用结束路径。"
+  },
+  {
+    "id": "C02",
+    "baseline_title": "权杖目标列表清理绕过附件同步，未找到的UUID也不回收",
+    "status": "present",
+    "current_title": "权杖部分目标清理绕过同步标记",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/ItemCockatriceScepter.java",
+        "line": 49,
+        "excerpt": "data.miscData.getTargetedByScepter().clear();"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/data/component/MiscData.java",
+        "line": 75,
+        "excerpt": "this.targetedByScepter.removeIf(living -> living.isRemoved() || living.getStatusEffect(StatusEffects.WITHER) == null || living.getStatusEffect(StatusEffects.WITHER).getDuration() <= 0);"
+      }
+    ],
+    "note": "本版保存的是 LivingEntity 引用和临时整数 ID，不是 26.1.2 的 UUID 列表；不能照搬 UUID 回收结论。"
+  },
+  {
+    "id": "C03",
+    "baseline_title": "连锁闪电BFS重复入队、重复查询相同范围",
+    "status": "present",
+    "current_title": "连锁闪电重复入队和查询固定攻击者范围",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/tool/DragonSteelOverrides.java",
+        "line": 96,
+        "excerpt": "Queue<Pair<MobEntity, Double>> bfsQueue = new LinkedList<>();"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/tool/DragonSteelOverrides.java",
+        "line": 114,
+        "excerpt": ")).stream().filter(attacker::canSee).filter(x -> !attacked.contains(x)).toList();"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "C04",
+    "baseline_title": "幽灵剑能力忽略触发手，始终使用主手物品",
+    "status": "present",
+    "current_title": "幽灵剑显式拒绝副手，且生成路径没有服务端保护",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/item/tool/ItemGhostSword.java",
+        "line": 32,
+        "excerpt": "if (playerEntity.getStackInHand(Hand.MAIN_HAND) != stack)"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/mixin/LivingEntityMixin.java",
+        "line": 35,
+        "excerpt": "ItemGhostSword.spawnGhostSwordEntity(stack, player);"
+      }
+    ],
+    "note": "本版不是“Mixin 总传主手”，错误发生在后续显式主手检查。"
+  },
+  {
+    "id": "R01",
+    "baseline_title": "图鉴每帧两次打开并解析文本，输入流未关闭",
+    "status": "present",
+    "current_title": "图鉴逐帧两次读资源文本，输入流未关闭",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/screen/gui/bestiary/BestiaryScreen.java",
+        "line": 687,
+        "excerpt": "final List<String> lines = IOUtils.readLines(resource.get().getInputStream(), StandardCharsets.UTF_8);"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/screen/gui/bestiary/BestiaryScreen.java",
+        "line": 782,
+        "excerpt": "final List<String> lines = IOUtils.readLines(resource.get().getInputStream(), \"UTF-8\");"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "R02",
+    "baseline_title": "石像每次render都重新烘焙备用猪模型",
+    "status": "present",
+    "current_title": "石像每次绘制都创建并烘焙备用猪模型",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderStoneStatue.java",
+        "line": 68,
+        "excerpt": "EntityModel model = new PigEntityModel<>(this.context.getPart(EntityModelLayers.PIG));"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "R03",
+    "baseline_title": "石像假实体按类型缓存，串用第一座石像的NBT",
+    "status": "present",
+    "current_title": "石像按实体类型缓存假实体，串用首座石像 NBT",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderStoneStatue.java",
+        "line": 85,
+        "excerpt": "if (this.hollowEntityMap.get(entityIn.getTrappedEntityTypeString()) == null) {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderStoneStatue.java",
+        "line": 93,
+        "excerpt": "this.hollowEntityMap.putIfAbsent(entityIn.getTrappedEntityTypeString(), fakeEntity);"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "N05",
+    "baseline_title": "开始跟踪鸡或村民就触发受攻击警报",
+    "status": "present",
+    "current_title": "开始跟踪鸡或村民就触发受攻击警报",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/IceAndFire.java",
+        "line": 73,
+        "excerpt": "EntityEvents.START_TRACKING_TAIL.register(ServerEvents::onLivingSetTarget);"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/event/ServerEvents.java",
+        "line": 156,
+        "excerpt": "public static void onLivingSetTarget(Entity tracking, ServerPlayerEntity player) {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "S04",
+    "baseline_title": "锻炉进度修改仍未完整标记持久化",
+    "status": "present",
+    "current_title": "锻炉进度存盘缺少标脏且被 short 截断",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 182,
+        "excerpt": "compound.putInt(\"CookTime\", (short) this.getPropertyDelegate().cookTime);"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityDragonForge.java",
+        "line": 316,
+        "excerpt": "public void transferPower(int i) {"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "L01",
+    "baseline_title": "独眼巨人破坏树木的减速计算被丢弃",
+    "status": "present",
+    "current_title": "独眼巨人破树后的减速向量被丢弃",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/EntityCyclops.java",
+        "line": 324,
+        "excerpt": "this.getVelocity().multiply(0.6D);"
+      }
+    ],
+    "note": "按本版源码重新确认，详见问题正文。"
+  },
+  {
+    "id": "V01",
+    "baseline_title": "底座的非龙蛋物品分支没有提交绘制",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/block/RenderPodium.java",
+        "line": 49,
+        "excerpt": "MinecraftClient.getInstance().getItemRenderer().renderItem(entity.getStack(0), ModelTransformationMode.FIXED, combinedLightIn, combinedOverlayIn, matrixStackIn, bufferIn, entity.getWorld(), 0);"
+      }
+    ],
+    "note": "非蛋分支调用即时 itemRenderer.renderItem，已有实际绘制。"
+  },
+  {
+    "id": "V02",
+    "baseline_title": "人形护甲的多个槽位共享延迟绘制模型状态",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/layer/LayerBipedArmor.java",
+        "line": 36,
+        "excerpt": "public void render(MatrixStack matrixStackIn, VertexConsumerProvider bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {"
+      }
+    ],
+    "note": "本版直接写顶点，不存在 26 的延迟提交队列覆盖槽位姿态机制。"
+  },
+  {
+    "id": "V03",
+    "baseline_title": "多处自定义几何提交没有保存独立模型姿态",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/block/RenderPixieHouse.java",
+        "line": 84,
+        "excerpt": "MODEL_PIXIE.render(matrixStackIn, bufferIn.getBuffer(type), combinedLightIn, combinedOverlayIn, 1.0F, 1.0F, 1.0F, 1.0F);"
+      }
+    ],
+    "note": "本版 Tabula/AdvancedEntityModel 立即绘制；不能套用 26 SubmitNodeCollector 的姿态快照问题。"
+  },
+  {
+    "id": "V04",
+    "baseline_title": "LegacyMobRenderer无条件提交隐形生物的实体身体",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderPixie.java",
+        "line": 13,
+        "excerpt": "public class RenderPixie extends MobEntityRenderer<EntityPixie, ModelPixie> {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderDragonBase.java",
+        "line": 13,
+        "excerpt": "public class RenderDragonBase extends MobEntityRenderer<EntityDragonBase, TabulaModel<EntityDragonBase>> {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderSeaSerpent.java",
+        "line": 15,
+        "excerpt": "public class RenderSeaSerpent extends MobEntityRenderer<EntitySeaSerpent, AdvancedEntityModel<EntitySeaSerpent>> {"
+      }
+    ],
+    "note": "龙、精灵等继承原版 MobEntityRenderer/LivingEntityRenderer，未发现对应无条件实体身体提交路径；其他显隐效果仍需实机。"
+  },
+  {
+    "id": "V05",
+    "baseline_title": "塞壬昼夜判定把日照角度阈值当作原始时钟tick",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/world/siren/SirenMorningDespawn.java",
+        "line": 27,
+        "excerpt": "if (!world.isDay() || world.getTime() % 20 != 0) return;"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/world/siren/SirenSpawnPredicate.java",
+        "line": 22,
+        "excerpt": "return world.toServerWorld().isNight()"
+      }
+    ],
+    "note": "消失用 world.isDay，生成用 isNight，没有 26 时钟 tick 与日照角度阈值混淆。"
+  },
+  {
+    "id": "V06",
+    "baseline_title": "四种方块实体在移植中丢失首次区块同步数据",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityEggInIce.java",
+        "line": 81,
+        "excerpt": "public NbtCompound toInitialChunkDataNbt() {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPixieHouse.java",
+        "line": 86,
+        "excerpt": "public NbtCompound toInitialChunkDataNbt() {"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityPodium.java",
+        "line": 81,
+        "excerpt": "this.writeNbt(this.toInitialChunkDataNbt());"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/entity/block/BlockEntityLectern.java",
+        "line": 222,
+        "excerpt": "public NbtCompound toInitialChunkDataNbt() {"
+      }
+    ],
+    "note": "EggInIce、PixieHouse、Podium、Lectern 都保留初始区块 NBT 覆盖；Jar 另归 S02。"
+  },
+  {
+    "id": "V07",
+    "baseline_title": "模型在构造时已就绪会跳过龙/海蛇附加层初始化",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderDragonBase.java",
+        "line": 16,
+        "excerpt": "this.addFeature(new LayerDragonMaleOverlay(this));"
+      },
+      {
+        "path": "common/src/main/java/com/iafenvoy/iceandfire/render/entity/RenderSeaSerpent.java",
+        "line": 18,
+        "excerpt": "this.features.add(new LayerSeaSerpentAncient(this));"
+      }
+    ],
+    "note": "龙在构造器直接添加五种层；海蛇实际渲染器也在构造链初始化相应层，没有 26 的延迟 model-ready hook。"
+  },
+  {
+    "id": "V08",
+    "baseline_title": "内置旧版材质包仍声明1.21的资源格式34",
+    "status": "not-applicable",
+    "refs": [
+      {
+        "path": "common/src/main/resources/resourcepacks/iaf_legacy/pack.mcmeta",
+        "line": 3,
+        "excerpt": "\"pack_format\": 15,"
+      }
+    ],
+    "note": "内置 iaf_legacy 使用 1.20.1 的 pack_format=15；Forge 主资源包也为 15。"
+  }
+]

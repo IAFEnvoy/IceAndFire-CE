@@ -30,20 +30,18 @@ public class DragonPosWorldData extends PersistentState {
         if (world instanceof ServerWorld serverWorld) {
             PersistentStateManager storage = serverWorld.getPersistentStateManager();
             DragonPosWorldData data = storage.getOrCreate(DragonPosWorldData::new, DragonPosWorldData::new, IDENTIFIER);
-            if (data != null) data.markDirty();
             return data;
         }
         return null;
     }
 
     public void addDragon(UUID uuid, BlockPos pos) {
-        this.lastDragonPositions.put(uuid, pos);
-        this.markDirty();
+        BlockPos immutable = pos.toImmutable();
+        if (!immutable.equals(this.lastDragonPositions.put(uuid, immutable))) this.markDirty();
     }
 
     public void removeDragon(UUID uuid) {
-        this.lastDragonPositions.remove(uuid);
-        this.markDirty();
+        if (this.lastDragonPositions.remove(uuid) != null) this.markDirty();
     }
 
     public BlockPos getDragonPos(UUID uuid) {
@@ -65,6 +63,7 @@ public class DragonPosWorldData extends PersistentState {
         this.lastDragonPositions.clear();
         for (int i = 0; i < nbttaglist.size(); ++i) {
             NbtCompound CompoundNBT = nbttaglist.getCompound(i);
+            if (!CompoundNBT.containsUuid("DragonUUID")) continue;
             UUID uuid = CompoundNBT.getUuid("DragonUUID");
             BlockPos pos = new BlockPos(CompoundNBT.getInt("DragonPosX"), CompoundNBT.getInt("DragonPosY"), CompoundNBT.getInt("DragonPosZ"));
             this.lastDragonPositions.put(uuid, pos);

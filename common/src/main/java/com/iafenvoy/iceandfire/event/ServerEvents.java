@@ -1,7 +1,6 @@
 package com.iafenvoy.iceandfire.event;
 
 import com.iafenvoy.iceandfire.IceAndFire;
-import com.iafenvoy.iceandfire.StaticVariables;
 import com.iafenvoy.iceandfire.config.IafCommonConfig;
 import com.iafenvoy.iceandfire.data.component.IafEntityData;
 import com.iafenvoy.iceandfire.entity.*;
@@ -11,7 +10,6 @@ import com.iafenvoy.iceandfire.entity.util.IAnimalFear;
 import com.iafenvoy.iceandfire.entity.util.IVillagerFear;
 import com.iafenvoy.iceandfire.entity.util.dragon.DragonUtils;
 import com.iafenvoy.iceandfire.item.ItemChain;
-import com.iafenvoy.iceandfire.item.ItemDragonHorn;
 import com.iafenvoy.iceandfire.item.armor.ItemDragonSteelArmor;
 import com.iafenvoy.iceandfire.item.armor.ItemScaleArmor;
 import com.iafenvoy.iceandfire.item.armor.ItemTrollArmor;
@@ -20,11 +18,9 @@ import com.iafenvoy.iceandfire.registry.IafDamageTypes;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafItems;
 import com.iafenvoy.iceandfire.registry.tag.IafEntityTags;
-import com.iafenvoy.uranus.network.PacketBufferUtils;
 import com.iafenvoy.uranus.util.RandomHelper;
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
-import dev.architectury.networking.NetworkManager;
 import dev.architectury.utils.value.IntValue;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.BlockState;
@@ -44,7 +40,6 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
@@ -154,10 +149,7 @@ public class ServerEvents {
     }
 
     public static void onLivingSetTarget(Entity tracking, ServerPlayerEntity player) {
-        if (tracking instanceof LivingEntity target) {
-            if (target.getType().isIn(IafEntityTags.CHICKENS)) signalChickenAlarm(target, player);
-            else if (DragonUtils.isVillager(target)) signalAmphithereAlarm(target, player);
-        }
+        // Tracking is synchronization, not an attack notification.
     }
 
     public static EventResult onPlayerAttack(PlayerEntity player, World world, Entity entity, Hand hand, @Nullable EntityHitResult hitResult) {
@@ -205,25 +197,16 @@ public class ServerEvents {
             }
             return EventResult.interruptDefault();
         }
-        if (entity instanceof EntityMultipartPart mutlipartPart) {
-            Entity parent = mutlipartPart.getParent();
-            try {
-                //If the attacked entity is the parent itself parent will be null and also doesn't have to be attacked
-                if (parent != null)
-                    player.attack(parent);
-            } catch (Exception e) {
-                IceAndFire.LOGGER.warn("Exception thrown while interacting with entity.", e);
+        if (entity instanceof EntityMultipartPart part) {
+            if (world.isClient) return EventResult.pass();
+            if (com.iafenvoy.iceandfire.network.MultipartInteraction.canInteract(player, part)) {
+                Entity parent = part.getParent();
+                if (part instanceof EntityHydraHead head && parent instanceof EntityHydra hydra)
+                    hydra.triggerHeadFlags(head.headIndex);
+                player.attack(parent);
             }
-            int extraData = 0;
-            if (mutlipartPart instanceof EntityHydraHead hydraHead && parent instanceof EntityHydra hydra) {
-                extraData = hydraHead.headIndex;
-                hydra.triggerHeadFlags(extraData);
-            }
-            if (mutlipartPart.getWorld().isClient && parent != null) {
-                PacketByteBuf buf = PacketBufferUtils.create();
-                buf.writeInt(parent.getId()).writeInt(extraData);
-                NetworkManager.sendToServer(StaticVariables.PLAYER_HIT_MULTIPART, buf);
-            }
+            // Forge only cancels AttackEntityEvent for false; Fabric maps it to FAIL.
+            return EventResult.interruptFalse();
         }
         if (entity instanceof LivingEntity livingEntity) {
             if (entity.getType().isIn(IafEntityTags.CHICKENS)) signalChickenAlarm(livingEntity, player);
@@ -296,13 +279,6 @@ public class ServerEvents {
                     entity.dropItem(IafItems.CHAIN.get(), 1);
                 return EventResult.interruptTrue();
             }
-        }
-        // Handle multipart
-        if (entity instanceof EntityMultipartPart multipart) {
-            multipart.interact(player, hand);
-            // Handle some dragon items
-            if (player.getStackInHand(hand).getItem() instanceof ItemDragonHorn horn && multipart.getParent() instanceof LivingEntity living)
-                horn.useOnEntity(player.getStackInHand(hand), player, living, hand);
         }
         return EventResult.pass();
     }

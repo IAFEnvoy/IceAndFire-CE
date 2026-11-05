@@ -70,10 +70,10 @@ public class IceAndFire {
         PlayerEvent.ATTACK_ENTITY.register(ServerEvents::onPlayerAttack);
         PlayerEvents.LOGGED_OUT.register(ServerEvents::onPlayerLeaveEvent);
         EntityEvents.ON_JOIN_WORLD.register(ServerEvents::onEntityJoinWorld);
-        EntityEvents.START_TRACKING_TAIL.register(ServerEvents::onLivingSetTarget);
         LivingEntityEvents.DAMAGE.register(ServerEvents::onEntityDamage);
         LivingEntityEvents.FALL.register(ServerEvents::onEntityFall);
 
         ServerNetworkHelper.registerReceivers();
+        com.iafenvoy.iceandfire.world.SummoningCrystalManager.register();
     }
 }

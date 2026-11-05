@@ -31,6 +31,6 @@ public record PortalDataStorage(PortalData data) implements ITickableCapability 
 
     @Override
     public boolean isDirty() {
-        return true;
+        return this.data.consumeDirty();
     }
 }

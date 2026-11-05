@@ -1,20 +1,16 @@
 package com.iafenvoy.iceandfire.entity.block;
 
-import com.iafenvoy.iceandfire.StaticVariables;
 import com.iafenvoy.iceandfire.entity.EntityPixie;
 import com.iafenvoy.iceandfire.registry.IafBlockEntities;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
 import com.iafenvoy.iceandfire.registry.IafEntities;
 import com.iafenvoy.iceandfire.registry.IafParticles;
-import com.iafenvoy.uranus.ServerHelper;
-import com.iafenvoy.uranus.network.PacketBufferUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
@@ -93,30 +89,27 @@ public class BlockEntityPixieHouse extends BlockEntity {
         this.hasPixie = compound.getBoolean("HasPixie");
         this.pixieType = compound.getInt("PixieType");
         this.tamedPixie = compound.getBoolean("TamedPixie");
-        if (compound.containsUuid("PixieOwnerUUID"))
-            this.pixieOwnerUUID = compound.getUuid("PixieOwnerUUID");
+        this.pixieOwnerUUID = compound.containsUuid("PixieOwnerUUID") ? compound.getUuid("PixieOwnerUUID") : null;
         this.pixieItems = DefaultedList.ofSize(1, ItemStack.EMPTY);
         Inventories.readNbt(compound, this.pixieItems);
         super.readNbt(compound);
     }
 
     public void releasePixie() {
+        if (this.world == null || this.world.isClient || !this.hasPixie) return;
         EntityPixie pixie = new EntityPixie(IafEntities.PIXIE.get(), this.world);
-        pixie.updatePositionAndAngles(this.pos.getX() + 0.5F, this.pos.getY() + 1F, this.pos.getZ() + 0.5F, ThreadLocalRandom.current().nextInt(360), 0);
-        pixie.setStackInHand(Hand.MAIN_HAND, this.pixieItems.get(0));
+        pixie.updatePositionAndAngles(this.pos.getX() + 0.5, this.pos.getY() + 1, this.pos.getZ() + 0.5, this.world.random.nextInt(360), 0);
+        pixie.setStackInHand(Hand.MAIN_HAND, this.pixieItems.get(0).copy());
         pixie.setColor(this.pixieType);
-        assert this.world != null;
-        if (!this.world.isClient)
-            this.world.spawnEntity(pixie);
-        this.hasPixie = false;
-        this.pixieType = 0;
-        pixie.ticksUntilHouseAI = 500;
         pixie.setTamed(this.tamedPixie);
         pixie.setOwnerUuid(this.pixieOwnerUUID);
-        if (!this.world.isClient) {
-            PacketByteBuf buf = PacketBufferUtils.create().writeBlockPos(this.pos);
-            buf.writeBoolean(false).writeInt(0);
-            ServerHelper.sendToAll(StaticVariables.UPDATE_PIXIE_HOUSE, buf);
-        }
+        pixie.ticksUntilHouseAI = 500;
+        if (!this.world.spawnEntity(pixie)) return;
+        this.hasPixie = false;
+        this.pixieType = 0;
+        this.pixieItems.clear();
+        this.tamedPixie = false;
+        this.pixieOwnerUUID = null;
+        BlockEntitySync.changed(this);
     }
 }

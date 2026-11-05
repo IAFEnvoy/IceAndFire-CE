@@ -19,6 +19,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -175,7 +176,8 @@ public class BlockEntityLectern extends LockableContainerBlockEntity implements 
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-        return true;
+        return this.world != null && player.getWorld() == this.world && this.world.getBlockEntity(this.pos) == this
+                && player.squaredDistanceTo(Vec3d.ofCenter(this.pos)) <= 64;
     }
 
     @Override
