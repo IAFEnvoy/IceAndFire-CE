@@ -15,7 +15,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class SirenShaderRenderHelper {
-    private static final Identifier SIREN_SHADER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "shaders/post/siren.json");
+    private static final Identifier SIREN_SHADER = Identifier.fromNamespaceAndPath(IceAndFire.MOD_ID, "siren");
 
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) {
