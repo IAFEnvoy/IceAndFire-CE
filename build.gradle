@@ -95,6 +95,14 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        clientArmorRegression {
+            client()
+            sourceSet = sourceSets.regression
+            gameDirectory = layout.buildDirectory.dir('armor-regression-runtime')
+            systemProperty 'iceandfire.armorRegression', 'true'
+            loadedMods = [mods.iceandfireRegression]
+        }
+
         server {
             server()
             programArgument '--nogui'
@@ -124,7 +132,7 @@ neoForge {
 
         // applies to all the run configs above
         configureEach {
-            if (name != 'gameTestServer') loadedMods = [mods.iceandfire]
+            if (name != 'gameTestServer' && name != 'clientArmorRegression') loadedMods = [mods.iceandfire]
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
