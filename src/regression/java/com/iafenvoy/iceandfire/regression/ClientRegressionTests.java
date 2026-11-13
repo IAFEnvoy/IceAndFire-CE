@@ -10,7 +10,13 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.LevelSettings;
+import net.minecraft.world.level.WorldDataConfiguration;
+import net.minecraft.world.level.levelgen.WorldOptions;
+import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,17 +32,33 @@ import java.util.List;
 public final class ClientRegressionTests {
     private static int ticks;
     private static boolean finished;
+    private static boolean opening;
+    private static int worldTicks;
 
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) throws Exception {
         if (!Boolean.getBoolean("iceandfire.auditClientRegression")) return;
         Minecraft client = Minecraft.getInstance();
-        if (client.getOverlay() != null || client.screen == null) return;
-        if (++ticks < 20) return;
+        if (++ticks > 1800) throw new AssertionError("Timed out opening client regression world");
         if (finished) {
-            if (ticks >= 40) client.stop();
+            client.stop();
             return;
         }
+        if (client.getOverlay() != null || ticks < 20) return;
+        if (!opening) {
+            if (client.screen == null) return;
+            opening = true;
+            client.options.pauseOnLostFocus = false;
+            // 26.1 binds item components when loading a world's data packs, not at the title screen.
+            client.createWorldOpenFlows().createFreshLevel("armor-regression-" + System.currentTimeMillis(),
+                    new LevelSettings("Armor regression", GameType.CREATIVE,
+                            LevelSettings.DifficultySettings.DEFAULT, true, WorldDataConfiguration.DEFAULT),
+                    new WorldOptions(273, false, false),
+                    registries -> registries.lookupOrThrow(Registries.WORLD_PRESET).getOrThrow(WorldPresets.FLAT)
+                            .value().createWorldDimensions(), client.screen);
+            return;
+        }
+        if (client.level == null || client.player == null || ++worldTicks < 20) return;
         finished = true;
         List<String> passed = new ArrayList<>();
         try {
@@ -46,10 +68,11 @@ public final class ClientRegressionTests {
             deferredPose("hydra_head", new HydraHeadModel(0), null, passed);
             deferredPose("pixie", new PixieModel(), null, passed);
             deferredPose("gauntlet", new DeathWormGauntletModel(), null, passed);
-            String result = "{\"passed\":5,\"failed\":0,\"checks\":\"" + String.join(",", passed)
-                    + "\",\"screen\":\"" + client.screen.getClass().getSimpleName() + "\"}";
+            ArmorModelRegression.run(passed);
+            String result = "{\"passed\":" + passed.size() + ",\"failed\":0,\"checks\":\"" + String.join(",", passed)
+                    + "\",\"world\":\"loaded\"}";
             Files.writeString(client.gameDirectory.toPath().resolve("client-regression-result.json"), result);
-            System.out.println("IAF CLIENT REGRESSION: all 5 deferred geometry/model tests passed");
+            System.out.println("IAF CLIENT REGRESSION: all " + passed.size() + " geometry/model tests passed");
         } catch (Throwable failure) {
             Files.writeString(client.gameDirectory.toPath().resolve("client-regression-result.json"),
                     "{\"failed\":1,\"completed\":" + passed.size() + "}");

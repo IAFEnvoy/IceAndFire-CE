@@ -33,8 +33,9 @@ public class SeaSerpentArmorModel extends ArmorModelBase {
         root.getChild("right_leg").addOrReplaceChild("legFinR", CubeListBuilder.create().texOffs(45, 31).addBox(-0.5F, -5.4F, -6.0F, 1, 7, 6), PartPose.offsetAndRotation(-1.5F, 5.2F, 1.6F, 3.141592653589793F, -1.3089969389957472F, 0.0F));
         root.getChild("left_leg").addOrReplaceChild("legFinL", CubeListBuilder.create().texOffs(45, 31).mirror().addBox(-0.5F, -5.4F, -6.0F, 1, 7, 6), PartPose.offsetAndRotation(1.5F, 5.2F, 1.6F, 3.141592653589793F, 1.3089969389957472F, 0.0F));
 
-        root.getChild("right_arm").addOrReplaceChild("shoulderR", CubeListBuilder.create().texOffs(38, 46).addBox(-3.5F, -2.0F, -2.5F, 5, 12, 5), PartPose.offset(0.0F, -0.5F, 0.0F));
-        root.getChild("left_arm").addOrReplaceChild("shoulderL", CubeListBuilder.create().texOffs(38, 46).mirror().addBox(-1.5F, -2.0F, -2.5F, 5, 12, 5), PartPose.offset(0.0F, -0.5F, 0.0F));
+        // Keep attached plates outside the expanded armor shell; horns and fins keep their authored size.
+        root.getChild("right_arm").addOrReplaceChild("shoulderR", CubeListBuilder.create().texOffs(38, 46).addBox(-3.5F, -2.0F, -2.5F, 5, 12, 5, deformation), PartPose.offset(0.0F, -0.5F, 0.0F));
+        root.getChild("left_arm").addOrReplaceChild("shoulderL", CubeListBuilder.create().texOffs(38, 46).mirror().addBox(-1.5F, -2.0F, -2.5F, 5, 12, 5, deformation), PartPose.offset(0.0F, -0.5F, 0.0F));
 
         return modelData;
     }

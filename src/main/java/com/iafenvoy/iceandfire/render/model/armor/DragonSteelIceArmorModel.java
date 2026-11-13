@@ -30,16 +30,17 @@ public class DragonSteelIceArmorModel extends ArmorModelBase {
         root.getChild("head").addOrReplaceChild("HornR6", CubeListBuilder.create().texOffs(9, 38).mirror().addBox(-1.0F, -0.8F, 0.0F, 2, 2, 5), PartPose.offsetAndRotation(-1.1F, -7.6F, -4.0F, 0.5126032013107347F, -0.13962634015954636F, 0.0F));
         root.getChild("head").addOrReplaceChild("HornL6", CubeListBuilder.create().texOffs(9, 38).addBox(-1.0F, -0.8F, 0.0F, 2, 2, 5), PartPose.offsetAndRotation(1.1F, -7.6F, -4.0F, 0.5126032013107347F, 0.13962634015954636F, 0.0F));
 
-        root.getChild("head").addOrReplaceChild("visor1", CubeListBuilder.create().texOffs(27, 50).addBox(-4.7F, -13.3F, -4.9F, 4, 5, 8), PartPose.offset(0.0F, 9.0F, 0.2F));
-        root.getChild("head").addOrReplaceChild("visor2", CubeListBuilder.create().texOffs(27, 50).mirror().addBox(0.8F, -13.3F, -4.9F, 4, 5, 8), PartPose.offset(-0.1F, 9.0F, 0.2F));
+        // Keep attached plates outside the expanded armor shell; horns and fins keep their authored size.
+        root.getChild("head").addOrReplaceChild("visor1", CubeListBuilder.create().texOffs(27, 50).addBox(-4.7F, -13.3F, -4.9F, 4, 5, 8, deformation), PartPose.offset(0.0F, 9.0F, 0.2F));
+        root.getChild("head").addOrReplaceChild("visor2", CubeListBuilder.create().texOffs(27, 50).mirror().addBox(0.8F, -13.3F, -4.9F, 4, 5, 8, deformation), PartPose.offset(-0.1F, 9.0F, 0.2F));
 
-        root.getChild("right_arm").addOrReplaceChild("sleeveRight", CubeListBuilder.create().texOffs(36, 33).addBox(-4.5F, -2.1F, -2.4F, 5, 4, 5), PartPose.offsetAndRotation(0.3F, -0.3F, 0.0F, 0.0F, 0.0F, -0.12217304763960307F));
-        root.getChild("left_arm").addOrReplaceChild("sleeveLeft", CubeListBuilder.create().texOffs(36, 33).mirror().addBox(-0.5F, -2.1F, -2.4F, 5, 4, 5), PartPose.offsetAndRotation(-0.7F, -0.3F, 0.0F, 0.0F, 0.0F, 0.12217304763960307F));
+        root.getChild("right_arm").addOrReplaceChild("sleeveRight", CubeListBuilder.create().texOffs(36, 33).addBox(-4.5F, -2.1F, -2.4F, 5, 4, 5, deformation), PartPose.offsetAndRotation(0.3F, -0.3F, 0.0F, 0.0F, 0.0F, -0.12217304763960307F));
+        root.getChild("left_arm").addOrReplaceChild("sleeveLeft", CubeListBuilder.create().texOffs(36, 33).mirror().addBox(-0.5F, -2.1F, -2.4F, 5, 4, 5, deformation), PartPose.offsetAndRotation(-0.7F, -0.3F, 0.0F, 0.0F, 0.0F, 0.12217304763960307F));
 
         root.addOrReplaceChild("right_leg", CubeListBuilder.create().texOffs(0, 16).addBox(-2.0F, -2.0F + legYOffset, -2.0F, 4.0F, 12.0F, 4.0F, deformation), PartPose.offset(-1.9F, 12.0F + offset, 0.0F));
         root.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(0, 16).mirror().addBox(-2.0F, -2.0F + legYOffset, -2.0F, 4.0F, 12.0F, 4.0F, deformation), PartPose.offset(1.9F, 12.0F + offset, 0.0F));
-        root.getChild("right_leg").addOrReplaceChild("robeLowerRight", CubeListBuilder.create().texOffs(4, 51).mirror().addBox(-2.1F, 0.0F, -2.5F, 4, 7, 5), PartPose.offset(0.0F, -0.2F, 0.0F));
-        root.getChild("left_leg").addOrReplaceChild("robeLowerLeft", CubeListBuilder.create().texOffs(4, 51).addBox(-1.9F, 0.0F, -2.5F, 4, 7, 5), PartPose.offset(0.0F, -0.2F, 0.0F));
+        root.getChild("right_leg").addOrReplaceChild("robeLowerRight", CubeListBuilder.create().texOffs(4, 51).mirror().addBox(-2.1F, 0.0F, -2.5F, 4, 7, 5, deformation), PartPose.offset(0.0F, -0.2F, 0.0F));
+        root.getChild("left_leg").addOrReplaceChild("robeLowerLeft", CubeListBuilder.create().texOffs(4, 51).addBox(-1.9F, 0.0F, -2.5F, 4, 7, 5, deformation), PartPose.offset(0.0F, -0.2F, 0.0F));
 
         root.getChild("head").getChild("HornR").addOrReplaceChild("HornR2", CubeListBuilder.create().texOffs(9, 38).mirror().addBox(-1.0F, -0.8F, 0.0F, 2, 2, 5), PartPose.offsetAndRotation(0.0F, 0.3F, 3.6F, -0.08726646259971647F, 0.0F, 0.0F));
         root.getChild("head").getChild("HornL").addOrReplaceChild("HornL2", CubeListBuilder.create().texOffs(9, 38).addBox(-1.0F, -0.8F, 0.0F, 2, 2, 5), PartPose.offsetAndRotation(0.0F, 0.3F, 3.6F, -0.08726646259971647F, 0.0F, 0.0F));
