@@ -79,6 +79,181 @@ public final class IssueRegressionTests {
 
     private static final BlockPos POS = new BlockPos(3, 2, 3);
 
+    public static void birdFlightSurvivesAnEmptyFlock(GameTestHelper helper) throws Exception {
+        var bird = helper.spawnWithNoFreeWill(IafEntities.STYMPHALIAN_BIRD.get(), POS);
+        var leader = helper.spawnWithNoFreeWill(IafEntities.STYMPHALIAN_BIRD.get(), POS.above());
+        var flock = StymphalianBirdFlock.createFlock(leader);
+        leader.flock = flock;
+        leader.discard();
+        bird.flock = flock;
+        var speed = StymphalianBirdEntity.class.getDeclaredMethod("getFlySpeed", boolean.class);
+        speed.setAccessible(true);
+        helper.assertTrue((float) speed.invoke(bird, false) == 2F, "Leaderless flight did not use the normal speed");
+        bird.setFlying(true);
+        bird.airTarget = bird.blockPosition().above(5);
+        bird.aiStep();
+        helper.assertTrue(Double.isFinite(bird.getDeltaMovement().lengthSqr()), "Leaderless flight produced invalid motion");
+        helper.succeed();
+    }
+
+    public static void dragonCorpsesAreDeadButRemainHarvestable(GameTestHelper helper) {
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+            DragonBaseEntity dragon = (DragonBaseEntity) helper.spawnWithNoFreeWill(type, POS);
+            dragon.setAgeInDays(75);
+            dragon.setHealth(0);
+            dragon.setModelDead(true);
+            helper.assertTrue(!dragon.isAlive() && dragon.isDeadOrDying(), "Corpse still reports alive");
+            for (var part : dragon.getParts())
+                helper.assertTrue(!part.isPickable(), "Corpse part remains a damage-indicator target");
+            helper.assertTrue(dragon.isPickable(), "Corpse body must remain selectable for harvesting");
+            int stage = dragon.getDeathStage();
+            dragon.mobInteract(player, InteractionHand.MAIN_HAND);
+            helper.assertTrue(dragon.getDeathStage() == stage + 1 && !dragon.isRemoved(), "Corpse harvesting was broken");
+            dragon.discard();
+        }
+        helper.succeed();
+    }
+
+    public static void hippogryphFliesWithinLocalAltitudeAndLands(GameTestHelper helper) {
+        // The 26.x test world has no terrain outside individual templates.
+        // Put the flight arena above the other fixtures so tests cannot obstruct each other.
+        var floor = POS.above(32);
+        var arenaChunk = new net.minecraft.world.level.ChunkPos(helper.absolutePos(floor).getX() >> 4, helper.absolutePos(floor).getZ() >> 4);
+        var forced = new java.util.ArrayList<net.minecraft.world.level.ChunkPos>();
+        for (int x = -3; x <= 3; x++) for (int z = -3; z <= 3; z++) {
+            var chunk = new net.minecraft.world.level.ChunkPos(arenaChunk.x() + x, arenaChunk.z() + z);
+            if (helper.getLevel().setChunkForced(chunk.x(), chunk.z(), true)) forced.add(chunk);
+        }
+        for (int x = -40; x <= 40; x++) for (int z = -40; z <= 40; z++)
+            helper.setBlock(floor.offset(x, 0, z), Blocks.STONE);
+        var hippo = helper.spawn(IafEntities.HIPPOGRYPH.get(), floor.above(6));
+        hippo.setNoAi(false);
+        hippo.setTame(true, false);
+        hippo.getRandom().setSeed(291);
+        hippo.setHovering(true);
+        double startY = hippo.getY(), startX = hippo.getX(), startZ = hippo.getZ();
+        double[] distance = {0};
+        helper.onEachTick(() -> {
+            helper.assertTrue(hippo.getY() <= startY + 14, "Hippogryph climbed without an altitude target");
+            helper.assertTrue(hippo.getDeltaMovement().y >= -0.4, "Hippogryph stopped flying before touchdown");
+            distance[0] = Math.max(distance[0], Math.hypot(hippo.getX() - startX, hippo.getZ() - startZ));
+            if (helper.getTick() > 40 && hippo.onGround() && !hippo.isFlying() && !hippo.isHovering()) {
+                helper.assertTrue(distance[0] > 1, "Hippogryph hovered without selecting a flight destination");
+                helper.assertTrue(!hippo.isNoGravity(), "Landing did not restore gravity");
+                hippo.discard();
+                forced.forEach(chunk -> helper.getLevel().setChunkForced(chunk.x(), chunk.z(), false));
+                helper.succeed();
+            }
+        });
+    }
+
+    public static void forgeSelectsAnAwakeAdultAndRejectsBlockedRays(GameTestHelper helper) {
+        var pos = POS.above(64);
+        for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++) for (int z = -1; z <= 1; z++) {
+            var block = y != 0 && x != 0 && z != 0 ? IafBlocks.DRAGON_BONE_BLOCK.get() : IafBlocks.DRAGONFORGE_LIGHTNING_BRICK.get();
+            helper.setBlock(pos.offset(x, y, z), block);
+        }
+        helper.setBlock(pos, IafBlocks.DRAGONFORGE_LIGHTNING_CORE_DISABLED.get());
+        var inputPos = pos.north();
+        helper.setBlock(inputPos, IafBlocks.DRAGONFORGE_LIGHTNING_INPUT.get());
+        DragonForgeBlockEntity core = helper.getBlockEntity(pos, DragonForgeBlockEntity.class);
+        core.setItem(0, new ItemStack(Items.IRON_INGOT));
+        core.setItem(1, new ItemStack(IafItems.LIGHTNING_DRAGON_BLOOD.get()));
+        DragonForgeInputBlockEntity input = helper.getBlockEntity(inputPos, DragonForgeInputBlockEntity.class);
+        helper.assertTrue(input.isAssembled(), "Test lightning forge must be ready");
+        var dragonPos = helper.absolutePos(inputPos).offset(0, 0, -16);
+        var rejected = helper.spawnWithNoFreeWill(IafEntities.LIGHTNING_DRAGON.get(), inputPos);
+        rejected.setPos(dragonPos.getX() + 0.5, dragonPos.getY(), dragonPos.getZ() + 0.5);
+        rejected.setTame(true, false);
+        rejected.setAgeInDays(0);
+        var adult = helper.spawnWithNoFreeWill(IafEntities.LIGHTNING_DRAGON.get(), inputPos);
+        adult.setAgeInDays(75);
+        adult.setPos(dragonPos.getX() + 0.5, dragonPos.getY(), dragonPos.getZ() + 0.5);
+        adult.setYRot(0);
+        adult.setTame(true, false);
+        helper.assertTrue(!adult.isChained(), "Unchained dragon incorrectly reports chained");
+        helper.assertTrue(!input.canDragonFuel(rejected), "Baby was eligible to fuel forge");
+        rejected.setAgeInDays(75);
+        rejected.setInSittingPose(true);
+        helper.assertTrue(!input.canDragonFuel(rejected), "Sleeping dragon was eligible to fuel forge");
+        var ray = helper.getLevel().clip(new net.minecraft.world.level.ClipContext(adult.getHeadPosition(),
+                net.minecraft.world.phys.Vec3.atCenterOf(input.getBlockPos()), net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, adult));
+        helper.assertTrue(input.canDragonFuel(adult), "Adult rejected: alive=" + adult.isAlive() + ", sleeping=" + adult.isSleeping()
+                + ", baby=" + adult.isBaby() + ", head=" + adult.getHeadPosition() + ", ray=" + ray.getBlockPos() + ", input=" + input.getBlockPos());
+        DragonForgeInputBlockEntity.tick(helper.getLevel(), input.getBlockPos(), input.getBlockState(), input);
+        helper.assertTrue(input.getBlockPos().equals(adult.burningTarget), "Unavailable dragon prevented adult selection");
+        adult.updateBurnTarget();
+        helper.assertTrue(adult.isBreathingFire() && input.getBlockPos().equals(adult.burningTarget), "Lure and breath eligibility disagree");
+        adult.fireBreathTicks = 40;
+        adult.burnProgress = 40;
+        adult.updateBurnTarget();
+        helper.assertTrue(core.lastDragonFlameTimer > 0, "Lightning breath did not transfer power into the forge");
+        rejected.setInSittingPose(false);
+        rejected.setModelDead(true);
+        helper.assertTrue(!input.canDragonFuel(rejected), "Corpse was eligible to fuel forge");
+        adult.setTame(false, false);
+        helper.assertTrue(!input.canDragonFuel(adult), "Wild unchained dragon was eligible to fuel forge");
+        com.iafenvoy.iceandfire.data.component.ChainData.get(adult).attachChain(rejected.getUUID());
+        helper.assertTrue(adult.isChained() && input.canDragonFuel(adult), "Chained adult cannot fuel forge");
+        var middle = adult.getHeadPosition().lerp(net.minecraft.world.phys.Vec3.atCenterOf(input.getBlockPos()), 0.5);
+        var obstruction = net.minecraft.core.BlockPos.containing(middle);
+        var previous = helper.getLevel().getBlockState(obstruction);
+        try {
+            helper.getLevel().setBlockAndUpdate(obstruction, Blocks.STONE.defaultBlockState());
+            helper.assertTrue(!input.canDragonFuel(adult), "Obstructed head-to-forge ray was accepted");
+            adult.updateBurnTarget();
+            helper.assertTrue(adult.burningTarget == null && !adult.isBreathingFire(), "Blocked input retained its burn target");
+        } finally {
+            helper.getLevel().setBlockAndUpdate(obstruction, previous);
+            adult.discard();
+            rejected.discard();
+        }
+        helper.succeed();
+    }
+
+
+    public static void iceDragonEndRestrictionHonorsConfigAndDimension(GameTestHelper helper) {
+        var option = com.iafenvoy.iceandfire.config.IafCommonConfig.INSTANCE.worldGen.preventIceDragonStructuresInEnd;
+        helper.assertTrue(option.getDefaultValue(), "End restriction must default to enabled");
+        boolean previous = option.getValue();
+        var chunk = helper.getLevel().getChunkAt(helper.absolutePos(POS));
+        var savedStarts = new java.util.HashMap<>(chunk.getAllStarts());
+        var registry = helper.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+        try {
+            for (boolean enabled : new boolean[]{true, false}) {
+                option.setValue(enabled);
+                for (var dimension : java.util.List.of(net.minecraft.world.level.Level.END,
+                        net.minecraft.world.level.Level.OVERWORLD, net.minecraft.world.level.Level.NETHER)) {
+                    var level = helper.getLevel().getServer().getLevel(dimension);
+                    helper.assertTrue(level != null, "Missing test dimension: " + dimension);
+                    for (String type : java.util.List.of("ice", "fire", "lightning")) {
+                        for (String kind : java.util.List.of("cave", "roost")) {
+                            var structure = registry.getValue(com.iafenvoy.iceandfire.IceAndFire.id(type + "_dragon_" + kind));
+                            helper.assertTrue(structure != null, "Missing dragon structure");
+                            var pieces = new net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer(java.util.List.of(
+                                    new net.minecraft.world.level.levelgen.structure.structures.BuriedTreasurePieces.BuriedTreasurePiece(BlockPos.ZERO)));
+                            var start = new net.minecraft.world.level.levelgen.structure.StructureStart(structure, chunk.getPos(), 0, pieces);
+                            helper.assertTrue(start.isValid(), "Test structure start must be valid");
+                            level.structureManager().setStartForStructure(net.minecraft.core.SectionPos.of(chunk.getPos(), 0), structure, start, chunk);
+                            boolean blocked = enabled && dimension.equals(net.minecraft.world.level.Level.END) && type.equals("ice");
+                            helper.assertTrue(chunk.getStartForStructure(structure) == (blocked
+                                            ? net.minecraft.world.level.levelgen.structure.StructureStart.INVALID_START : start),
+                                    "Wrong start stored for " + dimension + "/" + type + "/" + kind + ", enabled=" + enabled);
+                        }
+                    }
+                }
+            }
+        } finally {
+            option.setValue(previous);
+            chunk.setAllStarts(savedStarts);
+        }
+        helper.succeed();
+    }
+
+
     public static void shakePreyDamagesAndReleasesPlayersOnServer(GameTestHelper helper) {
         verifyShakePrey(helper, true, false);
         helper.succeed();

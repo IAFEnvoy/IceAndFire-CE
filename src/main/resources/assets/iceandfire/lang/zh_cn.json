@@ -767,6 +767,7 @@
   "config.iceandfire.worldgen.generateGorgonTempleChance": "蛇发女妖神庙生成概率",
   "config.iceandfire.worldgen.generateGraveYardChance": "墓地生成概率",
   "config.iceandfire.worldgen.generateHydraCaveChance": "九头蛇巢穴生成概率",
+  "config.iceandfire.worldgen.preventIceDragonStructuresInEnd": "禁止冰龙地表巢穴和地下洞穴在末地生成",
   "config.iceandfire.worldgen.generateIceDragonCaveChance": "冰龙地下洞穴生成概率",
   "config.iceandfire.worldgen.generateIceDragonRoostChance": "冰龙地上巢穴生成概率",
   "config.iceandfire.worldgen.generateLightningDragonCaveChance": "电龙地下洞穴生成概率",
