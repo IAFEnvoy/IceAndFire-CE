@@ -22,6 +22,8 @@ public class ClientRegressionSmoke implements ClientModInitializer {
             this.started = true;
             String original = client.options.language;
             try {
+                int armorCases = ArmorModelRegression.run();
+                check(armorCases == 19, "Expected 12 Dragonsteel and seven Sea Serpent model cases");
                 client.options.language = "en_us";
                 List<String> first = BestiaryPageCache.get("introduction_0.txt");
                 check(!first.isEmpty(), "English page missing");
@@ -37,7 +39,7 @@ public class ClientRegressionSmoke implements ClientModInitializer {
                         client.options.language = "en_us";
                         List<String> reloaded = BestiaryPageCache.get("introduction_0.txt");
                         check(reloaded != first && reloaded.equals(first), "Reload did not invalidate page cache");
-                        finish(client, "PASS: client startup, renderer initialization, page reuse, language fallback, missing page, resource reload");
+                        finish(client, "PASS: client startup, renderer initialization, page reuse, language fallback, missing page, resource reload, armor model cases=" + armorCases);
                     } catch (Throwable e) {
                         finish(client, "FAIL: " + e);
                     } finally {
