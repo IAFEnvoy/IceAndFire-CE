@@ -49,7 +49,16 @@ public class StymphalianBirdFlock {
     }
 
     public void addToFlock(EntityStymphalianBird bird) {
-        if (!this.members.contains(bird)) this.members.add(bird);
+        if (!this.members.contains(bird)) {
+            this.members.add(bird);
+            this.lastUpdate = Long.MIN_VALUE;
+        }
+    }
+
+    public void removeFromFlock(EntityStymphalianBird bird) {
+        this.members.remove(bird);
+        if (this.leader == bird) this.leader = null;
+        this.lastUpdate = Long.MIN_VALUE;
     }
 
     public void update() {
@@ -71,6 +80,7 @@ public class StymphalianBirdFlock {
     }
 
     public EntityStymphalianBird getLeader() {
+        this.update();
         return this.leader;
     }
 

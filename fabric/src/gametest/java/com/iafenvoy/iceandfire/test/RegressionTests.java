@@ -48,6 +48,177 @@ public class RegressionTests implements FabricGameTest {
     private static final BlockPos POS = new BlockPos(3, 2, 3);
 
     @GameTest(templateName = EMPTY_STRUCTURE)
+    public void birdFlightSurvivesAnEmptyFlock(TestContext c) throws Exception {
+        var bird = c.spawnMob(IafEntities.STYMPHALIAN_BIRD.get(), POS);
+        var leader = c.spawnMob(IafEntities.STYMPHALIAN_BIRD.get(), POS.up());
+        var flock = StymphalianBirdFlock.createFlock(leader);
+        leader.flock = flock;
+        leader.discard();
+        bird.flock = flock;
+        var speed = EntityStymphalianBird.class.getDeclaredMethod("getFlySpeed", boolean.class);
+        speed.setAccessible(true);
+        c.assertTrue((float) speed.invoke(bird, false) == 2F, "Leaderless flight did not use the normal speed");
+        bird.setFlying(true);
+        bird.airTarget = bird.getBlockPos().up(5);
+        bird.tickMovement();
+        c.assertTrue(Double.isFinite(bird.getVelocity().lengthSquared()), "Leaderless flight produced invalid motion");
+        c.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void dragonCorpsesAreDeadButRemainHarvestable(TestContext c) {
+        var player = c.createMockSurvivalPlayer();
+        player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+        for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+            EntityDragonBase dragon = (EntityDragonBase) c.spawnMob(type, POS);
+            dragon.setAgeInDays(75);
+            dragon.setHealth(0);
+            dragon.setModelDead(true);
+            c.assertTrue(!dragon.isAlive() && dragon.isDead(), "Corpse still reports alive");
+            c.assertTrue(dragon.canHit(), "Corpse body must remain selectable for harvesting");
+            int stage = dragon.getDeathStage();
+            dragon.interactMob(player, Hand.MAIN_HAND);
+            c.assertTrue(dragon.getDeathStage() == stage + 1 && !dragon.isRemoved(), "Corpse harvesting was broken");
+            dragon.discard();
+        }
+        c.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 500)
+    public void hippogryphFliesWithinLocalAltitudeAndLands(TestContext c) {
+        // The 26.x test world has no terrain outside individual templates.
+        // Put the flight arena above the other fixtures so tests cannot obstruct each other.
+        var floor = POS.up(32);
+        for (int x = -40; x <= 40; x++) for (int z = -40; z <= 40; z++)
+            c.setBlockState(floor.add(x, 0, z), net.minecraft.block.Blocks.STONE);
+        var hippo = c.spawnEntity(IafEntities.HIPPOGRYPH.get(), floor.up(6));
+        hippo.setAiDisabled(false);
+        hippo.setTamed(true);
+        hippo.getRandom().setSeed(291);
+        hippo.setHovering(true);
+        double startY = hippo.getY(), startX = hippo.getX(), startZ = hippo.getZ();
+        double[] distance = {0};
+        c.runAtEveryTick(() -> {
+            c.assertTrue(hippo.getY() <= startY + 14, "Hippogryph climbed without an altitude target");
+            c.assertTrue(hippo.getVelocity().y >= -0.4, "Hippogryph stopped flying before touchdown");
+            distance[0] = Math.max(distance[0], Math.hypot(hippo.getX() - startX, hippo.getZ() - startZ));
+            if (c.getTick() > 40 && hippo.isOnGround() && !hippo.isFlying() && !hippo.isHovering()) {
+                c.assertTrue(distance[0] > 1, "Hippogryph hovered without selecting a flight destination");
+                c.assertTrue(!hippo.hasNoGravity(), "Landing did not restore gravity");
+                hippo.discard();
+                c.complete();
+            }
+        });
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void forgeSelectsAnAwakeAdultAndRejectsBlockedRays(TestContext c) {
+        var pos = POS.up(64);
+        for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++) for (int z = -1; z <= 1; z++) {
+            var block = y != 0 && x != 0 && z != 0 ? IafBlocks.DRAGON_BONE_BLOCK.get() : IafBlocks.DRAGONFORGE_LIGHTNING_BRICK.get();
+            c.setBlockState(pos.add(x, y, z), block);
+        }
+        c.setBlockState(pos, IafBlocks.DRAGONFORGE_LIGHTNING_CORE_DISABLED.get());
+        var inputPos = pos.north();
+        c.setBlockState(inputPos, IafBlocks.DRAGONFORGE_LIGHTNING_INPUT.get());
+        BlockEntityDragonForge core = (BlockEntityDragonForge) c.getBlockEntity(pos);
+        core.setStack(0, new ItemStack(Items.IRON_INGOT));
+        core.setStack(1, new ItemStack(IafItems.LIGHTNING_DRAGON_BLOOD.get()));
+        BlockEntityDragonForgeInput input = (BlockEntityDragonForgeInput) c.getBlockEntity(inputPos);
+        c.assertTrue(input.isAssembled(), "Test lightning forge must be ready");
+        var dragonPos = c.getAbsolutePos(inputPos).add(0, 0, -16);
+        var rejected = c.spawnMob(IafEntities.LIGHTNING_DRAGON.get(), inputPos);
+        rejected.setPos(dragonPos.getX() + 0.5, dragonPos.getY(), dragonPos.getZ() + 0.5);
+        rejected.setTamed(true);
+        rejected.setAgeInDays(0);
+        var adult = c.spawnMob(IafEntities.LIGHTNING_DRAGON.get(), inputPos);
+        adult.setAgeInDays(75);
+        adult.setPos(dragonPos.getX() + 0.5, dragonPos.getY(), dragonPos.getZ() + 0.5);
+        adult.setYaw(0);
+        adult.setTamed(true);
+        c.assertTrue(!adult.isChained(), "Unchained dragon incorrectly reports chained");
+        c.assertTrue(!input.canDragonFuel(rejected), "Baby was eligible to fuel forge");
+        rejected.setAgeInDays(75);
+        rejected.setInSittingPose(true);
+        c.assertTrue(!input.canDragonFuel(rejected), "Sleeping dragon was eligible to fuel forge");
+        BlockEntityDragonForgeInput.tick(c.getWorld(), input.getPos(), input.getCachedState(), input);
+        c.assertTrue(input.getPos().equals(adult.burningTarget), "Unavailable dragon prevented adult selection");
+        adult.updateBurnTarget();
+        c.assertTrue(adult.isBreathingFire() && input.getPos().equals(adult.burningTarget), "Lure and breath eligibility disagree");
+        adult.fireBreathTicks = 40;
+        adult.burnProgress = 40;
+        for (int seed = 0; seed < 32; seed++) {
+            adult.getRandom().setSeed(seed);
+            core.lastDragonFlameTimer = 0;
+            adult.updateBurnTarget();
+            c.assertTrue(core.lastDragonFlameTimer > 0, "Lightning breath did not transfer power into the forge: seed=" + seed + ", target=" + adult.burningTarget
+                + ", breathing=" + adult.isActuallyBreathingFire() + ", progress=" + adult.burnProgress
+                + ", visible=" + adult.canPositionBeSeen(input.getPos().getX() + 0.5, input.getPos().getY() + 0.5, input.getPos().getZ() + 0.5)
+                + ", input=" + input.getPos() + ", head=" + adult.getHeadPosition() + ", yaw=" + adult.getYaw() + ", body=" + adult.bodyYaw);
+        }
+        rejected.setInSittingPose(false);
+        rejected.setModelDead(true);
+        c.assertTrue(!input.canDragonFuel(rejected), "Corpse was eligible to fuel forge");
+        adult.setTamed(false);
+        c.assertTrue(!input.canDragonFuel(adult), "Wild unchained dragon was eligible to fuel forge");
+        com.iafenvoy.iceandfire.data.component.IafEntityData.get(adult).chainData.attachChain(rejected);
+        c.assertTrue(adult.isChained() && input.canDragonFuel(adult), "Chained adult cannot fuel forge");
+        var middle = adult.getHeadPosition().lerp(Vec3d.ofCenter(input.getPos()), 0.5);
+        var obstruction = BlockPos.ofFloored(middle);
+        var previous = c.getWorld().getBlockState(obstruction);
+        try {
+            c.getWorld().setBlockState(obstruction, net.minecraft.block.Blocks.STONE.getDefaultState(), 3);
+            c.assertTrue(!input.canDragonFuel(adult), "Obstructed head-to-forge ray was accepted");
+            adult.updateBurnTarget();
+            c.assertTrue(adult.burningTarget == null && !adult.isBreathingFire(), "Blocked input retained its burn target");
+        } finally {
+            c.getWorld().setBlockState(obstruction, previous, 3);
+            adult.discard();
+            rejected.discard();
+        }
+        c.complete();
+    }
+
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void iceDragonEndRestrictionHonorsConfigAndDimension(TestContext c) {
+        var option = com.iafenvoy.iceandfire.config.IafCommonConfig.INSTANCE.worldGen.preventIceDragonStructuresInEnd;
+        c.assertTrue(option.getDefaultValue(), "End restriction must default to enabled");
+        boolean previous = option.getValue();
+        var chunk = c.getWorld().getWorldChunk(c.getAbsolutePos(POS));
+        var savedStarts = new java.util.HashMap<>(chunk.getStructureStarts());
+        var registry = c.getWorld().getRegistryManager().get(net.minecraft.registry.RegistryKeys.STRUCTURE);
+        try {
+            for (boolean enabled : new boolean[]{true, false}) {
+                option.setValue(enabled);
+                for (var dimension : java.util.List.of(World.END, World.OVERWORLD, World.NETHER)) {
+                    var world = c.getWorld().getServer().getWorld(dimension);
+                    c.assertTrue(world != null, "Missing test dimension: " + dimension);
+                    for (String type : java.util.List.of("ice", "fire", "lightning")) {
+                        for (String kind : java.util.List.of("cave", "roost")) {
+                            var structure = registry.get(new Identifier("iceandfire", type + "_dragon_" + kind));
+                            c.assertTrue(structure != null, "Missing dragon structure");
+                            var pieces = new net.minecraft.structure.StructurePiecesList(java.util.List.of(
+                                    new net.minecraft.structure.BuriedTreasureGenerator.Piece(BlockPos.ORIGIN)));
+                            var start = new net.minecraft.structure.StructureStart(structure, chunk.getPos(), 0, pieces);
+                            c.assertTrue(start.hasChildren(), "Test structure start must be valid");
+                            world.getStructureAccessor().setStructureStart(net.minecraft.util.math.ChunkSectionPos.from(chunk.getPos(), 0), structure, start, chunk);
+                            boolean blocked = enabled && dimension.equals(World.END) && type.equals("ice");
+                            c.assertTrue(chunk.getStructureStart(structure) == (blocked ? net.minecraft.structure.StructureStart.DEFAULT : start),
+                                    "Wrong start stored for " + dimension + "/" + type + "/" + kind + ", enabled=" + enabled);
+                        }
+                    }
+                }
+            }
+        } finally {
+            option.setValue(previous);
+            chunk.setStructureStarts(savedStarts);
+        }
+        c.complete();
+    }
+
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
     public void forgeStateKeepsInventory(TestContext c) {
         c.setBlockState(POS, IafBlocks.DRAGONFORGE_FIRE_CORE_DISABLED.get());
         BlockPos pos = c.getAbsolutePos(POS);

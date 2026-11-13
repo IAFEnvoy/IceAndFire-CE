@@ -475,9 +475,8 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     }
 
     public void updateBurnTarget() {
-        if (this.burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isBaby()) {
-            float maxDist = 115 * this.getDragonStage();
-            if (this.getWorld().getBlockEntity(this.burningTarget) instanceof BlockEntityDragonForgeInput forge && forge.isAssembled() && this.squaredDistanceTo(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D) < maxDist && this.canPositionBeSeen(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D)) {
+        if (this.burningTarget != null) {
+            if (this.getWorld().getBlockEntity(this.burningTarget) instanceof BlockEntityDragonForgeInput forge && forge.isAssembled() && forge.canDragonFuel(this)) {
                 this.getLookControl().lookAt(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D, 180F, 180F);
                 this.breathFireAtPos(this.burningTarget);
                 this.setBreathingFire(true);
@@ -489,6 +488,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
                     com.iafenvoy.iceandfire.network.EntityNetwork.sendToTracking(this, StaticVariables.DRAGON_SET_BURN_BLOCK, buf);
                 }
                 this.burningTarget = null;
+                this.setBreathingFire(false);
             }
         }
     }
@@ -1127,9 +1127,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     @Override
     public boolean isAlive() {
-        if (this.isModelDead())
-            return !this.isRemoved();
-        return super.isAlive();
+        return !this.isModelDead() && super.isAlive();
     }
 
     @Override
@@ -2622,7 +2620,7 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
     public boolean isChained() {
         AtomicBoolean isChained = new AtomicBoolean(false);
         IafEntityData data = IafEntityData.get(this);
-        isChained.set(data.chainData.getChainedTo().isEmpty());
+        isChained.set(!data.chainData.getChainedTo().isEmpty());
         return isChained.get();
     }
 

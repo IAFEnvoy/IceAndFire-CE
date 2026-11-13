@@ -106,6 +106,15 @@ public class EntityStymphalianBird extends HostileEntity implements IAnimatedEnt
     }
 
     @Override
+    public void remove(RemovalReason reason) {
+        if (this.flock != null) {
+            this.flock.removeFromFlock(this);
+            this.flock = null;
+        }
+        super.remove(reason);
+    }
+
+    @Override
     public void tick() {
         super.tick();
         if (!this.getWorld().isClient && this.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
@@ -224,14 +233,15 @@ public class EntityStymphalianBird extends HostileEntity implements IAnimatedEnt
                 this.flock.addToFlock(this);
             }
         } else {
-            if (!this.flock.isLeader(this)) {
-                double dist = this.squaredDistanceTo(this.flock.getLeader());
+            EntityStymphalianBird leader = this.flock.getLeader();
+            if (leader != null && leader != this) {
+                double dist = this.squaredDistanceTo(leader);
                 if (dist > 360) {
                     this.setFlying(true);
                     this.navigation.stop();
-                    this.airTarget = StymphalianBirdAIAirTarget.getNearbyAirTarget(this.flock.getLeader());
+                    this.airTarget = StymphalianBirdAIAirTarget.getNearbyAirTarget(leader);
                     this.aiFlightLaunch = false;
-                } else if (!this.flock.getLeader().isFlying()) {
+                } else if (!leader.isFlying()) {
                     this.setFlying(false);
                     this.airTarget = null;
                     this.aiFlightLaunch = false;
@@ -382,7 +392,8 @@ public class EntityStymphalianBird extends HostileEntity implements IAnimatedEnt
 
     private float getFlySpeed(boolean y) {
         float speed = 2;
-        if (this.flock != null && !this.flock.isLeader(this) && this.squaredDistanceTo(this.flock.getLeader()) > 10) {
+        EntityStymphalianBird leader = this.flock == null ? null : this.flock.getLeader();
+        if (leader != null && leader != this && this.squaredDistanceTo(leader) > 10) {
             speed = 4;
         }
         if (this.getAnimation() == ANIMATION_SHOOT_ARROWS && !y) {

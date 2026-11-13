@@ -4,6 +4,7 @@
   "package": "com.iafenvoy.iceandfire.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "StructureManagerMixin",
     "ChunkRegionMixin",
     "EntityMixin",
     "LakeFeatureMixin",

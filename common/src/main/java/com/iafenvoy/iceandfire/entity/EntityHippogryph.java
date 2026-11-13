@@ -815,7 +815,6 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         return false;
     }
 
-    // FIXME: There's something majorly wrong with hovering/flying logic. Results in Hippogryphs not landing and other animation issues
     @Override
     public void tickMovement() {
         super.tickMovement();
@@ -880,9 +879,6 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
             }
             this.hasChestVarChanged = false;
         }
-        if (this.isFlying() && this.age % 40 == 0 || this.isFlying() && this.isSitting()) {
-            this.setFlying(true);
-        }
         if (!this.canMove() && attackTarget != null) {
             this.setTarget(null);
         }
@@ -916,16 +912,13 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         if (!flying && !this.isLandNavigator) {
             this.switchNavigator(true);
         }
-        if ((flying || hovering) && !this.doesWantToLand() && this.getControllingPassenger() == null) {
-            double up = this.isTouchingWater() ? 0.16D : 0.08D;
-            this.setVelocity(this.getVelocity().add(0, up, 0));
-        }
         if ((flying || hovering) && this.age % 20 == 0 && this.isOverAir()) {
             this.playSound(SoundEvents.ENTITY_ENDER_DRAGON_FLAP, this.getSoundVolume() * ((float) IafCommonConfig.INSTANCE.dragon.flapNoiseDistance.getValue() / 2), 0.6F + this.random.nextFloat() * 0.6F * this.getSoundPitch());
         }
         if (this.isOnGround() && this.doesWantToLand() && (this.isFlying() || this.isHovering())) {
             this.setFlying(false);
             this.setHovering(false);
+            this.setNoGravity(false);
         }
         if (this.isHovering()) {
             if (this.isSitting()) {
@@ -933,10 +926,11 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
             }
             this.hoverTicks++;
             if (this.doesWantToLand()) {
-                this.setVelocity(this.getVelocity().add(0, -0.05D, 0));
+                this.setVelocity(this.getVelocity().x, -0.12D, this.getVelocity().z);
             } else {
                 if (this.getControllingPassenger() == null) {
-                    this.setVelocity(this.getVelocity().add(0, 0.08D, 0));
+                    // Approach a takeoff speed instead of accelerating upward every tick.
+                    this.setVelocity(this.getVelocity().x, this.getVelocity().y * 0.5D + 0.08D, this.getVelocity().z);
                 }
                 if (this.hoverTicks > 40) {
                     if (!this.isBaby()) {
@@ -956,10 +950,9 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
         }
         if (this.isFlying() && this.doesWantToLand() && this.getControllingPassenger() == null) {
             this.setHovering(false);
-            if (this.isOnGround()) {
-                this.flyTicks = 0;
-            }
-            this.setFlying(false);
+            this.getNavigation().stop();
+            // Keep flight physics until touchdown, rather than dropping out of the sky.
+            this.setVelocity(this.getVelocity().x * 0.9D, -0.12D, this.getVelocity().z * 0.9D);
         }
         if (this.isFlying()) {
             this.flyTicks++;
@@ -972,7 +965,7 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
             this.setHovering(false);
             this.setFlying(false);
         }
-        if ((!this.getWorld().isClient && !this.isFlightStaminaEnabled() && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isSitting() && !this.isFlying() && this.getPassengerList().isEmpty() && !this.isBaby() && !this.isHovering() && !this.isSitting() && this.canMove() && !this.isOverAir() || this.getY() < -1)) {
+        if (!this.getWorld().isClient && !this.isFlightStaminaEnabled() && this.getRandom().nextInt(FLIGHT_CHANCE_PER_TICK) == 0 && !this.isFlying() && this.getPassengerList().isEmpty() && !this.isBaby() && !this.isHovering() && this.canMove() && this.isOnGround()) {
             this.setHovering(true);
             this.hoverTicks = 0;
             this.flyTicks = 0;
@@ -1095,6 +1088,7 @@ public class EntityHippogryph extends TameableEntity implements NamedScreenHandl
     }
 
     protected void switchNavigator(boolean onLand) {
+        this.setNoGravity(!onLand);
         if (onLand) {
             this.moveControl = new MoveControl(this);
             this.navigation = this.createNavigator(this.getWorld(), AdvancedPathNavigate.MovementType.CLIMBING);

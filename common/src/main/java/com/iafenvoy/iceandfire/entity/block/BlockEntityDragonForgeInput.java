@@ -65,12 +65,6 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
     }
 
     protected void lureDragons() {
-        Vec3d targetPosition = new Vec3d(
-                this.getPos().getX() + 0.5F,
-                this.getPos().getY() + 0.5F,
-                this.getPos().getZ() + 0.5F
-        );
-
         Box searchArea = new Box(
                 (double) this.pos.getX() - LURE_DISTANCE,
                 (double) this.pos.getY() - LURE_DISTANCE,
@@ -84,10 +78,10 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
 
         assert this.world != null;
         for (EntityDragonBase dragon : this.world.getNonSpectatingEntities(EntityDragonBase.class, searchArea)) {
-            if (!dragonSelected && /* Dragon Checks */ this.getDragonType() == dragon.dragonType.getIntFromType() && (dragon.isChained() || dragon.isTamed()) && this.canSeeInput(dragon, targetPosition)) {
+            if (!dragonSelected && this.canDragonFuel(dragon)) {
                 dragon.burningTarget = this.pos;
                 dragonSelected = true;
-            } else if (dragon.burningTarget == this.pos) {
+            } else if (this.pos.equals(dragon.burningTarget)) {
                 dragon.burningTarget = null;
                 dragon.setBreathingFire(false);
             }
@@ -99,16 +93,16 @@ public class BlockEntityDragonForgeInput extends BlockEntity {
         return this.core != null && this.core.assembled() && this.core.canSmelt();
     }
 
-    private boolean canSeeInput(EntityDragonBase dragon, Vec3d target) {
-        if (target != null) {
-            assert this.world != null;
-            HitResult rayTrace = this.world.raycast(new RaycastContext(dragon.getHeadPosition(), target, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, dragon));
-            double distance = dragon.getHeadPosition().distanceTo(rayTrace.getPos());
-
-            return distance < 10.0F + dragon.getWidth();
-        }
-
-        return false;
+    // Share the same eligibility, range and head-to-input ray with the dragon's breath logic.
+    public boolean canDragonFuel(EntityDragonBase dragon) {
+        if (this.world == null || !dragon.isAlive() || dragon.isSleeping() || dragon.isBaby()
+                || this.getDragonType() != dragon.dragonType.getIntFromType()
+                || !(dragon.isChained() || dragon.isTamed())) return false;
+        Vec3d target = Vec3d.ofCenter(this.pos);
+        if (dragon.squaredDistanceTo(target) > LURE_DISTANCE * LURE_DISTANCE) return false;
+        var result = this.world.raycast(new RaycastContext(dragon.getHeadPosition(), target, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, dragon));
+        return result.getType() == HitResult.Type.MISS
+                || this.pos.equals(result.getBlockPos());
     }
 
     private BlockState getDeactivatedState() {
