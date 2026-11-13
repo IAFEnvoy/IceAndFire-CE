@@ -768,6 +768,7 @@
   "config.iceandfire.worldgen.generateGorgonTempleChance": "Generate Gorgon Temple Chance",
   "config.iceandfire.worldgen.generateGraveYardChance": "Generate Grave Yard Chance",
   "config.iceandfire.worldgen.generateHydraCaveChance": "Generate Hydra Cave Chance",
+  "config.iceandfire.worldgen.preventIceDragonStructuresInEnd": "Prevent Ice Dragon Roosts and Caves in the End",
   "config.iceandfire.worldgen.generateIceDragonCaveChance": "Generate Ice Dragon Cave Chance",
   "config.iceandfire.worldgen.generateIceDragonRoostChance": "Generate Ice Dragon Roost Chance",
   "config.iceandfire.worldgen.generateLightningDragonCaveChance": "Generate Lightning Dragon Cave Chance",

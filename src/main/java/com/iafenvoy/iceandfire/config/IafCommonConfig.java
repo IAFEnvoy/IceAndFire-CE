@@ -371,6 +371,7 @@ public class IafCommonConfig extends AutoInitConfigContainer {
         public final DoubleEntry dangerousDistanceLimit = DoubleEntry.builder("config.iceandfire.worldgen.dangerousDistanceLimit", 1000).min(0).key("dangerousDistanceLimit").build();
         public final DoubleEntry generateFireDragonCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateFireDragonCaveChance", 0.5).range(0, 1).key("generateFireDragonCaveChance").build();
         public final DoubleEntry generateFireDragonRoostChance = DoubleEntry.builder("config.iceandfire.worldgen.generateFireDragonRoostChance", 0.5).range(0, 1).key("generateFireDragonRoostChance").build();
+        public final BooleanEntry preventIceDragonStructuresInEnd = BooleanEntry.builder("config.iceandfire.worldgen.preventIceDragonStructuresInEnd", true).key("preventIceDragonStructuresInEnd").build();
         public final DoubleEntry generateIceDragonCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateIceDragonCaveChance", 0.5).range(0, 1).key("generateIceDragonCaveChance").build();
         public final DoubleEntry generateIceDragonRoostChance = DoubleEntry.builder("config.iceandfire.worldgen.generateIceDragonRoostChance", 0.5).range(0, 1).key("generateIceDragonRoostChance").build();
         public final DoubleEntry generateLightningDragonCaveChance = DoubleEntry.builder("config.iceandfire.worldgen.generateLightningDragonCaveChance", 0.5).range(0, 1).key("generateLightningDragonCaveChance").build();

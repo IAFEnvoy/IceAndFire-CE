@@ -480,9 +480,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public void updateBurnTarget() {
-        if (this.burningTarget != null && !this.isSleeping() && !this.isModelDead() && !this.isBaby()) {
-            float maxDist = 115 * this.getDragonStage();
-            if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && this.distanceToSqr(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D) < maxDist && this.canPositionBeSeen(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D)) {
+        if (this.burningTarget != null) {
+            if (this.level().getBlockEntity(this.burningTarget) instanceof DragonForgeInputBlockEntity forge && forge.isAssembled() && forge.canDragonFuel(this)) {
                 this.getLookControl().setLookAt(this.burningTarget.getX() + 0.5D, this.burningTarget.getY() + 0.5D, this.burningTarget.getZ() + 0.5D, 180F, 180F);
                 this.breathFireAtPos(this.burningTarget);
                 this.setBreathingFire(true);
@@ -490,6 +489,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                 if (!this.level().isClientSide)
                     PacketDistributor.sendToAllPlayers(new DragonSetBurnBlockS2CPayload(this.getId(), true, this.burningTarget));
                 this.burningTarget = null;
+                this.setBreathingFire(false);
             }
         }
     }
@@ -1082,9 +1082,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public boolean isAlive() {
-        if (this.isModelDead())
-            return !this.isRemoved();
-        return super.isAlive();
+        return !this.isModelDead() && super.isAlive();
     }
 
     @Override
@@ -2552,7 +2550,7 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     public boolean isChained() {
-        return ChainData.get(this).getChainedTo().isEmpty();
+        return !ChainData.get(this).getChainedTo().isEmpty();
     }
 
     @Override

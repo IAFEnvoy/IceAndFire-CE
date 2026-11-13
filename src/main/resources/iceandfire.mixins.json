@@ -4,6 +4,7 @@
   "package": "com.iafenvoy.iceandfire.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "StructureManagerMixin",
     "ChickenMixin",
     "LivingEntityAccessor",
     "LivingEntityMixin",
