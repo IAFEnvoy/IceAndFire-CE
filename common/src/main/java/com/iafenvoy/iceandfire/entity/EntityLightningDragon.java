@@ -197,7 +197,7 @@ public class EntityLightningDragon extends EntityDragonBase {
                 this.setYaw(this.bodyYaw);
                 if (this.fireBreathTicks % 7 == 0)
                     this.playSound(IafSounds.LIGHTNINGDRAGON_BREATH.get(), 4, 1);
-                this.stimulateFire(burningTarget.getX() + 0.5F, burningTarget.getY() + 0.5F, burningTarget.getZ() + 0.5F, 1);
+                this.stimulateFire(burningTarget.getX() + 0.5D, burningTarget.getY() + 0.5D, burningTarget.getZ() + 0.5D, 1);
             }
         } else
             this.setBreathingFire(true);

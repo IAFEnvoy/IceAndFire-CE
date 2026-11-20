@@ -1132,6 +1132,8 @@ public abstract class EntityDragonBase extends TameableEntity implements NamedSc
 
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
+        // MobEntity.interact is final and rejects corpses before interactMob is reached.
+        if (this.isModelDead() && !this.isRemoved()) return this.interactMob(player, hand);
         ItemStack stack = player.getStackInHand(hand);
         if (stack.getItem() == IafItems.DRAGON_DEBUG_STICK.get()) {
             this.logic.debug();

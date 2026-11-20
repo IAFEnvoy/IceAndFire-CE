@@ -7,7 +7,8 @@
   "entrypoints": {
     "client": [
       "com.iafenvoy.iceandfire.test.ClientRegressionSmoke",
-      "com.iafenvoy.iceandfire.test.Issue300ClientRegression"
+      "com.iafenvoy.iceandfire.test.Issue300ClientRegression",
+      "com.iafenvoy.iceandfire.test.CorpseClientRegression"
     ],
     "fabric-gametest": [
       "com.iafenvoy.iceandfire.test.RegressionTests"

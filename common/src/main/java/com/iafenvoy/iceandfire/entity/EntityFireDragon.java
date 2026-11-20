@@ -145,7 +145,7 @@ public class EntityFireDragon extends EntityDragonBase {
                 if (this.age % 5 == 0) {
                     this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
                 }
-                this.stimulateFire(burningTarget.getX() + 0.5F, burningTarget.getY() + 0.5F, burningTarget.getZ() + 0.5F, 1);
+                this.stimulateFire(burningTarget.getX() + 0.5D, burningTarget.getY() + 0.5D, burningTarget.getZ() + 0.5D, 1);
             }
         } else {
             this.setBreathingFire(true);

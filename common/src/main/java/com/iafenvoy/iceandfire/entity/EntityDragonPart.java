@@ -39,6 +39,12 @@ public class EntityDragonPart extends EntityMultipartPart {
     }
 
     @Override
+    public boolean canHit() {
+        var parent = this.getParent();
+        return parent != null && parent.isAlive();
+    }
+
+    @Override
     public void collideWithNearbyEntities() {
     }
 }

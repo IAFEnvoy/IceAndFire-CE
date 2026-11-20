@@ -77,8 +77,13 @@ public class RegressionTests implements FabricGameTest {
             c.assertTrue(!dragon.isAlive() && dragon.isDead(), "Corpse still reports alive");
             c.assertTrue(dragon.canHit(), "Corpse body must remain selectable for harvesting");
             int stage = dragon.getDeathStage();
-            dragon.interactMob(player, Hand.MAIN_HAND);
+            dragon.interactAt(player, Vec3d.ZERO, Hand.MAIN_HAND);
             c.assertTrue(dragon.getDeathStage() == stage + 1 && !dragon.isRemoved(), "Corpse harvesting was broken");
+            player.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
+            dragon.interactAt(player, Vec3d.ZERO, Hand.MAIN_HAND);
+            c.assertTrue(dragon.getDeathStage() == stage + 2 && player.getInventory().count(dragon.getBloodItem()) == 1,
+                    "Bottle interaction did not harvest blood");
+            player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
             dragon.discard();
         }
         c.complete();
@@ -109,6 +114,38 @@ public class RegressionTests implements FabricGameTest {
                 c.complete();
             }
         });
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void forgeBreathPreservesBlockCentersAtLargeCoordinates(TestContext c) throws Exception {
+        var target = new java.util.concurrent.atomic.AtomicReference<Vec3d>();
+        com.iafenvoy.iceandfire.api.IafEvents.DragonFire capture = (dragon, x, y, z) -> {
+            target.set(new Vec3d(x, y, z));
+            // Capture the requested target without attacking unloaded blocks far from the fixture.
+            return true;
+        };
+        var breath = EntityDragonBase.class.getDeclaredMethod("breathFireAtPos", BlockPos.class);
+        breath.setAccessible(true);
+        com.iafenvoy.iceandfire.api.IafEvents.ON_DRAGON_FIRE_BLOCK.register(capture);
+        try {
+            for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+                EntityDragonBase dragon = (EntityDragonBase) c.spawnMob(type, POS);
+                try {
+                    dragon.setAgeInDays(75);
+                    dragon.setBreathingFire(true);
+                    dragon.fireBreathTicks = 40;
+                    for (var pos : java.util.List.of(BlockPos.ORIGIN,
+                            new BlockPos(8_388_608, 100, 8_388_609), new BlockPos(-8_388_609, 100, -8_388_608),
+                            new BlockPos(29_000_001, 100, -29_000_001))) {
+                        target.set(null);
+                        breath.invoke(dragon, pos);
+                        c.assertTrue(Vec3d.ofCenter(pos).equals(target.get()),
+                                "Forge breath target lost precision: type=" + type + ", block=" + pos + ", target=" + target.get());
+                    }
+                } finally { dragon.discard(); }
+            }
+        } finally { com.iafenvoy.iceandfire.api.IafEvents.ON_DRAGON_FIRE_BLOCK.unregister(capture); }
+        c.complete();
     }
 
     @GameTest(templateName = EMPTY_STRUCTURE)
