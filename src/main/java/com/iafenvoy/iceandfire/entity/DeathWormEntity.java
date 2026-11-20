@@ -426,6 +426,41 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
     }
 
     @Override
+    protected void tickRidden(Player player, Vec3 travelVector) {
+        super.tickRidden(player, travelVector);
+        if (this.isControlledByLocalInstance() && this.up() && this.onGround())
+            this.jumpFromGround();
+    }
+
+    @Override
+    protected Vec3 getRiddenInput(Player player, Vec3 travelVector) {
+        if (!this.isControlledByLocalInstance()) return Vec3.ZERO;
+        if (this.isSandNavigator) this.switchNavigator(false);
+        double x = this.getX();
+        double z = this.getZ();
+        double speed = 1.8F * this.getRideSpeedModifier();
+        if (player.xxa != 0 || player.zza != 0) {
+            Vec3 direction = player.getLookAngle();
+            if (player.zza < 0)
+                direction = direction.yRot((float) Math.PI);
+            else if (player.xxa > 0)
+                direction = direction.yRot((float) Math.PI * 0.5F);
+            else if (player.xxa < 0)
+                direction = direction.yRot((float) Math.PI * -0.5F);
+            if (player.xxa != 0) speed *= 0.25D;
+            if (player.zza < 0) speed *= 0.15D;
+            x += direction.x * 10;
+            z += direction.z * 10;
+        }
+        // Preserve the original target-based steering, including turn limits and key priority.
+        // The rider's client must tick the controls because server AI cannot drive this vehicle.
+        this.moveControl.setWantedPosition(x, this.processRiderY(this.getY()), z, speed);
+        this.moveControl.tick();
+        this.jumpControl.tick();
+        return new Vec3(0, 0, this.zza);
+    }
+
+    @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (this.getWormAge() > 4 && player.getVehicle() == null && player.getMainHandItem().is(Items.FISHING_ROD) && player.getOffhandItem().is(Items.FISHING_ROD)) {
             player.startRiding(this);
@@ -647,7 +682,6 @@ public class DeathWormEntity extends TamableAnimal implements ISyncMount, ICusto
                 this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), this.getX() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.getSurface((int) Math.floor(this.getX()), (int) Math.floor(this.getY()), (int) Math.floor(this.getZ())) + 0.5F, this.getZ() + (double) (this.random.nextFloat() * this.getBbWidth() * 2.0F) - (double) this.getBbWidth(), this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D, this.random.nextGaussian() * 0.02D);
             if (this.tickCount % 10 == 0) this.playSound(SoundEvents.SAND_BREAK, 1, 0.5F);
         }
-        if (this.up() && this.onGround()) this.jumpFromGround();
         boolean inSand = this.isInSand() || this.getControllingPassenger() == null;
         if (inSand && !this.isSandNavigator) this.switchNavigator(true);
         if (!inSand && this.isSandNavigator) this.switchNavigator(false);

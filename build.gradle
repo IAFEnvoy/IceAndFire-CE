@@ -103,6 +103,14 @@ neoForge {
             loadedMods = [mods.iceandfireRegression]
         }
 
+        clientRidingRegression {
+            client()
+            sourceSet = sourceSets.regression
+            gameDirectory = layout.buildDirectory.dir('riding-regression-runtime')
+            systemProperty 'iceandfire.issue300Regression', 'true'
+            loadedMods = [mods.iceandfireRegression]
+        }
+
         server {
             server()
             programArgument '--nogui'
@@ -132,7 +140,7 @@ neoForge {
 
         // applies to all the run configs above
         configureEach {
-            if (name != 'gameTestServer' && name != 'clientArmorRegression') loadedMods = [mods.iceandfire]
+            if (name != 'gameTestServer' && name != 'clientArmorRegression' && name != 'clientRidingRegression') loadedMods = [mods.iceandfire]
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.
