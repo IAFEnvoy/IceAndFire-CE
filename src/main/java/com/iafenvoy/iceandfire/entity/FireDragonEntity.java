@@ -144,7 +144,7 @@ public class FireDragonEntity extends DragonBaseEntity {
                 if (this.tickCount % 5 == 0) {
                     this.playSound(IafSounds.FIREDRAGON_BREATH.get(), 4, 1);
                 }
-                this.breathAttack(burningTarget.getX() + 0.5F, burningTarget.getY() + 0.5F, burningTarget.getZ() + 0.5F, false);
+                this.breathAttack(burningTarget.getX() + 0.5D, burningTarget.getY() + 0.5D, burningTarget.getZ() + 0.5D, false);
             }
         } else {
             this.setBreathingFire(true);

@@ -1087,6 +1087,8 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public @NotNull InteractionResult interactAt(Player player, @NotNull Vec3 vec, @NotNull InteractionHand hand) {
+        // Mob.interact is final and rejects corpses before mobInteract is reached.
+        if (this.isModelDead() && !this.isRemoved()) return this.mobInteract(player, hand);
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == IafItems.DRAGON_DEBUG_STICK.get()) {
             this.logic.debug();
@@ -1246,7 +1248,11 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     }
                 }
             }
-        } else if (!this.level().isClientSide && this.getDeathStage() < lastDeathStage && player.mayBuild()) {
+        } else if (this.getDeathStage() < lastDeathStage && player.mayBuild()) {
+            // Consume valid client interactions so a single click cannot also harvest with the off hand.
+            if (this.level().isClientSide)
+                return stack.isEmpty() || stack.is(Items.GLASS_BOTTLE) && this.getDeathStage() < lastDeathStage / 2
+                        && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue() ? InteractionResult.SUCCESS : InteractionResult.PASS;
             if (!stack.isEmpty() && stack.getItem() == Items.GLASS_BOTTLE && this.getDeathStage() < lastDeathStage / 2 && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue()) {
                 if (!player.isCreative()) stack.shrink(1);
                 this.setDeathStage(this.getDeathStage() + 1);

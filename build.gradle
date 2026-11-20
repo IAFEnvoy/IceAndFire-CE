@@ -95,6 +95,14 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        clientCorpseRegression {
+            client()
+            sourceSet = sourceSets.regression
+            gameDirectory = layout.buildDirectory.dir('corpse-client-runtime')
+            systemProperty 'iceandfire.corpseRegression', 'true'
+            loadedMods = [mods.iceandfireRegression]
+        }
+
         clientArmorRegression {
             client()
             sourceSet = sourceSets.regression
@@ -140,7 +148,7 @@ neoForge {
 
         // applies to all the run configs above
         configureEach {
-            if (name != 'gameTestServer' && name != 'clientArmorRegression' && name != 'clientRidingRegression') loadedMods = [mods.iceandfire]
+            if (name != 'gameTestServer' && name != 'clientArmorRegression' && name != 'clientRidingRegression' && name != 'clientCorpseRegression') loadedMods = [mods.iceandfire]
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
             // "SCAN": For mods scan.

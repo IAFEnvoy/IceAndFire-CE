@@ -79,8 +79,13 @@ public final class IssueRegressionTests {
                 helper.assertTrue(!part.isPickable(), "Corpse part remains a damage-indicator target");
             helper.assertTrue(dragon.isPickable(), "Corpse body must remain selectable for harvesting");
             int stage = dragon.getDeathStage();
-            dragon.mobInteract(player, InteractionHand.MAIN_HAND);
+            dragon.interactAt(player, net.minecraft.world.phys.Vec3.ZERO, InteractionHand.MAIN_HAND);
             helper.assertTrue(dragon.getDeathStage() == stage + 1 && !dragon.isRemoved(), "Corpse harvesting was broken");
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
+            dragon.interactAt(player, net.minecraft.world.phys.Vec3.ZERO, InteractionHand.MAIN_HAND);
+            helper.assertTrue(dragon.getDeathStage() == stage + 2 && player.getInventory().countItem(dragon.getBloodItem()) == 1,
+                    "Bottle interaction did not harvest blood");
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             dragon.discard();
         }
         helper.succeed();
@@ -88,9 +93,15 @@ public final class IssueRegressionTests {
 
     @GameTest(template = "regression_empty", timeoutTicks = 500)
     public static void hippogryphFliesWithinLocalAltitudeAndLands(GameTestHelper helper) {
-        // The 26.x test world has no terrain outside individual templates.
-        // Put the flight arena above the other fixtures so tests cannot obstruct each other.
+        // Keep the flight arena ticking when it crosses the test world's active chunk boundary.
+        // Put it above the other fixtures so tests cannot obstruct each other.
         var floor = POS.above(32);
+        var arenaChunk = new net.minecraft.world.level.ChunkPos(helper.absolutePos(floor).getX() >> 4, helper.absolutePos(floor).getZ() >> 4);
+        var forced = new java.util.ArrayList<net.minecraft.world.level.ChunkPos>();
+        for (int x = -3; x <= 3; x++) for (int z = -3; z <= 3; z++) {
+            var chunk = new net.minecraft.world.level.ChunkPos(arenaChunk.x + x, arenaChunk.z + z);
+            if (helper.getLevel().setChunkForced(chunk.x, chunk.z, true)) forced.add(chunk);
+        }
         for (int x = -40; x <= 40; x++) for (int z = -40; z <= 40; z++)
             helper.setBlock(floor.offset(x, 0, z), Blocks.STONE);
         var hippo = helper.spawn(IafEntities.HIPPOGRYPH.get(), floor.above(6));
@@ -108,9 +119,42 @@ public final class IssueRegressionTests {
                 helper.assertTrue(distance[0] > 1, "Hippogryph hovered without selecting a flight destination");
                 helper.assertTrue(!hippo.isNoGravity(), "Landing did not restore gravity");
                 hippo.discard();
+                forced.forEach(chunk -> helper.getLevel().setChunkForced(chunk.x, chunk.z, false));
                 helper.succeed();
             }
         });
+    }
+
+    @GameTest(template = "regression_empty")
+    public static void forgeBreathPreservesBlockCentersAtLargeCoordinates(GameTestHelper helper) throws Exception {
+        var target = new java.util.concurrent.atomic.AtomicReference<net.minecraft.world.phys.Vec3>();
+        java.util.function.Consumer<com.iafenvoy.iceandfire.event.DragonFireEvent> capture = event -> {
+            target.set(new net.minecraft.world.phys.Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ()));
+            // Inspect the requested target without attacking unloaded blocks far from the fixture.
+            event.setCanceled(true);
+        };
+        var breath = DragonBaseEntity.class.getDeclaredMethod("breathFireAtPos", BlockPos.class);
+        breath.setAccessible(true);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(capture);
+        try {
+            for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+                DragonBaseEntity dragon = (DragonBaseEntity) helper.spawnWithNoFreeWill(type, POS);
+                try {
+                    dragon.setAgeInDays(75);
+                    dragon.setBreathingFire(true);
+                    dragon.fireBreathTicks = 40;
+                    for (var pos : java.util.List.of(BlockPos.ZERO,
+                            new BlockPos(8_388_608, 100, 8_388_609), new BlockPos(-8_388_609, 100, -8_388_608),
+                            new BlockPos(29_000_001, 100, -29_000_001))) {
+                        target.set(null);
+                        breath.invoke(dragon, pos);
+                        helper.assertTrue(net.minecraft.world.phys.Vec3.atCenterOf(pos).equals(target.get()),
+                                "Forge breath target lost precision: type=" + type + ", block=" + pos + ", target=" + target.get());
+                    }
+                } finally { dragon.discard(); }
+            }
+        } finally { net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(capture); }
+        helper.succeed();
     }
 
     @GameTest(template = "regression_empty")
@@ -154,8 +198,16 @@ public final class IssueRegressionTests {
         helper.assertTrue(adult.isBreathingFire() && input.getBlockPos().equals(adult.burningTarget), "Lure and breath eligibility disagree");
         adult.fireBreathTicks = 40;
         adult.burnProgress = 40;
-        adult.updateBurnTarget();
-        helper.assertTrue(core.lastDragonFlameTimer > 0, "Lightning breath did not transfer power into the forge");
+        for (int seed = 0; seed < 32; seed++) {
+            adult.getRandom().setSeed(seed);
+            core.lastDragonFlameTimer = 0;
+            adult.updateBurnTarget();
+            helper.assertTrue(core.lastDragonFlameTimer > 0, "Lightning breath did not transfer power into the forge: seed=" + seed
+                    + ", target=" + adult.burningTarget + ", head=" + adult.getHeadPosition()
+                    + ", visible=" + adult.canPositionBeSeen(input.getBlockPos().getX() + 0.5, input.getBlockPos().getY() + 0.5, input.getBlockPos().getZ() + 0.5)
+                    + ", requestedTarget=" + new net.minecraft.world.phys.Vec3(adult.burnParticleX, adult.burnParticleY, adult.burnParticleZ)
+                    + ", stage=" + adult.getDragonStage() + ", breathing=" + adult.isActuallyBreathingFire());
+        }
         rejected.setInSittingPose(false);
         rejected.setModelDead(true);
         helper.assertTrue(!input.canDragonFuel(rejected), "Corpse was eligible to fuel forge");
