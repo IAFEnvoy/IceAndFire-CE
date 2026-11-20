@@ -103,6 +103,13 @@ loom {
             runDir 'build/client-smoke-run'
             vmArg '-Diceandfire.client-smoke=true'
         }
+        clientRidingRegression {
+            client()
+            name 'Ice and Fire death worm riding regression'
+            source sourceSets.gametest
+            runDir 'build/riding-regression-run'
+            vmArg '-Diceandfire.issue300Regression=true'
+        }
         gametest {
             server()
             name 'Ice and Fire regressions'

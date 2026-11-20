@@ -386,6 +386,41 @@ public class EntityDeathWorm extends TameableEntity implements ISyncMount, ICust
     }
 
     @Override
+    protected void tickControlled(PlayerEntity player, Vec3d travelVector) {
+        super.tickControlled(player, travelVector);
+        if (this.isLogicalSideForUpdatingMovement() && this.up() && this.isOnGround())
+            this.jump();
+    }
+
+    @Override
+    protected Vec3d getControlledMovementInput(PlayerEntity player, Vec3d travelVector) {
+        if (!this.isLogicalSideForUpdatingMovement()) return Vec3d.ZERO;
+        if (this.isSandNavigator) this.switchNavigator(false);
+        double x = this.getX();
+        double z = this.getZ();
+        double speed = 1.8F * this.getRideSpeedModifier();
+        if (player.sidewaysSpeed != 0 || player.forwardSpeed != 0) {
+            Vec3d direction = player.getRotationVector();
+            if (player.forwardSpeed < 0)
+                direction = direction.rotateY((float) Math.PI);
+            else if (player.sidewaysSpeed > 0)
+                direction = direction.rotateY((float) Math.PI * 0.5F);
+            else if (player.sidewaysSpeed < 0)
+                direction = direction.rotateY((float) Math.PI * -0.5F);
+            if (player.sidewaysSpeed != 0) speed *= 0.25D;
+            if (player.forwardSpeed < 0) speed *= 0.15D;
+            x += direction.x * 10;
+            z += direction.z * 10;
+        }
+        // Preserve the original target-based steering, including turn limits and key priority.
+        // The rider's client must tick the controls because server AI cannot drive this vehicle.
+        this.moveControl.moveTo(x, this.processRiderY(this.getY()), z, speed);
+        this.moveControl.tick();
+        this.jumpControl.tick();
+        return new Vec3d(0, 0, this.forwardSpeed);
+    }
+
+    @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack itemstack = player.getStackInHand(hand);
         if (this.getWormAge() > 4 && player.getVehicle() == null && player.getMainHandStack().isOf(Items.FISHING_ROD) && player.getOffHandStack().isOf(Items.FISHING_ROD) && !this.getWorld().isClient) {
@@ -615,9 +650,6 @@ public class EntityDeathWorm extends TameableEntity implements ISyncMount, ICust
             if (this.age % 10 == 0) {
                 this.playSound(SoundEvents.BLOCK_SAND_BREAK, 1, 0.5F);
             }
-        }
-        if (this.up() && this.isOnGround()) {
-            this.jump();
         }
         boolean inSand = this.isInSand() || this.getControllingPassenger() == null;
         if (inSand && !this.isSandNavigator) {
