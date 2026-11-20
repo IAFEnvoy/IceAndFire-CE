@@ -185,8 +185,13 @@ public final class IssueRegressionTests {
                 helper.assertTrue(!part.isPickable(), "Corpse part remains a damage-indicator target");
             helper.assertTrue(dragon.isPickable(), "Corpse body must remain selectable for harvesting");
             int stage = dragon.getDeathStage();
-            dragon.mobInteract(player, InteractionHand.MAIN_HAND);
+            player.interactOn(dragon, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
             helper.assertTrue(dragon.getDeathStage() == stage + 1 && !dragon.isRemoved(), "Corpse harvesting was broken");
+            player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
+            player.interactOn(dragon, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
+            helper.assertTrue(dragon.getDeathStage() == stage + 2 && player.getInventory().countItem(dragon.getBloodItem()) == 1,
+                    "Bottle interaction did not harvest blood");
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             dragon.discard();
         }
         helper.succeed();
@@ -223,6 +228,37 @@ public final class IssueRegressionTests {
                 helper.succeed();
             }
         });
+    }
+
+    public static void forgeBreathPreservesBlockCentersAtLargeCoordinates(GameTestHelper helper) throws Exception {
+        var target = new java.util.concurrent.atomic.AtomicReference<net.minecraft.world.phys.Vec3>();
+        java.util.function.Consumer<com.iafenvoy.iceandfire.event.DragonFireEvent> capture = event -> {
+            target.set(new net.minecraft.world.phys.Vec3(event.getTargetX(), event.getTargetY(), event.getTargetZ()));
+            // Inspect the requested target without attacking unloaded blocks far from the fixture.
+            event.setCanceled(true);
+        };
+        var breath = DragonBaseEntity.class.getDeclaredMethod("breathFireAtPos", BlockPos.class);
+        breath.setAccessible(true);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(capture);
+        try {
+            for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+                DragonBaseEntity dragon = (DragonBaseEntity) helper.spawnWithNoFreeWill(type, POS);
+                try {
+                    dragon.setAgeInDays(75);
+                    dragon.setBreathingFire(true);
+                    dragon.fireBreathTicks = 40;
+                    for (var pos : java.util.List.of(BlockPos.ZERO,
+                            new BlockPos(8_388_608, 100, 8_388_609), new BlockPos(-8_388_609, 100, -8_388_608),
+                            new BlockPos(29_000_001, 100, -29_000_001))) {
+                        target.set(null);
+                        breath.invoke(dragon, pos);
+                        helper.assertTrue(net.minecraft.world.phys.Vec3.atCenterOf(pos).equals(target.get()),
+                                "Forge breath target lost precision: type=" + type + ", block=" + pos + ", target=" + target.get());
+                    }
+                } finally { dragon.discard(); }
+            }
+        } finally { net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(capture); }
+        helper.succeed();
     }
 
     public static void forgeSelectsAnAwakeAdultAndRejectsBlockedRays(GameTestHelper helper) {
@@ -265,8 +301,16 @@ public final class IssueRegressionTests {
         helper.assertTrue(adult.isBreathingFire() && input.getBlockPos().equals(adult.burningTarget), "Lure and breath eligibility disagree");
         adult.fireBreathTicks = 40;
         adult.burnProgress = 40;
-        adult.updateBurnTarget();
-        helper.assertTrue(core.lastDragonFlameTimer > 0, "Lightning breath did not transfer power into the forge");
+        for (int seed = 0; seed < 32; seed++) {
+            adult.getRandom().setSeed(seed);
+            core.lastDragonFlameTimer = 0;
+            adult.updateBurnTarget();
+            helper.assertTrue(core.lastDragonFlameTimer > 0, "Lightning breath did not transfer power into the forge: seed=" + seed
+                    + ", target=" + adult.burningTarget + ", head=" + adult.getHeadPosition()
+                    + ", visible=" + adult.canPositionBeSeen(input.getBlockPos().getX() + 0.5, input.getBlockPos().getY() + 0.5, input.getBlockPos().getZ() + 0.5)
+                    + ", requestedTarget=" + new net.minecraft.world.phys.Vec3(adult.burnParticleX, adult.burnParticleY, adult.burnParticleZ)
+                    + ", stage=" + adult.getDragonStage() + ", breathing=" + adult.isActuallyBreathingFire());
+        }
         rejected.setInSittingPose(false);
         rejected.setModelDead(true);
         helper.assertTrue(!input.canDragonFuel(rejected), "Corpse was eligible to fuel forge");

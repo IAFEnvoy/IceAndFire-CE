@@ -1134,6 +1134,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
     }
 
     @Override
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand, @NotNull Vec3 hitPos) {
+        // Mob.interact rejects dead mobs before mobInteract can harvest the corpse.
+        if (this.isModelDead() && !this.isRemoved()) return this.mobInteract(player, hand);
+        return super.interact(player, hand, hitPos);
+    }
+
+    @Override
     public @NotNull InteractionResult mobInteract(Player player, @NotNull InteractionHand hand) {
         // Interaction usually means right-click but the relevant item is often in the main hand
         ItemStack stack = player.getMainHandItem();
@@ -1286,7 +1293,12 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
                     }
                 }
             }
-        } else if (this.level() instanceof ServerLevel serverWorld && this.getDeathStage() < lastDeathStage && player.mayBuild()) {
+        } else if (this.getDeathStage() < lastDeathStage && player.mayBuild()) {
+            // Consume valid client interactions so a single click cannot also harvest with the off hand.
+            if (this.level().isClientSide())
+                return stack.isEmpty() || stack.is(Items.GLASS_BOTTLE) && this.getDeathStage() < lastDeathStage / 2
+                        && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue() ? InteractionResult.SUCCESS : InteractionResult.PASS;
+            if (!(this.level() instanceof ServerLevel serverWorld)) return InteractionResult.PASS;
             if (!stack.isEmpty() && stack.getItem() == Items.GLASS_BOTTLE && this.getDeathStage() < lastDeathStage / 2 && IafCommonConfig.INSTANCE.dragon.lootBlood.getValue()) {
                 if (!player.isCreative()) stack.shrink(1);
                 this.setDeathStage(this.getDeathStage() + 1);
