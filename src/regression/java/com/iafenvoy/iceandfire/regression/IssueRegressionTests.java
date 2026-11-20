@@ -79,6 +79,82 @@ public final class IssueRegressionTests {
 
     private static final BlockPos POS = new BlockPos(3, 2, 3);
 
+    public static void hydraHeartCuriosHonorsHealthBracketsAndDuration(GameTestHelper helper) {
+        var config = com.iafenvoy.iceandfire.config.IafCommonConfig.INSTANCE.tools;
+        boolean originalNerfed = config.hydraHeartNerfedBrackets.getValue();
+        int originalDuration = config.hydraHeartRegenDuration.getValue();
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var inventory = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(player)
+                .orElseThrow(() -> new AssertionError("test player has no Curios inventory capability"));
+        // Mock players do not log in, so initialize the inventory from loaded slot data.
+        inventory.reset();
+        var charm = inventory.getStacksHandler("charm")
+                .orElseThrow(() -> new AssertionError("test player has no charm slot")).getStacks();
+        var heart = new ItemStack(IafItems.HYDRA_HEART.get());
+        charm.setStackInSlot(0, heart);
+        var curio = top.theillusivec4.curios.api.CuriosApi.getCurio(charm.getStackInSlot(0))
+                .orElseThrow(() -> new AssertionError("Hydra Heart has no registered Curios item capability"));
+        var context = new top.theillusivec4.curios.api.SlotContext("charm", player, 0, false, true);
+        try {
+            config.hydraHeartRegenDuration.setValue(160);
+            float[] healthFractions = {1F, 0.9F, 0.75F, 0.74F, 0.5F, 0.49F, 0.25F, 0.24F};
+            int[][] amplifiers = {{-1, 0, 0, 1, 1, 2, 2, 3}, {-1, -1, -1, 0, 0, 1, 1, 2}};
+            for (int mode = 0; mode < 2; mode++) {
+                config.hydraHeartNerfedBrackets.setValue(mode == 1);
+                for (int i = 0; i < healthFractions.length; i++) {
+                    player.removeEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+                    player.setHealth(player.getMaxHealth() * healthFractions[i]);
+                    curio.curioTick(context);
+                    var effect = player.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+                    String scenario = "Curios heart at health " + healthFractions[i] + ", nerfed=" + (mode == 1);
+                    if (amplifiers[mode][i] < 0)
+                        helper.assertTrue(effect == null, scenario + " applied unexpected regeneration");
+                    else {
+                        helper.assertTrue(effect != null, scenario + " did not apply regeneration");
+                        helper.assertTrue(effect.getAmplifier() == amplifiers[mode][i], scenario + " used the wrong bracket");
+                        helper.assertTrue(effect.getDuration() == 160, scenario + " ignored the configured duration");
+                    }
+                }
+            }
+        } finally {
+            config.hydraHeartNerfedBrackets.setValue(originalNerfed);
+            config.hydraHeartRegenDuration.setValue(originalDuration);
+            charm.setStackInSlot(0, ItemStack.EMPTY);
+        }
+        helper.succeed();
+    }
+
+    public static void hydraHeartInventoryHonorsHotbarAndExistingEffects(GameTestHelper helper) {
+        var config = com.iafenvoy.iceandfire.config.IafCommonConfig.INSTANCE.tools;
+        boolean originalNerfed = config.hydraHeartNerfedBrackets.getValue();
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        var heart = new ItemStack(IafItems.HYDRA_HEART.get());
+        try {
+            config.hydraHeartNerfedBrackets.setValue(false);
+            player.setHealth(player.getMaxHealth() * 0.2F);
+            for (int slot : new int[]{0, 8, 9, 35}) {
+                player.getInventory().clearContent();
+                player.removeEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+                player.getInventory().setItem(slot, heart);
+                heart.inventoryTick(helper.getLevel(), player, null);
+                var effect = player.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+                helper.assertTrue((effect != null) == (slot < 9), "wrong heart activation in inventory slot " + slot);
+                if (effect != null)
+                    helper.assertTrue(effect.getAmplifier() == 3, "hotbar heart lost its low-health bracket");
+            }
+            player.getInventory().clearContent();
+            player.getInventory().setItem(0, heart);
+            player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 1200, 4));
+            heart.inventoryTick(helper.getLevel(), player, null);
+            var stronger = player.getEffect(net.minecraft.world.effect.MobEffects.REGENERATION);
+            helper.assertTrue(stronger != null && stronger.getAmplifier() == 4 && stronger.getDuration() == 1200,
+                    "heart replaced a stronger regeneration effect");
+        } finally {
+            config.hydraHeartNerfedBrackets.setValue(originalNerfed);
+        }
+        helper.succeed();
+    }
+
     public static void birdFlightSurvivesAnEmptyFlock(GameTestHelper helper) throws Exception {
         var bird = helper.spawnWithNoFreeWill(IafEntities.STYMPHALIAN_BIRD.get(), POS);
         var leader = helper.spawnWithNoFreeWill(IafEntities.STYMPHALIAN_BIRD.get(), POS.above());

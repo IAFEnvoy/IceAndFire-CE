@@ -26,24 +26,27 @@ public class HydraHeartItem extends Item {
     @Override
     public void inventoryTick(@NotNull ItemStack stack, @NotNull ServerLevel world, @NotNull Entity entity, EquipmentSlot slot) {
         if (entity instanceof Player player && player.getInventory().getNonEquipmentItems().subList(0, 9).stream().anyMatch(hotbarStack -> hotbarStack == stack)) {
-            double healthPercentage = player.getHealth() / Math.max(1, player.getMaxHealth());
-            if (healthPercentage < 1.0D) {
-                int level = 0;
-                if (IafCommonConfig.INSTANCE.tools.hydraHeartNerfedBrackets.getValue()) {
-                    if (healthPercentage < 0.25D) level = 2;
-                    else if (healthPercentage < 0.5D) level = 1;
-                    else if (healthPercentage < 0.75D) level = 0;
-                    else return;
-                } else {
-                    if (healthPercentage < 0.25D) level = 3;
-                    else if (healthPercentage < 0.5D) level = 2;
-                    else if (healthPercentage < 0.75D) level = 1;
-                }
-                //Consider using EffectInstance.combine
-                if (!player.hasEffect(MobEffects.REGENERATION) || player.getEffect(MobEffects.REGENERATION).getAmplifier() < level)
-                    player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, IafCommonConfig.INSTANCE.tools.hydraHeartRegenDuration.getValue(), level, true, false));
+            applyRegeneration(player);
+        }
+    }
+
+    public static void applyRegeneration(Player player) {
+        double healthPercentage = player.getHealth() / Math.max(1, player.getMaxHealth());
+        if (healthPercentage < 1.0D) {
+            int level = 0;
+            if (IafCommonConfig.INSTANCE.tools.hydraHeartNerfedBrackets.getValue()) {
+                if (healthPercentage < 0.25D) level = 2;
+                else if (healthPercentage < 0.5D) level = 1;
+                else if (healthPercentage < 0.75D) level = 0;
+                else return;
+            } else {
+                if (healthPercentage < 0.25D) level = 3;
+                else if (healthPercentage < 0.5D) level = 2;
+                else if (healthPercentage < 0.75D) level = 1;
             }
-            //In hotbar
+            //Consider using EffectInstance.combine
+            if (!player.hasEffect(MobEffects.REGENERATION) || player.getEffect(MobEffects.REGENERATION).getAmplifier() < level)
+                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, IafCommonConfig.INSTANCE.tools.hydraHeartRegenDuration.getValue(), level, true, false));
         }
     }
 
