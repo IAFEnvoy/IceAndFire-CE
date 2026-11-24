@@ -108,7 +108,7 @@ public class DragonForgeInputBlockEntity extends BlockEntity {
 
     // Share the same eligibility, range and head-to-input ray with the dragon's breath logic.
     public boolean canDragonFuel(DragonBaseEntity dragon) {
-        if (this.level == null || !dragon.isAlive() || dragon.isSleeping() || dragon.isBaby()
+        if (this.level == null || !dragon.isAlive() || dragon.isModelDead() || dragon.isSleeping() || dragon.isBaby()
                 || this.getDragonType() != dragon.dragonType
                 || !(dragon.isChained() || dragon.isTame())) return false;
         Vec3 target = Vec3.atCenterOf(this.worldPosition);

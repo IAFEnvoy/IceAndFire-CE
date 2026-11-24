@@ -1082,13 +1082,13 @@ public abstract class DragonBaseEntity extends TamableAnimal implements MenuProv
 
     @Override
     public boolean isAlive() {
-        return !this.isModelDead() && super.isAlive();
+        if (this.isModelDead())
+            return !this.isRemoved();
+        return super.isAlive();
     }
 
     @Override
     public @NotNull InteractionResult interactAt(Player player, @NotNull Vec3 vec, @NotNull InteractionHand hand) {
-        // Mob.interact is final and rejects corpses before mobInteract is reached.
-        if (this.isModelDead() && !this.isRemoved()) return this.mobInteract(player, hand);
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() == IafItems.DRAGON_DEBUG_STICK.get()) {
             this.logic.debug();

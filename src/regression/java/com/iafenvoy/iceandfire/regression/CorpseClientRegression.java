@@ -33,13 +33,16 @@ public final class CorpseClientRegression {
     private static net.minecraft.world.item.Item skullItem;
     private static CompletableFuture<Integer> setup;
     private static CompletableFuture<?> verification;
+    private static CompletableFuture<?> placement;
+    private static net.minecraft.world.entity.Entity aimed;
+    private static final String[] TARGETS = {"body", "head", "wing", "tail"};
 
     @SubscribeEvent
     public static void tick(ClientTickEvent.Post event) throws Exception {
         if (!Boolean.getBoolean("iceandfire.corpseRegression") || finished) return;
         Minecraft client = Minecraft.getInstance();
         try {
-            check(++ticks < 3600, "Corpse interaction timed out: scenario=" + scenario + ", phase=" + phase);
+            check(++ticks < 12000, "Corpse interaction timed out: scenario=" + scenario + ", phase=" + phase);
             if (client.getOverlay() != null) return;
             if (!opening) {
                 if (client.screen == null) return;
@@ -59,15 +62,16 @@ public final class CorpseClientRegression {
             if (++worldTicks < 30) return;
             var server = client.getSingleplayerServer();
             check(server != null, "Integrated server missing");
-            if (scenario == 18) {
+            if (scenario == 72) {
                 finish(client, null);
                 return;
             }
             int action = scenario % 6;
+            int targetIndex = scenario / 6 % 4;
             UUID playerId = client.player.getUUID();
             if (phase == 0) {
                 if (setup == null) {
-                    int typeIndex = scenario / 6;
+                    int typeIndex = scenario / 24;
                     setup = server.submit(() -> {
                         var player = server.getPlayerList().getPlayer(playerId);
                         var level = player.level();
@@ -102,21 +106,43 @@ public final class CorpseClientRegression {
                 if (!setup.isDone()) return;
                 dragonId = setup.join();
                 if (!(client.level.getEntity(dragonId) instanceof DragonBaseEntity dragon)) return;
-                check(!dragon.isAlive() && dragon.isPickable(), "Corpse lost death state or body selection");
-                for (var part : dragon.getParts()) check(!part.isPickable(), "Corpse part is still selectable");
+                check(dragon.isModelDead() && dragon.isAlive() && dragon.isPickable(), "Original corpse interaction state was not restored");
+                for (var part : dragon.getParts()) check(part.isPickable(), "Corpse part is not selectable");
                 if (++phaseTicks < 30) return;
+                if (placement == null) {
+                    placement = server.submit(() -> {
+                        var sp = server.getPlayerList().getPlayer(playerId);
+                        var sd = (DragonBaseEntity) sp.level().getEntity(dragonId);
+                        var se = targetIndex == 0 ? sd : sd.getParts()[targetIndex == 1 ? 0 : targetIndex == 2 ? 3 : 9];
+                        var center = se.getBoundingBox().getCenter();
+                        var out = center.subtract(sd.position()).multiply(1, 0, 1).normalize();
+                        if (out.lengthSqr() < 0.1) out = new net.minecraft.world.phys.Vec3(0, 0, -1);
+                        double distance = se.getBbWidth() / 2 + 1;
+                        sp.setNoGravity(true);
+                        sp.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+                        if (targetIndex == 0)
+                            sp.teleportTo(center.x, se.getBoundingBox().maxY + 1 - sp.getEyeHeight(), center.z);
+                        else sp.teleportTo(center.x + out.x * distance, center.y - sp.getEyeHeight(), center.z + out.z * distance);
+                    });
+                    return;
+                }
+                if (!placement.isDone()) return;
+                placement.join();
+                aimed = targetIndex == 0 ? dragon : dragon.getParts()[targetIndex == 1 ? 0 : targetIndex == 2 ? 3 : 9];
                 phase = 1;
                 phaseTicks = 0;
             }
             if (phase == 1) {
                 var dragon = client.level.getEntity(dragonId);
                 check(dragon != null, "Corpse disappeared before interaction");
-                var delta = dragon.getBoundingBox().getCenter().subtract(client.player.getEyePosition());
+                var delta = aimed.getBoundingBox().getCenter().subtract(client.player.getEyePosition());
+                client.player.setNoGravity(true);
+                client.player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
                 client.player.setYRot((float) (Mth.atan2(delta.z, delta.x) * 180 / Math.PI) - 90);
                 client.player.setXRot((float) (-Mth.atan2(delta.y, Math.hypot(delta.x, delta.z)) * 180 / Math.PI));
                 if (++phaseTicks < 5) return;
-                check(client.hitResult instanceof EntityHitResult hit && hit.getEntity() == dragon,
-                        "Crosshair did not select corpse body: " + client.hitResult);
+                check(client.hitResult instanceof EntityHitResult hit && hit.getEntity() == aimed,
+                        "Crosshair did not select corpse " + TARGETS[targetIndex] + ": " + client.hitResult);
                 client.options.keyUse.setDown(true);
                 phase = 2;
                 phaseTicks = 0;
@@ -140,7 +166,7 @@ public final class CorpseClientRegression {
                         var dragon = (DragonBaseEntity) entity;
                         check(dragon.getDeathStage() == (action >= 4 ? 0 : 1),
                                 "Harvest count incorrect: " + dragon.getDeathStage() + ", action=" + action);
-                        check(!dragon.isAlive(), "Harvest revived corpse");
+                        check(dragon.isModelDead() && dragon.isAlive(), "Harvest changed original corpse state");
                         if (action == 2) check(player.getInventory().countItem(Items.GLASS_BOTTLE) == 1,
                                 "Main-hand harvest also consumed off-hand bottle");
                         if (action == 1) {
@@ -153,12 +179,13 @@ public final class CorpseClientRegression {
             }
             if (phase == 3 && verification.isDone()) {
                 verification.join();
-                System.out.println("IAF CORPSE CLIENT: passed " + scenario);
+                System.out.println("IAF CORPSE CLIENT: passed " + scenario + " " + TARGETS[targetIndex] + " action=" + action);
                 scenario++;
                 phase = 0;
                 phaseTicks = 0;
                 setup = null;
                 verification = null;
+                placement = null;
             }
         } catch (Throwable failure) {
             finish(client, failure);
@@ -173,7 +200,7 @@ public final class CorpseClientRegression {
                         + ",\"failure\":\"" + (failure == null ? "" : failure.toString()
                         .replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ")) + "\"}");
         if (failure != null) failure.printStackTrace();
-        else System.out.println("IAF CORPSE CLIENT: all 18 scenarios passed");
+        else System.out.println("IAF CORPSE CLIENT: all 72 body/part scenarios passed");
         client.stop();
     }
 
