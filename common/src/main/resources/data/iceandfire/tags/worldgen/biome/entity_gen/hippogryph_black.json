@@ -2,9 +2,6 @@
   "replace": false,
   "values": [
     "minecraft:badlands",
-    {
-      "id": "#c:badlands",
-      "required": false
-    }
+    "#iceandfire:compat/badlands"
   ]
 }

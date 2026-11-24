@@ -21,6 +21,7 @@ import com.iafenvoy.iceandfire.world.DragonPosWorldData;
 import com.iafenvoy.iceandfire.world.SummoningCrystalManager;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,7 +67,7 @@ public class RegressionTests implements FabricGameTest {
     }
 
     @GameTest(templateName = EMPTY_STRUCTURE)
-    public void dragonCorpsesAreDeadButRemainHarvestable(TestContext c) {
+    public void dragonCorpsesRemainHarvestable(TestContext c) {
         var player = c.createMockSurvivalPlayer();
         player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
         for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
@@ -74,16 +75,50 @@ public class RegressionTests implements FabricGameTest {
             dragon.setAgeInDays(75);
             dragon.setHealth(0);
             dragon.setModelDead(true);
-            c.assertTrue(!dragon.isAlive() && dragon.isDead(), "Corpse still reports alive");
+            c.assertTrue(dragon.isModelDead() && dragon.isAlive(), "Original corpse interaction state was not restored");
             c.assertTrue(dragon.canHit(), "Corpse body must remain selectable for harvesting");
             int stage = dragon.getDeathStage();
-            dragon.interactAt(player, Vec3d.ZERO, Hand.MAIN_HAND);
+            player.interact(dragon, Hand.MAIN_HAND);
             c.assertTrue(dragon.getDeathStage() == stage + 1 && !dragon.isRemoved(), "Corpse harvesting was broken");
             player.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
-            dragon.interactAt(player, Vec3d.ZERO, Hand.MAIN_HAND);
+            player.interact(dragon, Hand.MAIN_HAND);
             c.assertTrue(dragon.getDeathStage() == stage + 2 && player.getInventory().count(dragon.getBloodItem()) == 1,
                     "Bottle interaction did not harvest blood");
             player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+            dragon.discard();
+        }
+        c.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void dragonCorpsePartsForwardHarvestingAndEnforceReach(TestContext c) throws Exception {
+        var player = c.createMockSurvivalPlayer();
+        for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
+            EntityDragonBase dragon = (EntityDragonBase) c.spawnMob(type, POS);
+            dragon.setAgeInDays(75);
+            dragon.setHealth(0);
+            dragon.setModelDead(true);
+            dragon.updateScale(dragon.getRenderSize() / 3);
+            for (String name : new String[]{"headPart", "neckPart", "rightWingUpperPart", "rightWingLowerPart",
+                    "leftWingUpperPart", "leftWingLowerPart", "tail1Part", "tail2Part", "tail3Part", "tail4Part"}) {
+                var field = EntityDragonBase.class.getDeclaredField(name);
+                field.setAccessible(true);
+                var part = (EntityDragonPart) field.get(dragon);
+                part.setPosition(dragon.getPos());
+                player.setPosition(part.getPos());
+                c.assertTrue(part.canHit() && MultipartInteraction.canInteract(player, part), "Corpse part rejected: " + name);
+                dragon.setDeathStage(0);
+                player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+                player.interact(part, Hand.MAIN_HAND);
+                c.assertTrue(dragon.getDeathStage() == 1, "Part did not forward empty-hand harvesting: " + name);
+                int blood = player.getInventory().count(dragon.getBloodItem());
+                player.setStackInHand(Hand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
+                player.interact(part, Hand.MAIN_HAND);
+                c.assertTrue(dragon.getDeathStage() == 2 && player.getInventory().count(dragon.getBloodItem()) == blood + 1,
+                        "Part did not forward blood harvesting: " + name);
+                player.setPosition(part.getPos().add(0, 0, 20));
+                c.assertFalse(MultipartInteraction.canInteract(player, part), "Remote corpse part interaction accepted");
+            }
             dragon.discard();
         }
         c.complete();
@@ -114,6 +149,95 @@ public class RegressionTests implements FabricGameTest {
                 c.complete();
             }
         });
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void compatTagsReadBothConventionsWithoutBridgingThem(TestContext helper) {
+        var common = net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.ITEM,
+                new Identifier("c", "ingots/silver"));
+        var forge = net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.ITEM,
+                new Identifier("forge", "ingots/silver"));
+        var compat = com.iafenvoy.iceandfire.registry.tag.IafItemTags.INGOTS_SILVER;
+        // Each convention and compat itself contributes a different test-only marker.
+        helper.assertTrue(new ItemStack(Items.LAPIS_LAZULI).isIn(common), "Missing c-only silver fixture");
+        helper.assertTrue(new ItemStack(Items.EMERALD).isIn(forge), "Missing forge-only silver fixture");
+        for (var item : java.util.List.of(Items.LAPIS_LAZULI, Items.EMERALD, Items.DIAMOND, IafItems.SILVER_INGOT.get()))
+            helper.assertTrue(new ItemStack(item).isIn(compat), "Compat lost an imported or local member: " + item);
+        helper.assertTrue(!new ItemStack(Items.EMERALD).isIn(common), "Forge member leaked back into c");
+        helper.assertTrue(!new ItemStack(Items.LAPIS_LAZULI).isIn(forge), "c member leaked back into forge");
+        helper.assertTrue(!new ItemStack(Items.DIAMOND).isIn(common) && !new ItemStack(Items.DIAMOND).isIn(forge),
+                "Compat member leaked back into a foreign namespace");
+        helper.assertTrue(new ItemStack(Items.STRING).isIn(com.iafenvoy.iceandfire.registry.tag.CommonTags.Items.STRING),
+                "String fallback disappeared with the old c tag");
+        var milk = net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.ITEM,
+                new Identifier("iceandfire", "compat/milks"));
+        helper.assertTrue(new ItemStack(Items.MILK_BUCKET).isIn(milk), "Milk fallback disappeared with the old foreign tags");
+        for (var block : java.util.List.of(Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.ENDER_CHEST,
+                Blocks.BARREL, Blocks.DISPENSER))
+            helper.assertTrue(block.getDefaultState().isIn(com.iafenvoy.iceandfire.registry.tag.IafBlockTags.DRAGON_BLOCK_BREAK_BLACKLIST),
+                    "Chest defaults or imported chest subtags lost dragon protection: " + block);
+        var recipe = helper.getWorld().getRecipeManager().get(new Identifier("iceandfire", "armor_silver_metal_helmet"))
+                .orElseThrow();
+        for (var item : java.util.List.of(Items.LAPIS_LAZULI, Items.EMERALD))
+            helper.assertTrue(recipe.getIngredients().stream().anyMatch(ingredient -> ingredient.test(new ItemStack(item))),
+                    "Silver recipe did not accept imported material: " + item);
+        helper.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void gravelTransformsUseTheCommonTag(TestContext helper) {
+        var transforms = java.util.List.<java.util.function.UnaryOperator<net.minecraft.block.BlockState>>of(
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockFire,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockIce,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockLightning);
+        var outputs = java.util.List.of(IafBlocks.CHARRED_GRAVEL.get(), IafBlocks.FROZEN_GRAVEL.get(), IafBlocks.CRACKLED_GRAVEL.get());
+        // Test-only tag entries stand in for third-party gravel and sand blocks.
+        for (var input : java.util.List.of(Blocks.GRAVEL, Blocks.WHITE_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER,
+                Blocks.SAND, Blocks.RED_SAND, Blocks.YELLOW_CONCRETE_POWDER)) {
+            var original = input.getDefaultState();
+            helper.assertTrue(original.isIn(com.iafenvoy.iceandfire.registry.tag.CommonTags.Blocks.GRAVEL)
+                            || original.isIn(net.minecraft.registry.tag.BlockTags.SAND),
+                    "Missing gravel/sand tag entry: " + input);
+            for (int i = 0; i < transforms.size(); i++) {
+                var result = transforms.get(i).apply(original);
+                helper.assertTrue(result.isOf(outputs.get(i)) && result.get(com.iafenvoy.iceandfire.item.block.BlockFallingReturningState.REVERTS),
+                        "Element " + i + " did not transform tagged gravel/sand: " + input);
+            }
+        }
+        for (var input : java.util.List.of(Blocks.SUSPICIOUS_SAND, Blocks.SUSPICIOUS_GRAVEL, Blocks.GLASS)) {
+            for (var transform : transforms)
+                helper.assertTrue(transform.apply(input.getDefaultState()).equals(input.getDefaultState()),
+                        "Protected or unrelated block was transformed: " + input);
+        }
+        helper.complete();
+    }
+
+    @GameTest(templateName = EMPTY_STRUCTURE)
+    public void cobblestoneTransformsUseTheCommonTag(TestContext helper) {
+        var transforms = java.util.List.<java.util.function.UnaryOperator<net.minecraft.block.BlockState>>of(
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockFire,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockIce,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockLightning);
+        var outputs = java.util.List.of(IafBlocks.CHARRED_COBBLESTONE.get(), IafBlocks.FROZEN_COBBLESTONE.get(), IafBlocks.CRACKLED_COBBLESTONE.get());
+        var stoneOutputs = java.util.List.of(IafBlocks.CHARRED_STONE.get(), IafBlocks.FROZEN_STONE.get(), IafBlocks.CRACKLED_STONE.get());
+        // Bricks have neither a cobblestone name nor the vanilla base-stone tag.
+        for (var input : java.util.List.of(Blocks.COBBLESTONE, Blocks.BRICKS, Blocks.STONE_BRICKS)) {
+            helper.assertTrue(input.getDefaultState().isIn(com.iafenvoy.iceandfire.registry.tag.CommonTags.Blocks.COBBLESTONE),
+                    "Missing shared cobblestone tag entry: " + input);
+            for (int i = 0; i < transforms.size(); i++) {
+                var result = transforms.get(i).apply(input.getDefaultState());
+                helper.assertTrue(result.isOf(outputs.get(i)) && result.get(com.iafenvoy.iceandfire.item.block.BlockReturningState.REVERTS),
+                        "Element " + i + " did not transform tagged cobblestone: " + input);
+            }
+        }
+        for (int i = 0; i < transforms.size(); i++) {
+            helper.assertTrue(transforms.get(i).apply(Blocks.STONE.getDefaultState()).isOf(stoneOutputs.get(i)),
+                    "Natural stone was incorrectly classified as cobblestone for element " + i);
+            for (var input : java.util.List.of(Blocks.COBBLESTONE_SLAB, Blocks.MOSSY_COBBLESTONE_WALL, Blocks.GLASS))
+                helper.assertTrue(transforms.get(i).apply(input.getDefaultState()).equals(input.getDefaultState()),
+                        "Untagged block was classified by its name: " + input);
+        }
+        helper.complete();
     }
 
     @GameTest(templateName = EMPTY_STRUCTURE)

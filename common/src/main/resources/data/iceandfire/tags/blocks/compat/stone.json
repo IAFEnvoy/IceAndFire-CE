@@ -8,6 +8,7 @@
     {
       "id": "#forge:stone",
       "required": false
-    }
+    },
+    "minecraft:stone"
   ]
 }

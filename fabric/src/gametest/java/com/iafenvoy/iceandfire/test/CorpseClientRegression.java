@@ -35,12 +35,24 @@ public final class CorpseClientRegression implements net.fabricmc.api.ClientModI
     private static net.minecraft.item.Item skullItem;
     private static CompletableFuture<Integer> setup;
     private static CompletableFuture<?> verification;
+    private static CompletableFuture<Integer> placement;
+    private static net.minecraft.entity.Entity aimed;
+    private static final String[] TARGETS = {"body", "head", "wing", "tail"};
+
+    private static net.minecraft.entity.Entity target(EntityDragonBase dragon, int index) {
+        if (index == 0) return dragon;
+        try {
+            var field = EntityDragonBase.class.getDeclaredField(index == 1 ? "headPart" : index == 2 ? "rightWingLowerPart" : "tail4Part");
+            field.setAccessible(true);
+            return (net.minecraft.entity.Entity) field.get(dragon);
+        } catch (ReflectiveOperationException failure) { throw new IllegalStateException(failure); }
+    }
 
     private static void tick() throws Exception {
         if (!Boolean.getBoolean("iceandfire.corpseRegression") || finished) return;
         MinecraftClient client = MinecraftClient.getInstance();
         try {
-            check(++ticks < 3600, "Corpse interaction timed out: scenario=" + scenario + ", phase=" + phase);
+            check(++ticks < 12000, "Corpse interaction timed out: scenario=" + scenario + ", phase=" + phase);
             if (client.getOverlay() != null) return;
             if (!opening) {
                 if (client.currentScreen == null) return;
@@ -60,15 +72,16 @@ public final class CorpseClientRegression implements net.fabricmc.api.ClientModI
             if (++worldTicks < 30) return;
             var server = client.getServer();
             check(server != null, "Integrated server missing");
-            if (scenario == 18) {
+            if (scenario == 72) {
                 finish(client, null);
                 return;
             }
             int action = scenario % 6;
+            int targetIndex = scenario / 6 % 4;
             UUID playerId = client.player.getUuid();
             if (phase == 0) {
                 if (setup == null) {
-                    int typeIndex = scenario / 6;
+                    int typeIndex = scenario / 24;
                     setup = server.submit(() -> {
                         var player = server.getPlayerManager().getPlayer(playerId);
                         var level = player.getServerWorld();
@@ -103,23 +116,48 @@ public final class CorpseClientRegression implements net.fabricmc.api.ClientModI
                 if (!setup.isDone()) return;
                 dragonId = setup.join();
                 if (!(client.world.getEntityById(dragonId) instanceof EntityDragonBase dragon)) return;
-                check(!dragon.isAlive() && dragon.canHit(), "Corpse lost death state or body selection");
+                check(dragon.isModelDead() && dragon.isAlive() && dragon.canHit(), "Original corpse interaction state was not restored");
                 for (var part : client.world.getEntitiesByClass(com.iafenvoy.iceandfire.entity.EntityDragonPart.class,
                         dragon.getBoundingBox().expand(32), part -> part.getParent() == dragon))
-                    check(!part.canHit(), "Corpse part is still selectable");
+                    check(part.canHit(), "Corpse part is not selectable");
                 if (++phaseTicks < 30) return;
+                if (placement == null) {
+                    placement = server.submit(() -> {
+                        var sp = server.getPlayerManager().getPlayer(playerId);
+                        var sd = (EntityDragonBase) sp.getServerWorld().getEntityById(dragonId);
+                        var se = target(sd, targetIndex);
+                        var center = se.getBoundingBox().getCenter();
+                        var out = center.subtract(sd.getPos()).multiply(1, 0, 1).normalize();
+                        if (out.lengthSquared() < 0.1) out = new net.minecraft.util.math.Vec3d(0, 0, -1);
+                        double distance = se.getWidth() / 2 + 1;
+                        sp.setNoGravity(true);
+                        sp.setVelocity(net.minecraft.util.math.Vec3d.ZERO);
+                        if (targetIndex == 0)
+                            sp.requestTeleport(center.x, se.getBoundingBox().maxY + 1 - sp.getStandingEyeHeight(), center.z);
+                        else sp.requestTeleport(center.x + out.x * distance, center.y - sp.getStandingEyeHeight(), center.z + out.z * distance);
+                        return se.getId();
+                    });
+                    return;
+                }
+                if (!placement.isDone()) return;
+                placement.join();
+                aimed = client.world.getEntityById(placement.join());
+                if (aimed == null) return;
+                check(aimed.canHit(), "Tracked corpse part is not selectable");
                 phase = 1;
                 phaseTicks = 0;
             }
             if (phase == 1) {
                 var dragon = client.world.getEntityById(dragonId);
                 check(dragon != null, "Corpse disappeared before interaction");
-                var delta = dragon.getBoundingBox().getCenter().subtract(client.player.getEyePos());
+                var delta = aimed.getBoundingBox().getCenter().subtract(client.player.getEyePos());
+                client.player.setNoGravity(true);
+                client.player.setVelocity(net.minecraft.util.math.Vec3d.ZERO);
                 client.player.setYaw((float) (MathHelper.atan2(delta.z, delta.x) * 180 / Math.PI) - 90);
                 client.player.setPitch((float) (-MathHelper.atan2(delta.y, Math.hypot(delta.x, delta.z)) * 180 / Math.PI));
                 if (++phaseTicks < 5) return;
-                check(client.crosshairTarget instanceof EntityHitResult hit && hit.getEntity() == dragon,
-                        "Crosshair did not select corpse body: " + client.crosshairTarget);
+                check(client.crosshairTarget instanceof EntityHitResult hit && hit.getEntity() == aimed,
+                        "Crosshair did not select corpse " + TARGETS[targetIndex] + ": " + client.crosshairTarget);
                 client.options.useKey.setPressed(true);
                 phase = 2;
                 phaseTicks = 0;
@@ -143,7 +181,7 @@ public final class CorpseClientRegression implements net.fabricmc.api.ClientModI
                         var dragon = (EntityDragonBase) entity;
                         check(dragon.getDeathStage() == (action >= 4 ? 0 : 1),
                                 "Harvest count incorrect: " + dragon.getDeathStage() + ", action=" + action);
-                        check(!dragon.isAlive(), "Harvest revived corpse");
+                        check(dragon.isModelDead() && dragon.isAlive(), "Harvest changed original corpse state");
                         if (action == 2) check(player.getInventory().count(Items.GLASS_BOTTLE) == 1,
                                 "Main-hand harvest also consumed off-hand bottle");
                         if (action == 1) {
@@ -156,12 +194,13 @@ public final class CorpseClientRegression implements net.fabricmc.api.ClientModI
             }
             if (phase == 3 && verification.isDone()) {
                 verification.join();
-                System.out.println("IAF CORPSE CLIENT: passed " + scenario);
+                System.out.println("IAF CORPSE CLIENT: passed " + scenario + " " + TARGETS[targetIndex] + " action=" + action);
                 scenario++;
                 phase = 0;
                 phaseTicks = 0;
                 setup = null;
                 verification = null;
+                placement = null;
             }
         } catch (Throwable failure) {
             finish(client, failure);
@@ -176,7 +215,7 @@ public final class CorpseClientRegression implements net.fabricmc.api.ClientModI
                         + ",\"failure\":\"" + (failure == null ? "" : failure.toString()
                         .replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ")) + "\"}");
         if (failure != null) failure.printStackTrace();
-        else System.out.println("IAF CORPSE CLIENT: all 18 scenarios passed");
+        else System.out.println("IAF CORPSE CLIENT: all 72 body/part scenarios passed");
         client.scheduleStop();
     }
 

@@ -1,13 +1,6 @@
 {
   "values": [
-    {
-      "id": "#c:bosses",
-      "required": false
-    },
-    {
-      "id": "#forge:bosses",
-      "required": false
-    },
+    "#iceandfire:compat/bosses",
     "minecraft:warden"
   ]
 }

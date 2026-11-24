@@ -13,21 +13,7 @@
     "minecraft:frozen_peaks",
     "minecraft:deep_frozen_ocean",
     "minecraft:ice_spikes",
-    {
-      "required": false,
-      "id": "#c:climate_cold"
-    },
-    {
-      "required": false,
-      "id": "#forge:is_cold"
-    },
-    {
-      "id": "#c:snowy",
-      "required": false
-    },
-    {
-      "id": "#forge:is_snowy",
-      "required": false
-    }
+    "#iceandfire:compat/climate_cold",
+    "#iceandfire:compat/snowy"
   ]
 }

@@ -2,9 +2,6 @@
   "replace": false,
   "values": [
     "#minecraft:is_savanna",
-    {
-      "id": "#c:savanna",
-      "required": false
-    }
+    "#iceandfire:compat/savanna"
   ]
 }

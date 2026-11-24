@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "forge:nuggets/copper"
+            "tag": "iceandfire:compat/nuggets/copper"
           }
         ]
       },

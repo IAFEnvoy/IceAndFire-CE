@@ -8,6 +8,7 @@
     {
       "id": "#forge:nuggets/silver",
       "required": false
-    }
+    },
+    "iceandfire:silver_nugget"
   ]
 }

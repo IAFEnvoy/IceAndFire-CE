@@ -8,6 +8,7 @@
     {
       "id": "#forge:ingots/silver",
       "required": false
-    }
+    },
+    "iceandfire:silver_ingot"
   ]
 }

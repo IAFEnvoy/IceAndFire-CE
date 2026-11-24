@@ -12,13 +12,6 @@
     "minecraft:plains",
     "minecraft:meadow",
     "minecraft:sunflower_plains",
-    {
-      "required": false,
-      "id": "#c:climate_hot"
-    },
-    {
-      "required": false,
-      "id": "#forge:is_hot"
-    }
+    "#iceandfire:compat/climate_hot"
   ]
 }

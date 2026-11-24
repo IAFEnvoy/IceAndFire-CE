@@ -3,13 +3,6 @@
   "values": [
     "minecraft:snowy_taiga",
     "minecraft:grove",
-    {
-      "id": "#c:taiga",
-      "required": false
-    },
-    {
-      "id": "#forge:is_coniferous",
-      "required": false
-    }
+    "#iceandfire:compat/taiga"
   ]
 }

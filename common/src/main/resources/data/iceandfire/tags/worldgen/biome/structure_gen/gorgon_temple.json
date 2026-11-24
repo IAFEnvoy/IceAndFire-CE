@@ -1,9 +1,6 @@
 {
   "values": [
     "#minecraft:is_beach",
-    {
-      "id": "#c:beach",
-      "required": false
-    }
+    "#iceandfire:compat/beach"
   ]
 }

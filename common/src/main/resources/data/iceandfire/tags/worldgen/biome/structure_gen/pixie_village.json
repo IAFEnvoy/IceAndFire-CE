@@ -17,13 +17,7 @@
     "minecraft:jungle",
     "minecraft:dark_forest",
     "#minecraft:is_forest",
-    {
-      "id": "#c:forest",
-      "required": false
-    },
-    {
-      "id": "#c:jungle",
-      "required": false
-    }
+    "#iceandfire:compat/forest",
+    "#iceandfire:compat/jungle"
   ]
 }

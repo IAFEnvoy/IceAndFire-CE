@@ -13,17 +13,6 @@
     "minecraft:meadow",
     "minecraft:grove",
     "minecraft:snowy_slopes",
-    {
-      "id": "#c:extreme_hills",
-      "required": false
-    },
-    {
-      "id": "#forge:is_plateau",
-      "required": false
-    },
-    {
-      "id": "#forge:is_slope",
-      "required": false
-    }
+    "#iceandfire:compat/extreme_hills"
   ]
 }

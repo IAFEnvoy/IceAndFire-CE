@@ -2,9 +2,6 @@
   "replace": false,
   "values": [
     "minecraft:savanna_plateau",
-    {
-      "id": "#c:savanna",
-      "required": false
-    }
+    "#iceandfire:compat/savanna"
   ]
 }

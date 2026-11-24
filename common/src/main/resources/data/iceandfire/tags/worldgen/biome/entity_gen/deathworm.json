@@ -2,13 +2,6 @@
   "replace": false,
   "values": [
     "minecraft:desert",
-    {
-      "id": "#c:desert",
-      "required": false
-    },
-    {
-      "id": "#forge:is_desert",
-      "required": false
-    }
+    "#iceandfire:compat/desert"
   ]
 }

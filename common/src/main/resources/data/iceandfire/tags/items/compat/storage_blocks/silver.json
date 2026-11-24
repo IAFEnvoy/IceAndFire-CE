@@ -8,6 +8,7 @@
     {
       "id": "#forge:storage_blocks/silver",
       "required": false
-    }
+    },
+    "iceandfire:silver_block"
   ]
 }

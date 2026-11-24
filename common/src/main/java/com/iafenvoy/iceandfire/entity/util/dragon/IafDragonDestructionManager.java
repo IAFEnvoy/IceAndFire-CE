@@ -12,6 +12,7 @@ import com.iafenvoy.iceandfire.item.block.BlockFallingReturningState;
 import com.iafenvoy.iceandfire.item.block.BlockReturningState;
 import com.iafenvoy.iceandfire.item.block.util.IDragonProof;
 import com.iafenvoy.iceandfire.registry.IafBlocks;
+import com.iafenvoy.iceandfire.registry.tag.CommonTags;
 import com.iafenvoy.iceandfire.registry.IafDamageTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -262,9 +263,9 @@ public class IafDragonDestructionManager {
             return IafBlocks.CHARRED_GRASS.get().getDefaultState().with(BlockReturningState.REVERTS, true);
         else if (in.isOf(Blocks.DIRT))
             return IafBlocks.CHARRED_DIRT.get().getDefaultState().with(BlockReturningState.REVERTS, true);
-        else if (in.isIn(BlockTags.SAND) && in.getBlock() == Blocks.GRAVEL)
+        else if (in.isIn(CommonTags.Blocks.GRAVEL) || (in.isIn(BlockTags.SAND) && !in.hasBlockEntity()))
             return IafBlocks.CHARRED_GRAVEL.get().getDefaultState().with(BlockFallingReturningState.REVERTS, true);
-        else if (in.isIn(BlockTags.BASE_STONE_OVERWORLD) && (in.getBlock() == Blocks.COBBLESTONE || in.getBlock().getTranslationKey().contains("cobblestone")))
+        else if (in.isIn(CommonTags.Blocks.COBBLESTONE))
             return IafBlocks.CHARRED_COBBLESTONE.get().getDefaultState().with(BlockReturningState.REVERTS, true);
         else if (in.isIn(BlockTags.BASE_STONE_OVERWORLD) && in.getBlock() != IafBlocks.CHARRED_COBBLESTONE.get())
             return IafBlocks.CHARRED_STONE.get().getDefaultState().with(BlockReturningState.REVERTS, true);
@@ -282,11 +283,9 @@ public class IafDragonDestructionManager {
             return IafBlocks.FROZEN_GRASS.get().getDefaultState().with(BlockReturningState.REVERTS, true);
         else if (in.isIn(BlockTags.DIRT) && in.getBlock() == Blocks.DIRT || in.isIn(BlockTags.SNOW))
             return IafBlocks.FROZEN_DIRT.get().getDefaultState().with(BlockReturningState.REVERTS, true);
-        else if (in.isIn(BlockTags.SAND) && in.getBlock() == Blocks.GRAVEL)
+        else if (in.isIn(CommonTags.Blocks.GRAVEL) || (in.isIn(BlockTags.SAND) && !in.hasBlockEntity()))
             return IafBlocks.FROZEN_GRAVEL.get().getDefaultState().with(BlockFallingReturningState.REVERTS, true);
-        else if (in.isIn(BlockTags.SAND) && in.getBlock() != Blocks.GRAVEL)
-            return in;
-        else if (in.isIn(BlockTags.BASE_STONE_OVERWORLD) && (in.getBlock() == Blocks.COBBLESTONE || in.getBlock().getTranslationKey().contains("cobblestone")))
+        else if (in.isIn(CommonTags.Blocks.COBBLESTONE))
             return IafBlocks.FROZEN_COBBLESTONE.get().getDefaultState().with(BlockReturningState.REVERTS, true);
         else if (in.isIn(BlockTags.BASE_STONE_OVERWORLD) && in.getBlock() != IafBlocks.FROZEN_COBBLESTONE.get())
             return IafBlocks.FROZEN_STONE.get().getDefaultState().with(BlockReturningState.REVERTS, true);
@@ -306,9 +305,9 @@ public class IafDragonDestructionManager {
             return IafBlocks.CRACKLED_GRASS.get().getDefaultState().with(BlockReturningState.REVERTS, true);
         else if (in.isIn(BlockTags.DIRT) && in.getBlock() == Blocks.DIRT)
             return IafBlocks.CRACKLED_DIRT.get().getDefaultState().with(BlockReturningState.REVERTS, true);
-        else if (in.isIn(BlockTags.SAND) && in.getBlock() == Blocks.GRAVEL)
+        else if (in.isIn(CommonTags.Blocks.GRAVEL) || (in.isIn(BlockTags.SAND) && !in.hasBlockEntity()))
             return IafBlocks.CRACKLED_GRAVEL.get().getDefaultState().with(BlockFallingReturningState.REVERTS, true);
-        else if (in.isIn(BlockTags.BASE_STONE_OVERWORLD) && (in.getBlock() == Blocks.COBBLESTONE || in.getBlock().getTranslationKey().contains("cobblestone")))
+        else if (in.isIn(CommonTags.Blocks.COBBLESTONE))
             return IafBlocks.CRACKLED_COBBLESTONE.get().getDefaultState().with(BlockReturningState.REVERTS, true);
         else if (in.isIn(BlockTags.BASE_STONE_OVERWORLD) && in.getBlock() != IafBlocks.CRACKLED_COBBLESTONE.get())
             return IafBlocks.CRACKLED_STONE.get().getDefaultState().with(BlockReturningState.REVERTS, true);

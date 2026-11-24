@@ -8,6 +8,12 @@
     {
       "id": "#forge:stone",
       "required": false
-    }
+    },
+    "minecraft:andesite",
+    "minecraft:diorite",
+    "minecraft:granite",
+    "minecraft:stone",
+    "minecraft:deepslate",
+    "minecraft:tuff"
   ]
 }

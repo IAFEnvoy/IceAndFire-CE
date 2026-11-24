@@ -3,9 +3,6 @@
   "values": [
     "minecraft:windswept_forest",
     "minecraft:windswept_hills",
-    {
-      "id": "#c:windswept",
-      "required": false
-    }
+    "#iceandfire:compat/windswept"
   ]
 }

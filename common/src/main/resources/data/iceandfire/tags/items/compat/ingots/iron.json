@@ -8,6 +8,7 @@
     {
       "id": "#forge:ingots/iron",
       "required": false
-    }
+    },
+    "minecraft:iron_ingot"
   ]
 }

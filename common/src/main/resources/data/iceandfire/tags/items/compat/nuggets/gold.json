@@ -8,6 +8,7 @@
     {
       "id": "#forge:nuggets/gold",
       "required": false
-    }
+    },
+    "minecraft:gold_nugget"
   ]
 }

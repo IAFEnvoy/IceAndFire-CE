@@ -3,13 +3,6 @@
   "values": [
     "minecraft:jagged_peaks",
     "minecraft:frozen_peaks",
-    {
-      "id": "#c:icy",
-      "required": false
-    },
-    {
-      "id": "#forge:is_snowy",
-      "required": false
-    }
+    "#iceandfire:compat/icy"
   ]
 }

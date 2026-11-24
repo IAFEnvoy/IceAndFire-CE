@@ -8,9 +8,9 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 /**
- * Tags owned by this mod which union the common ({@code c:}) and forge ({@code forge:}) conventions.
- * Code must look these up instead of a foreign namespace: on 1.20.1 forge only provides the
- * {@code forge:} tags and fabric only provides the {@code c:} ones.
+ * Mod-owned tags containing local defaults and optional imports from {@code c:} and {@code forge:}.
+ * Consumers use these tags; foreign tags only export concrete mod entries and never reference
+ * these unions or the other convention. Keep imports one-way to avoid tag dependency cycles.
  */
 public final class CommonTags {
     public static final class Blocks {

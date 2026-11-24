@@ -2,9 +2,6 @@
   "replace": false,
   "values": [
     "#minecraft:is_jungle",
-    {
-      "id": "#c:jungle",
-      "required": false
-    }
+    "#iceandfire:compat/jungle"
   ]
 }

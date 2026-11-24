@@ -8,6 +8,12 @@
     {
       "id": "#forge:chests",
       "required": false
-    }
+    },
+    "#iceandfire:compat/ender_chests",
+    "#iceandfire:compat/trapped_chests",
+    "#iceandfire:compat/wooden_chests",
+    "minecraft:ender_chest",
+    "minecraft:trapped_chest",
+    "minecraft:chest"
   ]
 }

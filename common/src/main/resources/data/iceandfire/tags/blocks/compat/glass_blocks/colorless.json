@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:glass_blocks/colorless",
+      "required": false
+    },
+    "minecraft:glass"
+  ]
+}
