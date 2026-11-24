@@ -1,6 +1,6 @@
 # Dragonforge target coordinate precision
 
-Applies to Minecraft 26.1.2 and 1.21.1 (`2.2.1-bugfix`), and Minecraft 1.20.1 (`1.3.1-bugfix`, Fabric and Forge).
+Applies to Minecraft 26.1.2 and 1.21.1 (`2.2.2`), and Minecraft 1.20.1 (`1.3.2`, Fabric and Forge).
 
 ## Cause
 
@@ -22,7 +22,7 @@ Latest verified full server suites:
 | --- | --- | --- |
 | 26.1.2 | NeoForge | 34/34 |
 | 1.21.1 | NeoForge | 23/23 |
-| 1.20.1 | Fabric | 31/31 |
+| 1.20.1 | Fabric | 32/32 |
 
 
 The deterministic target regression runs the real `breathFireAtPos` method for fire, ice and lightning dragons at the origin, beyond positive and negative 8,388,608 coordinates, and near positive/negative 29 million coordinates. It captures the target passed to the breath event and cancels those captured events to avoid attacking unloaded blocks. The listener is unregistered afterward. The original 26.1.2 code failed this check before the fix.

@@ -172,7 +172,7 @@ public final class IssueRegressionTests {
         helper.succeed();
     }
 
-    public static void dragonCorpsesAreDeadButRemainHarvestable(GameTestHelper helper) {
+    public static void dragonCorpsesRemainHarvestable(GameTestHelper helper) {
         var player = helper.makeMockPlayer(GameType.SURVIVAL);
         player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         for (var type : java.util.List.of(IafEntities.FIRE_DRAGON.get(), IafEntities.ICE_DRAGON.get(), IafEntities.LIGHTNING_DRAGON.get())) {
@@ -180,9 +180,9 @@ public final class IssueRegressionTests {
             dragon.setAgeInDays(75);
             dragon.setHealth(0);
             dragon.setModelDead(true);
-            helper.assertTrue(!dragon.isAlive() && dragon.isDeadOrDying(), "Corpse still reports alive");
+            helper.assertTrue(dragon.isModelDead() && dragon.isAlive(), "Original corpse interaction state was not restored");
             for (var part : dragon.getParts())
-                helper.assertTrue(!part.isPickable(), "Corpse part remains a damage-indicator target");
+                helper.assertTrue(part.isPickable(), "Corpse part must remain selectable for harvesting");
             helper.assertTrue(dragon.isPickable(), "Corpse body must remain selectable for harvesting");
             int stage = dragon.getDeathStage();
             player.interactOn(dragon, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
@@ -192,6 +192,17 @@ public final class IssueRegressionTests {
             helper.assertTrue(dragon.getDeathStage() == stage + 2 && player.getInventory().countItem(dragon.getBloodItem()) == 1,
                     "Bottle interaction did not harvest blood");
             player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            for (var part : dragon.getParts()) {
+                dragon.setDeathStage(0);
+                player.interactOn(part, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
+                helper.assertTrue(dragon.getDeathStage() == 1, "Corpse part did not forward empty-hand harvesting");
+                int blood = player.getInventory().countItem(dragon.getBloodItem());
+                player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GLASS_BOTTLE));
+                player.interactOn(part, InteractionHand.MAIN_HAND, net.minecraft.world.phys.Vec3.ZERO);
+                helper.assertTrue(dragon.getDeathStage() == 2 && player.getInventory().countItem(dragon.getBloodItem()) == blood + 1,
+                        "Corpse part did not forward blood harvesting");
+                player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            }
             dragon.discard();
         }
         helper.succeed();
@@ -228,6 +239,60 @@ public final class IssueRegressionTests {
                 helper.succeed();
             }
         });
+    }
+
+    public static void gravelTransformsUseTheCommonTag(GameTestHelper helper) {
+        var transforms = java.util.List.<java.util.function.UnaryOperator<net.minecraft.world.level.block.state.BlockState>>of(
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockFire,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockIce,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockLightning);
+        var outputs = java.util.List.of(IafBlocks.CHARRED_GRAVEL.get(), IafBlocks.FROZEN_GRAVEL.get(), IafBlocks.CRACKLED_GRAVEL.get());
+        // Test-only tag entries stand in for third-party gravel and sand blocks.
+        for (var input : java.util.List.of(Blocks.GRAVEL, Blocks.WHITE_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER,
+                Blocks.SAND, Blocks.RED_SAND, Blocks.YELLOW_CONCRETE_POWDER)) {
+            var original = input.defaultBlockState();
+            helper.assertTrue(original.is(com.iafenvoy.iceandfire.registry.tag.CommonBlockTags.GRAVELS)
+                            || original.is(net.minecraft.tags.BlockTags.SAND),
+                    "Missing gravel/sand tag entry: " + input);
+            for (int i = 0; i < transforms.size(); i++) {
+                var result = transforms.get(i).apply(original);
+                helper.assertTrue(result.is(outputs.get(i)) && result.getValue(com.iafenvoy.iceandfire.item.block.FallingReturningStateBlock.REVERTS),
+                        "Element " + i + " did not transform tagged gravel/sand: " + input);
+            }
+        }
+        for (var input : java.util.List.of(Blocks.SUSPICIOUS_SAND, Blocks.SUSPICIOUS_GRAVEL, Blocks.GLASS)) {
+            for (var transform : transforms)
+                helper.assertTrue(transform.apply(input.defaultBlockState()).equals(input.defaultBlockState()),
+                        "Protected or unrelated block was transformed: " + input);
+        }
+        helper.succeed();
+    }
+
+    public static void cobblestoneTransformsUseTheCommonTag(GameTestHelper helper) {
+        var transforms = java.util.List.<java.util.function.UnaryOperator<net.minecraft.world.level.block.state.BlockState>>of(
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockFire,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockIce,
+                com.iafenvoy.iceandfire.entity.util.dragon.IafDragonDestructionManager::transformBlockLightning);
+        var outputs = java.util.List.of(IafBlocks.CHARRED_COBBLESTONE.get(), IafBlocks.FROZEN_COBBLESTONE.get(), IafBlocks.CRACKLED_COBBLESTONE.get());
+        var stoneOutputs = java.util.List.of(IafBlocks.CHARRED_STONE.get(), IafBlocks.FROZEN_STONE.get(), IafBlocks.CRACKLED_STONE.get());
+        // Bricks have neither a cobblestone name nor the vanilla base-stone tag.
+        for (var input : java.util.List.of(Blocks.COBBLESTONE, Blocks.BRICKS, Blocks.STONE_BRICKS)) {
+            helper.assertTrue(input.defaultBlockState().is(com.iafenvoy.iceandfire.registry.tag.CommonBlockTags.COBBLESTONES),
+                    "Missing shared cobblestone tag entry: " + input);
+            for (int i = 0; i < transforms.size(); i++) {
+                var result = transforms.get(i).apply(input.defaultBlockState());
+                helper.assertTrue(result.is(outputs.get(i)) && result.getValue(com.iafenvoy.iceandfire.item.block.ReturningStateBlock.REVERTS),
+                        "Element " + i + " did not transform tagged cobblestone: " + input);
+            }
+        }
+        for (int i = 0; i < transforms.size(); i++) {
+            helper.assertTrue(transforms.get(i).apply(Blocks.STONE.defaultBlockState()).is(stoneOutputs.get(i)),
+                    "Natural stone was incorrectly classified as cobblestone for element " + i);
+            for (var input : java.util.List.of(Blocks.COBBLESTONE_SLAB, Blocks.MOSSY_COBBLESTONE_WALL, Blocks.GLASS))
+                helper.assertTrue(transforms.get(i).apply(input.defaultBlockState()).equals(input.defaultBlockState()),
+                        "Untagged block was classified by its name: " + input);
+        }
+        helper.succeed();
     }
 
     public static void forgeBreathPreservesBlockCentersAtLargeCoordinates(GameTestHelper helper) throws Exception {

@@ -46,6 +46,13 @@ if (providers.gradleProperty('auditRegression').isPresent() || providers.gradleP
         || providers.gradleProperty('issue300Regression').isPresent() || providers.gradleProperty('corpseRegression').isPresent()) {
     sourceSets.main.java.srcDir 'src/regression/java'
     sourceSets.main.resources.srcDir 'src/regression/resources'
+    // Opt-in test fixtures replace this tag with vanilla gravel plus test-only members.
+    def productionGravelTag = layout.projectDirectory.file('src/main/resources/data/c/tags/block/gravels.json').asFile
+    tasks.named('processResources', ProcessResources).configure {
+        eachFile { details ->
+            if (details.file == productionGravelTag) details.exclude()
+        }
+    }
 }
 
 repositories {

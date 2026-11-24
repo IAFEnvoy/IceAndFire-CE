@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:gravel",
+    "minecraft:white_concrete_powder",
+    "minecraft:gray_concrete_powder"
+  ]
+}
